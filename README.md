@@ -17,10 +17,10 @@
 
 
 如果您认为她对您有所帮助，希望您能为她点一下star，感谢您的访问！
-![image](https://github.com/577528249/TTNews/blob/master/introductionimages/IMG_0345)
-![image](https://github.com/577528249/TTNews/blob/master/introductionimages/IMG_0346)
-![image](https://github.com/577528249/TTNews/blob/master/introductionimages/IMG_0347)
-![image](https://github.com/577528249/TTNews/blob/master/introductionimages/IMG_0348)
+![image](https://github.com/577528249/TTNews/blob/master/introductionimages/IMG_0345.PNG)
+![image](https://github.com/577528249/TTNews/blob/master/introductionimages/IMG_0346.PNG)
+![image](https://github.com/577528249/TTNews/blob/master/introductionimages/IMG_0347.PNG)
+![image](https://github.com/577528249/TTNews/blob/master/introductionimages/IMG_0348.PNG)
 
 
 
