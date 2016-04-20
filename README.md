@@ -17,17 +17,27 @@
 
 
 如果您认为她对您有所帮助，希望您能为她点一下star，感谢您的访问！
-![image](https://github.com/577528249/TTNews/blob/master/introductionimages/IMG_0345.PNG)
-![image](https://github.com/577528249/TTNews/blob/master/introductionimages/IMG_0346.PNG)
-![image](https://github.com/577528249/TTNews/blob/master/introductionimages/IMG_0347.PNG)
-![image](https://github.com/577528249/TTNews/blob/master/introductionimages/IMG_0348.PNG)
-
-
-
 
 
 PS:她的新闻数据源来自于百度API Store里的免费新闻api
 （http://apistore.baidu.com/apiworks/servicedetail/688.html）
+
 她的搞笑图片，搞笑视频数据源来自于百思不得姐
 （api由抓包分析网络请求所得，版权归百思不得姐所有）。 
 如有问题可以在线留言或加qq577528249详聊，谢谢！
+
+
+
+![image](https://github.com/577528249/TTNews/blob/master/introductionimages/IMG_0345.PNG)
+
+
+
+![image](https://github.com/577528249/TTNews/blob/master/introductionimages/IMG_0346.PNG)
+
+
+
+![image](https://github.com/577528249/TTNews/blob/master/introductionimages/IMG_0347.PNG)
+
+
+
+![image](https://github.com/577528249/TTNews/blob/master/introductionimages/IMG_0349.PNG)
