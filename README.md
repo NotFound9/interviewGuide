@@ -1,5 +1,9 @@
 # TTNews
+
+
 ![image](https://github.com/577528249/TTNews/blob/master/introductionimages/123.gif)
+
+
 作为一个集新闻与娱乐于一体的新闻客户端，
 她具有阅读新闻，观赏搞笑图片，观赏搞笑视频等功能，		  
 她采用MVC架构，拥有新闻，图片，视频，我四个模块，
