@@ -27,7 +27,9 @@ PS:她的新闻数据源来自于百度API Store里的免费新闻api
 如有问题可以在线留言或加qq577528249详聊，谢谢！
 
 
-新闻首页
+# 新闻首页
+
+
 ![image](https://github.com/577528249/TTNews/blob/master/introductionimages/IMG_0345.PNG)
 
 
@@ -45,7 +47,9 @@ PS:她的新闻数据源来自于百度API Store里的免费新闻api
 
 
 
-图片界面
+# 图片界面
+
+
 ![image](https://github.com/577528249/TTNews/blob/master/introductionimages/IMG_0346.PNG)
 
 
@@ -62,7 +66,9 @@ PS:她的新闻数据源来自于百度API Store里的免费新闻api
 
 
 
-视频界面
+# 视频界面
+
+
 ![image](https://github.com/577528249/TTNews/blob/master/introductionimages/IMG_0347.PNG)
 
 
@@ -75,5 +81,6 @@ PS:她的新闻数据源来自于百度API Store里的免费新闻api
 
 
 
-我的界面
+# 我的界面
+
 ![image](https://github.com/577528249/TTNews/blob/master/introductionimages/IMG_0349.PNG)
