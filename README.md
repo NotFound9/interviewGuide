@@ -32,11 +32,47 @@ PS:她的新闻数据源来自于百度API Store里的免费新闻api
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ![image](https://github.com/577528249/TTNews/blob/master/introductionimages/IMG_0346.PNG)
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 ![image](https://github.com/577528249/TTNews/blob/master/introductionimages/IMG_0347.PNG)
+
+
+
+
+
+
+
+
+
 
 
 
