@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="10116" systemVersion="15D21" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="AppInfoViewController">
+            <connections>
+                <outlet property="appNameLabel" destination="XBf-Mf-ZpH" id="VyJ-nO-cTl"/>
+                <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
+            <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="appinfoimage" translatesAutoresizingMaskIntoConstraints="NO" id="Eq5-Vn-y3L">
+                    <rect key="frame" x="225" y="164" width="150" height="150"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="150" id="hv9-3X-UqR"/>
+                        <constraint firstAttribute="height" constant="150" id="yzJ-xj-0Pd"/>
+                    </constraints>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                            <integer key="value" value="10"/>
+                        </userDefinedRuntimeAttribute>
+                        <userDefinedRuntimeAttribute type="boolean" keyPath="layer.maskToBounds" value="YES"/>
+                    </userDefinedRuntimeAttributes>
+                </imageView>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="天天新闻" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XBf-Mf-ZpH">
+                    <rect key="frame" x="256" y="334" width="88" height="26.5"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="22"/>
+                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Trending News Everyday" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hTC-88-cUo">
+                    <rect key="frame" x="206" y="370" width="189" height="21"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                    <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="💕Made with love by YangJunhui" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="35Z-YO-aqL">
+                    <rect key="frame" x="174" y="559.5" width="253" height="20.5"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                    <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                    <nil key="highlightedColor"/>
+                </label>
+            </subviews>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+            <constraints>
+                <constraint firstItem="35Z-YO-aqL" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="77n-nx-ih7"/>
+                <constraint firstItem="Eq5-Vn-y3L" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" constant="164" id="Aj0-Ad-UYr"/>
+                <constraint firstItem="35Z-YO-aqL" firstAttribute="top" secondItem="hTC-88-cUo" secondAttribute="bottom" constant="10" id="EwV-Ia-96z"/>
+                <constraint firstItem="XBf-Mf-ZpH" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="P3J-A8-Ru4"/>
+                <constraint firstAttribute="bottom" secondItem="35Z-YO-aqL" secondAttribute="bottom" constant="40" id="UyD-Lt-Cdw"/>
+                <constraint firstItem="hTC-88-cUo" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="XyR-Ms-Wz3"/>
+                <constraint firstAttribute="bottom" secondItem="35Z-YO-aqL" secondAttribute="bottom" constant="20" id="YrF-G3-Qdg"/>
+                <constraint firstItem="Eq5-Vn-y3L" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="cHb-j4-wHm"/>
+                <constraint firstItem="hTC-88-cUo" firstAttribute="top" secondItem="XBf-Mf-ZpH" secondAttribute="bottom" constant="10" id="fe4-GA-0Ha"/>
+                <constraint firstItem="XBf-Mf-ZpH" firstAttribute="top" secondItem="Eq5-Vn-y3L" secondAttribute="bottom" constant="20" id="pW4-g6-UhH"/>
+            </constraints>
+            <variation key="default">
+                <mask key="constraints">
+                    <exclude reference="EwV-Ia-96z"/>
+                    <exclude reference="UyD-Lt-Cdw"/>
+                </mask>
+            </variation>
+            <point key="canvasLocation" x="254" y="221"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="appinfoimage" width="1000" height="1000"/>
+    </resources>
+</document>
