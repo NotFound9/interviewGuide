@@ -24,6 +24,10 @@
 @property (weak, nonatomic) IBOutlet UILabel *timeLabel;
 @property (weak, nonatomic) IBOutlet UIActivityIndicatorView *progressView;
 
+@property (nonatomic, weak) UITableView *tableView;
+@property (nonatomic, assign) NSIndexPath *indexPath;
+
+
 // 记录当前是否显示了工具栏
 @property (assign, nonatomic) BOOL isShowToolView;
 
@@ -105,6 +109,7 @@
 //
 -(void)dealloc {
     [self.playerItem removeObserver:self forKeyPath:@"status"];
+    [self.player replaceCurrentItemWithPlayerItem:nil];
 }
 // 暂停按钮的监听
 - (IBAction)playOrPause:(UIButton *)sender {
@@ -206,6 +211,20 @@
     NSString *currentString = [NSString stringWithFormat:@"%02ld:%02ld", (long)cMin, (long)cSec];
     
     return [NSString stringWithFormat:@"%@/%@", currentString, durationString];
+}
+
+-(void)resetPlayView {
+    [self suspendPlayVideo];
+    
+    [self.playerLayer removeFromSuperlayer];
+    // 替换PlayerItem为nil
+    [self.player replaceCurrentItemWithPlayerItem:nil];
+    // 把player置为nil
+    self.player = nil;
+    
+    [self removeFromSuperview];
+
+
 }
 
 @end

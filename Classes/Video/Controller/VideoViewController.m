@@ -30,7 +30,6 @@
 @property (nonatomic, strong) FullViewController *fullVc;
 @property (nonatomic, weak) VideoPlayView *playView;
 @property (nonatomic, weak) VideoTableViewCell *currentSelectedCell;
-@property (nonatomic, strong) NSIndexPath *currentPlayCellIndexPath;
 @property (nonatomic, copy) NSString *currentSkinModel;
 
 @end
@@ -59,6 +58,9 @@ static NSString * const VideoCell = @"VideoCell";
 -(void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    if (self.playView.superview) {
+        [self.playView resetPlayView];
+    }
 }
 
 -(void)updateSkinModel {
@@ -141,7 +143,6 @@ static NSString * const VideoCell = @"VideoCell";
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     VideoTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:VideoCell];
     cell.video = self.videoArray[indexPath.row];
-    [cell.playView removeFromSuperview];
     cell.delegate = self;
     cell.indexPath = indexPath;
     if ([self.currentSkinModel isEqualToString:DaySkinModelValue]) {//日间模式
@@ -162,7 +163,6 @@ static NSString * const VideoCell = @"VideoCell";
     VideoCommentViewController *vc = [[VideoCommentViewController alloc] init];
     vc.video = self.videoArray[indexPath.row];
     [self.navigationController pushViewController:vc animated:YES];
-
 }
 
 -(void)clickMoreButton:(TTVideo *)video {
@@ -199,9 +199,8 @@ static NSString * const VideoCell = @"VideoCell";
 }
 
 -(void)clickVideoButton:(NSIndexPath *)indexPath {
-    [self.playView removeFromSuperview];
+    [self.playView resetPlayView];
 
-    self.currentPlayCellIndexPath = indexPath;
     VideoTableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
     self.currentSelectedCell = cell;
     VideoPlayView *playView = [VideoPlayView videoPlayView];
@@ -215,7 +214,6 @@ static NSString * const VideoCell = @"VideoCell";
     self.playView.playerItem = item;
 }
 
-
 -(NSMutableArray *)videoArray {
     if (!_videoArray) {
         _videoArray = [NSMutableArray array];
@@ -223,5 +221,13 @@ static NSString * const VideoCell = @"VideoCell";
     return _videoArray;
 }
 
+-(void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    if (self.playView.superview) {
+        NSIndexPath *indePath = [self.tableView indexPathForCell:self.currentSelectedCell];
+        if (![self.tableView.indexPathsForVisibleRows containsObject:indePath]) {//播放video的cell已离开屏幕
+            [self.playView resetPlayView];
+        }
+    }
+}
 
 @end

@@ -23,5 +23,8 @@
 @property (weak, nonatomic) id<VideoPlayViewDelegate> delegate;
 
 @property (nonatomic, strong) AVPlayerItem *playerItem;
+
 -(void)suspendPlayVideo;
+
+-(void)resetPlayView;
 @end

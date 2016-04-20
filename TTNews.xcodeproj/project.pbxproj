@@ -539,11 +539,11 @@
 		EE4636601CC72BB800DB248F /* Controller */ = {
 			isa = PBXGroup;
 			children = (
+				EE4636641CC72BB800DB248F /* VideoViewController.h */,
+				EE4636651CC72BB800DB248F /* VideoViewController.m */,
 				EE4636611CC72BB800DB248F /* VideoCommentViewController.h */,
 				EE4636621CC72BB800DB248F /* VideoCommentViewController.m */,
 				EE4636631CC72BB800DB248F /* VideoCommentViewController.xib */,
-				EE4636641CC72BB800DB248F /* VideoViewController.h */,
-				EE4636651CC72BB800DB248F /* VideoViewController.m */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
