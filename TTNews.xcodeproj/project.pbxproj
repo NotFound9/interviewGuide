@@ -487,11 +487,11 @@
 		EE4636481CC72BB800DB248F /* Controller */ = {
 			isa = PBXGroup;
 			children = (
+				EE46364C1CC72BB800DB248F /* PictureViewController.h */,
+				EE46364D1CC72BB800DB248F /* PictureViewController.m */,
 				EE4636491CC72BB800DB248F /* PictureCommentViewController.h */,
 				EE46364A1CC72BB800DB248F /* PictureCommentViewController.m */,
 				EE46364B1CC72BB800DB248F /* PictureCommentViewController.xib */,
-				EE46364C1CC72BB800DB248F /* PictureViewController.h */,
-				EE46364D1CC72BB800DB248F /* PictureViewController.m */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -512,12 +512,12 @@
 		EE4636551CC72BB800DB248F /* View */ = {
 			isa = PBXGroup;
 			children = (
-				EE4636561CC72BB800DB248F /* PictureCommentCell.h */,
-				EE4636571CC72BB800DB248F /* PictureCommentCell.m */,
-				EE4636581CC72BB800DB248F /* PictureCommentCell.xib */,
 				EE4636591CC72BB800DB248F /* PictureTableViewCell.h */,
 				EE46365A1CC72BB800DB248F /* PictureTableViewCell.m */,
 				EE46365B1CC72BB800DB248F /* PictureTableViewCell.xib */,
+				EE4636561CC72BB800DB248F /* PictureCommentCell.h */,
+				EE4636571CC72BB800DB248F /* PictureCommentCell.m */,
+				EE4636581CC72BB800DB248F /* PictureCommentCell.xib */,
 				EE46365C1CC72BB800DB248F /* ShowBigPictureViewController.h */,
 				EE46365D1CC72BB800DB248F /* ShowBigPictureViewController.m */,
 				EE46365E1CC72BB800DB248F /* ShowBigPictureViewController.xib */,
@@ -965,6 +965,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = TTNews/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = yangjunhui.TTNews;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -977,6 +978,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = TTNews/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = yangjunhui.TTNews;
 				PRODUCT_NAME = "$(TARGET_NAME)";
