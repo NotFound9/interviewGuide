@@ -31,6 +31,7 @@
 @property (nonatomic, weak) VideoPlayView *playView;
 @property (nonatomic, weak) VideoTableViewCell *currentSelectedCell;
 @property (nonatomic, copy) NSString *currentSkinModel;
+@property (nonatomic, assign) BOOL isFullScreenPlaying;
 
 @end
 
@@ -58,8 +59,9 @@ static NSString * const VideoCell = @"VideoCell";
 -(void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    if (self.playView.superview) {
+    if (self.isFullScreenPlaying == NO) {//将要呈现的画面不是全屏播放页面
         [self.playView resetPlayView];
+
     }
 }
 
@@ -75,6 +77,7 @@ static NSString * const VideoCell = @"VideoCell";
 
 -(void)setupBasic {
     self.currentPage = 0;
+    self.isFullScreenPlaying = NO;
 }
 
 - (void)setupTableView {
@@ -176,6 +179,7 @@ static NSString * const VideoCell = @"VideoCell";
 - (void)videoplayViewSwitchOrientation:(BOOL)isFull
 {
     if (isFull) {
+        self.isFullScreenPlaying = YES;
         [self presentViewController:self.fullVc animated:YES completion:^{
             self.playView.frame = self.fullVc.view.bounds;
             [self.fullVc.view addSubview:self.playView];
@@ -184,7 +188,10 @@ static NSString * const VideoCell = @"VideoCell";
         [self.fullVc dismissViewControllerAnimated:YES completion:^{
             self.playView.frame = self.currentSelectedCell.video.videoFrame;
             [self.currentSelectedCell addSubview:self.playView];
+            self.isFullScreenPlaying = NO;
+
         }];
+        
     }
 }
 
@@ -222,7 +229,7 @@ static NSString * const VideoCell = @"VideoCell";
 }
 
 -(void)scrollViewDidScroll:(UIScrollView *)scrollView {
-    if (self.playView.superview) {
+    if (self.playView.superview && self.isFullScreenPlaying == NO) {//点全屏和退出的时候，也会调用scrollViewDidScroll这个方法
         NSIndexPath *indePath = [self.tableView indexPathForCell:self.currentSelectedCell];
         if (![self.tableView.indexPathsForVisibleRows containsObject:indePath]) {//播放video的cell已离开屏幕
             [self.playView resetPlayView];
