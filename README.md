@@ -1,7 +1,7 @@
 # TTNews
 
 
-![image](https://github.com/577528249/TTNews/blob/master/introductionimages/123.gif)
+![image](https://github.com/577528249/TTNews/blob/master/introductionimages/1234.gif)
 
 
 作为一个集新闻与娱乐于一体的新闻客户端，
