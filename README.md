@@ -19,10 +19,9 @@
 如果您认为她对您有所帮助，希望您能为她点一下star，感谢您的访问！
 
 
-PS:她的新闻数据源来自于百度API Store里的免费新闻api
+PS:她的新闻数据源来自于百度API Store里的免费新闻api，
 
 轮播图数据接口http://apistore.baidu.com/apiworks/servicedetail/1570.html
-
 
 
 新闻接口http://apistore.baidu.com/apiworks/servicedetail/688.html
