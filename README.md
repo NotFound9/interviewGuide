@@ -20,7 +20,7 @@
 
 
 PS:她的新闻数据源来自于百度API Store里的免费新闻api
-（http://apistore.baidu.com/apiworks/servicedetail/688.html）
+新闻接口http://apistore.baidu.com/apiworks/servicedetail/688.html和轮播图数据接口http://apistore.baidu.com/apiworks/servicedetail/1570.html
 
 她的搞笑图片，搞笑视频数据源来自于百思不得姐
 （api由抓包分析网络请求所得，版权归百思不得姐所有），
