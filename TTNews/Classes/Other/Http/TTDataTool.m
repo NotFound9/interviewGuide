@@ -28,7 +28,7 @@ static FMDatabaseQueue *_queue;
 
 +(void)initialize {
     NSString *path = [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:@"data.sqlite"];
-    NSLog(@"%@",path);
+//    NSLog(@"%@",path);
     _queue = [FMDatabaseQueue databaseQueueWithPath:path];
     
     [_queue inDatabase:^(FMDatabase *db) {

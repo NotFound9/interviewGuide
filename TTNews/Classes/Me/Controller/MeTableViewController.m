@@ -35,6 +35,8 @@ CGFloat const footViewHeight = 30;
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self caculateCacheSize];
+    self.automaticallyAdjustsScrollViewInsets = NO;
+    self.tableView.contentInset = UIEdgeInsetsMake(CGRectGetMaxY(self.navigationController.navigationBar.frame) + 30, 0, 0, 0);
 }
 
 -(void)viewWillAppear:(BOOL)animated {
@@ -48,6 +50,7 @@ CGFloat const footViewHeight = 30;
 -(void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    self.navigationController.navigationBar.alpha = 1.0;
 }
 
 -(void)updateSkinModel {
@@ -264,6 +267,16 @@ CGFloat const footViewHeight = 30;
         BOOL status = self.imageDownLoadModeSwitch.on;
         [[NSUserDefaults standardUserDefaults] setObject:@(status) forKey:IsDownLoadNoImageIn3GKey];
         [[NSUserDefaults standardUserDefaults] synchronize];
+    }
+}
+
+-(void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    if (self.tableView.contentOffset.y>0) {
+        self.navigationController.navigationBar.alpha = 0;
+    } else {
+        CGFloat yValue = - self.tableView.contentOffset.y;//纵向的差距
+        CGFloat alphValue = yValue/self.tableView.contentInset.top;
+        self.navigationController.navigationBar.alpha =alphValue;
     }
 }
 

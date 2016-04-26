@@ -61,8 +61,8 @@ static NSString * const VideoCell = @"VideoCell";
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     if (self.isFullScreenPlaying == NO) {//将要呈现的画面不是全屏播放页面
         [self.playView resetPlayView];
-
     }
+    self.navigationController.navigationBar.alpha = 1;
 }
 
 -(void)updateSkinModel {
@@ -82,6 +82,8 @@ static NSString * const VideoCell = @"VideoCell";
 
 - (void)setupTableView {
     self.view.backgroundColor = [UIColor colorWithRed:250.0/255.0 green:250.0/255.0 blue:250.0/255.0 alpha:1.0];
+    self.automaticallyAdjustsScrollViewInsets = NO;
+    self.tableView.contentInset = UIEdgeInsetsMake(CGRectGetMaxY(self.navigationController.navigationBar.frame) + 10, 0, 0, 0);
     self.tableView.scrollIndicatorInsets = self.tableView.contentInset;
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     [self.tableView registerNib:[UINib nibWithNibName:NSStringFromClass([VideoTableViewCell class]) bundle:nil] forCellReuseIdentifier:VideoCell];
@@ -235,6 +237,14 @@ static NSString * const VideoCell = @"VideoCell";
             [self.playView resetPlayView];
         }
     }
+    if (self.tableView.contentOffset.y>0) {
+        self.navigationController.navigationBar.alpha = 0;
+    } else {
+        CGFloat yValue = - self.tableView.contentOffset.y;//纵向的差距
+        CGFloat alphValue = yValue/self.tableView.contentInset.top;
+        self.navigationController.navigationBar.alpha =alphValue;
+    }
+    
 }
 
 @end
