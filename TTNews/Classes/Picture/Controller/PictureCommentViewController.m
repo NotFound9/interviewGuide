@@ -218,11 +218,11 @@ static NSString * const PictureCommentCellID = @"PictureCommentCell";
     PictureTableViewCell *cell = [PictureTableViewCell cell];
     self.headerPictureCell = cell;
     cell.picture = self.picture;
-    cell.size = CGSizeMake([UIScreen mainScreen].bounds.size.width, self.picture.cellHeight);
+    cell.frame = CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, self.picture.cellHeight);
     cell.contentView.frame = cell.bounds;
     
     // header的高度
-    header.height =  self.picture.cellHeight + cellMargin;
+    header.height =  self.picture.cellHeight+ cellMargin;
     [header addSubview:cell];
     
     // 设置header
@@ -232,6 +232,9 @@ static NSString * const PictureCommentCellID = @"PictureCommentCell";
 - (void)setupBasic
 {
     self.title = @"评论";
+    // 内边距s
+    self.automaticallyAdjustsScrollViewInsets = NO;
+    self.tableView.contentInset = UIEdgeInsetsMake(CGRectGetMaxY(self.navigationController.navigationBar.frame) + 10, 0, 0, 0);
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillChangeFrame:) name:UIKeyboardWillChangeFrameNotification object:nil];
     
@@ -247,9 +250,6 @@ static NSString * const PictureCommentCellID = @"PictureCommentCell";
     
     // 去掉分割线
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    
-    // 内边距s
-    self.tableView.contentInset = UIEdgeInsetsMake(64, 0, cellMargin, 0);
 }
 
 - (void)keyboardWillChangeFrame:(NSNotification *)note
@@ -361,6 +361,7 @@ static NSString * const PictureCommentCellID = @"PictureCommentCell";
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    
     UIMenuController *menu = [UIMenuController sharedMenuController];
     if (menu.isMenuVisible) {
         [menu setMenuVisible:NO animated:YES];

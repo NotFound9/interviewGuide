@@ -154,5 +154,24 @@
     self.separatorLine4.backgroundColor = [UIColor colorWithRed:40/255.0 green:36/255.0  blue:40/255.0  alpha:1.0];
 }
 
+- (IBAction)love:(id)sender {
+    UIButton *button = (UIButton *)sender;
+    button.selected = !button.selected;
+}
+
+- (IBAction)hate:(id)sender {
+    UIButton *button = (UIButton *)sender;
+    button.selected = !button.selected;
+}
+
+- (IBAction)repost:(id)sender {
+
+}
+
+- (IBAction)comment:(id)sender {
+    if ([self.delegate respondsToSelector:@selector(clickCommentButton:)]) {
+        [self.delegate clickCommentButton:self.indexPath];
+    }
+}
 
 @end

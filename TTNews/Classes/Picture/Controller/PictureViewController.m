@@ -148,17 +148,27 @@ static NSString * const PictureCell = @"PictureCell";
 }
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    PictureCommentViewController *vc = [[PictureCommentViewController alloc] init];
-    vc.picture = self.pictureArray[indexPath.row];
-    [self.navigationController pushViewController:vc animated:YES];
+    [self pushToVideoCommentViewControllerWithIndexPath:indexPath];
 }
 
+-(void)pushToVideoCommentViewControllerWithIndexPath:(NSIndexPath *)indexPath {
+    PictureCommentViewController *viewController = [[PictureCommentViewController alloc] init];
+    viewController.picture = self.pictureArray[indexPath.row];
+    [self.navigationController pushViewController:viewController animated:YES];
+}
+
+#pragma mark PictureTableViewCell代理 点击更多按钮
 -(void)clickMoreButton:(TTPicture *)picture {
     UIAlertController *controller =  [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
     [controller addAction:[UIAlertAction actionWithTitle:@"收藏" style:UIAlertActionStyleDefault handler:nil]];
     [controller addAction:[UIAlertAction actionWithTitle:@"举报" style:UIAlertActionStyleDefault handler:nil]];
     [controller addAction:[UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:nil]];
     [self presentViewController:controller animated:YES completion:nil];
+}
+
+#pragma mark PictureTableViewCell代理 点击评论按钮
+-(void)clickCommentButton:(NSIndexPath *)indexPath {
+    [self pushToVideoCommentViewControllerWithIndexPath:indexPath];
 }
 
 -(NSMutableArray *)pictureArray {

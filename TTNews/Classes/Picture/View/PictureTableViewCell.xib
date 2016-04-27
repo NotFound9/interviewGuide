@@ -156,14 +156,6 @@
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="l8m-PR-Xeh" userLabel="bottomView">
                         <rect key="frame" x="0.0" y="359" width="329" height="40"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iAc-Im-sxC">
-                                <rect key="frame" x="0.0" y="0.0" width="82.5" height="40"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                                <inset key="titleEdgeInsets" minX="10" minY="0.0" maxX="0.0" maxY="0.0"/>
-                                <state key="normal" title="535" image="mainCellDing">
-                                    <color key="titleColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
-                            </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="TnL-CA-Epf">
                                 <rect key="frame" x="82" y="0.0" width="82" height="40"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="12"/>
@@ -171,7 +163,11 @@
                                 <state key="normal" title="345" image="mainCellCai">
                                     <color key="titleColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
+                                <state key="selected" image="mainCellCaiClick"/>
                                 <state key="highlighted" image="mainCellCaiClick"/>
+                                <connections>
+                                    <action selector="hate:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="Rge-DX-I6P"/>
+                                </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nqb-TX-mPk">
                                 <rect key="frame" x="164" y="0.0" width="82.5" height="40"/>
@@ -180,7 +176,11 @@
                                 <state key="normal" title="455" image="mainCellShare">
                                     <color key="titleColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
+                                <state key="selected" image="mainCellShareClick"/>
                                 <state key="highlighted" image="mainCellShareClick"/>
+                                <connections>
+                                    <action selector="repost:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="man-lp-Axz"/>
+                                </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ZZT-8P-wDU">
                                 <rect key="frame" x="246" y="0.0" width="82" height="40"/>
@@ -189,7 +189,11 @@
                                 <state key="normal" title="133" image="mainCellComment">
                                     <color key="titleColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
+                                <state key="selected" image="mainCellCommentClick"/>
                                 <state key="highlighted" image="mainCellCommentClick"/>
+                                <connections>
+                                    <action selector="comment:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="mTe-Wi-M2r"/>
+                                </connections>
                             </button>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="7fb-uZ-DsU" userLabel="分割线">
                                 <rect key="frame" x="0.0" y="0.0" width="329" height="1"/>
@@ -237,6 +241,18 @@
                                     </mask>
                                 </variation>
                             </view>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iAc-Im-sxC">
+                                <rect key="frame" x="0.0" y="0.0" width="82.5" height="40"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                <inset key="titleEdgeInsets" minX="10" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                <state key="normal" title="535" image="mainCellDing">
+                                    <color key="titleColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <state key="selected" image="mainCellDingClick"/>
+                                <connections>
+                                    <action selector="love:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="9pT-dE-qRo"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         <constraints>
@@ -360,6 +376,7 @@
         <image name="mainCellComment" width="20" height="20"/>
         <image name="mainCellCommentClick" width="20" height="20"/>
         <image name="mainCellDing" width="20" height="20"/>
+        <image name="mainCellDingClick" width="20" height="20"/>
         <image name="mainCellShare" width="20" height="20"/>
         <image name="mainCellShareClick" width="23" height="23"/>
         <image name="see-big-picture" width="19" height="19"/>

@@ -527,12 +527,12 @@
 		EE79B0E91CC8C435001029EF /* View */ = {
 			isa = PBXGroup;
 			children = (
-				EE79B0EA1CC8C435001029EF /* PictureCommentCell.h */,
-				EE79B0EB1CC8C435001029EF /* PictureCommentCell.m */,
-				EE79B0EC1CC8C435001029EF /* PictureCommentCell.xib */,
 				EE79B0ED1CC8C435001029EF /* PictureTableViewCell.h */,
 				EE79B0EE1CC8C435001029EF /* PictureTableViewCell.m */,
 				EE79B0EF1CC8C435001029EF /* PictureTableViewCell.xib */,
+				EE79B0EA1CC8C435001029EF /* PictureCommentCell.h */,
+				EE79B0EB1CC8C435001029EF /* PictureCommentCell.m */,
+				EE79B0EC1CC8C435001029EF /* PictureCommentCell.xib */,
 				EE79B0F01CC8C435001029EF /* ShowBigPictureViewController.h */,
 				EE79B0F11CC8C435001029EF /* ShowBigPictureViewController.m */,
 				EE79B0F21CC8C435001029EF /* ShowBigPictureViewController.xib */,
@@ -591,12 +591,12 @@
 		EE79B1071CC8C435001029EF /* View */ = {
 			isa = PBXGroup;
 			children = (
-				EE79B1081CC8C435001029EF /* VideoCommentCell.h */,
-				EE79B1091CC8C435001029EF /* VideoCommentCell.m */,
-				EE79B10A1CC8C435001029EF /* VideoCommentCell.xib */,
 				EE79B10B1CC8C435001029EF /* VideoTableViewCell.h */,
 				EE79B10C1CC8C435001029EF /* VideoTableViewCell.m */,
 				EE79B10D1CC8C435001029EF /* VideoTableViewCell.xib */,
+				EE79B1081CC8C435001029EF /* VideoCommentCell.h */,
+				EE79B1091CC8C435001029EF /* VideoCommentCell.m */,
+				EE79B10A1CC8C435001029EF /* VideoCommentCell.xib */,
 			);
 			path = View;
 			sourceTree = "<group>";

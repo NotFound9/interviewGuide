@@ -44,14 +44,20 @@
 +(instancetype)cell {
     return [[[NSBundle mainBundle] loadNibNamed:NSStringFromClass(self) owner:nil options:nil] firstObject];
 }
+
 - (void)awakeFromNib {
     self.progressView.roundedCorners = 2;
     self.progressView.progressLabel.textColor = [UIColor whiteColor];
     UIImageView *imageView = [[UIImageView alloc] init];
     imageView.image = [UIImage imageNamed:@"mainCellBackground"];
     self.backgroundView = imageView;
-    
-    
+}
+
+- (void)setFrame:(CGRect)frame {
+    static CGFloat margin = 10;
+    frame.size.width = [UIScreen mainScreen].bounds.size.width;
+    frame.size.height = self.picture.cellHeight - margin;
+    [super setFrame:frame];
 }
 
 -(void)setPicture:(TTPicture *)picture {
@@ -130,8 +136,6 @@
     [super setSelected:selected animated:animated];
 }
 
-
-
 - (IBAction)more:(id)sender {
     
     if ([self.delegate respondsToSelector:@selector(clickMoreButton:)]) {
@@ -140,18 +144,31 @@
     
 }
 
-- (void)setFrame:(CGRect)frame {
-    static CGFloat margin = 10;
-//    frame.origin.y = frame.origin.y + margin;
-    frame.size.width = [UIScreen mainScreen].bounds.size.width;
-    frame.size.height = self.picture.cellHeight - margin;
-    [super setFrame:frame];
-}
 - (IBAction)seeBigPicture:(id)sender {
     
     ShowBigPictureViewController *viewController = [[ShowBigPictureViewController alloc] init];
     viewController.picture = self.picture;
     [[UIApplication sharedApplication].keyWindow.rootViewController presentViewController:viewController animated:YES completion:nil];
+}
+
+- (IBAction)love:(id)sender {
+    UIButton *button = (UIButton *)sender;
+    button.selected = !button.selected;
+}
+
+- (IBAction)hate:(id)sender {
+    UIButton *button = (UIButton *)sender;
+    button.selected = !button.selected;
+}
+
+- (IBAction)repost:(id)sender {
+    
+}
+
+- (IBAction)comment:(id)sender {
+    if ([self.delegate respondsToSelector:@selector(clickCommentButton:)]) {
+        [self.delegate clickCommentButton:self.indexPath];
+    }
 }
 
 -(void)updateToDaySkinMode {

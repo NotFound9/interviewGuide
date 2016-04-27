@@ -10,11 +10,17 @@
 #import "VideoPlayView.h"
 @class VideoPlayView;
 @class TTVideo;
+
 @protocol  VideoTableViewCellDelegate<NSObject>
+
 @optional
+
 -(void)clickMoreButton:(TTVideo *)video;
 -(void)clickVideoButton:(NSIndexPath *)indexPath;
+-(void)clickCommentButton:(NSIndexPath *)indexPath;
+
 @end
+
 @interface VideoTableViewCell : UITableViewCell
 
 +(instancetype)cell;

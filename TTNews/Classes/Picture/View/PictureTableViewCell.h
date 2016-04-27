@@ -7,18 +7,23 @@
 //
 
 #import <UIKit/UIKit.h>
-
 @class TTPicture;
+
 @protocol  PictureTableViewCellDelegate<NSObject>
 @optional
+
 -(void)clickMoreButton:(TTPicture *)picture;
+-(void)clickCommentButton:(NSIndexPath *)indexPath;
+
 @end
+
 @interface PictureTableViewCell : UITableViewCell
 
 +(instancetype)cell;
 -(void)updateToDaySkinMode;
 -(void)updateToNightSkinMode;
+
 @property (nonatomic, strong) TTPicture *picture;
 @property (nonatomic, weak) id<PictureTableViewCellDelegate> delegate;
-
+@property (nonatomic, strong) NSIndexPath *indexPath;
 @end

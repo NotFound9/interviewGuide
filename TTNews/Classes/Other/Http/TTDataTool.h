@@ -16,10 +16,6 @@
 
 +(void)videoWithParameters:(TTVideoFetchDataParameter *)videoParameters success:(void (^)(NSArray *array, NSString *maxtime))success failure:(void (^)(NSError *error))failure;
 
-+ (void)videoHotCommentWithParameters:(NSMutableDictionary *)parameters success:(void (^)(NSArray *hotArray, NSArray *latestArray, NSInteger total))success failure:(void (^)(NSError *error))failure;
-
-+ (void)videoMoreCommentWithParameters:(NSMutableDictionary *)parameters success:(void (^)(NSArray *latestArray, NSInteger total))success failure:(void (^)(NSError *error))failure;
-
 +(void)pictureWithParameters:(TTPictureFetchDataParameter *)pictureParameters success:(void (^)(NSArray *array, NSString *maxtime))success failure:(void (^)(NSError *error))failure;
 
 

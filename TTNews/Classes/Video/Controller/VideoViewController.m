@@ -61,6 +61,7 @@ static NSString * const VideoCell = @"VideoCell";
     self.navigationController.navigationBar.alpha = 1;
 }
 
+
 -(void)updateSkinModel {
     self.currentSkinModel = [[NSUserDefaults standardUserDefaults] stringForKey:CurrentSkinModelKey];
     if ([self.currentSkinModel isEqualToString:NightSkinModelValue]) {//日间模式
@@ -161,17 +162,13 @@ static NSString * const VideoCell = @"VideoCell";
 }
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    [self pushToVideoCommentViewControllerWithIndexPath:indexPath];
+}
+
+-(void)pushToVideoCommentViewControllerWithIndexPath:(NSIndexPath *)indexPath {
     VideoCommentViewController *vc = [[VideoCommentViewController alloc] init];
     vc.video = self.videoArray[indexPath.row];
     [self.navigationController pushViewController:vc animated:YES];
-}
-
--(void)clickMoreButton:(TTVideo *)video {
-    UIAlertController *controller =  [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
-    [controller addAction:[UIAlertAction actionWithTitle:@"收藏" style:UIAlertActionStyleDefault handler:nil]];
-    [controller addAction:[UIAlertAction actionWithTitle:@"举报" style:UIAlertActionStyleDefault handler:nil]];
-    [controller addAction:[UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:nil]];
-    [self presentViewController:controller animated:YES completion:nil];
 }
 
 - (void)videoplayViewSwitchOrientation:(BOOL)isFull
@@ -203,6 +200,17 @@ static NSString * const VideoCell = @"VideoCell";
     return _fullVc;
 }
 
+
+#pragma mark VideoTableViewCell的代理方法
+-(void)clickMoreButton:(TTVideo *)video {
+    UIAlertController *controller =  [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+    [controller addAction:[UIAlertAction actionWithTitle:@"收藏" style:UIAlertActionStyleDefault handler:nil]];
+    [controller addAction:[UIAlertAction actionWithTitle:@"举报" style:UIAlertActionStyleDefault handler:nil]];
+    [controller addAction:[UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:nil]];
+    [self presentViewController:controller animated:YES completion:nil];
+}
+
+#pragma mark VideoTableViewCell的代理方法
 -(void)clickVideoButton:(NSIndexPath *)indexPath {
     [self.playView resetPlayView];
 
@@ -217,6 +225,11 @@ static NSString * const VideoCell = @"VideoCell";
     self.playView.delegate = self;
     AVPlayerItem *item = [AVPlayerItem playerItemWithURL:[NSURL URLWithString:video.videouri]];
     self.playView.playerItem = item;
+}
+
+#pragma mark VideoTableViewCell的代理方法
+-(void)clickCommentButton:(NSIndexPath *)indexPath {
+    [self pushToVideoCommentViewControllerWithIndexPath:indexPath];
 }
 
 -(NSMutableArray *)videoArray {
@@ -234,7 +247,6 @@ static NSString * const VideoCell = @"VideoCell";
             }
     }
 
-    
     if (self.tableView.contentOffset.y>0) {
         self.navigationController.navigationBar.alpha = 0;
     } else {
