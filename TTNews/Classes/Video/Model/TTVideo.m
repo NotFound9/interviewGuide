@@ -29,9 +29,9 @@
         _cellHeight = cellMargin+cellTextY + TextHeight;
         
         //videoImageview的高度
-        CGFloat videoX = cellMargin;
+        CGFloat videoX = 0;
         CGFloat videoY = cellTextY + TextHeight + cellMargin;
-        CGFloat videoWidth = maxSize.width;
+        CGFloat videoWidth = [UIScreen mainScreen].bounds.size.width;
         
         CGFloat videoHeight = self.height * videoWidth/self.width;
         self.videoFrame = CGRectMake(videoX, videoY, videoWidth, videoHeight);

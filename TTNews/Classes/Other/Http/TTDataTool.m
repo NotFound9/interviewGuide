@@ -20,6 +20,7 @@
 #import <FMDB.h>
 #import <MJExtension.h>
 #import <AFNetworking.h>
+#import <SVProgressHUD.h>
 
 static NSString * const apikey = @"8b72ce2839d6eea0869b4c2c60d2a449";
 
@@ -44,35 +45,48 @@ static FMDatabaseQueue *_queue;
 }
 
 +(void)videoWithParameters:(TTVideoFetchDataParameter *)videoParameters success:(void (^)(NSArray *array, NSString *maxtime))success failure:(void (^)(NSError *error))failure {
-    NSMutableArray *videoArray = [self selectDataFromCacheWithVideoParameters:videoParameters];
-    if (videoArray.count>0) {
-        TTVideo *lastVideo = videoArray.lastObject;
-        NSString *maxtime = lastVideo.maxtime;
-        success(videoArray, maxtime);
-    } else {
-            AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
-            NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
-            parameters[@"a"] = @"list";
-            parameters[@"c"] = @"data";
-            parameters[@"type"] = @(41);
-            parameters[@"page"] = @(videoParameters.page);
-            if (videoParameters.maxtime) {
-                parameters[@"maxtime"] = videoParameters.maxtime;
-            }
-        
-            [manager GET:@"http://api.budejie.com/api/api_open.php" parameters:parameters progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-                NSArray *array = [TTVideo mj_objectArrayWithKeyValuesArray:responseObject[@"list"]];
-                NSString *maxTime = responseObject[@"info"][@"maxtime"];
-                for (TTVideo *video in array) {
-                    video.maxtime = maxTime;
-                }
-                [self addVideoArray:array];
-                success(array,maxTime);
-
-            } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-                failure(error);
-            }];
+    if ([TTJudgeNetworking currentNetworkingType] == NetworkingTypeNoReachable) {//没有网络
+        [SVProgressHUD showErrorWithStatus:@"无网络连接"];
+        videoParameters.recentTime = nil;
+        videoParameters.remoteTime = nil;
+        NSMutableArray *videoArray = [self selectDataFromCacheWithVideoParameters:videoParameters];
+        if (videoArray.count>0) {
+            TTVideo *lastVideo = videoArray.lastObject;
+            NSString *maxtime = lastVideo.maxtime;
+            success(videoArray, maxtime);
         }
+        success([videoArray copy], @"");
+    } else {
+        NSMutableArray *videoArray = [self selectDataFromCacheWithVideoParameters:videoParameters];
+        if (videoArray.count>0) {
+            TTVideo *lastVideo = videoArray.lastObject;
+            NSString *maxtime = lastVideo.maxtime;
+            success(videoArray, maxtime);
+        } else {
+                AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+                NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
+                parameters[@"a"] = @"list";
+                parameters[@"c"] = @"data";
+                parameters[@"type"] = @(41);
+                parameters[@"page"] = @(videoParameters.page);
+                if (videoParameters.maxtime) {
+                    parameters[@"maxtime"] = videoParameters.maxtime;
+                }
+            
+                [manager GET:@"http://api.budejie.com/api/api_open.php" parameters:parameters progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+                    NSArray *array = [TTVideo mj_objectArrayWithKeyValuesArray:responseObject[@"list"]];
+                    NSString *maxTime = responseObject[@"info"][@"maxtime"];
+                    for (TTVideo *video in array) {
+                        video.maxtime = maxTime;
+                    }
+                    [self addVideoArray:array];
+                    success(array,maxTime);
+
+                } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+                    failure(error);
+                }];
+            }
+    }
 }
 
 
@@ -133,150 +147,50 @@ static FMDatabaseQueue *_queue;
     }];
 }
 
-+ (void)videoHotCommentWithParameters:(NSMutableDictionary *)parameters success:(void (^)(NSArray *hotArray, NSArray *latestArray, NSInteger total))success failure:(void (^)(NSError *error))failure {
-    __block NSMutableArray *hotCommentArray = nil;
-    __block NSMutableArray *latestCommentArray = nil;
-    __block NSInteger total = 0;
-    NSString *ID = parameters[@"data_id"];
-    [_queue inDatabase:^(FMDatabase *db) {
-        hotCommentArray = [NSMutableArray array];
-        latestCommentArray = [NSMutableArray array];
-        NSInteger page = [parameters[@"page"] integerValue];
-        FMResultSet *result = nil;
-        NSString *querySql = [NSString stringWithFormat:@"select * from table_videocomment where idstr = '%@' and page = %ld order by id asc;", ID, (long)page];
-        result = [db executeQuery:querySql];
-        while (result.next) {
-            NSData *hotCommentdata = [result dataForColumn:@"hotcommentarray"];
-            NSData *latestCommentData = [result dataForColumn:@"latestcommentarray"];
-            total = [result intForColumn:@"total"];
-            
-            if (hotCommentdata) {
-                hotCommentArray = [NSKeyedUnarchiver unarchiveObjectWithData:hotCommentdata];
-            }
-            if (latestCommentData) {
-                latestCommentArray = [NSKeyedUnarchiver unarchiveObjectWithData:latestCommentData];
-            }
-        }
-        
-    }];
-    if (hotCommentArray.count > 0 || latestCommentArray.count > 0) {
-        success(hotCommentArray, latestCommentArray, total);
-    } else {
-        AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
-        [manager GET:@"http://api.budejie.com/api/api_open.php" parameters:parameters progress:nil success:^(NSURLSessionDataTask *task, id responseObject) {
-            if (![responseObject isKindOfClass:[NSDictionary class]]) {
-                NSError *error = [NSError errorWithDomain:@"example.com" code:500 userInfo:nil];
-                failure(error);
-                return;
-            } // 说明没有评论数据
-            
-            // 最热评论
-            hotCommentArray = [TTVideoComment mj_objectArrayWithKeyValuesArray:responseObject[@"hot"]];
-            // 最新评论
-            latestCommentArray = [TTVideoComment mj_objectArrayWithKeyValuesArray:responseObject[@"data"]];
-            // 控制footer的状态
-            NSInteger total = [responseObject[@"total"] integerValue];
-            success(hotCommentArray,latestCommentArray,total);
-//            [self addVideoCommentWithHotArray:hotCommentArray withLatestArray:latestCommentArray withTotal:total withID:ID withPage:1];
-            
-        } failure:^(NSURLSessionDataTask *task, NSError *error) {
-            failure(error);
-        }];
-    }
-}
-
-+ (void)videoMoreCommentWithParameters:(NSMutableDictionary *)parameters success:(void (^)(NSArray *latestArray, NSInteger total))success failure:(void (^)(NSError *error))failure {
-    __block NSMutableArray *hotCommentArray = nil;
-    __block NSMutableArray *latestCommentArray = nil;
-    __block NSInteger total = 0;
-    NSString *ID = parameters[@"data_id"];
-    [_queue inDatabase:^(FMDatabase *db) {
-        latestCommentArray = [NSMutableArray array];
-        NSInteger page = [parameters[@"page"] integerValue];
-        FMResultSet *result = nil;
-        NSString *querySql = [NSString stringWithFormat:@"select * from table_videocomment where idstr = '%@' and page = %ld order by id asc;", ID, (long)page];
-        result = [db executeQuery:querySql];
-        while (result.next) {
-            NSData *latestCommentData = [result dataForColumn:@"latestcommentarray"];
-            total = [result intForColumn:@"total"];
-            
-            if (latestCommentData) {
-                latestCommentArray = [NSKeyedUnarchiver unarchiveObjectWithData:latestCommentData];
-            }
-        }
-        
-    }];
-    if (latestCommentArray.count > 0) {
-        success(latestCommentArray, total);
-    } else {
-        AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
-        [manager GET:@"http://api.budejie.com/api/api_open.php" parameters:parameters progress:nil success:^(NSURLSessionDataTask *task, id responseObject) {
-            if (![responseObject isKindOfClass:[NSDictionary class]]) {
-                NSError *error = [NSError errorWithDomain:@"example.com" code:500 userInfo:nil];
-                failure(error);
-                return;
-            } // 说明没有评论数据
-            
-            // 最新评论
-            latestCommentArray = [TTVideoComment mj_objectArrayWithKeyValuesArray:responseObject[@"data"]];
-            // 控制footer的状态
-            NSInteger total = [responseObject[@"total"] integerValue];
-            success(latestCommentArray,total);
-            NSInteger page = [parameters[@"page"] integerValue];
-            [self addVideoCommentWithHotArray:hotCommentArray withLatestArray:latestCommentArray withTotal:total withID:ID withPage:page];
-            
-        } failure:^(NSURLSessionDataTask *task, NSError *error) {
-            failure(error);
-        }];
-    }
-}
-
-+(void)addVideoCommentWithHotArray:(NSMutableArray *)hotCommentArray withLatestArray:(NSMutableArray *)latestCommentArray withTotal:(NSInteger)total withID:(NSString *)ID withPage:(NSInteger)page{
-    [_queue inDatabase:^(FMDatabase *db) {
-        FMResultSet *result = nil;
-        NSString *querySql = [NSString stringWithFormat:@"SELECT * FROM table_videocomment WHERE idstr = '%@';",ID];
-        result = [db executeQuery:querySql];
-        if (result.next==NO) {//不存在此条数据
-            NSData *hotCommentData = [NSKeyedArchiver archivedDataWithRootObject:hotCommentArray];
-            NSData *latestCommentData = [NSKeyedArchiver archivedDataWithRootObject:latestCommentArray];
-            [db executeUpdate:@"insert into table_videocomment (idstr, hotcommentarray, latestcommentarray,total,page) values(?,?,?,?,?);", ID,hotCommentData,latestCommentData,@(total),@(page)];
-            
-        }
-        [result close];
-        
-    }];
-}
 
 +(void)pictureWithParameters:(TTPictureFetchDataParameter *)pictureParameters success:(void (^)(NSArray *array, NSString *maxtime))success failure:(void (^)(NSError *error))failure {
-    NSMutableArray *pictureArray = [self selectDataFromCacheWithPictureParameters:pictureParameters];
-    if (pictureArray.count>0) {
-        TTPicture *lastPicture = pictureArray.lastObject;
-        NSString *maxtime = lastPicture.maxtime;
-        success([pictureArray copy], maxtime);
-    } else {
-        AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
-        [manager.tasks makeObjectsPerformSelector:@selector(cancel)];
-        NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
-        parameters[@"a"] = @"list";
-        parameters[@"c"] = @"data";
-        parameters[@"type"] = @(10);
-        parameters[@"page"] = @(pictureParameters.page);
-        if (pictureParameters.maxtime) {
-            parameters[@"maxtime"] = pictureParameters.maxtime;
+    if ([TTJudgeNetworking currentNetworkingType] == NetworkingTypeNoReachable) {//没有网络
+        [SVProgressHUD showErrorWithStatus:@"无网络连接"];
+        pictureParameters.recentTime = nil;
+        pictureParameters.remoteTime = nil;
+        NSMutableArray *pictureArray = [self selectDataFromCacheWithPictureParameters:pictureParameters];
+        if (pictureArray.count>0) {
+            TTPicture *lastPicture = pictureArray.lastObject;
+            NSString *maxtime = lastPicture.maxtime;
+            success([pictureArray copy], maxtime);
         }
-        
-        [manager GET:@"http://api.budejie.com/api/api_open.php" parameters:parameters progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id _Nullable responseObject) {
-            NSArray *array = [TTPicture mj_objectArrayWithKeyValuesArray:responseObject[@"list"]];
-            NSString *maxTime = responseObject[@"info"][@"maxtime"];
-            for (TTPicture *picture in array) {
-                picture.maxtime = maxTime;
+        success([pictureArray copy], @"");
+    } else {
+        NSMutableArray *pictureArray = [self selectDataFromCacheWithPictureParameters:pictureParameters];
+        if (pictureArray.count>0) {
+            TTPicture *lastPicture = pictureArray.lastObject;
+            NSString *maxtime = lastPicture.maxtime;
+            success([pictureArray copy], maxtime);
+        } else {
+            AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+            [manager.tasks makeObjectsPerformSelector:@selector(cancel)];
+            NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
+            parameters[@"a"] = @"list";
+            parameters[@"c"] = @"data";
+            parameters[@"type"] = @(10);
+            parameters[@"page"] = @(pictureParameters.page);
+            if (pictureParameters.maxtime) {
+                parameters[@"maxtime"] = pictureParameters.maxtime;
             }
-            [self addPictureArray:array];
-            success(array,maxTime);
             
-        } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-            failure(error);
-        }];
+            [manager GET:@"http://api.budejie.com/api/api_open.php" parameters:parameters progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id _Nullable responseObject) {
+                NSArray *array = [TTPicture mj_objectArrayWithKeyValuesArray:responseObject[@"list"]];
+                NSString *maxTime = responseObject[@"info"][@"maxtime"];
+                for (TTPicture *picture in array) {
+                    picture.maxtime = maxTime;
+                }
+                [self addPictureArray:array];
+                success(array,maxTime);
+                
+            } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+                failure(error);
+            }];
+        }
     }
 }
 
@@ -340,6 +254,7 @@ static FMDatabaseQueue *_queue;
 
 +(void)TTHeaderNewsFromServerOrCacheWithMaxTTHeaderNews:(TTHeaderNews *)headerNews success:(void (^)(NSMutableArray *array))success failure:(void (^)(NSError *error))failure {
     if ([TTJudgeNetworking currentNetworkingType] == NetworkingTypeNoReachable) {//没有网络
+        [SVProgressHUD showErrorWithStatus:@"无网络连接"];
         NSMutableArray *array = [self TTHeaderNewsFromCacheWithMaxTTHeaderNews:headerNews];
         success(array);
     } else {//有网络
@@ -403,10 +318,10 @@ static FMDatabaseQueue *_queue;
 
 +(void)TTNormalNewsWithParameters:(TTNormalNewsFetchDataParameter *)normalNewsParameters success:(void (^)(NSMutableArray *array))success failure:(void (^)(NSError *error))failure {
     if (![TTJudgeNetworking judge]) {
+        [SVProgressHUD showErrorWithStatus:@"无网络连接"];
         TTNormalNewsFetchDataParameter *tempParameters = [[TTNormalNewsFetchDataParameter alloc] init];
         tempParameters.channelId = normalNewsParameters.channelId;
         NSMutableArray *tempCacheArray = [self selectDataFromTTNormalNewsCacheWithParameters:tempParameters];
-        
         success(tempCacheArray);
         return;
     }

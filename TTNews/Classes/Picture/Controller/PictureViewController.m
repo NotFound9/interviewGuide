@@ -34,10 +34,6 @@ static NSString * const PictureCell = @"PictureCell";
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    if ([TTJudgeNetworking judge]==NO) {
-        [SVProgressHUD showErrorWithStatus:@"无网络连接"];
-        return;
-    }
     [self setupBasic];
     [self setupTableView];
     [self setupMJRefreshHeader];

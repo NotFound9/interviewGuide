@@ -15,6 +15,7 @@
 #import "SendFeedbackViewController.h"
 #import "AppInfoViewController.h"
 #import "EditUserInfoViewController.h"
+#import "UIImage+Extension.h"
 
 @interface MeTableViewController ()
 
@@ -43,8 +44,6 @@ CGFloat const footViewHeight = 30;
     [super viewWillAppear:animated];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateSkinModel) name:SkinModelDidChangedNotification object:nil];
     [self updateSkinModel];
-//    self.shakeCanChangeSkinSwitch.on = [[NSUserDefaults standardUserDefaults] boolForKey:IsShakeCanChangeSkinKey];
-//    self.imageDownLoadModeSwitch.on = [[NSUserDefaults standardUserDefaults] boolForKey:IsDownLoadNoImageIn3GKey];
 }
 
 -(void)viewWillDisappear:(BOOL)animated {

@@ -49,10 +49,7 @@ static NSString * const apikey = @"8b72ce2839d6eea0869b4c2c60d2a449";
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    if ([TTJudgeNetworking judge]==NO) {
-        [SVProgressHUD showErrorWithStatus:@"无网络连接"];
-        return;
-    }
+    
     [self setupBasic];
     [self setupRefresh];
     [self setupHeader];

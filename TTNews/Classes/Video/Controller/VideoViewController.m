@@ -41,10 +41,6 @@ static NSString * const VideoCell = @"VideoCell";
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    if ([TTJudgeNetworking judge]==NO) {
-        [SVProgressHUD showErrorWithStatus:@"无网络连接"];
-        return;
-    }
     [self setupBasic];
     [self setupTableView];
     [self setupMJRefreshHeader];
@@ -233,10 +229,12 @@ static NSString * const VideoCell = @"VideoCell";
 -(void)scrollViewDidScroll:(UIScrollView *)scrollView {
     if (self.playView.superview && self.isFullScreenPlaying == NO) {//点全屏和退出的时候，也会调用scrollViewDidScroll这个方法
         NSIndexPath *indePath = [self.tableView indexPathForCell:self.currentSelectedCell];
-        if (![self.tableView.indexPathsForVisibleRows containsObject:indePath]) {//播放video的cell已离开屏幕
-            [self.playView resetPlayView];
-        }
+            if (![self.tableView.indexPathsForVisibleRows containsObject:indePath]) {//播放video的cell已离开屏幕
+                [self.playView resetPlayView];
+            }
     }
+
+    
     if (self.tableView.contentOffset.y>0) {
         self.navigationController.navigationBar.alpha = 0;
     } else {
@@ -246,5 +244,14 @@ static NSString * const VideoCell = @"VideoCell";
     }
     
 }
+
+//- (void)updatePlayViewToBottom {
+//    CGFloat margin = 20;
+//    CGFloat playViewHeight = 100;
+//    CGFloat playViewWidth = playViewHeight * self.currentSelectedCell.video.videoFrame.size.width/ self.currentSelectedCell.video.videoFrame.size.height;
+//    CGFloat playViewX = [UIScreen mainScreen].bounds.size.width - margin- playViewWidth;
+//    CGFloat playViewY = CGRectGetMinY(self.tabBarController.tabBar.frame) - margin - playViewHeight;
+//    self.playView.frame = CGRectMake(playViewX, playViewY, playViewWidth, playViewHeight);
+//}
 
 @end
