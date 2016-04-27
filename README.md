@@ -93,6 +93,15 @@ PS:她的新闻数据源来自于百度API Store里的免费新闻api，
 
 ![image](https://github.com/577528249/TTNews/blob/master/introductionimages/IMG_0349.PNG)
 
+
+
+
+#使用方法
+
+
+点击右上角Download Zip按钮，将项目压缩包下载至本地，解压后点击文件夹中TTNews.xcworkspace即可运行。
+
+
 #License
 The MIT License (MIT)
 
