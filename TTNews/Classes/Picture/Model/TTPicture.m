@@ -29,9 +29,9 @@
         _cellHeight = cellMargin+cellTextY + TextHeight;
         
         //videoImageview的高度
-        CGFloat pictureX = cellMargin;
+        CGFloat pictureX = 0;
         CGFloat pictureY =  cellTextY + TextHeight + cellMargin;
-        CGFloat pictureWidth = maxSize.width;
+        CGFloat pictureWidth = [UIScreen mainScreen].bounds.size.width;
         
         CGFloat pictureHeight = self.height * pictureWidth/self.width;
         if (pictureHeight > [UIScreen mainScreen].bounds.size.height-64-40) {
