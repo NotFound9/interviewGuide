@@ -22,17 +22,17 @@
 #import "TTConst.h"
 #import "UIImageView+Extension.h"
 #import "TTJudgeNetworking.h"
+#import "TTCycleScrollView.h"
 
-@interface ContentTableViewController ()
+@interface ContentTableViewController ()<TTCycleScrollViewDelegate>
 
 @property (nonatomic, strong) NSMutableArray *headerNewsArray;
 @property (nonatomic, assign) NSInteger currentPage;
 @property (nonatomic, strong) NSMutableArray *normalNewsArray;
-@property (nonatomic, weak) UIScrollView *headerScrollView;
+@property (nonatomic, weak) TTCycleScrollView *headerView;
 @property (nonatomic, weak) UILabel *headerLabel;
 @property (nonatomic, weak) UIPageControl *pageControl;
 @property (nonatomic, strong) NSTimer *timer;
-@property (nonatomic, assign) NSInteger currentHeaderIndex;
 @property (nonatomic, weak) UIImageView *leftImageView;
 @property (nonatomic, weak) UIImageView *middleImageView;
 @property (nonatomic, weak) UIImageView *rightImageView;
@@ -53,7 +53,6 @@ static NSString * const apikey = @"8b72ce2839d6eea0869b4c2c60d2a449";
     [self setupBasic];
     [self setupRefresh];
     [self setupHeader];
-    [self addTimer];
 }
 
 -(void)viewWillAppear:(BOOL)animated {
@@ -64,7 +63,7 @@ static NSString * const apikey = @"8b72ce2839d6eea0869b4c2c60d2a449";
 
 -(void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
-    [self removeTimer];
+    [self.headerView removeTimer];
     [SVProgressHUD dismiss];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
@@ -81,66 +80,9 @@ static NSString * const apikey = @"8b72ce2839d6eea0869b4c2c60d2a449";
 }
 
 -(void)setupHeader {
-    CGFloat headerLabelHeight = 30;
-    CGFloat margin = 10;
-    
-    self.automaticallyAdjustsScrollViewInsets = NO;
-    UIView *headerView = [[UIView alloc] init];
-    headerView.frame = CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.width*9/16);
-
-    UIScrollView *headerScrollView = [[UIScrollView alloc] init];
-    self.headerScrollView = headerScrollView;
-    headerScrollView.showsHorizontalScrollIndicator = NO;
-    headerScrollView.showsVerticalScrollIndicator = NO;
-    headerScrollView.frame = headerView.frame;
-    [headerView addSubview:headerScrollView];
-    headerScrollView.contentSize = CGSizeMake(headerScrollView.frame.size.width*3, 0);
-    headerScrollView.contentOffset = CGPointMake(headerScrollView.frame.size.width, 0);
-    headerScrollView.pagingEnabled = YES;
-    headerScrollView.delegate = self;
-    
-    for (NSInteger i = 0; i<3; i++) {
-        UIImageView *imageView = [[UIImageView alloc] init];
-        if (i==0) {
-            self.leftImageView = imageView;
-        } else if (i==1) {
-            self.middleImageView = imageView;
-        } else if (i==2) {
-            self.rightImageView = imageView;
-        }
-        imageView.frame = CGRectMake(i*headerScrollView.frame.size.width, 0, headerScrollView.frame.size.width, headerScrollView.frame.size.height);
-        UITapGestureRecognizer *recognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(clickHeaderImageView:)];
-        imageView.userInteractionEnabled = YES;
-        [imageView addGestureRecognizer:recognizer];
-        [headerScrollView addSubview:imageView];
-    }
-
-    UIView *view = [[UIView alloc] init];
-    view.frame = CGRectMake(0, headerView.frame.size.height - headerLabelHeight, headerView.frame.size.width, headerLabelHeight);
-    view.alpha = 0.8;
-    view.backgroundColor =[UIColor darkGrayColor];
-    [headerView addSubview:view];
-    
-    UIPageControl *pageControl = [[UIPageControl alloc] init];
-    pageControl.numberOfPages = 5;
-    CGFloat pageControlWidth = [pageControl sizeForNumberOfPages:pageControl.numberOfPages].width;
-    pageControl.currentPageIndicatorTintColor = [UIColor colorWithRed:243/255.0 green:75/255.0 blue:80/255.0 alpha:1.0];
-
-    self.pageControl = pageControl;
-    pageControl.frame = CGRectMake(headerView.frame.size.width - pageControlWidth-0.5*margin, 0, pageControlWidth, headerLabelHeight);
-    pageControl.currentPage = 0;
-    [view addSubview:pageControl];
-    
-    UILabel *headerLabel = [[UILabel alloc] init];
-    self.headerLabel = headerLabel;
-    headerLabel.frame = CGRectMake(0, 0, headerView.frame.size.width - pageControlWidth-1.5*margin, headerLabelHeight);
-    headerLabel.textAlignment = NSTextAlignmentLeft;
-    headerLabel.textColor = [UIColor whiteColor];
-    headerLabel.backgroundColor = [UIColor darkGrayColor];
-    headerLabel.lineBreakMode = NSLineBreakByWordWrapping;
-    [view addSubview:headerLabel];
-    
-    headerView.hidden = YES;
+    TTCycleScrollView *headerView = [[TTCycleScrollView alloc] initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.width*9/16)];
+    headerView.delegate = self;
+    self.headerView = headerView;
     self.tableView.tableHeaderView = headerView;
 }
 
@@ -153,7 +95,7 @@ static NSString * const apikey = @"8b72ce2839d6eea0869b4c2c60d2a449";
 }
 
 -(void)setupBasic {
-    self.currentHeaderIndex = 0;
+    self.automaticallyAdjustsScrollViewInsets = NO;
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.tableView.scrollIndicatorInsets = UIEdgeInsetsMake(104, 0, 0, 0);
     [self.tableView registerNib:[UINib nibWithNibName:NSStringFromClass([SinglePictureNewsTableViewCell class]) bundle:nil] forCellReuseIdentifier:singlePictureCell];
@@ -169,21 +111,28 @@ static NSString * const apikey = @"8b72ce2839d6eea0869b4c2c60d2a449";
 }
 
 -(void)fetchNewHeaderNews {
-    [self removeTimer];
+    [self.headerView removeTimer];
     [TTDataTool TTHeaderNewsFromServerOrCacheWithMaxTTHeaderNews:self.headerNewsArray.lastObject success:^(NSMutableArray *array) {
-            self.headerNewsArray = array;
-            self.tableView.tableHeaderView.hidden = NO;
-            [SVProgressHUD dismiss];
-            [self updateHeaderView];
+        [SVProgressHUD dismiss];
+        self.headerNewsArray = array;
+        NSMutableArray *imageUrls = [NSMutableArray array];
+        NSMutableArray *titles = [NSMutableArray array];
+        for (TTHeaderNews *news in self.headerNewsArray){
+            [imageUrls addObject:news.image_url];
+            [titles addObject:news.title];
+        }
+        self.headerView.imageUrls = [imageUrls copy];
+        self.headerView.titles = [titles copy];
+        self.headerView.currentMiddleImageViewIndex = 0;
+        [self.headerView updateImageViewsAndTitleLabel];
+        [self.headerView addTimer];
+        [self.tableView reloadData];
         } failure:^(NSError *error) {
             [SVProgressHUD dismiss];
             [SVProgressHUD showErrorWithStatus:@"加载失败！"];
             [self.tableView.mj_header endRefreshing];
-            [self removeTimer];
             NSLog(@"%@fetchHeaderNews%@",self, error);
     }];
-  
-    [self addTimer];
 }
 
 -(void)fetchNewNormalNews {
@@ -237,13 +186,6 @@ static NSString * const apikey = @"8b72ce2839d6eea0869b4c2c60d2a449";
         [self.tableView reloadData];
     }];
     
-}
-
-
-
--(void)clickHeaderImageView:(id)sender {
-    TTHeaderNews *news = self.headerNewsArray[self.currentHeaderIndex];
-    [self pushToDetailViewControllerWithUrl:news.url];
 }
 
 #pragma mark - Table view data source
@@ -316,39 +258,22 @@ static NSString * const apikey = @"8b72ce2839d6eea0869b4c2c60d2a449";
         [self pushToDetailViewControllerWithUrl:news.link];
     }
 }
--(void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
-    if (scrollView == self.headerScrollView) {//headerScrollView
-        if (self.headerNewsArray.count==0||self.headerNewsArray==nil) return;
-        
-        if (scrollView.contentOffset.x>=scrollView.frame.size.width) {//向右滚动
-            self.currentHeaderIndex = (self.currentHeaderIndex + 1)%self.headerNewsArray.count;
-        } else {//向左滚动
-            self.currentHeaderIndex = (self.currentHeaderIndex - 1 + self.headerNewsArray.count)%self.headerNewsArray.count;
-        }
-        self.pageControl.currentPage = self.currentHeaderIndex;
-
-        TTHeaderNews *middleNews = self.headerNewsArray[self.currentHeaderIndex];
-        [self.middleImageView TT_setImageWithURL:[NSURL URLWithString:middleNews.image_url]];
-        self.headerLabel.text = [NSString stringWithFormat:@"   %@", middleNews.title];
-        
-        NSInteger leftIndex = (self.currentHeaderIndex - 1 + self.headerNewsArray.count)%self.headerNewsArray.count;//防止减1减成负数，所以加了一个self.headerNewsArray.count
-        TTHeaderNews *leftNews = self.headerNewsArray[leftIndex];
-        [self.leftImageView TT_setImageWithURL:[NSURL URLWithString:leftNews.image_url]];
-        
-        NSInteger rightIndex = (self.currentHeaderIndex + 1)%self.headerNewsArray.count;
-        TTHeaderNews *rightNews = self.headerNewsArray[rightIndex];
-        [self.rightImageView TT_setImageWithURL:[NSURL URLWithString:rightNews.image_url]];
-        [self.headerScrollView setContentOffset:CGPointMake(self.headerScrollView.frame.size.width, 0)];
-    }
-    
-}
 
 -(void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
-    [self removeTimer];
+    [self.headerView removeTimer];
 }
 
--(void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset {
-    [self addTimer];
+-(void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
+    //判断headerview是否在视野内
+    if (self.tableView.contentOffset.y <= self.headerView.frame.size.height) {
+        [self.headerView addTimer];
+    }
+}
+
+#pragma mark - TTCycleScrollViewDelegate
+- (void)clickCurrentImageViewInCycleScrollView {
+    TTHeaderNews *news = self.headerNewsArray[self.headerView.currentMiddleImageViewIndex];
+    [self pushToDetailViewControllerWithUrl:news.url];
 }
 
 -(void)pushToDetailViewControllerWithUrl:(NSString *)url {
@@ -356,27 +281,6 @@ static NSString * const apikey = @"8b72ce2839d6eea0869b4c2c60d2a449";
     viewController.url = url;
     [self.navigationController pushViewController:viewController animated:YES];
 }
-
--(void)updateHeaderView {
-    if (self.headerNewsArray.count==0) return;
-    self.currentHeaderIndex = 0;
-    TTHeaderNews *middleNews = self.headerNewsArray[self.currentHeaderIndex];
-    [self.middleImageView TT_setImageWithURL:[NSURL URLWithString:middleNews.image_url]];
-    self.headerLabel.text = [NSString stringWithFormat:@"   %@", middleNews.title];
-    
-    NSInteger leftIndex = (self.currentHeaderIndex - 1 + self.headerNewsArray.count)%self.headerNewsArray.count;//防止减1减成负数，所以加了一个self.headerNewsArray.count
-    TTHeaderNews *leftNews = self.headerNewsArray[leftIndex];
-    [self.leftImageView TT_setImageWithURL:[NSURL URLWithString:leftNews.image_url]];
-    
-    NSInteger rightIndex = (self.currentHeaderIndex + 1)%self.headerNewsArray.count;
-    TTHeaderNews *rightNews = self.headerNewsArray[rightIndex];
-    [self.rightImageView TT_setImageWithURL:[NSURL URLWithString:rightNews.image_url]];
-    self.pageControl.currentPage=0;
-    [self.headerScrollView setContentOffset:CGPointMake(self.headerScrollView.frame.size.width, 0)];
-    self.pageControl.numberOfPages = self.headerNewsArray.count;
-    [self.tableView reloadData];
-}
-
 
 
 -(NSMutableArray *)normalNewsArray {
@@ -394,21 +298,5 @@ static NSString * const apikey = @"8b72ce2839d6eea0869b4c2c60d2a449";
     return _headerNewsArray;
 }
 
-- (void)addTimer {
-    self.timer = [NSTimer timerWithTimeInterval:3 target:self selector:@selector(nextNews) userInfo:nil repeats:YES];
-    [[NSRunLoop currentRunLoop] addTimer:self.timer forMode:NSDefaultRunLoopMode];
-    
-}
-
-- (void)removeTimer{
-    [self.timer invalidate];
-}
-
-- (void)nextNews {
-    [UIView animateWithDuration:0.25 animations:^{
-        [self.headerScrollView setContentOffset:CGPointMake(self.headerScrollView.contentOffset.x+[UIScreen mainScreen].bounds.size.width, 0)];
-        [self scrollViewDidEndDecelerating:self.headerScrollView];
-    }];
-}
 
 @end
