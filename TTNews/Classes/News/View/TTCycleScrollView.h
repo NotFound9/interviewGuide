@@ -27,5 +27,8 @@
 - (void)updateImageViewsAndTitleLabel;
 - (void)addTimer;
 - (void)removeTimer;
+-(void)updateToDaySkinMode;
+-(void)updateToNightSkinMode;
+
 
 @end

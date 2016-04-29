@@ -30,12 +30,6 @@
 @property (nonatomic, assign) NSInteger currentPage;
 @property (nonatomic, strong) NSMutableArray *normalNewsArray;
 @property (nonatomic, weak) TTCycleScrollView *headerView;
-@property (nonatomic, weak) UILabel *headerLabel;
-@property (nonatomic, weak) UIPageControl *pageControl;
-@property (nonatomic, strong) NSTimer *timer;
-@property (nonatomic, weak) UIImageView *leftImageView;
-@property (nonatomic, weak) UIImageView *middleImageView;
-@property (nonatomic, weak) UIImageView *rightImageView;
 @property (nonatomic, copy) NSString *currentSkinModel;
 
 @end
@@ -43,7 +37,6 @@
 static NSString * const singlePictureCell = @"SinglePictureCell";
 static NSString * const multiPictureCell = @"MultiPictureCell";
 static NSString * const noPictureCell = @"NoPictureCell";
-static NSString * const apikey = @"8b72ce2839d6eea0869b4c2c60d2a449";
 
 @implementation ContentTableViewController
 
@@ -70,11 +63,12 @@ static NSString * const apikey = @"8b72ce2839d6eea0869b4c2c60d2a449";
 
 -(void)updateSkinModel {
     self.currentSkinModel = [[NSUserDefaults standardUserDefaults] stringForKey:CurrentSkinModelKey];
-    if ([self.currentSkinModel isEqualToString:NightSkinModelValue]) {        self.tableView.backgroundColor = [UIColor blackColor];
-        self.headerLabel.textColor = [UIColor lightGrayColor];
+    if ([self.currentSkinModel isEqualToString:NightSkinModelValue]) {//夜间模式
+        self.tableView.backgroundColor = [UIColor blackColor];
+        [self.headerView updateToNightSkinMode];
     } else {//日间模式
         self.tableView.backgroundColor = [UIColor colorWithRed:250.0/255.0 green:250.0/255.0 blue:250.0/255.0 alpha:1.0];
-        self.headerLabel.textColor = [UIColor whiteColor];
+        [self.headerView updateToDaySkinMode];
     }
     [self.tableView reloadData];
 }

@@ -17,8 +17,8 @@
 @property (nonatomic, weak) UIImageView *rightImageView;
 @property (nonatomic, weak) UIView *bottomContianerView;
 @property (nonatomic, weak) UIPageControl *pageControl;
-@property (nonatomic, weak) UILabel *titleLabel;
 @property (nonatomic, strong) NSTimer *timer;
+@property (nonatomic, weak) UILabel *titleLabel;
 
 @end
 
@@ -79,7 +79,6 @@
     CGFloat kPageControlWidth = [pageControl sizeForNumberOfPages:5].width;
     CGFloat margin = 10;
     pageControl.frame = CGRectMake(bottomContianerView.frame.size.width - kPageControlWidth - margin, 0, kPageControlWidth, bottomContianerView.frame.size.height);
-    pageControl.currentPageIndicatorTintColor = [UIColor colorWithRed:243/255.0 green:75/255.0 blue:80/255.0 alpha:1.0];
 
     [bottomContianerView addSubview:pageControl];
     
@@ -165,6 +164,18 @@
     if ([self.delegate respondsToSelector:@selector(clickCurrentImageViewInCycleScrollView)]) {
         [self.delegate clickCurrentImageViewInCycleScrollView];
     }
+}
+
+#pragma mark 切换至日间模式
+-(void)updateToDaySkinMode {
+    self.pageControl.currentPageIndicatorTintColor = [UIColor colorWithRed:243/255.0 green:75/255.0 blue:80/255.0 alpha:1.0];
+    self.titleLabel.textColor = [UIColor whiteColor];
+}
+
+#pragma mark 切换至夜间模式
+-(void)updateToNightSkinMode {
+    self.pageControl.currentPageIndicatorTintColor = [UIColor blackColor];
+    self.titleLabel.textColor = [UIColor lightGrayColor];
 }
 
 @end
