@@ -17,4 +17,6 @@
 @property (nonatomic, copy) NSString *channelName;
 @property (nonatomic, strong) NSIndexPath *theIndexPath;
 @property (nonatomic, weak) id delegate;
+@property (weak, nonatomic) IBOutlet UIImageView *specialcell_nav_btn;
+
 @end

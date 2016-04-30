@@ -701,7 +701,7 @@
 				TargetAttributes = {
 					EE4635C21CC72B8900DB248F = {
 						CreatedOnToolsVersion = 7.3;
-						DevelopmentTeam = FJ2RR7PUE2;
+						DevelopmentTeam = 59T7N8PU47;
 					};
 					EE4635DB1CC72B8A00DB248F = {
 						CreatedOnToolsVersion = 7.3;
@@ -1001,11 +1001,14 @@
 			baseConfigurationReference = 9D08A2A40F47DA39E7253110 /* Pods-TTNews.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = TTNews/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = yangjunhui.TTNews;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Debug;
 		};
@@ -1014,11 +1017,14 @@
 			baseConfigurationReference = 53428844E2216BE5C197C066 /* Pods-TTNews.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = TTNews/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = yangjunhui.TTNews;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Release;
 		};
