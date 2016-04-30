@@ -74,7 +74,8 @@
 		EE79B1481CC8C435001029EF /* VideoCommentCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = EE79B10A1CC8C435001029EF /* VideoCommentCell.xib */; };
 		EE79B1491CC8C435001029EF /* VideoTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = EE79B10C1CC8C435001029EF /* VideoTableViewCell.m */; };
 		EE79B14A1CC8C435001029EF /* VideoTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = EE79B10D1CC8C435001029EF /* VideoTableViewCell.xib */; };
-		EEC791841CD1AEB8008B7C2D /* TTCycleScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = EEC791831CD1AEB8008B7C2D /* TTCycleScrollView.m */; };
+		EEB32A4B1CD38CAF00FF0AB8 /* TTTopChannelContianerView.m in Sources */ = {isa = PBXBuildFile; fileRef = EEB32A4A1CD38CAF00FF0AB8 /* TTTopChannelContianerView.m */; };
+		EEC791841CD1AEB8008B7C2D /* TTImageCyclePlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = EEC791831CD1AEB8008B7C2D /* TTImageCyclePlayView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -154,8 +155,8 @@
 		EE79B0C11CC8C435001029EF /* UIImageView+Extension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImageView+Extension.m"; sourceTree = "<group>"; };
 		EE79B0C21CC8C435001029EF /* UIView+Extension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+Extension.h"; sourceTree = "<group>"; };
 		EE79B0C31CC8C435001029EF /* UIView+Extension.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+Extension.m"; sourceTree = "<group>"; };
-		EE79B0C51CC8C435001029EF /* TTConst.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TTConst.h; sourceTree = "<group>"; };
-		EE79B0C61CC8C435001029EF /* TTConst.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TTConst.m; sourceTree = "<group>"; };
+		EE79B0C51CC8C435001029EF /* TTConst.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TTConst.h; path = ../Http/TTConst.h; sourceTree = "<group>"; };
+		EE79B0C61CC8C435001029EF /* TTConst.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TTConst.m; path = ../Http/TTConst.m; sourceTree = "<group>"; };
 		EE79B0C71CC8C435001029EF /* TTDataTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TTDataTool.h; sourceTree = "<group>"; };
 		EE79B0C81CC8C435001029EF /* TTDataTool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TTDataTool.m; sourceTree = "<group>"; };
 		EE79B0C91CC8C435001029EF /* TTNormalNewsFetchDataParameter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TTNormalNewsFetchDataParameter.h; sourceTree = "<group>"; };
@@ -216,8 +217,10 @@
 		EE79B10B1CC8C435001029EF /* VideoTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VideoTableViewCell.h; sourceTree = "<group>"; };
 		EE79B10C1CC8C435001029EF /* VideoTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VideoTableViewCell.m; sourceTree = "<group>"; };
 		EE79B10D1CC8C435001029EF /* VideoTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = VideoTableViewCell.xib; sourceTree = "<group>"; };
-		EEC791821CD1AEB8008B7C2D /* TTCycleScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TTCycleScrollView.h; sourceTree = "<group>"; };
-		EEC791831CD1AEB8008B7C2D /* TTCycleScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TTCycleScrollView.m; sourceTree = "<group>"; };
+		EEB32A491CD38CAF00FF0AB8 /* TTTopChannelContianerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TTTopChannelContianerView.h; sourceTree = "<group>"; };
+		EEB32A4A1CD38CAF00FF0AB8 /* TTTopChannelContianerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TTTopChannelContianerView.m; sourceTree = "<group>"; };
+		EEC791821CD1AEB8008B7C2D /* TTImageCyclePlayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TTImageCyclePlayView.h; sourceTree = "<group>"; };
+		EEC791831CD1AEB8008B7C2D /* TTImageCyclePlayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TTImageCyclePlayView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -444,8 +447,6 @@
 		EE79B0C41CC8C435001029EF /* Http */ = {
 			isa = PBXGroup;
 			children = (
-				EE79B0C51CC8C435001029EF /* TTConst.h */,
-				EE79B0C61CC8C435001029EF /* TTConst.m */,
 				EE79B0C71CC8C435001029EF /* TTDataTool.h */,
 				EE79B0C81CC8C435001029EF /* TTDataTool.m */,
 				EE79B0C91CC8C435001029EF /* TTNormalNewsFetchDataParameter.h */,
@@ -461,6 +462,8 @@
 		EE79B0CF1CC8C435001029EF /* Main */ = {
 			isa = PBXGroup;
 			children = (
+				EE79B0C51CC8C435001029EF /* TTConst.h */,
+				EE79B0C61CC8C435001029EF /* TTConst.m */,
 				EE79B0D01CC8C435001029EF /* AppDelegate.h */,
 				EE79B0D11CC8C435001029EF /* AppDelegate.m */,
 				EE79B0D21CC8C435001029EF /* TTNavigationController.h */,
@@ -616,8 +619,10 @@
 		EEC791811CD1AE84008B7C2D /* Other */ = {
 			isa = PBXGroup;
 			children = (
-				EEC791821CD1AEB8008B7C2D /* TTCycleScrollView.h */,
-				EEC791831CD1AEB8008B7C2D /* TTCycleScrollView.m */,
+				EEB32A491CD38CAF00FF0AB8 /* TTTopChannelContianerView.h */,
+				EEB32A4A1CD38CAF00FF0AB8 /* TTTopChannelContianerView.m */,
+				EEC791821CD1AEB8008B7C2D /* TTImageCyclePlayView.h */,
+				EEC791831CD1AEB8008B7C2D /* TTImageCyclePlayView.m */,
 			);
 			name = Other;
 			sourceTree = "<group>";
@@ -861,7 +866,7 @@
 				EE79B1191CC8C435001029EF /* TTNormalNews.m in Sources */,
 				EE79B1401CC8C435001029EF /* VideoViewController.m in Sources */,
 				EE4635C81CC72B8900DB248F /* main.m in Sources */,
-				EEC791841CD1AEB8008B7C2D /* TTCycleScrollView.m in Sources */,
+				EEC791841CD1AEB8008B7C2D /* TTImageCyclePlayView.m in Sources */,
 				EE79B1231CC8C435001029EF /* NSDate+Extension.m in Sources */,
 				EE79B11C1CC8C435001029EF /* MultiPictureTableViewCell.m in Sources */,
 				EE79B1261CC8C435001029EF /* UIImageView+Extension.m in Sources */,
@@ -869,6 +874,7 @@
 				EE79B1431CC8C435001029EF /* TTVideoUser.m in Sources */,
 				EE79B1121CC8C435001029EF /* MeTableViewController.m in Sources */,
 				EE79B1421CC8C435001029EF /* TTVideoComment.m in Sources */,
+				EEB32A4B1CD38CAF00FF0AB8 /* TTTopChannelContianerView.m in Sources */,
 				EE79B1451CC8C435001029EF /* VideoPlayView.m in Sources */,
 				EE79B12B1CC8C435001029EF /* TTPictureFetchDataParameter.m in Sources */,
 				EE79B1131CC8C435001029EF /* SendFeedbackViewController.m in Sources */,

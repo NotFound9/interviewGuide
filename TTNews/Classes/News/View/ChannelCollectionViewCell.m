@@ -10,23 +10,24 @@
 
 @interface ChannelCollectionViewCell()
 @property (weak, nonatomic) IBOutlet UILabel *channelNameLabel;
-@property (weak, nonatomic) IBOutlet UIButton *deleteButton;
-
 
 @end
+
+static NSString * const kShakeAnimationKey = @"kCollectionViewCellShake";
 
 @implementation ChannelCollectionViewCell
 
 - (void)awakeFromNib {
-    self.deleteButton.hidden = YES;
+
 }
 
--(void)wantToDeleteTheChannel {
-    self.deleteButton.hidden = NO;
+-(void)longPressCell {
+    if([self.delegate respondsToSelector:@selector(wantToDeleteCell)]) {
+        [self.delegate wantToDeleteCell];
+    }
 }
 
 - (IBAction)DeleteTheChannel:(id)sender {
-    
     if ([self.delegate respondsToSelector:@selector(deleteTheCellAtIndexPath:)]) {//判断代理对象是否有removeTheCell方法;
         [self.delegate deleteTheCellAtIndexPath:self.theIndexPath];
     }
@@ -34,7 +35,7 @@
 }
 
 -(void)setTheIndexPath:(NSIndexPath *)theIndexPath {
-    UILongPressGestureRecognizer *recognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(wantToDeleteTheChannel)];
+    UILongPressGestureRecognizer *recognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longPressCell)];
     recognizer.minimumPressDuration = 0.5;
     [self addGestureRecognizer:recognizer];
     _theIndexPath = theIndexPath;
@@ -42,6 +43,31 @@
 
 -(void)setChannelName:(NSString *)channelName {
     _channelName = channelName;
+    self.deleteButton.hidden = YES;
     self.channelNameLabel.text = channelName;
 }
+
+- (void)startShake {
+    CGPoint point = self.contentView.center;
+    CAKeyframeAnimation *animation = [CAKeyframeAnimation animation];
+    animation.keyPath = @"position";
+    NSValue *value1=[NSValue valueWithCGPoint:CGPointMake(point.x - 1, point.y+1)];
+    NSValue *value2=[NSValue valueWithCGPoint:CGPointMake(point.x + 2, point.y+2)];
+    NSValue *value3=[NSValue valueWithCGPoint:CGPointMake(point.x - 1, point.y+1)];
+    NSValue *value4=[NSValue valueWithCGPoint:CGPointMake(point.x + 1, point.y-1)];
+    NSValue *value5=[NSValue valueWithCGPoint:CGPointMake(point.x - 2, point.y-1)];
+    animation.values=@[value1,value2,value3,value4,value5];
+    animation.repeatCount = MAXFLOAT;
+//    animation.removedOnCompletion = NO;
+//    animation.fillMode = kCAFillModeRemoved;
+    animation.duration = 0.25;
+    animation.timingFunction=[CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut];
+//    animation.delegate=self;
+    [self.contentView.layer addAnimation:animation forKey:kShakeAnimationKey];
+}
+
+- (void)stopShake {
+    [self.contentView.layer removeAnimationForKey:kShakeAnimationKey];
+}
+
 @end

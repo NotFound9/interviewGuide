@@ -10,11 +10,20 @@
 
 @protocol ChannelCollectionViewCellDelegate <NSObject>
 
--(void)deleteTheCellAtIndexPath:(NSIndexPath*)indexPath;
+- (void)wantToDeleteCell;
+- (void)deleteTheCellAtIndexPath:(NSIndexPath*)indexPath;
 
 @end
+
 @interface ChannelCollectionViewCell : UICollectionViewCell
+
 @property (nonatomic, copy) NSString *channelName;
+@property (weak, nonatomic) IBOutlet UIButton *deleteButton;
 @property (nonatomic, strong) NSIndexPath *theIndexPath;
 @property (nonatomic, weak) id delegate;
+
+- (void)startShake;
+- (void)stopShake;
+
 @end
+

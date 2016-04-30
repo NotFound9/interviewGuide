@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
 
 UIKIT_EXTERN CGFloat const cellMargin;
 UIKIT_EXTERN CGFloat const cellTextY;

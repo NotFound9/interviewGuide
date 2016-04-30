@@ -1,5 +1,5 @@
 //
-//  TTCycleScrollView.h
+//  TTImageCyclePlayView.h
 //  TTNews
 //
 //  Created by 瑞文戴尔 on 16/4/28.
@@ -8,27 +8,25 @@
 
 #import <UIKit/UIKit.h>
 
-@protocol TTCycleScrollViewDelegate <NSObject>
+@protocol TTImageCyclePlayViewDelegate <NSObject>
 @optional
 
-- (void)clickCurrentImageViewInCycleScrollView;
+- (void)clickCurrentImageViewInImageCyclePlay;
 
 @end
 
-@interface TTCycleScrollView : UIView
-
+@interface TTImageCyclePlayView : UIView
 
 @property (nonatomic, strong) NSArray *imageUrls;
 @property (nonatomic, strong) NSArray *titles;
 @property (nonatomic, assign) NSInteger currentMiddleImageViewIndex;
-@property (nonatomic, weak) id<TTCycleScrollViewDelegate> delegate;
+@property (nonatomic, weak) id<TTImageCyclePlayViewDelegate> delegate;
 
 -(instancetype)initWithFrame:(CGRect)frame;
 - (void)updateImageViewsAndTitleLabel;
 - (void)addTimer;
 - (void)removeTimer;
--(void)updateToDaySkinMode;
--(void)updateToNightSkinMode;
-
+- (void)updateToDaySkinMode;
+- (void)updateToNightSkinMode;
 
 @end

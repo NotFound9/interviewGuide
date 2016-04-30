@@ -21,15 +21,14 @@
 #import "TTDataTool.h"
 #import "TTConst.h"
 #import "UIImageView+Extension.h"
-#import "TTJudgeNetworking.h"
-#import "TTCycleScrollView.h"
+#import "TTImageCyclePlayView.h"
 
-@interface ContentTableViewController ()<TTCycleScrollViewDelegate>
+@interface ContentTableViewController ()<TTImageCyclePlayViewDelegate>
 
 @property (nonatomic, strong) NSMutableArray *headerNewsArray;
 @property (nonatomic, assign) NSInteger currentPage;
 @property (nonatomic, strong) NSMutableArray *normalNewsArray;
-@property (nonatomic, weak) TTCycleScrollView *headerView;
+@property (nonatomic, weak) TTImageCyclePlayView *headerView;
 @property (nonatomic, copy) NSString *currentSkinModel;
 
 @end
@@ -74,7 +73,7 @@ static NSString * const noPictureCell = @"NoPictureCell";
 }
 
 -(void)setupHeader {
-    TTCycleScrollView *headerView = [[TTCycleScrollView alloc] initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.width*9/16)];
+    TTImageCyclePlayView *headerView = [[TTImageCyclePlayView alloc] initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.width*9/16)];
     headerView.delegate = self;
     self.headerView = headerView;
     self.tableView.tableHeaderView = headerView;
@@ -92,10 +91,9 @@ static NSString * const noPictureCell = @"NoPictureCell";
     self.automaticallyAdjustsScrollViewInsets = NO;
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.tableView.scrollIndicatorInsets = UIEdgeInsetsMake(104, 0, 0, 0);
+    [self.tableView registerNib:[UINib nibWithNibName:NSStringFromClass([NoPictureNewsTableViewCell class]) bundle:nil] forCellReuseIdentifier:noPictureCell];
     [self.tableView registerNib:[UINib nibWithNibName:NSStringFromClass([SinglePictureNewsTableViewCell class]) bundle:nil] forCellReuseIdentifier:singlePictureCell];
     [self.tableView registerNib:[UINib nibWithNibName:NSStringFromClass([MultiPictureTableViewCell class]) bundle:nil] forCellReuseIdentifier:multiPictureCell];
-    [self.tableView registerNib:[UINib nibWithNibName:NSStringFromClass([NoPictureNewsTableViewCell class]) bundle:nil] forCellReuseIdentifier:noPictureCell];
-
 }
 
 - (void)loadNewData {
@@ -264,8 +262,8 @@ static NSString * const noPictureCell = @"NoPictureCell";
     }
 }
 
-#pragma mark - TTCycleScrollViewDelegate
-- (void)clickCurrentImageViewInCycleScrollView {
+#pragma mark - TTImageCyclePlayViewDelegate
+- (void)clickCurrentImageViewInImageCyclePlay {
     TTHeaderNews *news = self.headerNewsArray[self.headerView.currentMiddleImageViewIndex];
     [self pushToDetailViewControllerWithUrl:news.url];
 }

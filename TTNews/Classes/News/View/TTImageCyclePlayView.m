@@ -1,15 +1,15 @@
 //
-//  TTCycleScrollView.m
+//  TTImageCyclePlayView.m
 //  TTNews
 //
 //  Created by 瑞文戴尔 on 16/4/28.
 //  Copyright © 2016年 瑞文戴尔. All rights reserved.
 //
 
-#import "TTCycleScrollView.h"
+#import "TTImageCyclePlayView.h"
 #import "UIImageView+Extension.h"
 
-@interface TTCycleScrollView ()<UIScrollViewDelegate>
+@interface TTImageCyclePlayView ()<UIScrollViewDelegate>
 
 @property (nonatomic, weak) UIScrollView *scrollView;
 @property (nonatomic, weak) UIImageView *leftImageView;
@@ -22,7 +22,7 @@
 
 @end
 
-@implementation TTCycleScrollView
+@implementation TTImageCyclePlayView
 
 #pragma mark 初始化View
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -161,8 +161,8 @@
 
 #pragma mark 点击了中间的ImageView即当前显示的ImageView
 - (void)clickMiddleImageView {
-    if ([self.delegate respondsToSelector:@selector(clickCurrentImageViewInCycleScrollView)]) {
-        [self.delegate clickCurrentImageViewInCycleScrollView];
+    if ([self.delegate respondsToSelector:@selector(clickCurrentImageViewInImageCyclePlay)]) {
+        [self.delegate clickCurrentImageViewInImageCyclePlay];
     }
 }
 
