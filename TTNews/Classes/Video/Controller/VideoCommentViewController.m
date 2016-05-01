@@ -91,6 +91,7 @@ static NSString * const VideoCommentCellID = @"VideoCommentCell";
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+#pragma mark 更新皮肤模式 接到模式切换的通知后会调用此方法
 -(void)updateSkinModel {
     self.currentSkinModel = [[NSUserDefaults standardUserDefaults] stringForKey:CurrentSkinModelKey];
     if ([self.currentSkinModel isEqualToString:NightSkinModelValue]) {
@@ -353,11 +354,10 @@ static NSString * const VideoCommentCellID = @"VideoCommentCell";
     return cell;
 }
 
-#pragma mark - <UITableViewDelegate>
+#pragma mark -UIScrollViewDelegate scrollView将要开始滑动
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
 {
     [self.view endEditing:YES];
-    
     [[UIMenuController sharedMenuController] setMenuVisible:NO animated:YES];
 }
 

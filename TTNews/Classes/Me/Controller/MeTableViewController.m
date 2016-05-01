@@ -51,6 +51,7 @@ CGFloat const footViewHeight = 30;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+#pragma mark 更新皮肤模式 接到模式切换的通知后会调用此方法
 -(void)updateSkinModel {
     self.currentSkinModel = [[NSUserDefaults standardUserDefaults] stringForKey:CurrentSkinModelKey];
     if ([self.currentSkinModel isEqualToString:NightSkinModelValue]) {
@@ -73,11 +74,13 @@ CGFloat const footViewHeight = 30;
 
 #pragma mark - Table view data source
 
+#pragma mark -UITableViewDataSource 返回tableView有多少组
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     
     return 3;
 }
 
+#pragma mark -UITableViewDataSource 返回tableView每一组有多少行
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     if (section == 0) return 1;
     else if(section == 1) return 4;
@@ -88,6 +91,7 @@ CGFloat const footViewHeight = 30;
     return footViewHeight;
 }
 
+#pragma mark -UITableViewDataSource 返回indexPath对应的cell的高度
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.section == 0) return 100;
     return 44;

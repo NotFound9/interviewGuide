@@ -76,6 +76,7 @@
 		EE79B14A1CC8C435001029EF /* VideoTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = EE79B10D1CC8C435001029EF /* VideoTableViewCell.xib */; };
 		EEB32A4B1CD38CAF00FF0AB8 /* TTTopChannelContianerView.m in Sources */ = {isa = PBXBuildFile; fileRef = EEB32A4A1CD38CAF00FF0AB8 /* TTTopChannelContianerView.m */; };
 		EEC791841CD1AEB8008B7C2D /* TTImageCyclePlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = EEC791831CD1AEB8008B7C2D /* TTImageCyclePlayView.m */; };
+		EEE3E81E1CD5AD3E00D699E0 /* ChannelsSectionHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = EEE3E81D1CD5AD3E00D699E0 /* ChannelsSectionHeaderView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -221,6 +222,8 @@
 		EEB32A4A1CD38CAF00FF0AB8 /* TTTopChannelContianerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TTTopChannelContianerView.m; sourceTree = "<group>"; };
 		EEC791821CD1AEB8008B7C2D /* TTImageCyclePlayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TTImageCyclePlayView.h; sourceTree = "<group>"; };
 		EEC791831CD1AEB8008B7C2D /* TTImageCyclePlayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TTImageCyclePlayView.m; sourceTree = "<group>"; };
+		EEE3E81C1CD5AD3E00D699E0 /* ChannelsSectionHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChannelsSectionHeaderView.h; sourceTree = "<group>"; };
+		EEE3E81D1CD5AD3E00D699E0 /* ChannelsSectionHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChannelsSectionHeaderView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -623,6 +626,8 @@
 				EEB32A4A1CD38CAF00FF0AB8 /* TTTopChannelContianerView.m */,
 				EEC791821CD1AEB8008B7C2D /* TTImageCyclePlayView.h */,
 				EEC791831CD1AEB8008B7C2D /* TTImageCyclePlayView.m */,
+				EEE3E81C1CD5AD3E00D699E0 /* ChannelsSectionHeaderView.h */,
+				EEE3E81D1CD5AD3E00D699E0 /* ChannelsSectionHeaderView.m */,
 			);
 			name = Other;
 			sourceTree = "<group>";
@@ -851,6 +856,7 @@
 				EE79B1271CC8C435001029EF /* UIView+Extension.m in Sources */,
 				EE79B1101CC8C435001029EF /* EditUserInfoViewController.m in Sources */,
 				EE79B13C1CC8C435001029EF /* ShowBigPictureViewController.m in Sources */,
+				EEE3E81E1CD5AD3E00D699E0 /* ChannelsSectionHeaderView.m in Sources */,
 				EE79B13A1CC8C435001029EF /* PictureTableViewCell.m in Sources */,
 				EE79B1341CC8C435001029EF /* PictureViewController.m in Sources */,
 				EE79B1181CC8C435001029EF /* TTHeaderNews.m in Sources */,

@@ -10,7 +10,7 @@
 
 @protocol ChannelCollectionViewCellDelegate <NSObject>
 
-- (void)wantToDeleteCell;
+- (void)didLongPressAChannelCell;
 - (void)deleteTheCellAtIndexPath:(NSIndexPath*)indexPath;
 
 @end

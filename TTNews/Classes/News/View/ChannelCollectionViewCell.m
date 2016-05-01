@@ -21,9 +21,9 @@ static NSString * const kShakeAnimationKey = @"kCollectionViewCellShake";
 
 }
 
--(void)longPressCell {
-    if([self.delegate respondsToSelector:@selector(wantToDeleteCell)]) {
-        [self.delegate wantToDeleteCell];
+-(void)longPress {
+    if([self.delegate respondsToSelector:@selector(didLongPressAChannelCell)]) {
+        [self.delegate didLongPressAChannelCell];
     }
 }
 
@@ -35,7 +35,7 @@ static NSString * const kShakeAnimationKey = @"kCollectionViewCellShake";
 }
 
 -(void)setTheIndexPath:(NSIndexPath *)theIndexPath {
-    UILongPressGestureRecognizer *recognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longPressCell)];
+    UILongPressGestureRecognizer *recognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longPress)];
     recognizer.minimumPressDuration = 0.5;
     [self addGestureRecognizer:recognizer];
     _theIndexPath = theIndexPath;

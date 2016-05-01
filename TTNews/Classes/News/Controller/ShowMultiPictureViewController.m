@@ -39,27 +39,7 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (void)updateSkinModel {
-    NSString  *currentSkinModel = [[NSUserDefaults standardUserDefaults] stringForKey:CurrentSkinModelKey];
-    if ([currentSkinModel isEqualToString:NightSkinModelValue]) {
-        self.textView.textColor = [UIColor grayColor];
-    } else {//日间模式
-        self.textView.textColor = [UIColor whiteColor];
-    }
-}
-
--(void)setupBackButton {
-    CGFloat margin= 10;
-    CGFloat buttonWidthHeight = 35;
-    UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    self.backButton = backButton;
-    backButton.frame = CGRectMake(margin, [UIApplication sharedApplication].statusBarFrame.size.height + margin, buttonWidthHeight, buttonWidthHeight);
-    [backButton setBackgroundImage:[UIImage imageNamed:@"show_image_back_icon"] forState:UIControlStateNormal];
-    [backButton addTarget:self action:@selector(backToOriginViewController) forControlEvents:UIControlEventTouchUpInside];
-    [self.view addSubview:backButton];
-    
-}
-
+#pragma mark --private method--初始化scrollView
 -(void)setupScrollView {
     self.automaticallyAdjustsScrollViewInsets = NO;
     UIScrollView *scrollView = [[UIScrollView alloc] init];
@@ -82,6 +62,7 @@
     
 }
 
+#pragma mark --private method--初始化TextView
 - (void)setupTextView {
     UITextView *textView = [[UITextView alloc] init];
     self.textView = textView;
@@ -94,15 +75,41 @@
     textView.userInteractionEnabled = NO;
     [self.view addSubview:textView];
 }
-        
+
+#pragma mark --private method--初始化返回按钮
+-(void)setupBackButton {
+    CGFloat margin= 10;
+    CGFloat buttonWidthHeight = 35;
+    UIButton *backButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    self.backButton = backButton;
+    backButton.frame = CGRectMake(margin, [UIApplication sharedApplication].statusBarFrame.size.height + margin, buttonWidthHeight, buttonWidthHeight);
+    [backButton setBackgroundImage:[UIImage imageNamed:@"show_image_back_icon"] forState:UIControlStateNormal];
+    [backButton addTarget:self action:@selector(dismiss) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:backButton];
+    
+}
+
+#pragma mark --private method--点击了ImageView
 -(void)clickImageView:(id)sender{
     self.backButton.hidden = !self.backButton.hidden;
     self.textView.hidden = !self.textView.hidden;
 }
 
--(void)backToOriginViewController {
+#pragma mark --private method--返回到上一个控制器
+-(void)dismiss {
     [self.navigationController popViewControllerAnimated:YES];
 }
+
+#pragma mark --private method--更新皮肤模式 接到模式切换的通知后会调用此方法
+- (void)updateSkinModel {
+    NSString  *currentSkinModel = [[NSUserDefaults standardUserDefaults] stringForKey:CurrentSkinModelKey];
+    if ([currentSkinModel isEqualToString:NightSkinModelValue]) {
+        self.textView.textColor = [UIColor grayColor];
+    } else {//日间模式
+        self.textView.textColor = [UIColor whiteColor];
+    }
+}
+
 
          
          

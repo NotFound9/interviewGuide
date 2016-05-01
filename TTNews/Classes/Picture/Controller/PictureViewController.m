@@ -52,6 +52,7 @@ static NSString * const PictureCell = @"PictureCell";
     
 }
 
+#pragma mark 更新皮肤模式 接到模式切换的通知后会调用此方法
 -(void)updateSkinModel {
     self.currentSkinModel = [[NSUserDefaults standardUserDefaults] stringForKey:CurrentSkinModelKey];
     if ([self.currentSkinModel isEqualToString:NightSkinModelValue]) {
@@ -121,15 +122,18 @@ static NSString * const PictureCell = @"PictureCell";
 
 #pragma mark - Table view data source
 
+#pragma mark -UITableViewDataSource 返回tableView有多少组
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     return 1;
 }
 
+#pragma mark -UITableViewDataSource 返回tableView每一组有多少行
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     return self.pictureArray.count;
 }
 
 
+#pragma mark -UITableViewDataSource 返回indexPath对应的cell
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     PictureTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:PictureCell];
     if ([self.currentSkinModel isEqualToString:DaySkinModelValue]) {//日间模式
@@ -147,6 +151,7 @@ static NSString * const PictureCell = @"PictureCell";
     return picture.cellHeight;
 }
 
+#pragma mark -UITableViewDelegate 点击了某个cell
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [self pushToVideoCommentViewControllerWithIndexPath:indexPath];
 }

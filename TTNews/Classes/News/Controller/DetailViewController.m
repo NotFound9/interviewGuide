@@ -13,7 +13,8 @@
 
 @interface DetailViewController ()<UIWebViewDelegate>
 
-@property (nonatomic, weak) UIView *shadeView;
+@property (nonatomic, weak) UIView *shadeView;//(页面模式时，用来使页面变暗)
+
 @property (nonatomic, weak) UIButton *collectButton;
 @property (nonatomic, weak) UIWebView *webView;
 
@@ -31,9 +32,10 @@
         [SVProgressHUD showErrorWithStatus:@"无网络连接"];
         [self.navigationController popViewControllerAnimated:YES];
     }
-    
-    [self setupBasic];
+    [self setupWebView];
     [self setupNaigationBar];
+    [self setupToolBars];
+    [self setupShadeView];
 }
 
 -(void)viewWillAppear:(BOOL)animated {
@@ -51,6 +53,87 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+#pragma mark --private Method--初始化webView
+- (void)setupWebView {
+    UIWebView *webView = [[UIWebView alloc] init];
+    self.webView = webView;
+    webView.frame = self.view.frame;
+    webView.delegate = self;
+    [self.view addSubview:webView];
+    [SVProgressHUD show];
+    
+    [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:self.url]]];
+}
+
+#pragma mark --private Method--初始化NavigationBar
+-(void)setupNaigationBar {
+    UIButton *collectButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    self.collectButton = collectButton;
+    collectButton.frame =CGRectMake(0, 0, 30, 30);
+    [collectButton setImage:[UIImage imageNamed:@"navigationBarItem_favorite_normal"] forState:UIControlStateNormal];
+    [collectButton setImage:[UIImage imageNamed:@"navigationBarItem_favorite_pressed"] forState:UIControlStateHighlighted];
+    [self.collectButton setImage:[[UIImage imageNamed:@"navigationBarItem_favorited_normal"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]forState:UIControlStateSelected];
+    [collectButton addTarget:self action:@selector(collectThisNews) forControlEvents:UIControlEventTouchUpInside];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:collectButton];
+}
+
+#pragma mark --private Method--初始化toolBar
+- (void)setupToolBars{
+    UIBarButtonItem *backItem = [[UIBarButtonItem alloc] initWithImage:[[UIImage imageNamed:@"toolbar_back_icon"] imageWithRenderingMode:UIImageRenderingModeAutomatic] style:UIBarButtonItemStylePlain target:self action:@selector(goBack)];
+    backItem.enabled = NO;
+    self.backItem = backItem;
+    
+    UIBarButtonItem *forwardItem = [[UIBarButtonItem alloc] initWithImage:[[UIImage imageNamed:@"toolbar_forward_icon"] imageWithRenderingMode:UIImageRenderingModeAutomatic]  style:UIBarButtonItemStylePlain target:self action:@selector(goForward)];
+    forwardItem.enabled = NO;
+    self.forwardItem = forwardItem;
+    
+    UIBarButtonItem *flexibleItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+    
+    UIBarButtonItem *refreshItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(refresh)];
+    self.refreshItem = refreshItem;
+    
+    self.toolbarItems = @[backItem,forwardItem,flexibleItem,refreshItem];
+}
+
+#pragma mark --private Method--初始化shadeView(页面模式时，用来使页面变暗)
+- (void)setupShadeView {
+    UIView *shadeView = [[UIView alloc] init];
+    self.shadeView = shadeView;
+    shadeView.backgroundColor = [UIColor blackColor];
+    shadeView.alpha = 0.3;
+    shadeView.userInteractionEnabled = NO;
+    shadeView.frame = self.webView.bounds;
+    [self.webView addSubview:shadeView];
+}
+
+#pragma mark -UIWebViewDelegate-将要加载Webview
+- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
+    return YES;
+}
+
+#pragma mark -UIWebViewDelegate-已经开始加载Webview
+- (void)webViewDidStartLoad:(UIWebView *)webView {
+    double delayInSeconds = 0.5;
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
+    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+           //执行事件
+        [SVProgressHUD dismiss];
+    });
+}
+
+#pragma mark -UIWebViewDelegate-已经加载Webview完毕
+- (void)webViewDidFinishLoad:(UIWebView *)webView {
+    [SVProgressHUD dismiss];
+    self.backItem.enabled = webView.canGoBack;
+    self.forwardItem.enabled = webView.canGoForward;
+}
+
+#pragma mark -UIWebViewDelegate-加载Webview失败
+- (void)webView:(UIWebView *)webView didFailLoadWithError:(nullable NSError *)error {
+    [SVProgressHUD dismiss];
+}
+
+#pragma mark --private Method--更新皮肤模式 接到模式切换的通知后会调用此方法
 - (void)updateSkinModel {
     NSString  *currentSkinModel = [[NSUserDefaults standardUserDefaults] stringForKey:CurrentSkinModelKey];
     if ([currentSkinModel isEqualToString:NightSkinModelValue]) {
@@ -68,43 +151,22 @@
     }
 }
 
--(void)setupNaigationBar {
-    UIButton *collectButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    self.collectButton = collectButton;
-    collectButton.frame =CGRectMake(0, 0, 30, 30);
-    [collectButton setImage:[UIImage imageNamed:@"navigationBarItem_favorite_normal"] forState:UIControlStateNormal];
-    [collectButton setImage:[UIImage imageNamed:@"navigationBarItem_favorite_pressed"] forState:UIControlStateHighlighted];
-    [self.collectButton setImage:[[UIImage imageNamed:@"navigationBarItem_favorited_normal"] imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]forState:UIControlStateSelected];
-    [collectButton addTarget:self action:@selector(collectThisNews) forControlEvents:UIControlEventTouchUpInside];
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:collectButton];
-    
-    UIBarButtonItem *backItem = [[UIBarButtonItem alloc] initWithImage:[[UIImage imageNamed:@"toolbar_back_icon"] imageWithRenderingMode:UIImageRenderingModeAutomatic] style:UIBarButtonItemStylePlain target:self action:@selector(goBack)];
-    backItem.enabled = NO;
-    self.backItem = backItem;
-    
-    UIBarButtonItem *forwardItem = [[UIBarButtonItem alloc] initWithImage:[[UIImage imageNamed:@"toolbar_forward_icon"] imageWithRenderingMode:UIImageRenderingModeAutomatic]  style:UIBarButtonItemStylePlain target:self action:@selector(goForward)];
-    forwardItem.enabled = NO;
-    self.forwardItem = forwardItem;
-    
-    UIBarButtonItem *flexibleItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
-    
-    UIBarButtonItem *refreshItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(refresh)];
-    self.refreshItem = refreshItem;
-    
-    self.toolbarItems = @[backItem,forwardItem,flexibleItem,refreshItem];
-}
-
+#pragma mark --private Method--返回上一个页面
 -(void)goBack {
     [self.webView goBack];
 }
 
+#pragma mark --private Method--前进到下一个页面
 -(void)goForward {
     [self.webView goForward];
 }
+
+#pragma mark --private Method--刷新当前页面
 -(void)refresh {
     [self.webView reload];
 }
 
+#pragma mark --private Method--收藏这条新闻
 -(void)collectThisNews {
     self.collectButton.selected = !self.collectButton.selected;
     if (self.collectButton.selected) {
@@ -117,50 +179,5 @@
         [self.collectButton setImage:[UIImage imageNamed:@"navigationBarItem_favorite_pressed"] forState:UIControlStateHighlighted];
     }
 }
-
-- (void)setupBasic {
-    UIWebView *webView = [[UIWebView alloc] init];
-    self.webView = webView;
-    webView.frame = self.view.frame;
-    webView.delegate = self;
-    [self.view addSubview:webView];
-    [SVProgressHUD show];
-    
-    UIView *shadeView = [[UIView alloc] init];
-    self.shadeView = shadeView;
-    shadeView.backgroundColor = [UIColor blackColor];
-    shadeView.alpha = 0.3;
-    shadeView.userInteractionEnabled = NO;
-    shadeView.frame = webView.bounds;
-    [webView addSubview:shadeView];
-    
-    [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:self.url]]];
- }
-
-
-- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
-    return YES;
-}
-
-- (void)webViewDidStartLoad:(UIWebView *)webView {
-    double delayInSeconds = 0.2;
-    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
-    dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-           //执行事件
-        [SVProgressHUD dismiss];
-    });
-}
-
-- (void)webViewDidFinishLoad:(UIWebView *)webView {
-    [SVProgressHUD dismiss];
-    self.backItem.enabled = webView.canGoBack;
-    self.forwardItem.enabled = webView.canGoForward;
-
-}
-
-- (void)webView:(UIWebView *)webView didFailLoadWithError:(nullable NSError *)error {
-    [SVProgressHUD dismiss];
-}
-
 
 @end

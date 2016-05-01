@@ -130,6 +130,7 @@
     [super setFrame:frame];
 }
 
+#pragma mark 切换至日间模式
 -(void)updateToDaySkinMode {
     self.contentLabel.textColor = [UIColor blackColor];
     self.playCountLabel.backgroundColor = [UIColor darkGrayColor];
@@ -142,6 +143,7 @@
     self.separatorLine4.backgroundColor = [UIColor colorWithRed:240/255.0 green:240/255.0  blue:240/255.0  alpha:1.0];
 
 }
+#pragma mark 切换至夜间模式
 -(void)updateToNightSkinMode {
     self.contentLabel.textColor = [UIColor grayColor];
     self.playCountLabel.backgroundColor = [UIColor blackColor];

@@ -66,11 +66,13 @@
     }
 }
 
+#pragma mark 切换至日间模式
 -(void)updateToDaySkinMode {
     self.contentLabel.textColor = [UIColor blackColor];
     self.contentView.backgroundColor = [UIColor whiteColor];
 }
 
+#pragma mark 切换至夜间模式
 -(void)updateToNightSkinMode {
     self.contentLabel.textColor = [UIColor grayColor];
     self.contentView.backgroundColor = [UIColor colorWithRed:42/255.0 green:39/255.0 blue:43/255.0 alpha:1.0];

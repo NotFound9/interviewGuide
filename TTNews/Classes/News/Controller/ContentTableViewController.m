@@ -41,7 +41,6 @@ static NSString * const noPictureCell = @"NoPictureCell";
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
     [self setupBasic];
     [self setupRefresh];
     [self setupHeader];
@@ -60,33 +59,7 @@ static NSString * const noPictureCell = @"NoPictureCell";
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
--(void)updateSkinModel {
-    self.currentSkinModel = [[NSUserDefaults standardUserDefaults] stringForKey:CurrentSkinModelKey];
-    if ([self.currentSkinModel isEqualToString:NightSkinModelValue]) {//夜间模式
-        self.tableView.backgroundColor = [UIColor blackColor];
-        [self.headerView updateToNightSkinMode];
-    } else {//日间模式
-        self.tableView.backgroundColor = [UIColor colorWithRed:250.0/255.0 green:250.0/255.0 blue:250.0/255.0 alpha:1.0];
-        [self.headerView updateToDaySkinMode];
-    }
-    [self.tableView reloadData];
-}
-
--(void)setupHeader {
-    TTImageCyclePlayView *headerView = [[TTImageCyclePlayView alloc] initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.width*9/16)];
-    headerView.delegate = self;
-    self.headerView = headerView;
-    self.tableView.tableHeaderView = headerView;
-}
-
--(void)setupRefresh {
-    self.tableView.mj_header = [MJRefreshNormalHeader headerWithRefreshingTarget:self refreshingAction:@selector(loadNewData)];
-    self.tableView.mj_header.automaticallyChangeAlpha = YES;
-    [self.tableView.mj_header beginRefreshing];
-    self.tableView.mj_footer = [MJRefreshBackNormalFooter footerWithRefreshingTarget:self refreshingAction:@selector(loadMoreData)];
-    self.currentPage = 1;
-}
-
+#pragma mark --private Method--设置tableView
 -(void)setupBasic {
     self.automaticallyAdjustsScrollViewInsets = NO;
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
@@ -96,12 +69,31 @@ static NSString * const noPictureCell = @"NoPictureCell";
     [self.tableView registerNib:[UINib nibWithNibName:NSStringFromClass([MultiPictureTableViewCell class]) bundle:nil] forCellReuseIdentifier:multiPictureCell];
 }
 
+#pragma mark --private Method--初始化轮播图View
+-(void)setupHeader {
+    TTImageCyclePlayView *headerView = [[TTImageCyclePlayView alloc] initWithFrame:CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, [UIScreen mainScreen].bounds.size.width*9/16)];
+    headerView.delegate = self;
+    self.headerView = headerView;
+    self.tableView.tableHeaderView = headerView;
+}
+
+#pragma mark --private Method--初始化刷新控件
+-(void)setupRefresh {
+    self.tableView.mj_header = [MJRefreshNormalHeader headerWithRefreshingTarget:self refreshingAction:@selector(loadNewData)];
+    self.tableView.mj_header.automaticallyChangeAlpha = YES;
+    [self.tableView.mj_header beginRefreshing];
+    self.tableView.mj_footer = [MJRefreshBackNormalFooter footerWithRefreshingTarget:self refreshingAction:@selector(loadMoreData)];
+    self.currentPage = 1;
+}
+
+#pragma mark --private Method--下拉刷新数据
 - (void)loadNewData {
     [SVProgressHUD show];
     [self fetchNewHeaderNews];
     [self fetchNewNormalNews];
 }
 
+#pragma mark --private Method--获取最新的轮播图新闻数据
 -(void)fetchNewHeaderNews {
     [self.headerView removeTimer];
     [TTDataTool TTHeaderNewsFromServerOrCacheWithMaxTTHeaderNews:self.headerNewsArray.lastObject success:^(NSMutableArray *array) {
@@ -127,6 +119,7 @@ static NSString * const noPictureCell = @"NoPictureCell";
     }];
 }
 
+#pragma mark --private Method--获取最新的普通新闻数据（也就是非轮播图数据）
 -(void)fetchNewNormalNews {
     TTNormalNews *news = self.normalNewsArray.firstObject;
     TTNormalNewsFetchDataParameter *parameters = [[TTNormalNewsFetchDataParameter alloc] init];
@@ -149,6 +142,7 @@ static NSString * const noPictureCell = @"NoPictureCell";
 
 }
 
+#pragma mark --private Method--上拉刷新数据
 -(void)loadMoreData {
     [SVProgressHUD show];
     TTNormalNews *news = self.normalNewsArray.lastObject;
@@ -180,16 +174,17 @@ static NSString * const noPictureCell = @"NoPictureCell";
     
 }
 
-#pragma mark - Table view data source
-
+#pragma mark -UITableViewDataSource 返回tableView有多少组
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     return 1;
 }
 
+#pragma mark -UITableViewDataSource 返回tableView每一组有多少行
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     return self.normalNewsArray.count;
 }
 
+#pragma mark -UITableViewDataSource 返回indexPath对应的cell
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     TTNormalNews *news = self.normalNewsArray[indexPath.row];
     if (news.normalNewsType == NormalNewsTypeMultiPicture) {
@@ -229,12 +224,13 @@ static NSString * const noPictureCell = @"NoPictureCell";
     }
 }
 
-
+#pragma mark -UITableViewDataSource 返回indexPath对应的cell的高度
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     TTNormalNews *news = self.normalNewsArray[indexPath.row];
     return news.cellHeight;
 }
 
+#pragma mark -UITableViewDelegate 点击了某个cell
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     TTNormalNews *news = self.normalNewsArray[indexPath.row];
     if (news.normalNewsType == NormalNewsTypeMultiPicture) {
@@ -251,10 +247,12 @@ static NSString * const noPictureCell = @"NoPictureCell";
     }
 }
 
--(void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
+#pragma mark -UIScrollViewDelegate scrollView将要开始滑动
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
     [self.headerView removeTimer];
 }
 
+#pragma mark -UIScrollViewDelegate scrollView已经停止拖动（手指离开屏幕时调用）
 -(void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
     //判断headerview是否在视野内
     if (self.tableView.contentOffset.y <= self.headerView.frame.size.height) {
@@ -262,19 +260,33 @@ static NSString * const noPictureCell = @"NoPictureCell";
     }
 }
 
-#pragma mark - TTImageCyclePlayViewDelegate
+#pragma mark -TTImageCyclePlayViewDelegate 点击了轮播图当前播放的imageView
 - (void)clickCurrentImageViewInImageCyclePlay {
     TTHeaderNews *news = self.headerNewsArray[self.headerView.currentMiddleImageViewIndex];
     [self pushToDetailViewControllerWithUrl:news.url];
 }
 
+#pragma mark --private Method--点击了某一条新闻，调转到新闻对应的网页去
 -(void)pushToDetailViewControllerWithUrl:(NSString *)url {
     DetailViewController *viewController = [[DetailViewController alloc] init];
     viewController.url = url;
     [self.navigationController pushViewController:viewController animated:YES];
 }
 
+#pragma mark --private Method--更新皮肤模式 接到模式切换的通知后会调用此方法
+-(void)updateSkinModel {
+    self.currentSkinModel = [[NSUserDefaults standardUserDefaults] stringForKey:CurrentSkinModelKey];
+    if ([self.currentSkinModel isEqualToString:NightSkinModelValue]) {//夜间模式
+        self.tableView.backgroundColor = [UIColor blackColor];
+        [self.headerView updateToNightSkinMode];
+    } else {//日间模式
+        self.tableView.backgroundColor = [UIColor colorWithRed:250.0/255.0 green:250.0/255.0 blue:250.0/255.0 alpha:1.0];
+        [self.headerView updateToDaySkinMode];
+    }
+    [self.tableView reloadData];
+}
 
+#pragma mark --懒加载--normalNewsArray
 -(NSMutableArray *)normalNewsArray {
     if (!_normalNewsArray) {
         _normalNewsArray = [NSMutableArray array];
@@ -282,13 +294,12 @@ static NSString * const noPictureCell = @"NoPictureCell";
     return _normalNewsArray;
 }
 
-
+#pragma mark --懒加载--headerNewsArray
 -(NSMutableArray *)headerNewsArray {
     if (!_headerNewsArray) {
         _headerNewsArray = [NSMutableArray array];
     }
     return _headerNewsArray;
 }
-
 
 @end

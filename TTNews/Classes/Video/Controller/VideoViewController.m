@@ -62,6 +62,7 @@ static NSString * const VideoCell = @"VideoCell";
 }
 
 
+#pragma mark 更新皮肤模式 接到模式切换的通知后会调用此方法
 -(void)updateSkinModel {
     self.currentSkinModel = [[NSUserDefaults standardUserDefaults] stringForKey:CurrentSkinModelKey];
     if ([self.currentSkinModel isEqualToString:NightSkinModelValue]) {//日间模式
@@ -132,16 +133,18 @@ static NSString * const VideoCell = @"VideoCell";
 }
 
 #pragma mark - Table view data source
-
+#pragma mark -UITableViewDataSource 返回tableView有多少组
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     return 1;
 }
 
+#pragma mark -UITableViewDataSource 返回tableView每一组有多少行
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     return self.videoArray.count;
 }
 
 
+#pragma mark -UITableViewDataSource 返回indexPath对应的cell
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     VideoTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:VideoCell];
     cell.video = self.videoArray[indexPath.row];
@@ -161,6 +164,7 @@ static NSString * const VideoCell = @"VideoCell";
     return video.cellHeight;
 }
 
+#pragma mark -UITableViewDelegate 点击了某个cell
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [self pushToVideoCommentViewControllerWithIndexPath:indexPath];
 }
@@ -254,16 +258,6 @@ static NSString * const VideoCell = @"VideoCell";
         CGFloat alphValue = yValue/self.tableView.contentInset.top;
         self.navigationController.navigationBar.alpha =alphValue;
     }
-    
 }
-
-//- (void)updatePlayViewToBottom {
-//    CGFloat margin = 20;
-//    CGFloat playViewHeight = 100;
-//    CGFloat playViewWidth = playViewHeight * self.currentSelectedCell.video.videoFrame.size.width/ self.currentSelectedCell.video.videoFrame.size.height;
-//    CGFloat playViewX = [UIScreen mainScreen].bounds.size.width - margin- playViewWidth;
-//    CGFloat playViewY = CGRectGetMinY(self.tabBarController.tabBar.frame) - margin - playViewHeight;
-//    self.playView.frame = CGRectMake(playViewX, playViewY, playViewWidth, playViewHeight);
-//}
 
 @end

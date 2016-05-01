@@ -25,6 +25,7 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+#pragma mark 更新皮肤模式 接到模式切换的通知后会调用此方法
 -(void)updateSkinModel {
     NSMutableDictionary *attributes = [NSMutableDictionary dictionary];
     NSString *currentSkinModel = [[NSUserDefaults standardUserDefaults] stringForKey:CurrentSkinModelKey];
