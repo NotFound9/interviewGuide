@@ -39,7 +39,9 @@ PS:她的新闻数据源来自于百度API Store里的免费新闻api，
 
 
 点击右上角Download Zip按钮，将项目压缩包下载至本地，解压后点击文件夹中TTNews.xcworkspace即可运行。
-如果下载太慢了，可以来百度云下载链接: http://pan.baidu.com/s/1jI8O9Ps 密码: w7gm
+
+
+如果下载太慢了，可以来百度云盘下载，链接: http://pan.baidu.com/s/1jI8O9Ps 密码: w7gm
 
 
 # 新闻首页
