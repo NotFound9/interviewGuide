@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="10116" systemVersion="15D21" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="10116" systemVersion="15E65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
@@ -10,7 +10,7 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
         <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="SinglePictureCell" rowHeight="80" id="KGk-i7-Jjw" userLabel="NormalNewsTableViewCell" customClass="SinglePictureNewsTableViewCell">
-            <rect key="frame" x="0.0" y="0.0" width="324" height="86.5"/>
+            <rect key="frame" x="0.0" y="0.0" width="324" height="87"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
                 <rect key="frame" x="0.0" y="0.0" width="324" height="86"/>
@@ -29,7 +29,7 @@
                         </variation>
                     </imageView>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="19评论" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="AK7-vS-5I9">
-                        <rect key="frame" x="279" y="68" width="34.5" height="13.5"/>
+                        <rect key="frame" x="279" y="68" width="35" height="14"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="17.5" id="ZAX-wf-bxz"/>
                         </constraints>
@@ -50,13 +50,13 @@
                         </constraints>
                     </view>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="杭州西湖区风景旅游局长被查杭州西湖区风景旅游局长被查" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="n7R-v2-oFm">
-                        <rect key="frame" x="95" y="15" width="218.5" height="19.5"/>
+                        <rect key="frame" x="95" y="15" width="219" height="20"/>
                         <fontDescription key="fontDescription" type="system" pointSize="16"/>
                         <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="涉嫌违纪；辖区内有西湖、西溪湿地两个国家5A级景区" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Quh-YW-FDC">
-                        <rect key="frame" x="95" y="39" width="218.5" height="31.5"/>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="涉嫌违纪；辖区内有西湖、西溪湿地两个国家5A级景区" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Quh-YW-FDC">
+                        <rect key="frame" x="95" y="39" width="219" height="32"/>
                         <fontDescription key="fontDescription" type="system" pointSize="13"/>
                         <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                         <nil key="highlightedColor"/>
@@ -97,11 +97,11 @@
                         <exclude reference="H1B-3e-LbR"/>
                         <exclude reference="Sgw-yy-0Bd"/>
                         <exclude reference="hMw-6Z-9fL"/>
+                        <exclude reference="S6d-Rh-f8J"/>
+                        <exclude reference="wKY-IG-WVD"/>
                         <exclude reference="R3v-gp-sgK"/>
                         <exclude reference="VGj-Bl-5NW"/>
                         <exclude reference="bvt-SK-Ogo"/>
-                        <exclude reference="S6d-Rh-f8J"/>
-                        <exclude reference="wKY-IG-WVD"/>
                         <exclude reference="D6f-EG-DsV"/>
                         <exclude reference="GD7-Fv-iFx"/>
                         <exclude reference="XVp-D0-Q7l"/>

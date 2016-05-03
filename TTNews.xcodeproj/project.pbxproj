@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		253A9EA61CD5A04F003B5617 /* ZFButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 253A9EA51CD5A04F003B5617 /* ZFButton.m */; };
+		253A9EA91CD5A067003B5617 /* ZFView.m in Sources */ = {isa = PBXBuildFile; fileRef = 253A9EA81CD5A067003B5617 /* ZFView.m */; };
 		9D9B34292F23760DBD87E9B4 /* libPods-TTNews.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 59D897E651F8649ACCCD036B /* libPods-TTNews.a */; };
 		EE4635C81CC72B8900DB248F /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = EE4635C71CC72B8900DB248F /* main.m */; };
 		EE4635D31CC72B8900DB248F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EE4635D21CC72B8900DB248F /* Assets.xcassets */; };
@@ -95,6 +97,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		253A9EA41CD5A04F003B5617 /* ZFButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZFButton.h; sourceTree = "<group>"; };
+		253A9EA51CD5A04F003B5617 /* ZFButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZFButton.m; sourceTree = "<group>"; };
+		253A9EA71CD5A067003B5617 /* ZFView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZFView.h; sourceTree = "<group>"; };
+		253A9EA81CD5A067003B5617 /* ZFView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZFView.m; sourceTree = "<group>"; };
 		53428844E2216BE5C197C066 /* Pods-TTNews.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TTNews.release.xcconfig"; path = "Pods/Target Support Files/Pods-TTNews/Pods-TTNews.release.xcconfig"; sourceTree = "<group>"; };
 		59D897E651F8649ACCCD036B /* libPods-TTNews.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-TTNews.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		9D08A2A40F47DA39E7253110 /* Pods-TTNews.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TTNews.debug.xcconfig"; path = "Pods/Target Support Files/Pods-TTNews/Pods-TTNews.debug.xcconfig"; sourceTree = "<group>"; };
@@ -609,6 +615,10 @@
 				EE79B0AB1CC8C435001029EF /* ChannelCollectionViewCell.h */,
 				EE79B0AC1CC8C435001029EF /* ChannelCollectionViewCell.m */,
 				EE79B0AD1CC8C435001029EF /* ChannelCollectionViewCell.xib */,
+				253A9EA41CD5A04F003B5617 /* ZFButton.h */,
+				253A9EA51CD5A04F003B5617 /* ZFButton.m */,
+				253A9EA71CD5A067003B5617 /* ZFView.h */,
+				253A9EA81CD5A067003B5617 /* ZFView.m */,
 			);
 			name = Cell;
 			sourceTree = "<group>";
@@ -873,10 +883,12 @@
 				EE79B12B1CC8C435001029EF /* TTPictureFetchDataParameter.m in Sources */,
 				EE79B1131CC8C435001029EF /* SendFeedbackViewController.m in Sources */,
 				EE79B12A1CC8C435001029EF /* TTNormalNewsFetchDataParameter.m in Sources */,
+				253A9EA61CD5A04F003B5617 /* ZFButton.m in Sources */,
 				EE79B1171CC8C435001029EF /* ShowMultiPictureViewController.m in Sources */,
 				EE79B1151CC8C435001029EF /* DetailViewController.m in Sources */,
 				EE79B1221CC8C435001029EF /* Foundation+Log.m in Sources */,
 				EE79B1311CC8C435001029EF /* TTJudgeNetworking.m in Sources */,
+				253A9EA91CD5A067003B5617 /* ZFView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -7,6 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "ZFView.h"
+#import "ZFButton.h"
 
 @interface NewsViewController : UIViewController
 

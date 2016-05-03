@@ -14,6 +14,7 @@
 #import "TTJudgeNetworking.h"
 #import "TTConst.h"
 
+
 @interface NewsViewController()<UIScrollViewDelegate,UICollectionViewDelegate,UICollectionViewDataSource,ChannelCollectionViewCellDelegate>
 
 @property (nonatomic, strong) NSMutableArray *currentChannelsArray;
@@ -27,9 +28,12 @@
 @property (nonatomic, weak) UIButton *selectButton;
 @property (nonatomic, weak) UIButton *addButton;
 @property (nonatomic, assign) BOOL isAddChannelsViewShow;
-@property (nonatomic, weak) UICollectionView *collectionView;
+@property (nonatomic, weak) UIView *collectionView;
 @property (nonatomic, assign) CGRect collectionViewFrame;
 @property (nonatomic, copy) NSString *currentSkinModel;
+
+/** 标题数组*/
+@property (nonatomic, strong) NSMutableArray * titlesArray;
 
 @end
 
@@ -171,17 +175,19 @@ static CGFloat titleLabelSelectedFont = 17;
     flowLayout.scrollDirection = UICollectionViewScrollDirectionVertical;
     flowLayout.headerReferenceSize = CGSizeMake(kDeviceWidth, 35);//头部
     
-    UICollectionView *collectionView = [[UICollectionView alloc] initWithFrame:CGRectMake(0, top, 0, 0)collectionViewLayout:flowLayout];
+//    UICollectionView *collectionView = [[UICollectionView alloc] initWithFrame:CGRectMake(0, top, 0, 0)collectionViewLayout:flowLayout];
+    ZFView *collectionView = [[ZFView alloc] initWithFrame:CGRectMake(0, top, kDeviceWidth, kDeviceHeight) titlesArray:self.titlesArray];
     self.collectionViewFrame = CGRectMake(0, top, kDeviceWidth, kDeviceHeight - top - bottom);
     self.collectionView = collectionView;
     collectionView.backgroundColor = [UIColor whiteColor];
     collectionView.alpha = 0.95;
     [self.view addSubview:collectionView];
-    collectionView.dataSource = self;
-    collectionView.delegate = self;
-    [collectionView registerNib:[UINib nibWithNibName:NSStringFromClass([ChannelCollectionViewCell class]) bundle:nil] forCellWithReuseIdentifier:collectionCellID];
-    [collectionView registerClass:[UICollectionReusableView class] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:collectionViewSectionHeaderID];
+//    collectionView.dataSource = self;
+//    collectionView.delegate = self;
+//    [collectionView registerNib:[UINib nibWithNibName:NSStringFromClass([ChannelCollectionViewCell class]) bundle:nil] forCellWithReuseIdentifier:collectionCellID];
+//    [collectionView registerClass:[UICollectionReusableView class] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:collectionViewSectionHeaderID];
 
+    self.collectionView.hidden = YES;
 }
 
 -(void)buttonClick:(UIButton *)button {
@@ -212,6 +218,7 @@ static CGFloat titleLabelSelectedFont = 17;
 -(void)showAddChannelsView{
     POPSpringAnimation *animation = [POPSpringAnimation animationWithPropertyNamed:kPOPViewFrame];
     if (self.isAddChannelsViewShow == NO) {//下拉
+        self.collectionView.hidden = NO;
         [UIView animateWithDuration:0.25 animations:^{
             self.addButton.transform = CGAffineTransformRotate(self.addButton.transform, -M_PI_4);
         }];
@@ -222,8 +229,7 @@ static CGFloat titleLabelSelectedFont = 17;
         [UIView animateWithDuration:0.25 animations:^{
             self.addButton.transform = CGAffineTransformRotate(self.addButton.transform, M_PI_4);
         }];
-        animation.fromValue = [NSValue valueWithCGRect:self.collectionViewFrame];
-        animation.toValue = [NSValue valueWithCGRect:CGRectMake(0, self.collectionViewFrame.origin.y, self.collectionViewFrame.size.width, 0)];
+        self.collectionView.hidden = YES;
         self.isAddChannelsViewShow = NO;
     }
     
@@ -321,7 +327,7 @@ static CGFloat titleLabelSelectedFont = 17;
         [self.topScrollView addSubview:button];
         
         self.contentScrollView.contentSize = CGSizeMake(self.contentScrollView.frame.size.width* self.currentChannelsArray.count, 0);
-        [self.collectionView reloadData];
+//        [self.collectionView reloadData];
         [SVProgressHUD showSuccessWithStatus:@"添加成功！"];
         [self showAddChannelsView];
         [self buttonClick:button];
@@ -359,7 +365,7 @@ static CGFloat titleLabelSelectedFont = 17;
     [self.currentChannelsArray removeObjectAtIndex:indexPath.row];
     [self storeCurrentChannelsArray];
     [self.childViewControllers[indexPath.row] removeFromParentViewController];
-    [self.collectionView reloadData];
+//    [self.collectionView reloadData];
     
     [self.topScrollView.subviews.lastObject removeFromSuperview];
     for (NSInteger i = 1; i<self.topScrollView.subviews.count; i++) {
@@ -406,6 +412,14 @@ static CGFloat titleLabelSelectedFont = 17;
 -(void)storeCurrentChannelsArray {
     [[NSUserDefaults standardUserDefaults] setObject:self.currentChannelsArray forKey:@"currentChannelsArray"];
     [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+- (NSMutableArray *)titlesArray{
+    if (!_titlesArray) {
+        //初始化标题数组
+        _titlesArray = [NSMutableArray arrayWithObjects:@"国内", @"国际", @"娱乐", @"互联网", @"体育", @"财经", @"科技", @"汽车", @"军事", @"理财", @"经济", @"房产", @"国际足球", @"国内足球", @"综合体育", @"电影", @"电视", @"游戏", @"教育", @"美容", @"情感",@"养生", @"数码", @"电脑", @"科普", @"社会", @"台湾", @"港澳", nil];
+    }
+    return _titlesArray;
 }
 
 -(NSMutableArray *)currentChannelsArray {
