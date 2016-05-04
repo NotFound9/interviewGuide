@@ -10,6 +10,7 @@
 #import "TTpicture.h"
 #import <MJRefresh.h>
 #import <AFNetworking.h>
+#import <SDImageCache.h>
 #import "TTpictureComment.h"
 #import <MJExtension.h>
 #import "PictureCommentCell.h"
@@ -84,6 +85,8 @@ static NSString * const PictureCommentCellID = @"PictureCommentCell";
     //    [self.manager.tasks makeObjectsPerformSelector:@selector(cancel)];
     [self.manager invalidateSessionCancelingTasks:YES];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [[SDImageCache sharedImageCache] clearDisk];
+
 }
 
 #pragma mark 更新皮肤模式 接到模式切换的通知后会调用此方法

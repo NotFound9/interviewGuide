@@ -24,8 +24,21 @@
 
 static NSString * const apikey = @"8b72ce2839d6eea0869b4c2c60d2a449";
 
+@interface TTDataTool()
+
+@property (nonatomic, strong) AFHTTPSessionManager *manager;
+
+@end
+
 @implementation TTDataTool
 static FMDatabaseQueue *_queue;
+
+- (AFHTTPSessionManager *)manager {
+    if (!_manager) {
+        _manager = [AFHTTPSessionManager manager];
+    }
+    return _manager;
+}
 
 +(void)initialize {
     NSString *path = [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:@"data.sqlite"];
@@ -63,6 +76,8 @@ static FMDatabaseQueue *_queue;
             NSString *maxtime = lastVideo.maxtime;
             success(videoArray, maxtime);
         } else {
+            __weak typeof (self)weakself=self;
+
                 AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
                 NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
                 parameters[@"a"] = @"list";
@@ -79,7 +94,7 @@ static FMDatabaseQueue *_queue;
                     for (TTVideo *video in array) {
                         video.maxtime = maxTime;
                     }
-                    [self addVideoArray:array];
+                    [weakself addVideoArray:array];
                     success(array,maxTime);
 
                 } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
@@ -167,6 +182,8 @@ static FMDatabaseQueue *_queue;
             NSString *maxtime = lastPicture.maxtime;
             success([pictureArray copy], maxtime);
         } else {
+            __weak typeof (self)weakself=self;
+
             AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
             [manager.tasks makeObjectsPerformSelector:@selector(cancel)];
             NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
@@ -184,7 +201,7 @@ static FMDatabaseQueue *_queue;
                 for (TTPicture *picture in array) {
                     picture.maxtime = maxTime;
                 }
-                [self addPictureArray:array];
+                [weakself addPictureArray:array];
                 success(array,maxTime);
                 
             } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
@@ -246,34 +263,35 @@ static FMDatabaseQueue *_queue;
     }];
 }
 
-+(void)addPictureArray:(NSArray *)pictureArray {
++ (void)addPictureArray:(NSArray *)pictureArray {
     for (TTPicture *picture in pictureArray) {
         [self addPicture:picture];
     }
 }
 
-+(void)TTHeaderNewsFromServerOrCacheWithMaxTTHeaderNews:(TTHeaderNews *)headerNews success:(void (^)(NSMutableArray *array))success failure:(void (^)(NSError *error))failure {
++ (void)TTHeaderNewsFromServerOrCacheWithMaxTTHeaderNews:(TTHeaderNews *)headerNews success:(void (^)(NSMutableArray *array))success failure:(void (^)(NSError *error))failure {
     if ([TTJudgeNetworking currentNetworkingType] == NetworkingTypeNoReachable) {//没有网络
         [SVProgressHUD showErrorWithStatus:@"无网络连接"];
         NSMutableArray *array = [self TTHeaderNewsFromCacheWithMaxTTHeaderNews:headerNews];
         success(array);
     } else {//有网络
-        AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
-        [manager.requestSerializer setValue:apikey forHTTPHeaderField:@"apikey"];
-        [manager GET:@"http://apis.baidu.com/songshuxiansheng/news/news" parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-            NSMutableArray *headerNewsArray = [TTHeaderNews mj_objectArrayWithKeyValuesArray:responseObject[@"retData"]];
-            NSArray *temmArray = [headerNewsArray copy];
-            for (TTHeaderNews *headerNews in temmArray) {
-                if ([headerNews.image_url isEqualToString:@""]) {
-                    [headerNewsArray removeObject:headerNews];
-                }
+    __weak typeof (self)weakself=self;
+    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+    [manager.requestSerializer setValue:apikey forHTTPHeaderField:@"apikey"];
+    [manager GET:@"http://apis.baidu.com/songshuxiansheng/news/news" parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        NSMutableArray *headerNewsArray = [TTHeaderNews mj_objectArrayWithKeyValuesArray:responseObject[@"retData"]];
+        NSArray *temmArray = [headerNewsArray copy];
+        for (TTHeaderNews *headerNews in temmArray) {
+            if ([headerNews.image_url isEqualToString:@""]) {
+                [headerNewsArray removeObject:headerNews];
             }
-            [self addTTHeaderNewsArray:[headerNewsArray copy]];
-            success(headerNewsArray);
-        } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-            failure(error);
-            NSLog(@"%@",error);
-            }];
+        }
+        [weakself addTTHeaderNewsArray:[headerNewsArray copy]];
+        success(headerNewsArray);
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        failure(error);
+        NSLog(@"%@",error);
+        }];
     }
 
 }
@@ -330,6 +348,8 @@ static FMDatabaseQueue *_queue;
     if (cacheArray.count == 20) {
         success(cacheArray);
     } else {
+        __weak typeof (self)weakself=self;
+
         AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
         [manager.requestSerializer setValue:apikey forHTTPHeaderField:@"apikey"];
         
@@ -343,7 +363,7 @@ static FMDatabaseQueue *_queue;
             for (TTNormalNews *news in pictureArray) {
                 news.allPages = [responseObject[@"showapi_res_body"][@"pagebean"][@"allPages"] integerValue];
             }
-            [self addTTNormalNewsArray:pictureArray];
+            [weakself addTTNormalNewsArray:pictureArray];
             success(pictureArray);
         } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
             failure(error);

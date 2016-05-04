@@ -4,7 +4,7 @@
 //
 //  Created by 瑞文戴尔 on 16/4/29.
 //  Copyright © 2016年 瑞文戴尔. All rights reserved.
-//这是新闻首页上方的频道选择的scrollview
+//这是新闻首页上方的新闻频道选择的scrollview
 
 #import <UIKit/UIKit.h>
 

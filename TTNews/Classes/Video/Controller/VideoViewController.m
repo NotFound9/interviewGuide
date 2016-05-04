@@ -10,6 +10,7 @@
 #import <MJExtension.h>
 #import <MJRefresh.h>
 #import <SVProgressHUD.h>
+#import <SDImageCache.h>
 #import "TTVideo.h"
 #import "TTVideoFetchDataParameter.h"
 #import <UIImageView+WebCache.h>
@@ -59,6 +60,7 @@ static NSString * const VideoCell = @"VideoCell";
         [self.playView resetPlayView];
     }
     self.navigationController.navigationBar.alpha = 1;
+    [[SDImageCache sharedImageCache] clearDisk];
 }
 
 

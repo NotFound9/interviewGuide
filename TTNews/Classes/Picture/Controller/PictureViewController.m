@@ -10,6 +10,7 @@
 #import <MJExtension.h>
 #import <MJRefresh.h>
 #import <SVProgressHUD.h>
+#import <SDImageCache.h>
 #import <UIImageView+WebCache.h>
 #import "PictureTableViewCell.h"
 #import "TTPicture.h"
@@ -49,7 +50,8 @@ static NSString * const PictureCell = @"PictureCell";
     [super viewWillDisappear:animated];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     self.navigationController.navigationBar.alpha = 1;
-    
+    [[SDImageCache sharedImageCache] clearDisk];
+
 }
 
 #pragma mark 更新皮肤模式 接到模式切换的通知后会调用此方法

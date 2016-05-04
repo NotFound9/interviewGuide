@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		9D9B34292F23760DBD87E9B4 /* libPods-TTNews.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 59D897E651F8649ACCCD036B /* libPods-TTNews.a */; };
+		EE3A071E1CDA1DAD0024C37A /* ContentTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EE3A071D1CDA1DAD0024C37A /* ContentTableViewController.m */; };
 		EE4635C81CC72B8900DB248F /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = EE4635C71CC72B8900DB248F /* main.m */; };
 		EE4635D31CC72B8900DB248F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EE4635D21CC72B8900DB248F /* Assets.xcassets */; };
 		EE4635E11CC72B8A00DB248F /* TTNewsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = EE4635E01CC72B8A00DB248F /* TTNewsTests.m */; };
@@ -19,7 +20,6 @@
 		EE79B1111CC8C435001029EF /* EditUserInfoViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = EE79B0941CC8C435001029EF /* EditUserInfoViewController.xib */; };
 		EE79B1121CC8C435001029EF /* MeTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EE79B0961CC8C435001029EF /* MeTableViewController.m */; };
 		EE79B1131CC8C435001029EF /* SendFeedbackViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EE79B0981CC8C435001029EF /* SendFeedbackViewController.m */; };
-		EE79B1141CC8C435001029EF /* ContentTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EE79B09E1CC8C435001029EF /* ContentTableViewController.m */; };
 		EE79B1151CC8C435001029EF /* DetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EE79B0A01CC8C435001029EF /* DetailViewController.m */; };
 		EE79B1161CC8C435001029EF /* NewsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EE79B0A21CC8C435001029EF /* NewsViewController.m */; };
 		EE79B1171CC8C435001029EF /* ShowMultiPictureViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EE79B0A41CC8C435001029EF /* ShowMultiPictureViewController.m */; };
@@ -100,6 +100,7 @@
 		53428844E2216BE5C197C066 /* Pods-TTNews.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TTNews.release.xcconfig"; path = "Pods/Target Support Files/Pods-TTNews/Pods-TTNews.release.xcconfig"; sourceTree = "<group>"; };
 		59D897E651F8649ACCCD036B /* libPods-TTNews.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-TTNews.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		9D08A2A40F47DA39E7253110 /* Pods-TTNews.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TTNews.debug.xcconfig"; path = "Pods/Target Support Files/Pods-TTNews/Pods-TTNews.debug.xcconfig"; sourceTree = "<group>"; };
+		EE3A071D1CDA1DAD0024C37A /* ContentTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContentTableViewController.m; sourceTree = "<group>"; };
 		EE4635C31CC72B8900DB248F /* TTNews.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TTNews.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EE4635C71CC72B8900DB248F /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		EE4635D21CC72B8900DB248F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -122,7 +123,6 @@
 		EE79B0971CC8C435001029EF /* SendFeedbackViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SendFeedbackViewController.h; sourceTree = "<group>"; };
 		EE79B0981CC8C435001029EF /* SendFeedbackViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SendFeedbackViewController.m; sourceTree = "<group>"; };
 		EE79B09D1CC8C435001029EF /* ContentTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContentTableViewController.h; sourceTree = "<group>"; };
-		EE79B09E1CC8C435001029EF /* ContentTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ContentTableViewController.m; sourceTree = "<group>"; };
 		EE79B09F1CC8C435001029EF /* DetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DetailViewController.h; sourceTree = "<group>"; };
 		EE79B0A01CC8C435001029EF /* DetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DetailViewController.m; sourceTree = "<group>"; };
 		EE79B0A11CC8C435001029EF /* NewsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewsViewController.h; sourceTree = "<group>"; };
@@ -389,7 +389,7 @@
 				EE79B0A11CC8C435001029EF /* NewsViewController.h */,
 				EE79B0A21CC8C435001029EF /* NewsViewController.m */,
 				EE79B09D1CC8C435001029EF /* ContentTableViewController.h */,
-				EE79B09E1CC8C435001029EF /* ContentTableViewController.m */,
+				EE3A071D1CDA1DAD0024C37A /* ContentTableViewController.m */,
 				EE79B09F1CC8C435001029EF /* DetailViewController.h */,
 				EE79B0A01CC8C435001029EF /* DetailViewController.m */,
 				EE79B0A31CC8C435001029EF /* ShowMultiPictureViewController.h */,
@@ -846,7 +846,6 @@
 				EE79B12E1CC8C435001029EF /* TTNavigationController.m in Sources */,
 				EE79B1301CC8C435001029EF /* Reachability.m in Sources */,
 				EE79B1411CC8C435001029EF /* TTVideo.m in Sources */,
-				EE79B1141CC8C435001029EF /* ContentTableViewController.m in Sources */,
 				EE79B1491CC8C435001029EF /* VideoTableViewCell.m in Sources */,
 				EE79B13E1CC8C435001029EF /* VideoCommentViewController.m in Sources */,
 				EE79B1361CC8C435001029EF /* TTPictureComment.m in Sources */,
@@ -864,6 +863,7 @@
 				EE79B12C1CC8C435001029EF /* TTVideoFetchDataParameter.m in Sources */,
 				EE79B1241CC8C435001029EF /* UIBarButtonItem+Extension.m in Sources */,
 				EE79B12F1CC8C435001029EF /* TTTabBarController.m in Sources */,
+				EE3A071E1CDA1DAD0024C37A /* ContentTableViewController.m in Sources */,
 				EE79B1251CC8C435001029EF /* UIImage+Extension.m in Sources */,
 				EE79B11E1CC8C435001029EF /* NoPictureNewsTableViewCell.m in Sources */,
 				EE79B1471CC8C435001029EF /* VideoCommentCell.m in Sources */,

@@ -11,6 +11,7 @@
 #import "TTVideo.h"
 #import <MJRefresh.h>
 #import <AFNetworking.h>
+#import <SDImageCache.h>
 #import "TTVideoComment.h"
 #import <MJExtension.h>
 #import "VideoCommentCell.h"
@@ -89,6 +90,7 @@ static NSString * const VideoCommentCellID = @"VideoCommentCell";
     //    [self.manager.tasks makeObjectsPerformSelector:@selector(cancel)];
     [self.manager invalidateSessionCancelingTasks:YES];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [[SDImageCache sharedImageCache] clearDisk];
 }
 
 #pragma mark 更新皮肤模式 接到模式切换的通知后会调用此方法

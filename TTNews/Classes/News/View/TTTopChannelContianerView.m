@@ -173,7 +173,7 @@ static CGFloat kSliderViewWidth = 20;
     }
 }
 
-#pragma mark 添加频道：增加scrollView的contensize，然后在最后添加一个channelButton
+#pragma mark 添加新闻频道：增加scrollView的contensize，然后在最后添加一个channelButton
 - (void)addAChannelButtonWithChannelName:(NSString *)channelName {
     CGFloat buttonWidth = self.scrollView.frame.size.width/5;
     UIButton *button = [self createChannelButton];
@@ -193,11 +193,11 @@ static CGFloat kSliderViewWidth = 20;
 }
 
 - (void)didShowEditChannelView:(BOOL)value {
-    if (value == YES) {//显示编辑频道View
+    if (value == YES) {//显示编辑新闻频道View
         self.addButton.selected = YES;
         self.indicatorView.hidden = YES;
         self.scrollView.hidden = YES;
-    } else {//显示编辑频道View
+    } else {//显示编辑新闻频道View
         self.addButton.selected = NO;
         self.indicatorView.hidden = NO;
         self.scrollView.hidden = NO;

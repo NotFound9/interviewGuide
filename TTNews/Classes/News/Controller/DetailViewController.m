@@ -7,6 +7,7 @@
 //
 
 #import "DetailViewController.h"
+#import <SDImageCache.h>
 #import <SVProgressHUD.h>
 #import "TTConst.h"
 #import "TTJudgeNetworking.h"
@@ -51,6 +52,7 @@
     [SVProgressHUD dismiss];
     self.navigationController.toolbarHidden = YES;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [[SDImageCache sharedImageCache] clearDisk];
 }
 
 #pragma mark --private Method--初始化webView
