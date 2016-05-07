@@ -138,6 +138,11 @@ static NSString * const collectionViewSectionHeaderID = @"ChannelCollectionHeade
         }else if (indexPath.section == 1) {
             headerView.titleLabel.text = @"可添加栏目 (点击添加)";
         }
+    if ([self.currentSkinModel isEqualToString:NightSkinModelValue]) {
+        [headerView updateToNightSkinMode];
+    } else {
+        [headerView updateToDaySkinMode];
+    }
     return headerView;
 }
 
@@ -170,7 +175,11 @@ static NSString * const collectionViewSectionHeaderID = @"ChannelCollectionHeade
         }
     } else {
         cell.channelName = self.remainChannelsArray[indexPath.row];
-
+    }
+    if ([self.currentSkinModel isEqualToString:NightSkinModelValue]) {
+        [cell updateToNightSkinMode];
+    } else {
+        [cell updateToDaySkinMode];
     }
     return cell;
 }
@@ -246,7 +255,6 @@ static NSString * const collectionViewSectionHeaderID = @"ChannelCollectionHeade
     }
 }
 
-
 #pragma mark --TTTopChannelContianerViewDelegate--选择了某个新闻频道，更新scrollView的contenOffset
 - (void)chooseChannelWithIndex:(NSInteger)index {
     [self.contentScrollView setContentOffset:CGPointMake(self.contentScrollView.frame.size.width * index, 0) animated:YES];
@@ -257,25 +265,14 @@ static NSString * const collectionViewSectionHeaderID = @"ChannelCollectionHeade
     self.currentSkinModel = [[NSUserDefaults standardUserDefaults] stringForKey:CurrentSkinModelKey];
     if ([self.currentSkinModel isEqualToString:NightSkinModelValue]) {
         self.view.backgroundColor = [UIColor blackColor];
-        self.topContianerView.backgroundColor = [UIColor colorWithRed:34/255.0 green:30/255.0 blue:33/255.0 alpha:1.0];
-        self.topContianerView.scrollView.backgroundColor = [UIColor colorWithRed:34/255.0 green:30/255.0 blue:33/255.0 alpha:1.0];
-        for (UIView *view in self.topContianerView.scrollView.subviews) {
-            if ([view isKindOfClass:[UIControl class]]) {//是按钮
-                UIButton *button = (UIButton *)view;
-                [button setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
-            }
-        }
+        self.collectionView.backgroundColor = [UIColor colorWithRed:34/255.0 green:30/255.0 blue:33/255.0 alpha:1.0];
+        [self.topContianerView updateToNightSkinMode];
     } else {//日间模式
         self.view.backgroundColor = [UIColor colorWithRed:250.0/255.0 green:250.0/255.0 blue:250.0/255.0 alpha:1.0];
-        self.topContianerView.backgroundColor = [UIColor whiteColor];
-        self.topContianerView.scrollView.backgroundColor = [UIColor whiteColor];
-        for (UIView *view in self.topContianerView.scrollView.subviews) {
-            if ([view isKindOfClass:[UIControl class]]) {//是按钮
-                UIButton *button = (UIButton *)view;
-                [button setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-            }
-        }
+        self.collectionView.backgroundColor  = [UIColor whiteColor];
+        [self.topContianerView updateToDaySkinMode];
     }
+    [self.collectionView reloadData];
 }
 
 #pragma mark --private Method--显示或隐藏点击加号按钮弹出的新闻频道编辑的CollectionView

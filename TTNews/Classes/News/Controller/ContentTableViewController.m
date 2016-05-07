@@ -7,7 +7,6 @@
 //
 
 #import "ContentTableViewController.h"
-#import <MJExtension.h>
 #import <MJRefresh.h>
 #import <SVProgressHUD.h>
 #import "SinglePictureNewsTableViewCell.h"

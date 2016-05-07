@@ -413,7 +413,12 @@
 			isa = PBXGroup;
 			children = (
 				EEC791801CD1AE72008B7C2D /* Cell */,
-				EEC791811CD1AE84008B7C2D /* Other */,
+				EEB32A491CD38CAF00FF0AB8 /* TTTopChannelContianerView.h */,
+				EEB32A4A1CD38CAF00FF0AB8 /* TTTopChannelContianerView.m */,
+				EEC791821CD1AEB8008B7C2D /* TTImageCyclePlayView.h */,
+				EEC791831CD1AEB8008B7C2D /* TTImageCyclePlayView.m */,
+				EEE3E81C1CD5AD3E00D699E0 /* ChannelsSectionHeaderView.h */,
+				EEE3E81D1CD5AD3E00D699E0 /* ChannelsSectionHeaderView.m */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -617,19 +622,6 @@
 				EE79B0AD1CC8C435001029EF /* ChannelCollectionViewCell.xib */,
 			);
 			name = Cell;
-			sourceTree = "<group>";
-		};
-		EEC791811CD1AE84008B7C2D /* Other */ = {
-			isa = PBXGroup;
-			children = (
-				EEB32A491CD38CAF00FF0AB8 /* TTTopChannelContianerView.h */,
-				EEB32A4A1CD38CAF00FF0AB8 /* TTTopChannelContianerView.m */,
-				EEC791821CD1AEB8008B7C2D /* TTImageCyclePlayView.h */,
-				EEC791831CD1AEB8008B7C2D /* TTImageCyclePlayView.m */,
-				EEE3E81C1CD5AD3E00D699E0 /* ChannelsSectionHeaderView.h */,
-				EEE3E81D1CD5AD3E00D699E0 /* ChannelsSectionHeaderView.m */,
-			);
-			name = Other;
 			sourceTree = "<group>";
 		};
 		FEE7BD5D4A5B10AF1F933FC9 /* Pods */ = {

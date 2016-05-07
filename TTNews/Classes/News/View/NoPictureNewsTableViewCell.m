@@ -46,8 +46,6 @@
     self.newsTitleLabel.textColor = [UIColor blackColor];
     self.contentView.backgroundColor = [UIColor whiteColor];
     self.separatorLine.backgroundColor = [UIColor colorWithRed:240/255.0 green:240/255.0  blue:240/255.0  alpha:1.0];
-
-    
 }
 
 #pragma mark 切换至夜间模式
@@ -55,8 +53,6 @@
     self.newsTitleLabel.textColor = [UIColor grayColor];
     self.contentView.backgroundColor = [UIColor colorWithRed:42/255.0 green:39/255.0 blue:43/255.0 alpha:1.0];
     self.separatorLine.backgroundColor = [UIColor colorWithRed:40/255.0 green:36/255.0  blue:40/255.0  alpha:1.0];
-
-
 }
 
 @end

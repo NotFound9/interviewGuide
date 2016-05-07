@@ -12,4 +12,7 @@
 
 @property (nonatomic, weak) UILabel *titleLabel;
 
+-(void)updateToDaySkinMode;
+-(void)updateToNightSkinMode;
+
 @end

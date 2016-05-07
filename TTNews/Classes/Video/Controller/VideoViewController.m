@@ -7,13 +7,11 @@
 //
 
 #import "VideoViewController.h"
-#import <MJExtension.h>
 #import <MJRefresh.h>
 #import <SVProgressHUD.h>
 #import <SDImageCache.h>
 #import "TTVideo.h"
 #import "TTVideoFetchDataParameter.h"
-#import <UIImageView+WebCache.h>
 #import "VideoTableViewCell.h"
 #import "VideoPlayView.h"
 #import "FullViewController.h"
@@ -75,11 +73,13 @@ static NSString * const VideoCell = @"VideoCell";
     [self.tableView reloadData];
 }
 
+#pragma mark 基本设置
 -(void)setupBasic {
     self.currentPage = 0;
     self.isFullScreenPlaying = NO;
 }
 
+#pragma mark 初始化TableView
 - (void)setupTableView {
     self.view.backgroundColor = [UIColor colorWithRed:250.0/255.0 green:250.0/255.0 blue:250.0/255.0 alpha:1.0];
     self.automaticallyAdjustsScrollViewInsets = NO;
@@ -89,6 +89,7 @@ static NSString * const VideoCell = @"VideoCell";
     [self.tableView registerNib:[UINib nibWithNibName:NSStringFromClass([VideoTableViewCell class]) bundle:nil] forCellReuseIdentifier:VideoCell];
 }
 
+#pragma mark 初始化刷新控件
 - (void)setupMJRefreshHeader {
     self.tableView.mj_header = [MJRefreshNormalHeader headerWithRefreshingTarget:self refreshingAction:@selector(LoadNewData)];
     self.tableView.mj_header.automaticallyChangeAlpha = YES;
@@ -97,6 +98,7 @@ static NSString * const VideoCell = @"VideoCell";
     self.tableView.mj_footer = [MJRefreshAutoNormalFooter footerWithRefreshingTarget:self refreshingAction:@selector(LoadMoreData)];
 }
 
+#pragma mark 加载最新数据
 - (void)LoadNewData {
     TTVideoFetchDataParameter *params = [[TTVideoFetchDataParameter alloc] init];
     TTVideo *firstVideo = self.videoArray.firstObject;
@@ -114,6 +116,7 @@ static NSString * const VideoCell = @"VideoCell";
     
 }
 
+#pragma mark 加载更多数据
 - (void)LoadMoreData {
     TTVideoFetchDataParameter *parammeters = [[TTVideoFetchDataParameter alloc] init];
     TTVideo *lastVideo = self.videoArray.lastObject;
@@ -161,6 +164,7 @@ static NSString * const VideoCell = @"VideoCell";
     return cell;
 }
 
+#pragma mark -UITableViewDataSource 返回indexPath对应的cell的高度
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     TTVideo *video = self.videoArray[indexPath.row];
     return video.cellHeight;
@@ -171,12 +175,14 @@ static NSString * const VideoCell = @"VideoCell";
     [self pushToVideoCommentViewControllerWithIndexPath:indexPath];
 }
 
+#pragma mark 点击某个Cell或点击评论按钮跳转到评论页面
 -(void)pushToVideoCommentViewControllerWithIndexPath:(NSIndexPath *)indexPath {
     VideoCommentViewController *vc = [[VideoCommentViewController alloc] init];
     vc.video = self.videoArray[indexPath.row];
     [self.navigationController pushViewController:vc animated:YES];
 }
 
+#pragma mark 视频播放时窗口模式与全屏模式切换
 - (void)videoplayViewSwitchOrientation:(BOOL)isFull
 {
     if (isFull) {
@@ -245,6 +251,7 @@ static NSString * const VideoCell = @"VideoCell";
     return _videoArray;
 }
 
+#pragma mark --UIScrollViewDelegate--scrollView滑动了
 -(void)scrollViewDidScroll:(UIScrollView *)scrollView {
     if (self.playView.superview && self.isFullScreenPlaying == NO) {//点全屏和退出的时候，也会调用scrollViewDidScroll这个方法
         NSIndexPath *indePath = [self.tableView indexPathForCell:self.currentSelectedCell];

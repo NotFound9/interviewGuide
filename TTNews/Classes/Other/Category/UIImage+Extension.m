@@ -15,14 +15,14 @@
     UIGraphicsBeginImageContextWithOptions(self.size, NO, 0.0);
     
     // 获得上下文
-    CGContextRef ctx = UIGraphicsGetCurrentContext();
+    CGContextRef context = UIGraphicsGetCurrentContext();
     
     // 添加一个圆
     CGRect rect = CGRectMake(0, 0, self.size.width, self.size.height);
-    CGContextAddEllipseInRect(ctx, rect);
+    CGContextAddEllipseInRect(context, rect);
     
     // 裁剪
-    CGContextClip(ctx);
+    CGContextClip(context);
     
     // 将图片画上去
     [self drawInRect:rect];

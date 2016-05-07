@@ -10,8 +10,8 @@
 
 @interface TTTopChannelContianerView()
 
-@property (nonatomic, weak) UIView *indicatorView;
 @property (nonatomic, weak) UIButton *currentSelectedChannelButton;
+@property (nonatomic, weak) UIView *indicatorView;
 
 @end
 
@@ -42,8 +42,8 @@ static CGFloat kSliderViewWidth = 20;
         [self.scrollView addSubview:button];
     }
     
-    //默认选中第三个channelButton
-    [self clickChannelButton:self.scrollView.subviews[2]];
+    //默认选中第三个channelButton,因为scrollView的subview含有indicatorView，所以第三个按钮对应scrollView的subview的index是3
+    [self clickChannelButton:self.scrollView.subviews[3]];
 }
 
 #pragma mark 初始化子控件
@@ -61,7 +61,7 @@ static CGFloat kSliderViewWidth = 20;
     //初始化被选中channelButton的红线，也就是indicatorView
     UIView *indicatorView = [self createIndicatorView];
     self.indicatorView = indicatorView;
-    [self addSubview:self.indicatorView];
+    [self.scrollView addSubview:self.indicatorView];
     
     //初始化右侧的加号button
     UIButton *button = [self createTheAddButton];
@@ -135,12 +135,12 @@ static CGFloat kSliderViewWidth = 20;
         [sender.titleLabel setFont:[UIFont systemFontOfSize:kTitleLabelSelectedFont]];
         [sender layoutIfNeeded];
         [self.scrollView setContentOffset:CGPointMake(newOffsetX, 0)];
-        CGPoint senderTittleNewPoint = [sender.titleLabel.superview convertPoint:sender.titleLabel.frame.origin toView:self];
         //indicatorView宽度会比titleLabel宽20，centerX与titleLabel相同
-        self.indicatorView.frame = CGRectMake(senderTittleNewPoint.x -10, self.frame.size.height - 2, sender.titleLabel.frame.size.width + 20, 2);
+        self.indicatorView.frame = CGRectMake(sender.frame.origin.x + sender.titleLabel.frame.origin.x - 10, self.frame.size.height - 2, sender.titleLabel.frame.size.width + 20, 2);
     }];
     
-    NSInteger index = [self.scrollView.subviews indexOfObject:sender];
+    //因为subviews包含indicatorView,所以index需要减1
+    NSInteger index = [self.scrollView.subviews indexOfObject:sender] - 1;
     if ([self.delegate respondsToSelector:@selector(chooseChannelWithIndex:)]) {
         [self.delegate chooseChannelWithIndex:index];
     }
@@ -148,15 +148,18 @@ static CGFloat kSliderViewWidth = 20;
 
 #pragma mark 选中某个ChannelButton
 - (void)selectChannelButtonWithIndex:(NSInteger)index {
-    [self clickChannelButton:self.scrollView.subviews[index]];
+    self.indicatorView.hidden = NO;
+    //因为subviews包含indicatorView,所以index需要加1
+    [self clickChannelButton:self.scrollView.subviews[index+1]];
 }
 
 #pragma mark 删除某个ChannelButton
 - (void)deleteChannelButtonWithIndex:(NSInteger)index {
-    //删除index对应的button，
-    [self.scrollView.subviews[index] removeFromSuperview];
+    //删除index对应的button，因为subviews包含indicatorView,所以index需要加1
+    NSInteger realIndex= index + 1;
+    [self.scrollView.subviews[realIndex] removeFromSuperview];
     //后面的button的x向左移动buuton宽度的距离
-    for (NSInteger i = index; i<self.scrollView.subviews.count; i++) {
+    for (NSInteger i = realIndex; i<self.scrollView.subviews.count; i++) {
         UIButton *button = self.scrollView.subviews[i];
         CGRect buttonFrame = button.frame;
         button.frame = CGRectMake(buttonFrame.origin.x - button.frame.size.width, buttonFrame.origin.y, buttonFrame.size.width, buttonFrame.size.height);
@@ -183,14 +186,34 @@ static CGFloat kSliderViewWidth = 20;
     [self.scrollView addSubview:button];
 }
 
+#pragma mark 更新至日间模式
 - (void)updateToDaySkinMode {
+    self.backgroundColor = [UIColor whiteColor];
+    self.scrollView.backgroundColor = [UIColor whiteColor];
+    for (UIView *view in self.scrollView.subviews) {
+        if ([view isKindOfClass:[UIControl class]]) {//是按钮
+            UIButton *button = (UIButton *)view;
+            [button setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+        }
+    }
     self.addButton.backgroundColor = [UIColor whiteColor];
 }
 
+#pragma mark 更新至夜间模式
 - (void)updateToNightSkinMode {
+    self.backgroundColor = [UIColor colorWithRed:34/255.0 green:30/255.0 blue:33/255.0 alpha:1.0];
+    self.scrollView.backgroundColor = [UIColor colorWithRed:34/255.0 green:30/255.0 blue:33/255.0 alpha:1.0];
+    for (UIView *view in self.scrollView.subviews) {
+        if ([view isKindOfClass:[UIControl class]]) {//是按钮
+            UIButton *button = (UIButton *)view;
+            [button setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
+        }
+    }
     self.addButton.backgroundColor = [UIColor colorWithRed:34/255.0 green:30/255.0 blue:33/255.0 alpha:1.0];
 
 }
+
+#pragma mark 更新至日间模式
 
 - (void)didShowEditChannelView:(BOOL)value {
     if (value == YES) {//显示编辑新闻频道View

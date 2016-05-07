@@ -55,6 +55,7 @@ static NSString * const VideoCommentCellID = @"VideoCommentCell";
 
 @implementation VideoCommentViewController
 
+#pragma mark 懒加载
 - (AFHTTPSessionManager *)manager
 {
     if (!_manager) {
@@ -65,11 +66,8 @@ static NSString * const VideoCommentCellID = @"VideoCommentCell";
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
     [self setupBasic];
-    
     [self setupHeader];
-    
     [self setupRefresh];
 }
 
@@ -93,6 +91,70 @@ static NSString * const VideoCommentCellID = @"VideoCommentCell";
     [[SDImageCache sharedImageCache] clearDisk];
 }
 
+
+#pragma mark 基本设置
+- (void)setupBasic
+{
+    self.title = @"评论";
+    self.page = 1;
+    // cell的高度设置
+    self.tableView.estimatedRowHeight = 44;
+    self.tableView.rowHeight = UITableViewAutomaticDimension;
+    
+    // 背景色
+    self.tableView.backgroundColor = [UIColor colorWithRed:223.0/255.0 green:223.0/255.0 blue:223.0/255.0 alpha:1.0];
+    
+    // 注册
+    [self.tableView registerNib:[UINib nibWithNibName:NSStringFromClass([VideoCommentCell class]) bundle:nil] forCellReuseIdentifier:VideoCommentCellID];
+    
+    // 去掉分割线
+    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    
+    // 内边距s
+    CGFloat top = CGRectGetMaxY(self.navigationController.navigationBar.frame);
+    self.tableView.contentInset = UIEdgeInsetsMake(top, 0, cellMargin, 0);
+    self.automaticallyAdjustsScrollViewInsets = NO;
+}
+
+
+#pragma mark 初始化刷新控件
+- (void)setupRefresh
+{
+    self.tableView.mj_header = [MJRefreshNormalHeader headerWithRefreshingTarget:self refreshingAction:@selector(loadNewComments)];
+    self.tableView.mj_header.automaticallyChangeAlpha = YES;
+    [self.tableView.mj_header beginRefreshing];
+    
+    self.tableView.mj_footer = [MJRefreshAutoNormalFooter footerWithRefreshingTarget:self refreshingAction:@selector(loadMoreComments)];
+    self.tableView.mj_footer.hidden = YES;
+}
+
+#pragma mark 初始化TableView的headerView
+- (void)setupHeader
+{
+    // 清空top_cmt
+    if (self.video.top_cmt) {
+        self.saved_top_cmt = self.video.top_cmt;
+        self.video.top_cmt = nil;
+        self.video.cellHeight = 0;
+    }
+    
+    // 创建header
+    UIView *header = [[UIView alloc] init];
+    //     添加cell
+    VideoTableViewCell *cell = [VideoTableViewCell cell];
+    self.headerVideoCell = cell;
+    cell.video = self.video;
+    cell.frame = CGRectMake(0, cellMargin, [UIScreen mainScreen].bounds.size.width, self.video.cellHeight);
+    cell.contentView.frame = cell.bounds;
+    
+    // header的高度
+    header.height =  self.video.cellHeight + cellMargin;
+    [header addSubview:cell];
+    
+    // 设置header
+    self.tableView.tableHeaderView = header;
+}
+
 #pragma mark 更新皮肤模式 接到模式切换的通知后会调用此方法
 -(void)updateSkinModel {
     self.currentSkinModel = [[NSUserDefaults standardUserDefaults] stringForKey:CurrentSkinModelKey];
@@ -112,18 +174,7 @@ static NSString * const VideoCommentCellID = @"VideoCommentCell";
     [self.tableView reloadData];
 }
 
-
-- (void)setupRefresh
-{
-    self.tableView.mj_header = [MJRefreshNormalHeader headerWithRefreshingTarget:self refreshingAction:@selector(loadNewComments)];
-    self.tableView.mj_header.automaticallyChangeAlpha = YES;
-    [self.tableView.mj_header beginRefreshing];
-    
-    self.tableView.mj_footer = [MJRefreshAutoNormalFooter footerWithRefreshingTarget:self refreshingAction:@selector(loadMoreComments)];
-    self.tableView.mj_footer.hidden = YES;
-}
-
-
+#pragma mark 加载最新评论
 - (void)loadNewComments
 {
     // 结束之前的所有请求
@@ -164,6 +215,7 @@ static NSString * const VideoCommentCellID = @"VideoCommentCell";
     }];
 }
 
+#pragma mark 加载更多评论
 - (void)loadMoreComments
 {
     // 结束之前的所有请求
@@ -211,55 +263,7 @@ static NSString * const VideoCommentCellID = @"VideoCommentCell";
     }];
 }
 
-- (void)setupHeader
-{
-    // 清空top_cmt
-    if (self.video.top_cmt) {
-        self.saved_top_cmt = self.video.top_cmt;
-        self.video.top_cmt = nil;
-        self.video.cellHeight = 0;
-    }
-
-    // 创建header
-    UIView *header = [[UIView alloc] init];
-    //     添加cell
-    VideoTableViewCell *cell = [VideoTableViewCell cell];
-    self.headerVideoCell = cell;
-    cell.video = self.video;
-    cell.frame = CGRectMake(0, cellMargin, [UIScreen mainScreen].bounds.size.width, self.video.cellHeight);
-    cell.contentView.frame = cell.bounds;
-
-    // header的高度
-    header.height =  self.video.cellHeight + cellMargin;
-    [header addSubview:cell];
-    
-    // 设置header
-    self.tableView.tableHeaderView = header;
-}
-
-- (void)setupBasic
-{
-    self.title = @"评论";
-    self.page = 1;
-    // cell的高度设置
-    self.tableView.estimatedRowHeight = 44;
-    self.tableView.rowHeight = UITableViewAutomaticDimension;
-    
-    // 背景色
-    self.tableView.backgroundColor = [UIColor colorWithRed:223.0/255.0 green:223.0/255.0 blue:223.0/255.0 alpha:1.0];
-    
-    // 注册
-    [self.tableView registerNib:[UINib nibWithNibName:NSStringFromClass([VideoCommentCell class]) bundle:nil] forCellReuseIdentifier:VideoCommentCellID];
-    
-    // 去掉分割线
-    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    
-    // 内边距s
-    CGFloat top = CGRectGetMaxY(self.navigationController.navigationBar.frame);
-    self.tableView.contentInset = UIEdgeInsetsMake(top, 0, cellMargin, 0);
-    self.automaticallyAdjustsScrollViewInsets = NO;
-}
-
+#pragma mark 接收到键盘frame将要变化的通知
 - (void)keyboardWillChangeFrame:(NSNotification *)note
 {
     // 键盘显示\隐藏完毕的frame
@@ -274,9 +278,7 @@ static NSString * const VideoCommentCellID = @"VideoCommentCell";
     }];
 }
 
-/**
- * 返回第section组的所有评论数组
- */
+#pragma mark 返回第section组的所有评论数组
 - (NSArray *)commentsInSection:(NSInteger)section
 {
     if (section == 0) {
@@ -285,12 +287,14 @@ static NSString * const VideoCommentCellID = @"VideoCommentCell";
     return self.latestComments;
 }
 
+#pragma mark 返回indexPath对应的模型数据
 - (TTVideoComment *)commentInIndexPath:(NSIndexPath *)indexPath
 {
     return [self commentsInSection:indexPath.section][indexPath.row];
 }
 
 #pragma mark - <UITableViewDataSource>
+#pragma mark -UITableViewDataSource 返回tableView有多少组
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
     NSInteger hotCount = self.hotComments.count;
@@ -301,6 +305,7 @@ static NSString * const VideoCommentCellID = @"VideoCommentCell";
     return 0;
 }
 
+#pragma mark -UITableViewDataSource 返回tableView某一组对应的cell个数
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     NSInteger hotCount = self.hotComments.count;
@@ -312,11 +317,11 @@ static NSString * const VideoCommentCellID = @"VideoCommentCell";
     if (section == 0) {
         return hotCount ? hotCount : latestCount;
     }
-    
     // 非第0组
     return latestCount;
 }
 
+#pragma mark -UITableViewDataSource 返回tableView每一组section的HeaderView
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
     // 先从缓存池中找header
@@ -343,6 +348,7 @@ static NSString * const VideoCommentCellID = @"VideoCommentCell";
     return sectionHeaderLabel;
 }
 
+#pragma mark -UITableViewDataSource 返回indexPath对应的cell的高度
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     
@@ -356,13 +362,8 @@ static NSString * const VideoCommentCellID = @"VideoCommentCell";
     return cell;
 }
 
-#pragma mark -UIScrollViewDelegate scrollView将要开始滑动
-- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
-{
-    [self.view endEditing:YES];
-    [[UIMenuController sharedMenuController] setMenuVisible:NO animated:YES];
-}
 
+#pragma mark -UITableViewDelegate 点击了TableView的某一行cell
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     UIMenuController *menu = [UIMenuController sharedMenuController];
@@ -383,6 +384,13 @@ static NSString * const VideoCommentCellID = @"VideoCommentCell";
         [menu setTargetRect:rect inView:cell];
         [menu setMenuVisible:YES animated:YES];
     }
+}
+
+#pragma mark -UIScrollViewDelegate scrollView将要开始滑动
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
+{
+    [self.view endEditing:YES];
+    [[UIMenuController sharedMenuController] setMenuVisible:NO animated:YES];
 }
 
 #pragma mark - MenuItem处理

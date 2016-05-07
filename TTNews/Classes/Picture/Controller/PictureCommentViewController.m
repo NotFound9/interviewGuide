@@ -108,7 +108,31 @@ static NSString * const PictureCommentCellID = @"PictureCommentCell";
     [self.tableView reloadData];
 }
 
+#pragma mark 基本设置
+- (void)setupBasic
+{
+    self.title = @"评论";
+    // 内边距s
+    self.automaticallyAdjustsScrollViewInsets = NO;
+    self.tableView.contentInset = UIEdgeInsetsMake(CGRectGetMaxY(self.navigationController.navigationBar.frame) + 10, 0, 0, 0);
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillChangeFrame:) name:UIKeyboardWillChangeFrameNotification object:nil];
+    
+    // cell的高度设置
+    self.tableView.estimatedRowHeight = 44;
+    self.tableView.rowHeight = UITableViewAutomaticDimension;
+    
+    // 背景色
+    self.tableView.backgroundColor = [UIColor colorWithRed:223.0/255.0 green:223.0/255.0 blue:223.0/255.0 alpha:1.0];
+    
+    // 注册
+    [self.tableView registerNib:[UINib nibWithNibName:NSStringFromClass([PictureCommentCell class]) bundle:nil] forCellReuseIdentifier:PictureCommentCellID];
+    
+    // 去掉分割线
+    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+}
 
+#pragma mark 初始化刷新控件
 - (void)setupRefresh
 {
     self.tableView.mj_header = [MJRefreshNormalHeader headerWithRefreshingTarget:self refreshingAction:@selector(loadNewComments)];
@@ -119,6 +143,34 @@ static NSString * const PictureCommentCellID = @"PictureCommentCell";
     self.tableView.mj_footer.hidden = YES;
 }
 
+#pragma mark 初始化TableView的headerView
+- (void)setupHeader
+{
+    // 清空top_cmt
+    if (self.picture.top_cmt) {
+        self.saved_top_cmt = self.picture.top_cmt;
+        self.picture.top_cmt = nil;
+        self.picture.cellHeight = 0;
+    }
+    
+    // 创建header
+    UIView *header = [[UIView alloc] init];
+    //     添加cell
+    PictureTableViewCell *cell = [PictureTableViewCell cell];
+    self.headerPictureCell = cell;
+    cell.picture = self.picture;
+    cell.frame = CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, self.picture.cellHeight);
+    cell.contentView.frame = cell.bounds;
+    
+    // header的高度
+    header.height =  self.picture.cellHeight+ cellMargin;
+    [header addSubview:cell];
+    
+    // 设置header
+    self.tableView.tableHeaderView = header;
+}
+
+#pragma mark 加载更多评论
 - (void)loadMoreComments
 {
     // 结束之前的所有请求
@@ -166,6 +218,7 @@ static NSString * const PictureCommentCellID = @"PictureCommentCell";
     }];
 }
 
+#pragma mark 加载最新评论
 - (void)loadNewComments
 {
     // 结束之前的所有请求
@@ -206,56 +259,8 @@ static NSString * const PictureCommentCellID = @"PictureCommentCell";
     }];
 }
 
-- (void)setupHeader
-{
-    
-    // 清空top_cmt
-    if (self.picture.top_cmt) {
-        self.saved_top_cmt = self.picture.top_cmt;
-        self.picture.top_cmt = nil;
-        self.picture.cellHeight = 0;
-    }
 
-    // 创建header
-    UIView *header = [[UIView alloc] init];
-    //     添加cell
-    PictureTableViewCell *cell = [PictureTableViewCell cell];
-    self.headerPictureCell = cell;
-    cell.picture = self.picture;
-    cell.frame = CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, self.picture.cellHeight);
-    cell.contentView.frame = cell.bounds;
-    
-    // header的高度
-    header.height =  self.picture.cellHeight+ cellMargin;
-    [header addSubview:cell];
-    
-    // 设置header
-    self.tableView.tableHeaderView = header;
-}
-
-- (void)setupBasic
-{
-    self.title = @"评论";
-    // 内边距s
-    self.automaticallyAdjustsScrollViewInsets = NO;
-    self.tableView.contentInset = UIEdgeInsetsMake(CGRectGetMaxY(self.navigationController.navigationBar.frame) + 10, 0, 0, 0);
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillChangeFrame:) name:UIKeyboardWillChangeFrameNotification object:nil];
-    
-    // cell的高度设置
-    self.tableView.estimatedRowHeight = 44;
-    self.tableView.rowHeight = UITableViewAutomaticDimension;
-    
-    // 背景色
-    self.tableView.backgroundColor = [UIColor colorWithRed:223.0/255.0 green:223.0/255.0 blue:223.0/255.0 alpha:1.0];
-    
-    // 注册
-    [self.tableView registerNib:[UINib nibWithNibName:NSStringFromClass([PictureCommentCell class]) bundle:nil] forCellReuseIdentifier:PictureCommentCellID];
-    
-    // 去掉分割线
-    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-}
-
+#pragma mark 接收到键盘frame将要变化的通知
 - (void)keyboardWillChangeFrame:(NSNotification *)note
 {
     // 键盘显示\隐藏完毕的frame
@@ -270,9 +275,7 @@ static NSString * const PictureCommentCellID = @"PictureCommentCell";
     }];
 }
 
-/**
- * 返回第section组的所有评论数组
- */
+#pragma mark 返回第section组的所有评论数组
 - (NSArray *)commentsInSection:(NSInteger)section
 {
     if (section == 0) {
@@ -287,6 +290,7 @@ static NSString * const PictureCommentCellID = @"PictureCommentCell";
 }
 
 #pragma mark - <UITableViewDataSource>
+#pragma mark -UITableViewDataSource 返回tableView的组数
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
     NSInteger hotCount = self.hotComments.count;
@@ -297,6 +301,7 @@ static NSString * const PictureCommentCellID = @"PictureCommentCell";
     return 0;
 }
 
+#pragma mark -UITableViewDataSource 返回某一组对应的cell个数
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     
@@ -314,6 +319,7 @@ static NSString * const PictureCommentCellID = @"PictureCommentCell";
     return latestCount;
 }
 
+#pragma mark -UITableViewDataSource 返回tableView每一组section的HeaderView
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
     // 先从缓存池中找header
@@ -341,6 +347,7 @@ static NSString * const PictureCommentCellID = @"PictureCommentCell";
 
 }
 
+#pragma mark -UITableViewDataSource 返回indexPath对应的cell
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     
@@ -362,6 +369,7 @@ static NSString * const PictureCommentCellID = @"PictureCommentCell";
     [[UIMenuController sharedMenuController] setMenuVisible:NO animated:YES];
 }
 
+#pragma mark -UITableViewDelegate 点击了tableView的某一行cell
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     

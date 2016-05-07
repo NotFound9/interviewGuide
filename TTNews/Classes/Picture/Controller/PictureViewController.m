@@ -7,11 +7,9 @@
 //
 
 #import "PictureViewController.h"
-#import <MJExtension.h>
 #import <MJRefresh.h>
 #import <SVProgressHUD.h>
 #import <SDImageCache.h>
-#import <UIImageView+WebCache.h>
 #import "PictureTableViewCell.h"
 #import "TTPicture.h"
 #import "PictureCommentViewController.h"
@@ -32,6 +30,14 @@
 static NSString * const PictureCell = @"PictureCell";
 
 @implementation PictureViewController
+
+#pragma mark 懒加载
+-(NSMutableArray *)pictureArray {
+    if (!_pictureArray) {
+        _pictureArray = [NSMutableArray array];
+    }
+    return _pictureArray;
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -65,10 +71,12 @@ static NSString * const PictureCell = @"PictureCell";
     [self.tableView reloadData];
 }
 
+#pragma mark 基本设置
 - (void)setupBasic {
     self.currentPage = 0;
 }
 
+#pragma mark 初始化tableview
 - (void)setupTableView {
     self.automaticallyAdjustsScrollViewInsets = NO;
     self.tableView.contentInset = UIEdgeInsetsMake(CGRectGetMaxY(self.navigationController.navigationBar.frame) + 10, 0, 0, 0);
@@ -78,6 +86,7 @@ static NSString * const PictureCell = @"PictureCell";
     [self.tableView registerNib:[UINib nibWithNibName:NSStringFromClass([PictureTableViewCell class]) bundle:nil] forCellReuseIdentifier:PictureCell];
 }
 
+#pragma mark --初始化刷新控件
 - (void)setupMJRefreshHeader {
     self.tableView.mj_header = [MJRefreshNormalHeader headerWithRefreshingTarget:self refreshingAction:@selector(LoadNewData)];
     self.tableView.mj_header.automaticallyChangeAlpha = YES;
@@ -86,7 +95,7 @@ static NSString * const PictureCell = @"PictureCell";
     self.tableView.mj_footer = [MJRefreshBackNormalFooter footerWithRefreshingTarget:self refreshingAction:@selector(LoadMoreData)];
 }
 
-
+#pragma mark --下拉刷新数据
 - (void)LoadNewData {
     TTPictureFetchDataParameter *params = [[TTPictureFetchDataParameter alloc] init];
     TTPicture *firstPicture= self.pictureArray.firstObject;
@@ -104,6 +113,7 @@ static NSString * const PictureCell = @"PictureCell";
     
 }
 
+#pragma mark --上拉加载更多数据
 - (void)LoadMoreData {
     TTPictureFetchDataParameter *params= [[TTPictureFetchDataParameter alloc] init];
     TTPicture *lastPicture = self.pictureArray.lastObject;
@@ -148,6 +158,7 @@ static NSString * const PictureCell = @"PictureCell";
     return cell;
 }
 
+#pragma mark -UITableViewDataSource 返回indexPath对应的cell的高度
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     TTPicture *picture = self.pictureArray[indexPath.row];
     return picture.cellHeight;
@@ -155,10 +166,11 @@ static NSString * const PictureCell = @"PictureCell";
 
 #pragma mark -UITableViewDelegate 点击了某个cell
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    [self pushToVideoCommentViewControllerWithIndexPath:indexPath];
+    [self pushToPictureCommentViewControllerWithIndexPath:indexPath];
 }
 
--(void)pushToVideoCommentViewControllerWithIndexPath:(NSIndexPath *)indexPath {
+#pragma mark 点击某个Cell或点击评论按钮跳转到评论页面
+-(void)pushToPictureCommentViewControllerWithIndexPath:(NSIndexPath *)indexPath {
     PictureCommentViewController *viewController = [[PictureCommentViewController alloc] init];
     viewController.picture = self.pictureArray[indexPath.row];
     [self.navigationController pushViewController:viewController animated:YES];
@@ -175,16 +187,10 @@ static NSString * const PictureCell = @"PictureCell";
 
 #pragma mark PictureTableViewCell代理 点击评论按钮
 -(void)clickCommentButton:(NSIndexPath *)indexPath {
-    [self pushToVideoCommentViewControllerWithIndexPath:indexPath];
+    [self pushToPictureCommentViewControllerWithIndexPath:indexPath];
 }
 
--(NSMutableArray *)pictureArray {
-    if (!_pictureArray) {
-        _pictureArray = [NSMutableArray array];
-    }
-    return _pictureArray;
-}
-
+#pragma mark --UIScrollViewDelegate scrollView滑动了
 -(void)scrollViewDidScroll:(UIScrollView *)scrollView {
     if (self.tableView.contentOffset.y>0) {
         self.navigationController.navigationBar.alpha = 0;
