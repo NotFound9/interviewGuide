@@ -9,12 +9,14 @@
 #import "NewsViewController.h"
 #import <POP.h>
 #import <SVProgressHUD.h>
+#import <SDImageCache.h>
 #import "ContentTableViewController.h"
 #import "ChannelCollectionViewCell.h"
 #import "TTJudgeNetworking.h"
 #import "TTConst.h"
 #import "TTTopChannelContianerView.h"
 #import "ChannelsSectionHeaderView.h"
+#import "TTNormalNews.h"
 
 @interface NewsViewController()<UIScrollViewDelegate,UICollectionViewDataSource,UICollectionViewDelegate, ChannelCollectionViewCellDelegate,TTTopChannelContianerViewDelegate>
 
@@ -42,6 +44,7 @@ static NSString * const collectionViewSectionHeaderID = @"ChannelCollectionHeade
     [self setupChildController];
     [self setupContentScrollView];
     [self setupCollectionView];
+        
 }
 
 -(void)viewWillAppear:(BOOL)animated {
@@ -53,6 +56,7 @@ static NSString * const collectionViewSectionHeaderID = @"ChannelCollectionHeade
 -(void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [[SDImageCache sharedImageCache] clearDisk];
 }
 
 #pragma mark --private Method--初始化子控制器
@@ -111,7 +115,7 @@ static NSString * const collectionViewSectionHeaderID = @"ChannelCollectionHeade
         ContentTableViewController *vc = self.childViewControllers[index];
         vc.view.frame = CGRectMake(scrollView.contentOffset.x, 0, self.contentScrollView.frame.size.width, self.contentScrollView.frame.size.height);
         vc.tableView.contentInset = UIEdgeInsetsMake(CGRectGetMaxY(self.navigationController.navigationBar.frame)+self.topContianerView.scrollView.frame.size.height, 0, self.tabBarController.tabBar.frame.size.height, 0);
-        [scrollView addSubview:vc.view];
+            [scrollView addSubview:vc.view];
     }
 }
 

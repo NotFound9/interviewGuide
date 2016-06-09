@@ -12,7 +12,7 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="appinfoimage" translatesAutoresizingMaskIntoConstraints="NO" id="yCV-Nl-4d8">
-                    <rect key="frame" x="225" y="164" width="150" height="150"/>
+                    <rect key="frame" x="225" y="150" width="150" height="150"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="150" id="gy6-4L-nFD"/>
                         <constraint firstAttribute="height" constant="150" id="xx5-0N-fgi"/>
@@ -25,13 +25,13 @@
                     </userDefinedRuntimeAttributes>
                 </imageView>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="天天新闻" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="G5X-sn-vZy">
-                    <rect key="frame" x="256" y="334" width="88" height="26.5"/>
+                    <rect key="frame" x="256" y="320" width="88" height="26.5"/>
                     <fontDescription key="fontDescription" type="system" pointSize="22"/>
                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Trending  News  Everyday" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Lbp-PU-6nq">
-                    <rect key="frame" x="202" y="370" width="197.5" height="21"/>
+                    <rect key="frame" x="202" y="356" width="197.5" height="21"/>
                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                     <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                     <nil key="highlightedColor"/>
@@ -54,7 +54,7 @@
                 <constraint firstItem="yCV-Nl-4d8" firstAttribute="centerX" secondItem="0Pz-If-xgt" secondAttribute="centerX" id="WP2-EU-3kC"/>
                 <constraint firstItem="4gj-Tz-lCe" firstAttribute="centerX" secondItem="0Pz-If-xgt" secondAttribute="centerX" id="cAA-HP-nUy"/>
                 <constraint firstItem="4gj-Tz-lCe" firstAttribute="top" secondItem="Lbp-PU-6nq" secondAttribute="bottom" constant="10" id="j9o-9n-ELn"/>
-                <constraint firstItem="yCV-Nl-4d8" firstAttribute="top" secondItem="0Pz-If-xgt" secondAttribute="top" constant="164" id="vhx-wO-fMy"/>
+                <constraint firstItem="yCV-Nl-4d8" firstAttribute="top" secondItem="0Pz-If-xgt" secondAttribute="top" constant="150" id="vhx-wO-fMy"/>
             </constraints>
             <variation key="default">
                 <mask key="constraints">

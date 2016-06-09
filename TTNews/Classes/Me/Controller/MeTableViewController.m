@@ -49,6 +49,7 @@ CGFloat const footViewHeight = 30;
 -(void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [SVProgressHUD dismiss];
 }
 
 #pragma mark 更新皮肤模式 接到模式切换的通知后会调用此方法

@@ -79,6 +79,7 @@ static FMDatabaseQueue *_queue;
             __weak typeof (self)weakself=self;
 
                 AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+            
                 NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
                 parameters[@"a"] = @"list";
                 parameters[@"c"] = @"data";
@@ -185,7 +186,6 @@ static FMDatabaseQueue *_queue;
             __weak typeof (self)weakself=self;
 
             AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
-            [manager.tasks makeObjectsPerformSelector:@selector(cancel)];
             NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
             parameters[@"a"] = @"list";
             parameters[@"c"] = @"data";
@@ -352,7 +352,6 @@ static FMDatabaseQueue *_queue;
 
         AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
         [manager.requestSerializer setValue:apikey forHTTPHeaderField:@"apikey"];
-        
         NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
         parameters[@"channelid"] = normalNewsParameters.channelId;
         parameters[@"channelName"] = [normalNewsParameters.channelName stringByAppendingString:@"最新"];

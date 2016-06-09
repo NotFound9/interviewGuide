@@ -10,15 +10,16 @@
 
 @interface TTTopChannelContianerView()
 
-@property (nonatomic, weak) UIButton *currentSelectedChannelButton;
+@property (nonatomic, weak) UIButton *lastSelectedButton;
 @property (nonatomic, weak) UIView *indicatorView;
 
 @end
 
-static CGFloat kTitleLabelNorimalFont = 15;
-static CGFloat kTitleLabelSelectedFont = 18;
+static CGFloat kTitleLabelNorimalFont = 13;
+static CGFloat kTitleLabelSelectedFont = 16;
 static CGFloat kAddChannelWidth = 30;
 static CGFloat kSliderViewWidth = 20;
+static CGFloat buttonWidth = 65;
 
 @implementation TTTopChannelContianerView
 
@@ -33,7 +34,7 @@ static CGFloat kSliderViewWidth = 20;
 #pragma mark channelNameArray的setter方法，channelNameArray
 - (void)setChannelNameArray:(NSArray *)channelNameArray {
     _channelNameArray = channelNameArray;
-    CGFloat buttonWidth = self.scrollView.frame.size.width/5;
+//    CGFloat buttonWidth = self.scrollView.frame.size.width/5;
     self.scrollView.contentSize = CGSizeMake(buttonWidth * channelNameArray.count, 0);
     for (NSInteger i = 0; i < channelNameArray.count; i++) {
         UIButton *button = [self createChannelButton];
@@ -120,10 +121,10 @@ static CGFloat kSliderViewWidth = 20;
 
 #pragma mark 选择了某个ChannelButton
 - (void)clickChannelButton:(UIButton *)sender {
-    self.currentSelectedChannelButton.titleLabel.font = [UIFont systemFontOfSize:kTitleLabelNorimalFont];
-    self.currentSelectedChannelButton.enabled = YES;
-    self.currentSelectedChannelButton = sender;
-    self.currentSelectedChannelButton.enabled = NO;
+    self.lastSelectedButton.titleLabel.font = [UIFont systemFontOfSize:kTitleLabelNorimalFont];
+    self.lastSelectedButton.enabled = YES;
+    self.lastSelectedButton = sender;
+    self.lastSelectedButton.enabled = NO;
     CGFloat newOffsetX = sender.center.x - [UIScreen mainScreen].bounds.size.width*0.5;
     if (newOffsetX < 0) {
         newOffsetX = 0;
@@ -178,7 +179,7 @@ static CGFloat kSliderViewWidth = 20;
 
 #pragma mark 添加新闻频道：增加scrollView的contensize，然后在最后添加一个channelButton
 - (void)addAChannelButtonWithChannelName:(NSString *)channelName {
-    CGFloat buttonWidth = self.scrollView.frame.size.width/5;
+//    CGFloat buttonWidth = self.scrollView.frame.size.width/5;
     UIButton *button = [self createChannelButton];
     self.scrollView.contentSize = CGSizeMake(self.scrollView.contentSize.width + buttonWidth, 0);
     button.frame = CGRectMake(self.scrollView.contentSize.width - buttonWidth , 0, buttonWidth, self.frame.size.height);

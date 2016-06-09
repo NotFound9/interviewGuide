@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "TTNormalNews.h"
+@class TTNormalNews;
 
 @interface ContentTableViewController : UITableViewController
 
