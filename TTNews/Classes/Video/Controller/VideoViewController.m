@@ -182,7 +182,7 @@ static NSString * const VideoCell = @"VideoCell";
     [self.navigationController pushViewController:vc animated:YES];
 }
 
-#pragma mark 视频播放时窗口模式与全屏模式切换
+#pragma mark VideoPlayViewDelegate 视频播放时窗口模式与全屏模式切换
 - (void)videoplayViewSwitchOrientation:(BOOL)isFull
 {
     if (isFull) {

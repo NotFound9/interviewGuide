@@ -67,12 +67,12 @@
     
     NSInteger count = video.playcount.integerValue;
     if (count>10000) {
-        self.playCountLabel.text = [NSString stringWithFormat:@"%d万播放",count/10000];
+        self.playCountLabel.text = [NSString stringWithFormat:@"%ld万播放",count/10000];
     } else {
         self.playCountLabel.text = [NSString stringWithFormat:@"%ld播放",(long)count];
     }
     NSInteger time = video.videotime.integerValue;
-    self.timelabel.text = [NSString stringWithFormat:@"%02d%02ld",time/60,time%60];
+    self.timelabel.text = [NSString stringWithFormat:@"%02ld%02ld",time/60,time%60];
     [self.videoImageView TT_setImageWithURL:[NSURL URLWithString:video.image1]];
 
     [self setupButton:self.loveButton WithTittle:video.love];

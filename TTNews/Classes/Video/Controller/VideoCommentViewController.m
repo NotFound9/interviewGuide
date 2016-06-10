@@ -19,10 +19,11 @@
 #import "TTConst.h"
 #import "UIView+Extension.h"
 #import "TTDataTool.h"
+#import "FullViewController.h"
 
 static NSString * const VideoCommentCellID = @"VideoCommentCell";
 
-@interface VideoCommentViewController () <UITableViewDelegate, UITableViewDataSource>
+@interface VideoCommentViewController () <UITableViewDelegate, UITableViewDataSource,VideoTableViewCellDelegate,VideoPlayViewDelegate>
 /** 工具条底部间距 */
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *bottomSapce;
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
@@ -50,6 +51,11 @@ static NSString * const VideoCommentCellID = @"VideoCommentCell";
 @property (weak, nonatomic) IBOutlet UITextField *commentTextField;
 
 @property (nonatomic, assign) NSInteger total;
+
+
+@property (nonatomic, strong) FullViewController *fullVc;
+@property (nonatomic, weak) VideoPlayView *playView;
+@property (nonatomic, assign) BOOL isFullScreenPlaying;
 
 @end
 
@@ -80,6 +86,9 @@ static NSString * const VideoCommentCellID = @"VideoCommentCell";
 
 -(void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
+    if (self.isFullScreenPlaying == NO) {//将要呈现的画面不是全屏播放页面
+        [self.playView resetPlayView];
+    }
     if (self.saved_top_cmt) {
         self.video.top_cmt = self.saved_top_cmt;
         [self.video setValue:@0 forKeyPath:@"cellHeight"];
@@ -123,7 +132,6 @@ static NSString * const VideoCommentCellID = @"VideoCommentCell";
     self.tableView.mj_header = [MJRefreshNormalHeader headerWithRefreshingTarget:self refreshingAction:@selector(loadNewComments)];
     self.tableView.mj_header.automaticallyChangeAlpha = YES;
     [self.tableView.mj_header beginRefreshing];
-    
     self.tableView.mj_footer = [MJRefreshAutoNormalFooter footerWithRefreshingTarget:self refreshingAction:@selector(loadMoreComments)];
     self.tableView.mj_footer.hidden = YES;
 }
@@ -143,6 +151,7 @@ static NSString * const VideoCommentCellID = @"VideoCommentCell";
     //     添加cell
     VideoTableViewCell *cell = [VideoTableViewCell cell];
     self.headerVideoCell = cell;
+    cell.delegate = self;
     cell.video = self.video;
     cell.frame = CGRectMake(0, cellMargin, [UIScreen mainScreen].bounds.size.width, self.video.cellHeight);
     cell.contentView.frame = cell.bounds;
@@ -412,4 +421,55 @@ static NSString * const VideoCommentCellID = @"VideoCommentCell";
     NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
     NSLog(@"%s %@", __func__, [self commentInIndexPath:indexPath].content);
 }
+
+#pragma mark VideoTableViewCell的代理方法
+-(void)clickVideoButton:(NSIndexPath *)indexPath {
+    [self.playView resetPlayView];
+    VideoPlayView *playView = [VideoPlayView videoPlayView];
+    playView.frame = self.video.videoFrame;
+    [self.headerVideoCell addSubview:playView];
+    self.headerVideoCell.playView = playView;
+    self.playView = playView;
+    self.playView.delegate = self;
+    AVPlayerItem *item = [AVPlayerItem playerItemWithURL:[NSURL URLWithString:self.video.videouri]];
+    self.playView.playerItem = item;
+}
+
+#pragma mark 视频播放时窗口模式与全屏模式切换
+- (void)videoplayViewSwitchOrientation:(BOOL)isFull
+{
+    if (isFull) {
+        self.isFullScreenPlaying = YES;
+        [self presentViewController:self.fullVc animated:YES completion:^{
+            self.playView.frame = self.fullVc.view.bounds;
+            [self.fullVc.view addSubview:self.playView];
+        }];
+    } else {
+        [self.fullVc dismissViewControllerAnimated:YES completion:^{
+            self.playView.frame = self.headerVideoCell.video.videoFrame;
+            [self.headerVideoCell addSubview:self.playView];
+            self.isFullScreenPlaying = NO;
+            
+        }];
+        
+    }
+}
+
+#pragma mark --UIScrollViewDelegate--scrollView滑动了
+-(void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    if (self.playView.superview && self.isFullScreenPlaying == NO) {//点全屏和退出的
+            [self.playView resetPlayView];
+    }
+}
+
+
+#pragma mark - 懒加载代码
+- (FullViewController *)fullVc
+{
+    if (_fullVc == nil) {
+        self.fullVc = [[FullViewController alloc] init];
+    }
+    return _fullVc;
+}
+
 @end
