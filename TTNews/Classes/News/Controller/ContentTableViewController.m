@@ -248,6 +248,8 @@ static NSString * const noPictureCell = @"NoPictureCell";
 
 #pragma mark -UIScrollViewDelegate scrollView将要开始滑动
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
+    UITableViewCell *cell = (UITableViewCell *)[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
+
     [self.headerView removeTimer];
 }
 

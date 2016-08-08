@@ -105,6 +105,7 @@ static NSString * const VideoCell = @"VideoCell";
     params.recentTime = firstVideo.created_at;
     params.page = 0;
     params.maxtime = nil;
+
     [TTDataTool videoWithParameters:params success:^(NSArray *array, NSString *maxtime){
         self.maxtime = maxtime;
         self.videoArray = [array mutableCopy];

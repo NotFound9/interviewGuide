@@ -14,6 +14,7 @@
 		EE4635E11CC72B8A00DB248F /* TTNewsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = EE4635E01CC72B8A00DB248F /* TTNewsTests.m */; };
 		EE4635EC1CC72B8A00DB248F /* TTNewsUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = EE4635EB1CC72B8A00DB248F /* TTNewsUITests.m */; };
 		EE4636B81CC7499D00DB248F /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = EE4636B71CC7499D00DB248F /* LaunchScreen.xib */; };
+		EE4BEB5D1D5480E400B4A035 /* NewsURLs.plist in Resources */ = {isa = PBXBuildFile; fileRef = EE4BEB5C1D5480E400B4A035 /* NewsURLs.plist */; };
 		EE79B10E1CC8C435001029EF /* AppInfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EE79B0901CC8C435001029EF /* AppInfoViewController.m */; };
 		EE79B10F1CC8C435001029EF /* AppInfoViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = EE79B0911CC8C435001029EF /* AppInfoViewController.xib */; };
 		EE79B1101CC8C435001029EF /* EditUserInfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EE79B0931CC8C435001029EF /* EditUserInfoViewController.m */; };
@@ -112,6 +113,7 @@
 		EE4635EB1CC72B8A00DB248F /* TTNewsUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TTNewsUITests.m; sourceTree = "<group>"; };
 		EE4635ED1CC72B8A00DB248F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		EE4636B71CC7499D00DB248F /* LaunchScreen.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LaunchScreen.xib; sourceTree = "<group>"; };
+		EE4BEB5C1D5480E400B4A035 /* NewsURLs.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = NewsURLs.plist; sourceTree = "<group>"; };
 		EE79B08F1CC8C435001029EF /* AppInfoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppInfoViewController.h; sourceTree = "<group>"; };
 		EE79B0901CC8C435001029EF /* AppInfoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppInfoViewController.m; sourceTree = "<group>"; };
 		EE79B0911CC8C435001029EF /* AppInfoViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AppInfoViewController.xib; sourceTree = "<group>"; };
@@ -298,6 +300,7 @@
 				EE4635D21CC72B8900DB248F /* Assets.xcassets */,
 				EE4635D71CC72B8900DB248F /* Info.plist */,
 				EE4635C71CC72B8900DB248F /* main.m */,
+				EE4BEB5C1D5480E400B4A035 /* NewsURLs.plist */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -703,7 +706,6 @@
 				TargetAttributes = {
 					EE4635C21CC72B8900DB248F = {
 						CreatedOnToolsVersion = 7.3;
-						DevelopmentTeam = FJ2RR7PUE2;
 					};
 					EE4635DB1CC72B8A00DB248F = {
 						CreatedOnToolsVersion = 7.3;
@@ -758,6 +760,7 @@
 				EE79B1331CC8C435001029EF /* PictureCommentViewController.xib in Resources */,
 				EE79B1111CC8C435001029EF /* EditUserInfoViewController.xib in Resources */,
 				EE79B13F1CC8C435001029EF /* VideoCommentViewController.xib in Resources */,
+				EE4BEB5D1D5480E400B4A035 /* NewsURLs.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1005,11 +1008,14 @@
 			baseConfigurationReference = 9D08A2A40F47DA39E7253110 /* Pods-TTNews.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = TTNews/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = yangjunhui.TTNews;
+				PRODUCT_BUNDLE_IDENTIFIER = yangjunhui.TTNews12;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Debug;
 		};
@@ -1018,11 +1024,14 @@
 			baseConfigurationReference = 53428844E2216BE5C197C066 /* Pods-TTNews.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				INFOPLIST_FILE = TTNews/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = yangjunhui.TTNews;
+				PRODUCT_BUNDLE_IDENTIFIER = yangjunhui.TTNews12;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Release;
 		};

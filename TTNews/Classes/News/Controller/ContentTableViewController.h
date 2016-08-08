@@ -14,6 +14,6 @@
 @property(nonatomic, strong) TTNormalNews *news;
 @property (nonatomic, copy) NSString *channelId;
 @property (nonatomic, copy) NSString *channelName;
-
+@property (nonatomic, copy) NSString *urlString;
 
 @end

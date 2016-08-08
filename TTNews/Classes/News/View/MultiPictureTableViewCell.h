@@ -12,7 +12,7 @@
 
 @property (nonatomic, strong) NSArray *imageUrls;
 @property (nonatomic, copy) NSString *title;
-
+@property (nonatomic, copy) NSString *iconImage;
 -(void)updateToDaySkinMode;
 -(void)updateToNightSkinMode;
 

@@ -84,7 +84,7 @@ CGFloat const footViewHeight = 30;
 #pragma mark -UITableViewDataSource 返回tableView每一组有多少行
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     if (section == 0) return 1;
-    else if(section == 1) return 4;
+    else if(section == 1) return 3;
     return 2;
 }
 
@@ -95,6 +95,7 @@ CGFloat const footViewHeight = 30;
 #pragma mark -UITableViewDataSource 返回indexPath对应的cell的高度
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.section == 0) return 100;
+    
     return 44;
 }
 
@@ -191,16 +192,6 @@ CGFloat const footViewHeight = 30;
                     cell.accessoryView = changeSkinSwitch;
                 }
         } else if (indexPath.row == 2) {
-            cell.textLabel.text = @"智能无图";
-            if (cell.accessoryView == nil) {
-                UISwitch *theSwitch = [[UISwitch alloc] initWithFrame:CGRectMake(0, 0, 51, 31)];
-                self.imageDownLoadModeSwitch = theSwitch;
-                [theSwitch addTarget:self action:@selector(switchDidChange:) forControlEvents:UIControlEventValueChanged];
-                theSwitch.on = [[NSUserDefaults standardUserDefaults] boolForKey:IsDownLoadNoImageIn3GKey];
-                
-                cell.accessoryView = theSwitch;
-            }
-        } else if (indexPath.row == 3) {
                 cell.textLabel.text = @"清除缓存";
                 cell.detailTextLabel.text = [NSString stringWithFormat:@"%.1f MB",self.cacheSize];
             }
@@ -266,10 +257,10 @@ CGFloat const footViewHeight = 30;
         if([self.delegate respondsToSelector:@selector(shakeCanChangeSkin:)]) {
             [self.delegate shakeCanChangeSkin:status];
         }
-    } else if (theSwitch == self.imageDownLoadModeSwitch) {//智能无图
-        BOOL status = self.imageDownLoadModeSwitch.on;
-        [[NSUserDefaults standardUserDefaults] setObject:@(status) forKey:IsDownLoadNoImageIn3GKey];
-        [[NSUserDefaults standardUserDefaults] synchronize];
+//    } else if (theSwitch == self.imageDownLoadModeSwitch) {//智能无图
+//        BOOL status = self.imageDownLoadModeSwitch.on;
+//        [[NSUserDefaults standardUserDefaults] setObject:@(status) forKey:IsDownLoadNoImageIn3GKey];
+//        [[NSUserDefaults standardUserDefaults] synchronize];
     }
 }
 

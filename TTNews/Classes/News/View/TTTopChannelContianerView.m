@@ -125,6 +125,7 @@ static CGFloat buttonWidth = 65;
     self.lastSelectedButton.enabled = YES;
     self.lastSelectedButton = sender;
     self.lastSelectedButton.enabled = NO;
+    //选中的标签要居中，也就是scrollView的offset.x加屏幕的一半要等于标签的中心
     CGFloat newOffsetX = sender.center.x - [UIScreen mainScreen].bounds.size.width*0.5;
     if (newOffsetX < 0) {
         newOffsetX = 0;

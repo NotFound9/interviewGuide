@@ -65,6 +65,7 @@
     [SVProgressHUD show];
     
     [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:self.url]]];
+
 }
 
 #pragma mark --private Method--初始化NavigationBar

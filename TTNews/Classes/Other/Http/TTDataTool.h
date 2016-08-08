@@ -7,6 +7,8 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <AFNetworking.h>
+
 @class TTVideo;
 @class TTHeaderNews;
 @class TTVideoFetchDataParameter;

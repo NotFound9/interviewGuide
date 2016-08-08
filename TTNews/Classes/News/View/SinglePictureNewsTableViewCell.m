@@ -8,6 +8,7 @@
 
 #import "SinglePictureNewsTableViewCell.h"
 #import "UIImageView+Extension.h"
+#import <UIImageView+WebCache.h>
 
 @interface SinglePictureNewsTableViewCell()
 @property (weak, nonatomic) IBOutlet UIImageView *pictureImageView;
@@ -27,7 +28,7 @@
 
 -(void)setImageUrl:(NSString *)imageUrl {
     _imageUrl = imageUrl;
-    [self.pictureImageView TT_setImageWithURL:[NSURL URLWithString:imageUrl]];
+    [self.pictureImageView  sd_setImageWithURL:[NSURL URLWithString:imageUrl]];
 }
 
 -(void)setContentTittle:(NSString *)contentTittle {

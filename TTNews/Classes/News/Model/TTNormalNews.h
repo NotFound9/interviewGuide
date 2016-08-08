@@ -15,7 +15,6 @@ typedef NS_ENUM(NSUInteger, NormalNewsType) {
     NormalNewsTypeNoPicture = 1,
     NormalNewsTypeSigalPicture = 2,
     NormalNewsTypeMultiPicture = 3,//图片大于等于三张
-    
 };
 
 @property (nonatomic, copy) NSString *channelId;
