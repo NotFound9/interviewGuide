@@ -26,11 +26,7 @@
 }
 
 -(void)setupUserDefaults {
-    NSString *currentModel = [[NSUserDefaults standardUserDefaults] objectForKey:CurrentSkinModelKey];
-    if (currentModel==nil) {
-        [[NSUserDefaults standardUserDefaults] setObject:DaySkinModelValue forKey:CurrentSkinModelKey];
-        [[NSUserDefaults standardUserDefaults] synchronize];
-    }
+    
     BOOL isShakeCanChangeSkin = [[NSUserDefaults standardUserDefaults] boolForKey:IsShakeCanChangeSkinKey];
     if (!isShakeCanChangeSkin) {
         [[NSUserDefaults standardUserDefaults] setObject:@(NO) forKey:IsShakeCanChangeSkinKey];

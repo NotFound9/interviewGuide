@@ -14,6 +14,7 @@ pod 'SVProgressHUD'
 pod 'DACircularProgress'
 pod 'FMDB'
 pod 'NJKWebViewProgress'
+pod 'DKNightVersion'
 
 end
 

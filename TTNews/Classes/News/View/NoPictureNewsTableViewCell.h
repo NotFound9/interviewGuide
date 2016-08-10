@@ -13,7 +13,5 @@
 @property (nonatomic, copy) NSString *titleText;
 @property (nonatomic, copy) NSString *contentText;
 
--(void)updateToDaySkinMode;
--(void)updateToNightSkinMode;
 
 @end

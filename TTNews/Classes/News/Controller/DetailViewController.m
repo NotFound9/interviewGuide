@@ -11,6 +11,7 @@
 #import <SVProgressHUD.h>
 #import "TTConst.h"
 #import "TTJudgeNetworking.h"
+#import <DKNightVersion.h>
 
 @interface DetailViewController ()<UIWebViewDelegate>
 
@@ -33,26 +34,25 @@
         [SVProgressHUD showErrorWithStatus:@"无网络连接"];
         [self.navigationController popViewControllerAnimated:YES];
     }
+    self.view.dk_backgroundColorPicker = DKColorPickerWithRGB(0xf0f0f0, 0x343434, 0xfafafa);
+
     [self setupWebView];
     [self setupNaigationBar];
     [self setupToolBars];
-    [self setupShadeView];
+//    [self setupShadeView];
 }
 
 -(void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     [SVProgressHUD show];
     self.navigationController.toolbarHidden = NO;
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateSkinModel) name:SkinModelDidChangedNotification object:nil];
-    [self updateSkinModel];
+
 }
 
 -(void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     [SVProgressHUD dismiss];
     self.navigationController.toolbarHidden = YES;
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-    [[SDImageCache sharedImageCache] clearDisk];
 }
 
 #pragma mark --private Method--初始化webView
@@ -96,6 +96,10 @@
     self.refreshItem = refreshItem;
     
     self.toolbarItems = @[backItem,forwardItem,flexibleItem,refreshItem];
+    backItem.dk_tintColorPicker = DKColorPickerWithKey(TINT);
+    forwardItem.dk_tintColorPicker = DKColorPickerWithKey(TINT);
+    refreshItem.dk_tintColorPicker = DKColorPickerWithKey(TINT);
+    self.navigationController.toolbar.dk_tintColorPicker =  DKColorPickerWithRGB(0xffffff, 0x343434, 0xfafafa);
 }
 
 #pragma mark --private Method--初始化shadeView(页面模式时，用来使页面变暗)
@@ -136,23 +140,6 @@
     [SVProgressHUD dismiss];
 }
 
-#pragma mark --private Method--更新皮肤模式 接到模式切换的通知后会调用此方法
-- (void)updateSkinModel {
-    NSString  *currentSkinModel = [[NSUserDefaults standardUserDefaults] stringForKey:CurrentSkinModelKey];
-    if ([currentSkinModel isEqualToString:NightSkinModelValue]) {
-        self.view.backgroundColor = [UIColor blackColor];
-        self.shadeView.hidden = NO;
-        self.refreshItem.tintColor = [UIColor whiteColor];
-        self.backItem.tintColor = [UIColor whiteColor];
-        self.forwardItem.tintColor = [UIColor whiteColor];
-    } else {//日间模式
-        self.view.backgroundColor = [UIColor colorWithRed:250.0/255.0 green:250.0/255.0 blue:250.0/255.0 alpha:1.0];
-        self.shadeView.hidden = YES;
-        self.refreshItem.tintColor = [UIColor colorWithRed:245/255.0 green:76/255.0 blue:76/255.0 alpha:1.0];
-        self.backItem.tintColor = [UIColor colorWithRed:245/255.0 green:76/255.0 blue:76/255.0 alpha:1.0];
-        self.forwardItem.tintColor = [UIColor colorWithRed:245/255.0 green:76/255.0 blue:76/255.0 alpha:1.0];
-    }
-}
 
 #pragma mark --private Method--返回上一个页面
 -(void)goBack {

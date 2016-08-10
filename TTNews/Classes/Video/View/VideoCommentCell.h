@@ -12,6 +12,5 @@
 @interface VideoCommentCell : UITableViewCell
 /** 评论 */
 @property (nonatomic, strong) TTVideoComment *comment;
--(void)updateToDaySkinMode;
--(void)updateToNightSkinMode;
+
 @end

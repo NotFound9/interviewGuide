@@ -14,6 +14,7 @@
 #import "UIImageView+Extension.h"
 #import "UIImage+Extension.h"
 #import <DALabeledCircularProgressView.h>
+#import <DKNightVersion.h>
 
 @interface PictureTableViewCell()
 @property (weak, nonatomic) IBOutlet UIImageView *headerImageView;
@@ -51,6 +52,21 @@
     UIImageView *imageView = [[UIImageView alloc] init];
     imageView.image = [UIImage imageNamed:@"mainCellBackground"];
     self.backgroundView = imageView;
+    
+    self.dk_backgroundColorPicker = DKColorPickerWithRGB(0xffffff, 0x343434, 0xfafafa);
+    self.contentView.dk_backgroundColorPicker = DKColorPickerWithRGB(0xffffff, 0x343434, 0xfafafa);
+    self.nameLabel.dk_textColorPicker = DKColorPickerWithKey(TEXT);
+    self.contentLabel.dk_textColorPicker = DKColorPickerWithKey(TEXT);
+    self.TimeLabel.dk_textColorPicker = DKColorPickerWithKey(TEXT);
+    self.topCommentTopLabel.dk_textColorPicker = DKColorPickerWithKey(TEXT);
+    self.topCommentLabel.dk_textColorPicker = DKColorPickerWithKey(TEXT);
+    
+    self.separatorLine1.dk_backgroundColorPicker = DKColorPickerWithKey(SEP);
+    self.separatorLine2.dk_backgroundColorPicker = DKColorPickerWithKey(SEP);
+    self.separatorLine3.dk_backgroundColorPicker = DKColorPickerWithKey(SEP);
+    self.separatorLine4.dk_backgroundColorPicker = DKColorPickerWithKey(SEP);
+    
+
 }
 
 - (void)setFrame:(CGRect)frame {
@@ -171,29 +187,6 @@
     }
 }
 
-#pragma mark 切换至日间模式
--(void)updateToDaySkinMode {
-    self.contentLabel.textColor = [UIColor blackColor];
-    self.contentView.backgroundColor = [UIColor whiteColor];
-    self.backgroundColor = [UIColor whiteColor];
-    self.separatorLine1.backgroundColor = [UIColor colorWithRed:240/255.0 green:240/255.0  blue:240/255.0  alpha:1.0];
-    self.separatorLine2.backgroundColor = [UIColor colorWithRed:240/255.0 green:240/255.0  blue:240/255.0  alpha:1.0];
-    self.separatorLine3.backgroundColor = [UIColor colorWithRed:240/255.0 green:240/255.0  blue:240/255.0  alpha:1.0];
-    self.separatorLine4.backgroundColor = [UIColor colorWithRed:240/255.0 green:240/255.0  blue:240/255.0  alpha:1.0];
-    [self.seeBigPictureButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-}
 
-#pragma mark 切换至夜间模式
--(void)updateToNightSkinMode {
-    self.contentLabel.textColor = [UIColor grayColor];
-    self.contentView.backgroundColor = [UIColor colorWithRed:42/255.0 green:39/255.0 blue:43/255.0 alpha:1.0];
-    self.backgroundColor = [UIColor colorWithRed:42/255.0 green:39/255.0 blue:43/255.0 alpha:1.0];
-    self.separatorLine1.backgroundColor = [UIColor colorWithRed:40/255.0 green:36/255.0  blue:40/255.0  alpha:1.0];
-    self.separatorLine2.backgroundColor = [UIColor colorWithRed:40/255.0 green:36/255.0  blue:40/255.0  alpha:1.0];
-    self.separatorLine3.backgroundColor = [UIColor colorWithRed:40/255.0 green:36/255.0  blue:40/255.0  alpha:1.0];
-    self.separatorLine4.backgroundColor = [UIColor colorWithRed:40/255.0 green:36/255.0  blue:40/255.0  alpha:1.0];
-    [self.seeBigPictureButton setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
-
-}
 
 @end

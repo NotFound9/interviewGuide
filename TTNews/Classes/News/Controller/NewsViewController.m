@@ -17,6 +17,7 @@
 #import "TTTopChannelContianerView.h"
 #import "ChannelsSectionHeaderView.h"
 #import "TTNormalNews.h"
+#import <DKNightVersion.h>
 
 @interface NewsViewController()<UIScrollViewDelegate,UICollectionViewDataSource,UICollectionViewDelegate, ChannelCollectionViewCellDelegate,TTTopChannelContianerViewDelegate>
 
@@ -40,6 +41,9 @@ static NSString * const collectionViewSectionHeaderID = @"ChannelCollectionHeade
 -(void)viewDidLoad {
     self.automaticallyAdjustsScrollViewInsets = NO;
     self.isCellShouldShake = NO;
+    self.view.dk_backgroundColorPicker = DKColorPickerWithRGB(0xf0f0f0, 0x000000, 0xfafafa);
+    self.navigationController.navigationBar.dk_barTintColorPicker = DKColorPickerWithRGB(0xfa5054,0x444444,0xfa5054);
+    
     [self setupTopContianerView];
     [self setupChildController];
     [self setupContentScrollView];
@@ -49,14 +53,11 @@ static NSString * const collectionViewSectionHeaderID = @"ChannelCollectionHeade
 
 -(void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateSkinModel) name:SkinModelDidChangedNotification object:nil];
-    [self updateSkinModel];
+   
 }
 
 -(void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-    [[SDImageCache sharedImageCache] clearDisk];
 }
 
 #pragma mark --private Method--初始化子控制器
@@ -73,6 +74,7 @@ static NSString * const collectionViewSectionHeaderID = @"ChannelCollectionHeade
 - (void)setupTopContianerView{
     CGFloat top = CGRectGetMaxY(self.navigationController.navigationBar.frame);
     TTTopChannelContianerView *topContianerView = [[TTTopChannelContianerView alloc] initWithFrame:CGRectMake(0, top, [UIScreen mainScreen].bounds.size.width, 30)];
+//    self.topContianerView.dk_backgroundColorPicker = DKColorPickerWithRGB(0xf0f0f0, 0x343434, 0xfafafa);
     topContianerView.channelNameArray = self.currentChannelsArray;
     topContianerView.delegate = self;
     self.topContianerView  = topContianerView;
@@ -94,10 +96,13 @@ static NSString * const collectionViewSectionHeaderID = @"ChannelCollectionHeade
 
 #pragma mark --private Method--初始化点击加号按钮弹出的新闻频道编辑的CollectionView
 -(void)setupCollectionView {
+    
     UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
     flowLayout.scrollDirection = UICollectionViewScrollDirectionVertical;
     flowLayout.headerReferenceSize = CGSizeMake([UIScreen mainScreen].bounds.size.width, 35);//头部
     UICollectionView *collectionView = [[UICollectionView alloc] initWithFrame:CGRectMake(0, 0, 0, 0) collectionViewLayout:flowLayout];
+    self.collectionView.dk_backgroundColorPicker = DKColorPickerWithRGB(0xffffff, 0x343434, 0xfafafa);
+
     self.collectionView = collectionView;
     collectionView.backgroundColor = [UIColor whiteColor];
     collectionView.alpha = 0.98;
@@ -142,12 +147,7 @@ static NSString * const collectionViewSectionHeaderID = @"ChannelCollectionHeade
         }else if (indexPath.section == 1) {
             headerView.titleLabel.text = @"可添加栏目 (点击添加)";
         }
-    if ([self.currentSkinModel isEqualToString:NightSkinModelValue]) {
-        [headerView updateToNightSkinMode];
-    } else {
-        [headerView updateToDaySkinMode];
-    }
-    return headerView;
+        return headerView;
 }
 
 #pragma mark --UICollectionViewDataSource-- 返回collectionView的组数
@@ -180,11 +180,7 @@ static NSString * const collectionViewSectionHeaderID = @"ChannelCollectionHeade
     } else {
         cell.channelName = self.remainChannelsArray[indexPath.row];
     }
-    if ([self.currentSkinModel isEqualToString:NightSkinModelValue]) {
-        [cell updateToNightSkinMode];
-    } else {
-        [cell updateToDaySkinMode];
-    }
+    
     return cell;
 }
 
@@ -264,20 +260,7 @@ static NSString * const collectionViewSectionHeaderID = @"ChannelCollectionHeade
     [self.contentScrollView setContentOffset:CGPointMake(self.contentScrollView.frame.size.width * index, 0) animated:YES];
 }
 
-#pragma mark --private Method--更新皮肤模式 接到模式切换的通知后会调用此方法
--(void)updateSkinModel {
-    self.currentSkinModel = [[NSUserDefaults standardUserDefaults] stringForKey:CurrentSkinModelKey];
-    if ([self.currentSkinModel isEqualToString:NightSkinModelValue]) {
-        self.view.backgroundColor = [UIColor blackColor];
-        self.collectionView.backgroundColor = [UIColor colorWithRed:34/255.0 green:30/255.0 blue:33/255.0 alpha:1.0];
-        [self.topContianerView updateToNightSkinMode];
-    } else {//日间模式
-        self.view.backgroundColor = [UIColor colorWithRed:250.0/255.0 green:250.0/255.0 blue:250.0/255.0 alpha:1.0];
-        self.collectionView.backgroundColor  = [UIColor whiteColor];
-        [self.topContianerView updateToDaySkinMode];
-    }
-    [self.collectionView reloadData];
-}
+
 
 #pragma mark --private Method--显示或隐藏点击加号按钮弹出的新闻频道编辑的CollectionView
 -(void)shouldShowChannelsEditCollectionView:(BOOL)value {
@@ -411,7 +394,10 @@ static NSString * const collectionViewSectionHeaderID = @"ChannelCollectionHeade
     return _channelsUrlDictionary;
 }
 
-
+-(void)didReceiveMemoryWarning {
+    [[SDImageCache sharedImageCache] clearDisk];
+    
+}
 
 @end
 

@@ -9,6 +9,7 @@
 #import "EditUserInfoViewController.h"
 #import "UIImage+Extension.h"
 #import "TTConst.h"
+#import <DKNightVersion.h>
 
 @interface EditUserInfoViewController ()<UINavigationControllerDelegate,UIImagePickerControllerDelegate>
 @property (weak, nonatomic) IBOutlet UIImageView *headerImageView;
@@ -21,6 +22,8 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.view.dk_backgroundColorPicker = DKColorPickerWithKey(BG);
+
     [self setupBasic];
 }
 
@@ -42,31 +45,11 @@
     [super viewWillDisappear:animated];
     [[NSUserDefaults standardUserDefaults] setObject:self.nameTextField.text forKey:UserNameKey];
     [[NSUserDefaults standardUserDefaults] setObject:self.signatureTextView.text forKey:UserSignatureKey];
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 -(void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateSkinModel) name:SkinModelDidChangedNotification object:nil];
-    [self updateSkinModel];
-}
 
-#pragma mark 更新皮肤模式 接到模式切换的通知后会调用此方法
--(void)updateSkinModel {
-    NSString *currentSkinModel = [[NSUserDefaults standardUserDefaults] stringForKey:CurrentSkinModelKey];
-    if ([currentSkinModel isEqualToString:NightSkinModelValue]) {
-        self.view.backgroundColor = [UIColor blackColor];
-        self.nameTextField.backgroundColor = [UIColor darkGrayColor];
-        self.signatureTextView.backgroundColor = [UIColor darkGrayColor];
-        self.nameTextField.textColor =[UIColor grayColor];
-        self.signatureTextView.textColor = [UIColor grayColor];
-    } else {//日间模式
-        self.view.backgroundColor = [UIColor colorWithRed:240/255.0 green:240/255.0 blue:240/255.0 alpha:1.0];
-        self.nameTextField.backgroundColor = [UIColor whiteColor];
-        self.signatureTextView.backgroundColor = [UIColor whiteColor];
-        self.nameTextField.textColor =[UIColor blackColor];
-        self.signatureTextView.textColor = [UIColor blackColor];
-    }
 }
 
 

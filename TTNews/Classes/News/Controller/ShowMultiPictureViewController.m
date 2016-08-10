@@ -9,6 +9,7 @@
 #import "ShowMultiPictureViewController.h"
 #import "UIImageView+Extension.h"
 #import "TTConst.h"
+#import <DKNightVersion.h>
 
 @interface ShowMultiPictureViewController ()
 
@@ -21,6 +22,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.view.dk_backgroundColorPicker = DKColorPickerWithRGB(0xf0f0f0, 0x343434, 0xfafafa);
     [self setupScrollView];
     [self setupTextView];
     [self setupBackButton];
@@ -29,8 +31,7 @@
 -(void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     self.navigationController.navigationBar.hidden =YES;
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateSkinModel) name:SkinModelDidChangedNotification object:nil];
-    [self updateSkinModel];
+   
 }
 
 -(void)viewWillDisappear:(BOOL)animated {
@@ -100,15 +101,6 @@
     [self.navigationController popViewControllerAnimated:YES];
 }
 
-#pragma mark --private method--更新皮肤模式 接到模式切换的通知后会调用此方法
-- (void)updateSkinModel {
-    NSString  *currentSkinModel = [[NSUserDefaults standardUserDefaults] stringForKey:CurrentSkinModelKey];
-    if ([currentSkinModel isEqualToString:NightSkinModelValue]) {
-        self.textView.textColor = [UIColor grayColor];
-    } else {//日间模式
-        self.textView.textColor = [UIColor whiteColor];
-    }
-}
 
 
          

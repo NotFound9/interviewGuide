@@ -8,6 +8,7 @@
 
 #import "TTImageCyclePlayView.h"
 #import "UIImageView+Extension.h"
+#import <DKNightVersion.h>
 
 @interface TTImageCyclePlayView ()<UIScrollViewDelegate>
 
@@ -85,6 +86,8 @@
     //初始化titleLabel
     UILabel *titleLabel = [[UILabel alloc] init];
     self.titleLabel = titleLabel;
+    self.titleLabel.dk_textColorPicker = DKColorPickerWithKey(TEXT);
+
     titleLabel.frame = CGRectMake(0, 0, bottomContianerView.frame.size.width - kPageControlWidth - 2*margin, bottomContianerView.frame.size.height);
     titleLabel.textAlignment = NSTextAlignmentLeft;
     titleLabel.textColor = [UIColor whiteColor];
@@ -166,16 +169,6 @@
     }
 }
 
-#pragma mark 切换至日间模式
--(void)updateToDaySkinMode {
-    self.pageControl.currentPageIndicatorTintColor = [UIColor colorWithRed:243/255.0 green:75/255.0 blue:80/255.0 alpha:1.0];
-    self.titleLabel.textColor = [UIColor whiteColor];
-}
 
-#pragma mark 切换至夜间模式
--(void)updateToNightSkinMode {
-    self.pageControl.currentPageIndicatorTintColor = [UIColor blackColor];
-    self.titleLabel.textColor = [UIColor lightGrayColor];
-}
 
 @end

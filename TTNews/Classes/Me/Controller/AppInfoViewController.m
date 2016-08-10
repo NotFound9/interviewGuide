@@ -24,26 +24,13 @@
 
 -(void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateSkinModel) name:SkinModelDidChangedNotification object:nil];
-    [self updateSkinModel];
+ 
 }
 
 -(void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-#pragma mark 更新皮肤模式 接到模式切换的通知后会调用此方法
--(void)updateSkinModel {
-    NSString *currentSkinModel = [[NSUserDefaults standardUserDefaults] stringForKey:CurrentSkinModelKey];
-    if ([currentSkinModel isEqualToString:NightSkinModelValue]) {
-        self.view.backgroundColor = [UIColor blackColor];
-        self.appNameLabel.textColor = [UIColor grayColor];
-    } else {//日间模式
-        self.view.backgroundColor = [UIColor whiteColor];
-        self.appNameLabel.textColor = [UIColor blackColor];
-    }
-}
 
 /*
 #pragma mark - Navigation

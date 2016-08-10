@@ -8,7 +8,8 @@
 
 #import "TTNavigationController.h"
 #import "TTConst.h"
-
+#import <DKNightVersion.h>
+#import <SDImageCache.h>
 @interface TTNavigationController ()
 
 @end
@@ -17,33 +18,12 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [self updateSkinModel];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateSkinModel) name:SkinModelDidChangedNotification object:nil];
+    [self.navigationBar setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys:[UIColor whiteColor],NSForegroundColorAttributeName,nil]];
+
 }
 
 -(void)dealloc {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
-
-#pragma mark 更新皮肤模式 接到模式切换的通知后会调用此方法
--(void)updateSkinModel {
-    NSMutableDictionary *attributes = [NSMutableDictionary dictionary];
-    NSString *currentSkinModel = [[NSUserDefaults standardUserDefaults] stringForKey:CurrentSkinModelKey];
-    if ([currentSkinModel isEqualToString:NightSkinModelValue]) {//夜间模式
-        self.navigationBar.barTintColor = [UIColor colorWithRed:34/255.0 green:30/255.0 blue:33/255.0 alpha:1.0];
-        attributes[NSForegroundColorAttributeName] = [UIColor grayColor];
-        
-        self.toolbar.barTintColor = [UIColor blackColor];
-    }else {//日间模式
-        self.navigationBar.barTintColor = [UIColor colorWithRed:243/255.0 green:75/255.0 blue:80/255.0 alpha:1.0];
-        attributes[NSForegroundColorAttributeName] = [UIColor whiteColor];
-        self.toolbar.barTintColor = [UIColor whiteColor];
-    }
-    attributes[NSFontAttributeName] = [UIFont systemFontOfSize:20];
-    self.navigationBar.titleTextAttributes = attributes;
-}
-
 -(void)pushViewController:(UIViewController *)viewController animated:(BOOL)animated {
     if (self.childViewControllers.count > 0) { // 如果push进来的不是第一个控制器
         UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -54,6 +34,8 @@
         button.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
         //        [button sizeToFit];
         // 让按钮的内容往左边偏移10
+//        button.dk_backgroundColorPicker = DKColorPickerWithRGB(0xffffff, 0x343434, 0xfafafa);
+
         [button addTarget:self action:@selector(back) forControlEvents:UIControlEventTouchUpInside];
         
         // 修改导航栏左边的item
@@ -78,5 +60,8 @@
     [self popViewControllerAnimated:YES];
 }
 
-
+-(void)didReceiveMemoryWarning {
+    [[SDImageCache sharedImageCache] clearDisk];
+    
+}
 @end

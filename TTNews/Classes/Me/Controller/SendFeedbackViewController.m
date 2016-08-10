@@ -9,6 +9,7 @@
 #import "SendFeedbackViewController.h"
 #import "TTConst.h"
 #import <SVProgressHUD.h>
+#import <DKNightVersion.h>
 
 @interface SendFeedbackViewController ()<UITextViewDelegate>
 
@@ -26,9 +27,7 @@
 
 -(void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateSkinModel) name:SkinModelDidChangedNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillChangeFrame:) name:UIKeyboardWillChangeFrameNotification object:nil];
-    [self updateSkinModel];
     
 }
 
@@ -37,19 +36,6 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-#pragma mark 更新皮肤模式 接到模式切换的通知后会调用此方法
--(void)updateSkinModel {
-    NSString *currentSkinModel = [[NSUserDefaults standardUserDefaults] stringForKey:CurrentSkinModelKey];
-    if ([currentSkinModel isEqualToString:NightSkinModelValue]) {
-        self.view.backgroundColor = [UIColor blackColor];
-        self.textView.backgroundColor= [UIColor darkGrayColor];
-        self.textView.textColor = [UIColor lightGrayColor];
-    } else {//日间模式
-        self.view.backgroundColor = [UIColor colorWithRed:230/255.0 green:230/255.0 blue:230/255.0 alpha:1.0];
-        self.textView.backgroundColor= [UIColor whiteColor];
-        self.textView.textColor = [UIColor blackColor];
-    }
-}
 
 -(void)keyboardWillChangeFrame:(NSNotification *)notification {
     CGRect frame = [notification.userInfo[@"UIKeyboardFrameEndUserInfoKey"] CGRectValue];
@@ -58,13 +44,17 @@
 }
 
 -(void)setupBasic {
+    self.view.dk_backgroundColorPicker = DKColorPickerWithRGB(0xf0f0f0, 0x343434, 0xfafafa);
     self.title = @"反馈";
     self.automaticallyAdjustsScrollViewInsets = NO;
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"发送" style:UIBarButtonItemStyleDone target:self action:@selector(sendFeedBack)];
+    UIBarButtonItem *redItem = [[UIBarButtonItem alloc] initWithTitle:@"发送" style:UIBarButtonItemStyleDone target:self action:@selector(sendFeedBack)];
+    redItem.dk_tintColorPicker = DKColorPickerWithKey(TINT);
+    self.navigationItem.rightBarButtonItem =redItem;
     self.navigationItem.rightBarButtonItem.tintColor = [UIColor whiteColor];
     
     UITextView *textView = [[UITextView alloc] init];
     self.textView = textView;
+    textView.dk_textColorPicker = DKColorPickerWithKey(TEXT);
     CGFloat margin = 20;
     textView.frame = CGRectMake(margin, CGRectGetMaxY(self.navigationController.navigationBar.frame) + margin, [UIScreen mainScreen].bounds.size.width - 2*margin, [UIScreen mainScreen].bounds.size.height - 2*margin - CGRectGetMaxY(self.navigationController.navigationBar.frame));
     textView.delegate = self;

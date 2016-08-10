@@ -75,6 +75,10 @@
 		EE79B1481CC8C435001029EF /* VideoCommentCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = EE79B10A1CC8C435001029EF /* VideoCommentCell.xib */; };
 		EE79B1491CC8C435001029EF /* VideoTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = EE79B10C1CC8C435001029EF /* VideoTableViewCell.m */; };
 		EE79B14A1CC8C435001029EF /* VideoTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = EE79B10D1CC8C435001029EF /* VideoTableViewCell.xib */; };
+		EE8A19351D5AF9FD00BAE119 /* UserInfoCell.m in Sources */ = {isa = PBXBuildFile; fileRef = EE8A19341D5AF9FD00BAE119 /* UserInfoCell.m */; };
+		EE8A19381D5B04C800BAE119 /* SwitchCell.m in Sources */ = {isa = PBXBuildFile; fileRef = EE8A19371D5B04C800BAE119 /* SwitchCell.m */; };
+		EE8A193B1D5B2BDD00BAE119 /* TwoLabelCell.m in Sources */ = {isa = PBXBuildFile; fileRef = EE8A193A1D5B2BDD00BAE119 /* TwoLabelCell.m */; };
+		EE8A193E1D5B46CE00BAE119 /* DisclosureCell.m in Sources */ = {isa = PBXBuildFile; fileRef = EE8A193D1D5B46CE00BAE119 /* DisclosureCell.m */; };
 		EEB32A4B1CD38CAF00FF0AB8 /* TTTopChannelContianerView.m in Sources */ = {isa = PBXBuildFile; fileRef = EEB32A4A1CD38CAF00FF0AB8 /* TTTopChannelContianerView.m */; };
 		EEC791841CD1AEB8008B7C2D /* TTImageCyclePlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = EEC791831CD1AEB8008B7C2D /* TTImageCyclePlayView.m */; };
 		EEE3E81E1CD5AD3E00D699E0 /* ChannelsSectionHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = EEE3E81D1CD5AD3E00D699E0 /* ChannelsSectionHeaderView.m */; };
@@ -195,9 +199,9 @@
 		EE79B0ED1CC8C435001029EF /* PictureTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PictureTableViewCell.h; sourceTree = "<group>"; };
 		EE79B0EE1CC8C435001029EF /* PictureTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PictureTableViewCell.m; sourceTree = "<group>"; };
 		EE79B0EF1CC8C435001029EF /* PictureTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PictureTableViewCell.xib; sourceTree = "<group>"; };
-		EE79B0F01CC8C435001029EF /* ShowBigPictureViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShowBigPictureViewController.h; sourceTree = "<group>"; };
-		EE79B0F11CC8C435001029EF /* ShowBigPictureViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShowBigPictureViewController.m; sourceTree = "<group>"; };
-		EE79B0F21CC8C435001029EF /* ShowBigPictureViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ShowBigPictureViewController.xib; sourceTree = "<group>"; };
+		EE79B0F01CC8C435001029EF /* ShowBigPictureViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ShowBigPictureViewController.h; path = ../View/ShowBigPictureViewController.h; sourceTree = "<group>"; };
+		EE79B0F11CC8C435001029EF /* ShowBigPictureViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ShowBigPictureViewController.m; path = ../View/ShowBigPictureViewController.m; sourceTree = "<group>"; };
+		EE79B0F21CC8C435001029EF /* ShowBigPictureViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = ShowBigPictureViewController.xib; path = ../View/ShowBigPictureViewController.xib; sourceTree = "<group>"; };
 		EE79B0F51CC8C435001029EF /* VideoCommentViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VideoCommentViewController.h; sourceTree = "<group>"; };
 		EE79B0F61CC8C435001029EF /* VideoCommentViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VideoCommentViewController.m; sourceTree = "<group>"; };
 		EE79B0F71CC8C435001029EF /* VideoCommentViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = VideoCommentViewController.xib; sourceTree = "<group>"; };
@@ -220,6 +224,14 @@
 		EE79B10B1CC8C435001029EF /* VideoTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VideoTableViewCell.h; sourceTree = "<group>"; };
 		EE79B10C1CC8C435001029EF /* VideoTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VideoTableViewCell.m; sourceTree = "<group>"; };
 		EE79B10D1CC8C435001029EF /* VideoTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = VideoTableViewCell.xib; sourceTree = "<group>"; };
+		EE8A19331D5AF9FD00BAE119 /* UserInfoCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserInfoCell.h; sourceTree = "<group>"; };
+		EE8A19341D5AF9FD00BAE119 /* UserInfoCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserInfoCell.m; sourceTree = "<group>"; };
+		EE8A19361D5B04C800BAE119 /* SwitchCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwitchCell.h; sourceTree = "<group>"; };
+		EE8A19371D5B04C800BAE119 /* SwitchCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwitchCell.m; sourceTree = "<group>"; };
+		EE8A19391D5B2BDD00BAE119 /* TwoLabelCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TwoLabelCell.h; sourceTree = "<group>"; };
+		EE8A193A1D5B2BDD00BAE119 /* TwoLabelCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TwoLabelCell.m; sourceTree = "<group>"; };
+		EE8A193C1D5B46CE00BAE119 /* DisclosureCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DisclosureCell.h; sourceTree = "<group>"; };
+		EE8A193D1D5B46CE00BAE119 /* DisclosureCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DisclosureCell.m; sourceTree = "<group>"; };
 		EEB32A491CD38CAF00FF0AB8 /* TTTopChannelContianerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TTTopChannelContianerView.h; sourceTree = "<group>"; };
 		EEB32A4A1CD38CAF00FF0AB8 /* TTTopChannelContianerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TTTopChannelContianerView.m; sourceTree = "<group>"; };
 		EEC791821CD1AEB8008B7C2D /* TTImageCyclePlayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TTImageCyclePlayView.h; sourceTree = "<group>"; };
@@ -372,6 +384,14 @@
 		EE79B09A1CC8C435001029EF /* View */ = {
 			isa = PBXGroup;
 			children = (
+				EE8A19331D5AF9FD00BAE119 /* UserInfoCell.h */,
+				EE8A19341D5AF9FD00BAE119 /* UserInfoCell.m */,
+				EE8A19361D5B04C800BAE119 /* SwitchCell.h */,
+				EE8A19371D5B04C800BAE119 /* SwitchCell.m */,
+				EE8A19391D5B2BDD00BAE119 /* TwoLabelCell.h */,
+				EE8A193A1D5B2BDD00BAE119 /* TwoLabelCell.m */,
+				EE8A193C1D5B46CE00BAE119 /* DisclosureCell.h */,
+				EE8A193D1D5B46CE00BAE119 /* DisclosureCell.m */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -514,6 +534,9 @@
 				EE79B0DD1CC8C435001029EF /* PictureCommentViewController.h */,
 				EE79B0DE1CC8C435001029EF /* PictureCommentViewController.m */,
 				EE79B0DF1CC8C435001029EF /* PictureCommentViewController.xib */,
+				EE79B0F01CC8C435001029EF /* ShowBigPictureViewController.h */,
+				EE79B0F11CC8C435001029EF /* ShowBigPictureViewController.m */,
+				EE79B0F21CC8C435001029EF /* ShowBigPictureViewController.xib */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -540,9 +563,6 @@
 				EE79B0EA1CC8C435001029EF /* PictureCommentCell.h */,
 				EE79B0EB1CC8C435001029EF /* PictureCommentCell.m */,
 				EE79B0EC1CC8C435001029EF /* PictureCommentCell.xib */,
-				EE79B0F01CC8C435001029EF /* ShowBigPictureViewController.h */,
-				EE79B0F11CC8C435001029EF /* ShowBigPictureViewController.m */,
-				EE79B0F21CC8C435001029EF /* ShowBigPictureViewController.xib */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -837,7 +857,9 @@
 				EE79B1381CC8C435001029EF /* PictureCommentCell.m in Sources */,
 				EE79B10E1CC8C435001029EF /* AppInfoViewController.m in Sources */,
 				EE79B1281CC8C435001029EF /* TTConst.m in Sources */,
+				EE8A19351D5AF9FD00BAE119 /* UserInfoCell.m in Sources */,
 				EE79B12D1CC8C435001029EF /* AppDelegate.m in Sources */,
+				EE8A19381D5B04C800BAE119 /* SwitchCell.m in Sources */,
 				EE79B12E1CC8C435001029EF /* TTNavigationController.m in Sources */,
 				EE79B1301CC8C435001029EF /* Reachability.m in Sources */,
 				EE79B1411CC8C435001029EF /* TTVideo.m in Sources */,
@@ -868,6 +890,7 @@
 				EE79B1401CC8C435001029EF /* VideoViewController.m in Sources */,
 				EE4635C81CC72B8900DB248F /* main.m in Sources */,
 				EEC791841CD1AEB8008B7C2D /* TTImageCyclePlayView.m in Sources */,
+				EE8A193B1D5B2BDD00BAE119 /* TwoLabelCell.m in Sources */,
 				EE79B1231CC8C435001029EF /* NSDate+Extension.m in Sources */,
 				EE79B11C1CC8C435001029EF /* MultiPictureTableViewCell.m in Sources */,
 				EE79B1261CC8C435001029EF /* UIImageView+Extension.m in Sources */,
@@ -884,6 +907,7 @@
 				EE79B1151CC8C435001029EF /* DetailViewController.m in Sources */,
 				EE79B1221CC8C435001029EF /* Foundation+Log.m in Sources */,
 				EE79B1311CC8C435001029EF /* TTJudgeNetworking.m in Sources */,
+				EE8A193E1D5B46CE00BAE119 /* DisclosureCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

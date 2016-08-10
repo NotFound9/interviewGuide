@@ -17,6 +17,7 @@
 #import "UIBarButtonItem+Extension.h"
 #import "TTConst.h"
 #import "UIView+Extension.h"
+#import <DKNightVersion.h>
 
 static NSString * const PictureCommentCellID = @"PictureCommentCell";
 
@@ -70,9 +71,7 @@ static NSString * const PictureCommentCellID = @"PictureCommentCell";
 
 -(void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateSkinModel) name:SkinModelDidChangedNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillChangeFrame:) name:UIKeyboardWillChangeFrameNotification object:nil];
-    [self updateSkinModel];
 }
 
 -(void)viewWillDisappear:(BOOL)animated {
@@ -85,32 +84,15 @@ static NSString * const PictureCommentCellID = @"PictureCommentCell";
     //    [self.manager.tasks makeObjectsPerformSelector:@selector(cancel)];
     [self.manager invalidateSessionCancelingTasks:YES];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    [[SDImageCache sharedImageCache] clearDisk];
 
-}
-
-#pragma mark 更新皮肤模式 接到模式切换的通知后会调用此方法
--(void)updateSkinModel {
-    self.currentSkinModel = [[NSUserDefaults standardUserDefaults] stringForKey:CurrentSkinModelKey];
-    if ([self.currentSkinModel isEqualToString:NightSkinModelValue]) {
-        self.tableView.backgroundColor = [UIColor blackColor];
-        self.bottomContianerView.backgroundColor = [UIColor blackColor];
-        self.commentTextField.backgroundColor = [UIColor darkGrayColor];
-        self.commentTextField.textColor = [UIColor lightGrayColor];
-        [self.headerPictureCell updateToNightSkinMode];
-    } else {//日间模式
-        self.tableView.backgroundColor = [UIColor colorWithRed:250.0/255.0 green:250.0/255.0 blue:250.0/255.0 alpha:1.0];
-        self.bottomContianerView.backgroundColor = [UIColor colorWithRed:250.0/255.0 green:250.0/255.0 blue:250.0/255.0 alpha:1.0];
-        self.commentTextField.backgroundColor = [UIColor whiteColor];
-        self.commentTextField.textColor = [UIColor blackColor];
-        [self.headerPictureCell updateToDaySkinMode];
-        }
-    [self.tableView reloadData];
 }
 
 #pragma mark 基本设置
 - (void)setupBasic
 {
+    self.tableView.dk_backgroundColorPicker = DKColorPickerWithRGB(0xf0f0f0, 0x000000, 0xfafafa);
+    self.bottomContianerView.dk_backgroundColorPicker = DKColorPickerWithRGB(0xf0f0f0, 0x000000, 0xfafafa);
+
     self.title = @"评论";
     // 内边距s
     self.automaticallyAdjustsScrollViewInsets = NO;
@@ -123,7 +105,6 @@ static NSString * const PictureCommentCellID = @"PictureCommentCell";
     self.tableView.rowHeight = UITableViewAutomaticDimension;
     
     // 背景色
-    self.tableView.backgroundColor = [UIColor colorWithRed:223.0/255.0 green:223.0/255.0 blue:223.0/255.0 alpha:1.0];
     
     // 注册
     [self.tableView registerNib:[UINib nibWithNibName:NSStringFromClass([PictureCommentCell class]) bundle:nil] forCellReuseIdentifier:PictureCommentCellID];
@@ -334,15 +315,7 @@ static NSString * const PictureCommentCellID = @"PictureCommentCell";
         sectionHeaderLabel.text = @"   最新评论";
     }
     
-    if ([self.currentSkinModel isEqualToString:DaySkinModelValue]) {//日间模式
-        sectionHeaderLabel.backgroundColor = [UIColor whiteColor];
-        sectionHeaderLabel.textColor = [UIColor blackColor];
-        
-    } else {
-        sectionHeaderLabel.backgroundColor = [UIColor blackColor];
-        sectionHeaderLabel.textColor = [UIColor grayColor];
-    }
-    
+    sectionHeaderLabel.dk_textColorPicker = DKColorPickerWithKey(TEXT);
     return sectionHeaderLabel;
 
 }
@@ -352,11 +325,7 @@ static NSString * const PictureCommentCellID = @"PictureCommentCell";
 {
     
     PictureCommentCell *cell = [tableView dequeueReusableCellWithIdentifier:PictureCommentCellID];
-    if ([self.currentSkinModel isEqualToString:DaySkinModelValue]) {//日间模式
-        [cell updateToDaySkinMode];
-    } else {
-        [cell updateToNightSkinMode];
-    }
+
     cell.comment = [self commentInIndexPath:indexPath];
     
     return cell;

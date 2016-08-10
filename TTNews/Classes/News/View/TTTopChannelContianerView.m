@@ -7,6 +7,7 @@
 //
 
 #import "TTTopChannelContianerView.h"
+#import <DKNightVersion.h>
 
 @interface TTTopChannelContianerView()
 
@@ -83,7 +84,9 @@ static CGFloat buttonWidth = 65;
 
 #pragma mark 创建右侧的加号Button
 - (UIButton *)createTheAddButton {
+
     UIButton *addChannelButton =[UIButton buttonWithType:UIButtonTypeCustom];
+    addChannelButton.dk_backgroundColorPicker = DKColorPickerWithRGB(0xf0f0f0, 0x343434, 0xfafafa);
     self.addButton = addChannelButton;
     [addChannelButton setImage:[UIImage imageNamed:@"home_header_add_slim"] forState:UIControlStateNormal];
     addChannelButton.frame = CGRectMake([UIScreen mainScreen].bounds.size.width - kAddChannelWidth, 0, kAddChannelWidth, kAddChannelWidth);
@@ -112,6 +115,7 @@ static CGFloat buttonWidth = 65;
 - (UIButton *)createChannelButton{
     UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
     [button setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    button.dk_backgroundColorPicker = DKColorPickerWithRGB(0xf0f0f0, 0x949494, 0xfafafa);
     [button setTitleColor:[UIColor colorWithRed:243/255.0 green:75/255.0 blue:80/255.0 alpha:1.0] forState:UIControlStateDisabled];
     [button.titleLabel setFont:[UIFont systemFontOfSize:kTitleLabelNorimalFont]];
     [button addTarget:self action:@selector(clickChannelButton:) forControlEvents:UIControlEventTouchUpInside];
@@ -188,34 +192,9 @@ static CGFloat buttonWidth = 65;
     [self.scrollView addSubview:button];
 }
 
-#pragma mark 更新至日间模式
-- (void)updateToDaySkinMode {
-    self.backgroundColor = [UIColor whiteColor];
-    self.scrollView.backgroundColor = [UIColor whiteColor];
-    for (UIView *view in self.scrollView.subviews) {
-        if ([view isKindOfClass:[UIControl class]]) {//是按钮
-            UIButton *button = (UIButton *)view;
-            [button setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-        }
-    }
-    self.addButton.backgroundColor = [UIColor whiteColor];
-}
 
-#pragma mark 更新至夜间模式
-- (void)updateToNightSkinMode {
-    self.backgroundColor = [UIColor colorWithRed:34/255.0 green:30/255.0 blue:33/255.0 alpha:1.0];
-    self.scrollView.backgroundColor = [UIColor colorWithRed:34/255.0 green:30/255.0 blue:33/255.0 alpha:1.0];
-    for (UIView *view in self.scrollView.subviews) {
-        if ([view isKindOfClass:[UIControl class]]) {//是按钮
-            UIButton *button = (UIButton *)view;
-            [button setTitleColor:[UIColor grayColor] forState:UIControlStateNormal];
-        }
-    }
-    self.addButton.backgroundColor = [UIColor colorWithRed:34/255.0 green:30/255.0 blue:33/255.0 alpha:1.0];
 
-}
-
-#pragma mark 更新至日间模式
+#pragma mark
 
 - (void)didShowEditChannelView:(BOOL)value {
     if (value == YES) {//显示编辑新闻频道View

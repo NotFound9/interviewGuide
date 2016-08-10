@@ -13,6 +13,7 @@
 #import "UIImage+Extension.h"
 #import "UIImageView+Extension.h"
 #import "VideoPlayView.h"
+#import <DKNightVersion.h>
 
 @interface VideoTableViewCell()<VideoPlayViewDelegate>
 @property (weak, nonatomic) IBOutlet UIImageView *headerImageView;
@@ -45,6 +46,22 @@
     return [[[NSBundle mainBundle] loadNibNamed:NSStringFromClass(self) owner:nil options:nil] lastObject];
 }
 - (void)awakeFromNib {
+    self.dk_backgroundColorPicker = DKColorPickerWithRGB(0xffffff, 0x343434, 0xfafafa);
+
+    self.contentView.dk_backgroundColorPicker = DKColorPickerWithRGB(0xffffff, 0x343434, 0xfafafa);
+    self.nameLabel.dk_textColorPicker = DKColorPickerWithKey(TEXT);
+    self.contentLabel.dk_textColorPicker = DKColorPickerWithKey(TEXT);
+    self.createdTimeLabel.dk_textColorPicker = DKColorPickerWithKey(TEXT);
+    self.timelabel.dk_textColorPicker = DKColorPickerWithKey(TEXT);
+    self.topCommentTopLabel.dk_textColorPicker = DKColorPickerWithKey(TEXT);
+    self.topCommentLabel.dk_textColorPicker = DKColorPickerWithKey(TEXT);
+
+    self.separatorLine1.dk_backgroundColorPicker = DKColorPickerWithKey(SEP);
+    self.separatorLine2.dk_backgroundColorPicker = DKColorPickerWithKey(SEP);
+    self.separatorLine3.dk_backgroundColorPicker = DKColorPickerWithKey(SEP);
+    self.separatorLine4.dk_backgroundColorPicker = DKColorPickerWithKey(SEP);
+
+
     self.nameLabel.textColor = [UIColor colorWithRed:243/255.0 green:75/255.0 blue:80/255.0 alpha:1.0];
     self.autoresizingMask = NO;
     self.autoresizesSubviews = NO;
@@ -127,32 +144,6 @@
     frame.size.width = [UIScreen mainScreen].bounds.size.width;
     frame.size.height = self.video.cellHeight - margin;
     [super setFrame:frame];
-}
-
-#pragma mark 切换至日间模式
--(void)updateToDaySkinMode {
-    self.contentLabel.textColor = [UIColor blackColor];
-    self.playCountLabel.backgroundColor = [UIColor darkGrayColor];
-    self.timelabel.backgroundColor = [UIColor darkGrayColor];
-    self.contentView.backgroundColor = [UIColor whiteColor];
-    self.backgroundColor = [UIColor whiteColor];
-    self.separatorLine1.backgroundColor = [UIColor colorWithRed:240/255.0 green:240/255.0  blue:240/255.0  alpha:1.0];
-    self.separatorLine2.backgroundColor = [UIColor colorWithRed:240/255.0 green:240/255.0  blue:240/255.0  alpha:1.0];
-    self.separatorLine3.backgroundColor = [UIColor colorWithRed:240/255.0 green:240/255.0  blue:240/255.0  alpha:1.0];
-    self.separatorLine4.backgroundColor = [UIColor colorWithRed:240/255.0 green:240/255.0  blue:240/255.0  alpha:1.0];
-
-}
-#pragma mark 切换至夜间模式
--(void)updateToNightSkinMode {
-    self.contentLabel.textColor = [UIColor grayColor];
-    self.playCountLabel.backgroundColor = [UIColor blackColor];
-    self.timelabel.backgroundColor = [UIColor blackColor];
-    self.contentView.backgroundColor = [UIColor colorWithRed:42/255.0 green:39/255.0 blue:43/255.0 alpha:1.0];
-    self.backgroundColor = [UIColor colorWithRed:42/255.0 green:39/255.0 blue:43/255.0 alpha:1.0];
-    self.separatorLine1.backgroundColor = [UIColor colorWithRed:40/255.0 green:36/255.0  blue:40/255.0  alpha:1.0];
-    self.separatorLine2.backgroundColor = [UIColor colorWithRed:40/255.0 green:36/255.0  blue:40/255.0  alpha:1.0];
-    self.separatorLine3.backgroundColor = [UIColor colorWithRed:40/255.0 green:36/255.0  blue:40/255.0  alpha:1.0];
-    self.separatorLine4.backgroundColor = [UIColor colorWithRed:40/255.0 green:36/255.0  blue:40/255.0  alpha:1.0];
 }
 
 - (IBAction)love:(id)sender {

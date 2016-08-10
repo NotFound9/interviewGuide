@@ -17,4 +17,6 @@
 @interface MeTableViewController : UITableViewController
 
 @property(nonatomic, weak) id<MeTableViewControllerDelegate> delegate;
+@property (nonatomic, weak) UISwitch *changeSkinSwitch;
+
 @end

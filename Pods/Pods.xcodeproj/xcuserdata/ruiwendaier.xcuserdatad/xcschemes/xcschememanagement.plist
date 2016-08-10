@@ -14,6 +14,11 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>DKNightVersion.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>FMDB.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -57,17 +62,17 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>1B8E19C63680FC214ACED7ABC9CC43F4</key>
+		<key>2F639BAC2BE0057D2AF305181E4637DE</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>1BA8EA61E8C455A511ADD70B633F64EA</key>
+		<key>53406FD23904169597858D7716FC7645</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>2A3AC2749F9E5191590325D4B57ADFBE</key>
+		<key>63491E1EA0E903734AFD83F4D7DC319A</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -102,7 +107,12 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>F685E26B42AB8A29BCD64BBCA69CA8A1</key>
+		<key>B56BC1B5AF7240A3B2E50EC7A163A638</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>E96531D2698B334C4DEC89A22248E32D</key>
 		<dict>
 			<key>primary</key>
 			<true/>

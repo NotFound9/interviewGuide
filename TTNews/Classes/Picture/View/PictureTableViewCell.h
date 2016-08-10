@@ -20,8 +20,6 @@
 @interface PictureTableViewCell : UITableViewCell
 
 +(instancetype)cell;
--(void)updateToDaySkinMode;
--(void)updateToNightSkinMode;
 
 @property (nonatomic, strong) TTPicture *picture;
 @property (nonatomic, weak) id<PictureTableViewCellDelegate> delegate;

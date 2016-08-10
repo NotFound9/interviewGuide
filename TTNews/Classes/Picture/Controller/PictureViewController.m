@@ -17,6 +17,7 @@
 #import "TTPictureFetchDataParameter.h"
 #import "TTConst.h"
 #import "TTJudgeNetworking.h"
+#import <DKNightVersion.h>
 
 @interface PictureViewController ()<PictureTableViewCellDelegate>
 
@@ -48,31 +49,25 @@ static NSString * const PictureCell = @"PictureCell";
 
 -(void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateSkinModel) name:SkinModelDidChangedNotification object:nil];
-    [self updateSkinModel];
+
 }
 
 -(void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     self.navigationController.navigationBar.alpha = 1;
-    [[SDImageCache sharedImageCache] clearDisk];
 
 }
 
-#pragma mark 更新皮肤模式 接到模式切换的通知后会调用此方法
--(void)updateSkinModel {
-    self.currentSkinModel = [[NSUserDefaults standardUserDefaults] stringForKey:CurrentSkinModelKey];
-    if ([self.currentSkinModel isEqualToString:NightSkinModelValue]) {
-        self.tableView.backgroundColor = [UIColor blackColor];
-    } else {//日间模式
-        self.tableView.backgroundColor = [UIColor colorWithRed:250.0/255.0 green:250.0/255.0 blue:250.0/255.0 alpha:1.0];
-    }
-    [self.tableView reloadData];
-}
+
 
 #pragma mark 基本设置
 - (void)setupBasic {
+    self.tableView.dk_backgroundColorPicker = DKColorPickerWithRGB(0xf0f0f0, 0x000000, 0xfafafa);
+    
+    self.navigationController.navigationBar.dk_barTintColorPicker = DKColorPickerWithRGB(0xfa5054,0x444444,0xfa5054);
+
+
     self.currentPage = 0;
 }
 
@@ -80,7 +75,6 @@ static NSString * const PictureCell = @"PictureCell";
 - (void)setupTableView {
     self.automaticallyAdjustsScrollViewInsets = NO;
     self.tableView.contentInset = UIEdgeInsetsMake(CGRectGetMaxY(self.navigationController.navigationBar.frame) + 10, 0, 0, 0);
-    self.view.backgroundColor = [UIColor colorWithRed:250.0/255.0 green:250.0/255.0 blue:250.0/255.0 alpha:1.0];
     self.tableView.scrollIndicatorInsets = self.tableView.contentInset;
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     [self.tableView registerNib:[UINib nibWithNibName:NSStringFromClass([PictureTableViewCell class]) bundle:nil] forCellReuseIdentifier:PictureCell];
@@ -148,11 +142,6 @@ static NSString * const PictureCell = @"PictureCell";
 #pragma mark -UITableViewDataSource 返回indexPath对应的cell
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     PictureTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:PictureCell];
-    if ([self.currentSkinModel isEqualToString:DaySkinModelValue]) {//日间模式
-        [cell updateToDaySkinMode];
-    } else {
-        [cell updateToNightSkinMode];
-    }
     cell.picture = self.pictureArray[indexPath.row];
     cell.delegate = self;
     return cell;
@@ -199,6 +188,11 @@ static NSString * const PictureCell = @"PictureCell";
         CGFloat alphValue = yValue/self.tableView.contentInset.top;
         self.navigationController.navigationBar.alpha =alphValue;
     }
+}
+
+-(void)didReceiveMemoryWarning {
+    [[SDImageCache sharedImageCache] clearDisk];
+    
 }
 
 @end

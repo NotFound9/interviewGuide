@@ -20,6 +20,7 @@
 #import "UIView+Extension.h"
 #import "TTDataTool.h"
 #import "FullViewController.h"
+#import <DKNightVersion.h>
 
 static NSString * const VideoCommentCellID = @"VideoCommentCell";
 
@@ -79,9 +80,7 @@ static NSString * const VideoCommentCellID = @"VideoCommentCell";
 
 -(void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateSkinModel) name:SkinModelDidChangedNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillChangeFrame:) name:UIKeyboardWillChangeFrameNotification object:nil];
-    [self updateSkinModel];
 }
 
 -(void)viewWillDisappear:(BOOL)animated {
@@ -97,13 +96,15 @@ static NSString * const VideoCommentCellID = @"VideoCommentCell";
     //    [self.manager.tasks makeObjectsPerformSelector:@selector(cancel)];
     [self.manager invalidateSessionCancelingTasks:YES];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    [[SDImageCache sharedImageCache] clearDisk];
 }
 
 
 #pragma mark 基本设置
 - (void)setupBasic
 {
+    self.tableView.dk_backgroundColorPicker = DKColorPickerWithRGB(0xf0f0f0, 0x000000, 0xfafafa);
+    self.bottomContianerView.dk_backgroundColorPicker = DKColorPickerWithRGB(0xf0f0f0, 0x000000, 0xfafafa);
+
     self.title = @"评论";
     self.page = 1;
     // cell的高度设置
@@ -111,7 +112,6 @@ static NSString * const VideoCommentCellID = @"VideoCommentCell";
     self.tableView.rowHeight = UITableViewAutomaticDimension;
     
     // 背景色
-    self.tableView.backgroundColor = [UIColor colorWithRed:223.0/255.0 green:223.0/255.0 blue:223.0/255.0 alpha:1.0];
     
     // 注册
     [self.tableView registerNib:[UINib nibWithNibName:NSStringFromClass([VideoCommentCell class]) bundle:nil] forCellReuseIdentifier:VideoCommentCellID];
@@ -162,25 +162,6 @@ static NSString * const VideoCommentCellID = @"VideoCommentCell";
     
     // 设置header
     self.tableView.tableHeaderView = header;
-}
-
-#pragma mark 更新皮肤模式 接到模式切换的通知后会调用此方法
--(void)updateSkinModel {
-    self.currentSkinModel = [[NSUserDefaults standardUserDefaults] stringForKey:CurrentSkinModelKey];
-    if ([self.currentSkinModel isEqualToString:NightSkinModelValue]) {
-        self.tableView.backgroundColor = [UIColor blackColor];
-        self.bottomContianerView.backgroundColor = [UIColor blackColor];
-        self.commentTextField.backgroundColor = [UIColor darkGrayColor];
-        self.commentTextField.textColor = [UIColor lightGrayColor];
-        [self.headerVideoCell updateToNightSkinMode];
-    } else {//日间模式
-        self.tableView.backgroundColor = [UIColor colorWithRed:250.0/255.0 green:250.0/255.0 blue:250.0/255.0 alpha:1.0];
-        self.bottomContianerView.backgroundColor = [UIColor colorWithRed:250.0/255.0 green:250.0/255.0 blue:250.0/255.0 alpha:1.0];
-        self.commentTextField.backgroundColor = [UIColor whiteColor];
-        self.commentTextField.textColor = [UIColor blackColor];
-        [self.headerVideoCell updateToDaySkinMode];
-    }
-    [self.tableView reloadData];
 }
 
 #pragma mark 加载最新评论
@@ -336,7 +317,7 @@ static NSString * const VideoCommentCellID = @"VideoCommentCell";
     // 先从缓存池中找header
     UILabel *sectionHeaderLabel = [[UILabel alloc] init];
     sectionHeaderLabel.frame = CGRectMake(0, 0, [UIScreen mainScreen].bounds.size.width, 20);
-    
+
     // 设置label的数据
     NSInteger hotCount = self.hotComments.count;
     if (section == 0) {
@@ -345,14 +326,8 @@ static NSString * const VideoCommentCellID = @"VideoCommentCell";
         sectionHeaderLabel.text = @"   最新评论";
     }
     
-    if ([self.currentSkinModel isEqualToString:DaySkinModelValue]) {//日间模式
-        sectionHeaderLabel.backgroundColor = [UIColor whiteColor];
-        sectionHeaderLabel.textColor = [UIColor blackColor];
-
-    } else {
-        sectionHeaderLabel.backgroundColor = [UIColor blackColor];
-        sectionHeaderLabel.textColor = [UIColor grayColor];
-    }
+   
+    sectionHeaderLabel.dk_textColorPicker = DKColorPickerWithKey(TEXT);
 
     return sectionHeaderLabel;
 }
@@ -363,11 +338,7 @@ static NSString * const VideoCommentCellID = @"VideoCommentCell";
     
     VideoCommentCell *cell = [tableView dequeueReusableCellWithIdentifier:VideoCommentCellID];
     cell.comment = [self commentInIndexPath:indexPath];
-    if ([self.currentSkinModel isEqualToString:DaySkinModelValue]) {
-        [cell updateToDaySkinMode];
-    } else {
-        [cell updateToNightSkinMode];
-    }
+   
     return cell;
 }
 

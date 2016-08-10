@@ -13,9 +13,12 @@
 #import "VideoViewController.h"
 #import "MeTableViewController.h"
 #import "TTConst.h"
-
+#import <DKNightVersion.h>
+#import <SDImageCache.h>
 @interface TTTabBarController ()<MeTableViewControllerDelegate>
-
+{
+    MeTableViewController *_MeController;
+}
 @property (nonatomic, assign) BOOL isShakeCanChangeSkin;
 
 @end
@@ -35,15 +38,20 @@
     [self addChildViewController:vc3 withImage:[UIImage imageNamed:@"tabbar_video"] selectedImage:[UIImage imageNamed:@"tabbar_video_hl"] withTittle:@"视频"];
     
     MeTableViewController *vc4 = [[MeTableViewController alloc] init];
+    _MeController = vc4;
     [self addChildViewController:vc4 withImage:[UIImage imageNamed:@"tabbar_setting"] selectedImage:[UIImage imageNamed:@"tabbar_setting_hl"] withTittle:@"我的"];
     vc4.delegate = self;
     
-    [self updateSkinModel];
     [self setupBasic];
 }
 
 -(void)setupBasic {
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateSkinModel) name:SkinModelDidChangedNotification object:nil];
+    if ([self.dk_manager.themeVersion isEqualToString:DKThemeVersionNormal]) {
+        self.tabBar.barTintColor = [UIColor whiteColor];
+    } else {
+        self.tabBar.barTintColor = [UIColor colorWithRed:34/255.0 green:34/255.0 blue:34/255.0 alpha:1.0];
+    }
+
     [UIApplication sharedApplication].applicationSupportsShakeToEdit = YES;
     [self becomeFirstResponder];
     self.isShakeCanChangeSkin = [[NSUserDefaults standardUserDefaults] boolForKey:IsShakeCanChangeSkinKey];
@@ -52,30 +60,21 @@
 }
 
 -(void)dealloc {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    
 }
 
-#pragma mark 更新皮肤模式 接到模式切换的通知后会调用此方法
--(void)updateSkinModel {
-    NSString *currentSkinModel = [[NSUserDefaults standardUserDefaults] stringForKey:CurrentSkinModelKey];
-    if ([currentSkinModel isEqualToString:NightSkinModelValue]) {
-        self.tabBar.barTintColor = [UIColor colorWithRed:34/255.0 green:30/255.0 blue:33/255.0 alpha:1.0];
-    } else {//日间模式
-        self.tabBar.barTintColor = [UIColor whiteColor];
-    }
-}
 
 -(void)motionBegan:(UIEventSubtype)motion withEvent:(UIEvent *)event {
     if (motion == UIEventSubtypeMotionShake) {
         if (self.isShakeCanChangeSkin == NO) return;
-        NSString *currentSkinModel = [[NSUserDefaults standardUserDefaults] stringForKey:CurrentSkinModelKey];
-        if ([currentSkinModel isEqualToString:DaySkinModelValue]) {//当前为日间模式，切换至夜间模式
-            [[NSUserDefaults standardUserDefaults] setObject:NightSkinModelValue forKey:CurrentSkinModelKey];
+        if ([self.dk_manager.themeVersion isEqualToString:DKThemeVersionNormal]) {//将要切换至夜间模式
+            self.dk_manager.themeVersion = DKThemeVersionNight;                self.tabBar.barTintColor = [UIColor colorWithRed:34/255.0 green:34/255.0 blue:34/255.0 alpha:1.0];
+            _MeController.changeSkinSwitch.on = YES;
         } else {
-            [[NSUserDefaults standardUserDefaults] setObject:DaySkinModelValue forKey:CurrentSkinModelKey];
+                self.dk_manager.themeVersion = DKThemeVersionNormal;             self.tabBar.barTintColor = [UIColor whiteColor];
+            _MeController.changeSkinSwitch.on = NO;
+
         }
-        [[NSUserDefaults standardUserDefaults] synchronize];
-        [[NSNotificationCenter defaultCenter] postNotificationName:SkinModelDidChangedNotification object:self];
     }
 }
 
@@ -96,4 +95,8 @@
     self.isShakeCanChangeSkin = status;
 }
 
+-(void)didReceiveMemoryWarning {
+    [[SDImageCache sharedImageCache] clearDisk];
+
+}
 @end

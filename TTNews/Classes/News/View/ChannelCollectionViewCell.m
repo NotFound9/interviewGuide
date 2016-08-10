@@ -7,6 +7,7 @@
 //
 
 #import "ChannelCollectionViewCell.h"
+#import <DKNightVersion.h>
 
 @interface ChannelCollectionViewCell()
 @property (weak, nonatomic) IBOutlet UILabel *channelNameLabel;
@@ -18,7 +19,9 @@ static NSString * const kShakeAnimationKey = @"kCollectionViewCellShake";
 @implementation ChannelCollectionViewCell
 
 - (void)awakeFromNib {
+    self.dk_backgroundColorPicker = DKColorPickerWithRGB(0xffffff, 0x343434, 0xfafafa);
 
+    self.channelNameLabel.dk_textColorPicker = DKColorPickerWithKey(TEXT);
 }
 
 -(void)longPress {
@@ -68,18 +71,6 @@ static NSString * const kShakeAnimationKey = @"kCollectionViewCellShake";
 
 - (void)stopShake {
     [self.contentView.layer removeAnimationForKey:kShakeAnimationKey];
-}
-
-#pragma mark 切换至日间模式
--(void)updateToDaySkinMode {
-    self.channelNameLabel.textColor = [UIColor blackColor];
-    self.contentView.backgroundColor = [UIColor whiteColor];
-}
-
-#pragma mark 切换至夜间模式
--(void)updateToNightSkinMode {
-    self.channelNameLabel.textColor = [UIColor grayColor];
-    self.contentView.backgroundColor = [UIColor colorWithRed:42/255.0 green:39/255.0 blue:43/255.0 alpha:1.0];
 }
 
 @end

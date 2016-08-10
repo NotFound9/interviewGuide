@@ -24,8 +24,6 @@
 
 - (void)startShake;
 - (void)stopShake;
--(void)updateToDaySkinMode;
--(void)updateToNightSkinMode;
 
 @end
 

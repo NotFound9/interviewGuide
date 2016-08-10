@@ -21,6 +21,8 @@
 #import "TTConst.h"
 #import "UIImageView+Extension.h"
 #import "TTImageCyclePlayView.h"
+#import <DKNightVersion.h>
+#import <SDImageCache.h>
 
 @interface ContentTableViewController ()<TTImageCyclePlayViewDelegate>
 
@@ -47,19 +49,18 @@ static NSString * const noPictureCell = @"NoPictureCell";
 
 -(void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateSkinModel) name:SkinModelDidChangedNotification object:nil];
-    [self updateSkinModel];
 }
 
 -(void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     [self.headerView removeTimer];
     [SVProgressHUD dismiss];
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 #pragma mark --private Method--设置tableView
 -(void)setupBasic {
+    self.tableView.dk_backgroundColorPicker = DKColorPickerWithRGB(0xf0f0f0, 0x000000, 0xfafafa);
+
     self.automaticallyAdjustsScrollViewInsets = NO;
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.tableView.scrollIndicatorInsets = UIEdgeInsetsMake(104, 0, 0, 0);
@@ -190,11 +191,7 @@ static NSString * const noPictureCell = @"NoPictureCell";
         MultiPictureTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:multiPictureCell];
         cell.title = news.title;
         cell.imageUrls = news.imageurls;
-        if ([self.currentSkinModel isEqualToString:DaySkinModelValue]) {//日间模式
-            [cell updateToDaySkinMode];
-        } else {
-            [cell updateToNightSkinMode];
-        }
+        
         return cell;
     } else if (news.normalNewsType == NormalNewsTypeSigalPicture) {
         SinglePictureNewsTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:singlePictureCell];
@@ -204,21 +201,12 @@ static NSString * const noPictureCell = @"NoPictureCell";
         if (dict) {
             cell.imageUrl = dict[@"url"];
         }
-        if ([self.currentSkinModel isEqualToString:DaySkinModelValue]) {//日间模式
-            [cell updateToDaySkinMode];
-        } else {
-            [cell updateToNightSkinMode];
-        }
-        return cell;
+            return cell;
     } else {
         NoPictureNewsTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:noPictureCell];
         cell.titleText = news.title;
         cell.contentText = news.desc;
-        if ([self.currentSkinModel isEqualToString:DaySkinModelValue]) {//日间模式
-            [cell updateToDaySkinMode];
-        } else {
-            [cell updateToNightSkinMode];
-        }
+        
         return cell;
     }
 }
@@ -248,7 +236,6 @@ static NSString * const noPictureCell = @"NoPictureCell";
 
 #pragma mark -UIScrollViewDelegate scrollView将要开始滑动
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
-    UITableViewCell *cell = (UITableViewCell *)[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
 
     [self.headerView removeTimer];
 }
@@ -274,19 +261,6 @@ static NSString * const noPictureCell = @"NoPictureCell";
     [self.navigationController pushViewController:viewController animated:YES];
 }
 
-#pragma mark --private Method--更新皮肤模式 接到模式切换的通知后会调用此方法
--(void)updateSkinModel {
-    self.currentSkinModel = [[NSUserDefaults standardUserDefaults] stringForKey:CurrentSkinModelKey];
-    if ([self.currentSkinModel isEqualToString:NightSkinModelValue]) {//夜间模式
-        self.tableView.backgroundColor = [UIColor blackColor];
-        [self.headerView updateToNightSkinMode];
-    } else {//日间模式
-        self.tableView.backgroundColor = [UIColor colorWithRed:250.0/255.0 green:250.0/255.0 blue:250.0/255.0 alpha:1.0];
-        [self.headerView updateToDaySkinMode];
-    }
-    [self.tableView reloadData];
-}
-
 #pragma mark --懒加载--normalNewsArray
 -(NSMutableArray *)normalNewsArray {
     if (!_normalNewsArray) {
@@ -302,5 +276,8 @@ static NSString * const noPictureCell = @"NoPictureCell";
     }
     return _headerNewsArray;
 }
-
+-(void)didReceiveMemoryWarning {
+    [[SDImageCache sharedImageCache] clearDisk];
+    
+}
 @end

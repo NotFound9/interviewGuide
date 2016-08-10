@@ -114,14 +114,14 @@ If you'd like to stack HUDs, you can balance out every show call using:
 + (void)popActivity;
 ```
 
-The HUD will get dismissed once the `popActivity` calls will match the number of show calls.  
+The HUD will get dismissed once the `popActivity` calls will match the number of show calls.
 
-Or show a confirmation glyph before before getting dismissed a little bit later. The display time depends on the length of the given string (between 0.5 and 5 seconds).
+Or show a confirmation glyph before before getting dismissed a little bit later. The display time depends on `minimumDismissTimeInterval` and the length of the given string.
 
 ```objective-c
-+ (void)showInfoWithStatus:(NSString *)string;
++ (void)showInfoWithStatus:(NSString*)string;
 + (void)showSuccessWithStatus:(NSString*)string;
-+ (void)showErrorWithStatus:(NSString *)string;
++ (void)showErrorWithStatus:(NSString*)string;
 + (void)showImage:(UIImage*)image status:(NSString*)string;
 ```
 
@@ -141,7 +141,7 @@ Or show a confirmation glyph before before getting dismissed a little bit later.
 + (void)setFont:(UIFont*)font;                                      // default is [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline]
 + (void)setForegroundColor:(UIColor*)color;                         // default is [UIColor blackColor], only used for SVProgressHUDStyleCustom
 + (void)setBackgroundColor:(UIColor*)color;                         // default is [UIColor whiteColor], only used for SVProgressHUDStyleCustom
-+ (void)setBackgroundLayerColor:(UIColor *)color;                   // default is [UIColor colorWithWhite:0 alpha:0.4], only used for SVProgressHUDMaskTypeCustom
++ (void)setBackgroundLayerColor:(UIColor*)color;                    // default is [UIColor colorWithWhite:0 alpha:0.4], only used for SVProgressHUDMaskTypeCustom
 + (void)setInfoImage:(UIImage*)image;                               // default is the bundled info image provided by Freepik
 + (void)setSuccessImage:(UIImage*)image;                            // default is bundled success image from Freepik
 + (void)setErrorImage:(UIImage*)image;                              // default is bundled error image from Freepik
@@ -160,7 +160,7 @@ As standard `SVProgressHUD` offers two preconfigured styles:
 * `SVProgressHUDStyleLight`: White background with black spinner and text
 * `SVProgressHUDStyleDark`: Black background with white spinner and text
 
-If you want to use custom colors with `setForegroundColor` and `setBackgroundColor:`  don't forget to set `SVProgressHUDStyleCustom` via `setDefaultStyle:`.
+If you want to use custom colors with `setForegroundColor` and `setBackgroundColor:` don't forget to set `SVProgressHUDStyleCustom` via `setDefaultStyle:`.
 
 ## Notifications
 
@@ -181,7 +181,7 @@ When using `SVProgressHUD` in an App Extension, `#define SV_APP_EXTENSIONS` to a
 ## Contributing to this project
 
 If you have feature requests or bug reports, feel free to help out by sending pull requests or by [creating new issues](https://github.com/SVProgressHUD/SVProgressHUD/issues/new). Please take a moment to
-review the guidelines written by [Nicolas Gallagher](https://github.com/necolas/):
+review the guidelines written by [Nicolas Gallagher](https://github.com/necolas):
 
 * [Bug reports](https://github.com/necolas/issue-guidelines/blob/master/CONTRIBUTING.md#bugs)
 * [Feature requests](https://github.com/necolas/issue-guidelines/blob/master/CONTRIBUTING.md#features)

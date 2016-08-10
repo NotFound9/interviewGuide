@@ -11,6 +11,7 @@
 #import "TTVideoUser.h"
 #import "UIImage+Extension.h"
 #import "UIImageView+Extension.h"
+#import <DKNightVersion.h>
 
 @interface VideoCommentCell()
 @property (weak, nonatomic) IBOutlet UIImageView *profileImageView;
@@ -38,7 +39,11 @@
     UIImageView *bgView = [[UIImageView alloc] init];
     bgView.image = [UIImage imageNamed:@"mainCellBackground"];
     self.backgroundView = bgView;
-    
+    self.contentView.dk_backgroundColorPicker = DKColorPickerWithRGB(0xffffff, 0x343434, 0xfafafa);
+    self.contentLabel.dk_textColorPicker = DKColorPickerWithKey(TEXT);
+    self.usernameLabel.dk_textColorPicker = DKColorPickerWithKey(TEXT);
+    self.likeCountLabel.dk_textColorPicker = DKColorPickerWithKey(TEXT);
+
 //    self.profileImageView.layer.cornerRadius = self.profileImageView.width * 0.5;
 //    self.profileImageView.layer.masksToBounds = YES;
 }
@@ -66,16 +71,5 @@
     }
 }
 
-#pragma mark 切换至日间模式
--(void)updateToDaySkinMode {
-    self.contentLabel.textColor = [UIColor blackColor];
-    self.contentView.backgroundColor = [UIColor whiteColor];
-}
-
-#pragma mark 切换至夜间模式
--(void)updateToNightSkinMode {
-    self.contentLabel.textColor = [UIColor grayColor];
-    self.contentView.backgroundColor = [UIColor colorWithRed:42/255.0 green:39/255.0 blue:43/255.0 alpha:1.0];
-}
 
 @end

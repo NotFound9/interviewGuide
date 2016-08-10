@@ -24,8 +24,7 @@
 @interface VideoTableViewCell : UITableViewCell
 
 +(instancetype)cell;
--(void)updateToDaySkinMode;
--(void)updateToNightSkinMode;
+
 @property (nonatomic, strong) TTVideo *video;
 @property (nonatomic, weak) id<VideoTableViewCellDelegate> delegate;
 @property (nonatomic, strong) NSIndexPath *indexPath;

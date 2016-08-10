@@ -23,8 +23,7 @@
 - (void)addAChannelButtonWithChannelName:(NSString *)channelName;
 - (void)selectChannelButtonWithIndex:(NSInteger)index;
 - (void)deleteChannelButtonWithIndex:(NSInteger)index;
-- (void)updateToDaySkinMode;
-- (void)updateToNightSkinMode;
+
 - (void)didShowEditChannelView:(BOOL)value;
 
 @property (nonatomic, strong) NSArray *channelNameArray;

@@ -9,6 +9,7 @@
 #import "SinglePictureNewsTableViewCell.h"
 #import "UIImageView+Extension.h"
 #import <UIImageView+WebCache.h>
+#import <DKNightVersion.h>
 
 @interface SinglePictureNewsTableViewCell()
 @property (weak, nonatomic) IBOutlet UIImageView *pictureImageView;
@@ -23,6 +24,12 @@
 - (void)awakeFromNib {
     self.commentCount.text = [NSString stringWithFormat:@"%d评论",arc4random()%1000];
     self.selectionStyle = UITableViewCellSelectionStyleNone;
+    self.dk_backgroundColorPicker = DKColorPickerWithRGB(0xffffff, 0x343434, 0xfafafa);
+    self.newsTittleLabel.dk_textColorPicker = DKColorPickerWithKey(TEXT);
+    self.commentCount.dk_textColorPicker = DKColorPickerWithKey(TEXT);
+    self.descLabel.dk_textColorPicker = DKColorPickerWithKey(TEXT);
+    self.separatorLine.dk_backgroundColorPicker = DKColorPickerWithKey(SEP);
+
 }
 
 
@@ -41,21 +48,5 @@
     self.descLabel.text = desc;
 }
 
-#pragma mark 切换至日间模式
--(void)updateToDaySkinMode {
-    self.newsTittleLabel.textColor = [UIColor blackColor];
-    self.contentView.backgroundColor = [UIColor whiteColor];
-    self.separatorLine.backgroundColor = [UIColor colorWithRed:240/255.0 green:240/255.0  blue:240/255.0  alpha:1.0];
-    
-}
-
-#pragma mark 切换至夜间模式
--(void)updateToNightSkinMode {
-    self.newsTittleLabel.textColor = [UIColor grayColor];
-    self.contentView.backgroundColor = [UIColor colorWithRed:42/255.0 green:39/255.0 blue:43/255.0 alpha:1.0];
-    self.separatorLine.backgroundColor = [UIColor colorWithRed:40/255.0 green:36/255.0  blue:40/255.0  alpha:1.0];
-
-
-}
 
 @end

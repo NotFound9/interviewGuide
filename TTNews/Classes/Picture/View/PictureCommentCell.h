@@ -13,7 +13,4 @@
 /** 评论 */
 @property (nonatomic, strong) TTPictureComment *comment;
 
--(void)updateToDaySkinMode;
--(void)updateToNightSkinMode;
-
 @end
