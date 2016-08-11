@@ -10,7 +10,6 @@
 #import "VideoTableViewCell.h"
 #import "TTVideo.h"
 #import <MJRefresh.h>
-#import <AFNetworking.h>
 #import <SDImageCache.h>
 #import "TTVideoComment.h"
 #import <MJExtension.h>
@@ -40,9 +39,6 @@ static NSString * const VideoCommentCellID = @"VideoCommentCell";
 /** 保存当前的页码 */
 @property (nonatomic, assign) NSInteger page;
 
-/** 管理者 */
-@property (nonatomic, strong) AFHTTPSessionManager *manager;
-
 /** 当前皮肤模式*/
 @property (nonatomic, copy) NSString *currentSkinModel;
 
@@ -63,14 +59,6 @@ static NSString * const VideoCommentCellID = @"VideoCommentCell";
 @implementation VideoCommentViewController
 
 #pragma mark 懒加载
-- (AFHTTPSessionManager *)manager
-{
-    if (!_manager) {
-        _manager = [AFHTTPSessionManager manager];
-    }
-    return _manager;
-}
-
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self setupBasic];
@@ -92,9 +80,6 @@ static NSString * const VideoCommentCellID = @"VideoCommentCell";
         self.video.top_cmt = self.saved_top_cmt;
         [self.video setValue:@0 forKeyPath:@"cellHeight"];
     }
-    // 取消所有任务
-    //    [self.manager.tasks makeObjectsPerformSelector:@selector(cancel)];
-    [self.manager invalidateSessionCancelingTasks:YES];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -167,9 +152,6 @@ static NSString * const VideoCommentCellID = @"VideoCommentCell";
 #pragma mark 加载最新评论
 - (void)loadNewComments
 {
-    // 结束之前的所有请求
-    [self.manager.tasks makeObjectsPerformSelector:@selector(cancel)];
-    
     // 参数
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     params[@"a"] = @"dataList";
@@ -177,7 +159,7 @@ static NSString * const VideoCommentCellID = @"VideoCommentCell";
     params[@"data_id"] = self.video.ID;
     params[@"hot"] = @"1";
     
-    [self.manager GET:@"http://api.budejie.com/api/api_open.php" parameters:params progress:nil success:^(NSURLSessionDataTask *task, id responseObject) {
+    [TTDataTool VideoCommentsWithParameters:params success:^(NSDictionary *responseObject) {
         if (![responseObject isKindOfClass:[NSDictionary class]]) {
             [self.tableView.mj_header endRefreshing];
             return;
@@ -200,7 +182,7 @@ static NSString * const VideoCommentCellID = @"VideoCommentCell";
         if (self.latestComments.count >= total) { // 全部加载完毕
             self.tableView.mj_footer.hidden = YES;
         }
-    } failure:^(NSURLSessionDataTask *task, NSError *error) {
+     } failure:^(NSError *error)  {
         [self.tableView.mj_header endRefreshing];
     }];
 }
@@ -208,8 +190,6 @@ static NSString * const VideoCommentCellID = @"VideoCommentCell";
 #pragma mark 加载更多评论
 - (void)loadMoreComments
 {
-    // 结束之前的所有请求
-    [self.manager.tasks makeObjectsPerformSelector:@selector(cancel)];
     
     // 页码
     NSInteger page = self.page + 1;
@@ -223,7 +203,7 @@ static NSString * const VideoCommentCellID = @"VideoCommentCell";
     TTVideoComment *cmt = [self.latestComments lastObject];
     params[@"lastcid"] = cmt.ID;
     
-    [self.manager GET:@"http://api.budejie.com/api/api_open.php" parameters:params progress:nil success:^(NSURLSessionDataTask *task, id responseObject) {
+    [TTDataTool VideoCommentsWithParameters:params success:^(NSDictionary *responseObject) {
         // 没有数据
         if (![responseObject isKindOfClass:[NSDictionary class]]) {
             self.tableView.mj_footer.hidden = YES;
@@ -248,7 +228,7 @@ static NSString * const VideoCommentCellID = @"VideoCommentCell";
             // 结束刷新状态
             [self.tableView.mj_footer endRefreshing];
         }
-    } failure:^(NSURLSessionDataTask *task, NSError *error) {
+    } failure:^(NSError *error) {
         [self.tableView.mj_footer endRefreshing];
     }];
 }

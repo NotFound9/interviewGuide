@@ -56,7 +56,7 @@ static NSString * const VideoCell = @"VideoCell";
     if (self.isFullScreenPlaying == NO) {//将要呈现的画面不是全屏播放页面
         [self.playView resetPlayView];
     }
-    self.navigationController.navigationBar.alpha = 1;
+//    self.navigationController.navigationBar.alpha = 1;
 }
 
 
@@ -246,13 +246,13 @@ static NSString * const VideoCell = @"VideoCell";
             }
     }
 
-    if (self.tableView.contentOffset.y>0) {
-        self.navigationController.navigationBar.alpha = 0;
-    } else {
-        CGFloat yValue = - self.tableView.contentOffset.y;//纵向的差距
-        CGFloat alphValue = yValue/self.tableView.contentInset.top;
-        self.navigationController.navigationBar.alpha =alphValue;
-    }
+//    if (self.tableView.contentOffset.y>0) {
+//        self.navigationController.navigationBar.alpha = 0;
+//    } else {
+//        CGFloat yValue = - self.tableView.contentOffset.y;//纵向的差距
+//        CGFloat alphValue = yValue/self.tableView.contentInset.top;
+//        self.navigationController.navigationBar.alpha =alphValue;
+//    }
 }
 -(void)didReceiveMemoryWarning {
     [[SDImageCache sharedImageCache] clearDisk];

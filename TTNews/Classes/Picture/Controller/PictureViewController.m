@@ -55,7 +55,7 @@ static NSString * const PictureCell = @"PictureCell";
 -(void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    self.navigationController.navigationBar.alpha = 1;
+//    self.navigationController.navigationBar.alpha = 1;
 
 }
 
@@ -181,13 +181,13 @@ static NSString * const PictureCell = @"PictureCell";
 
 #pragma mark --UIScrollViewDelegate scrollView滑动了
 -(void)scrollViewDidScroll:(UIScrollView *)scrollView {
-    if (self.tableView.contentOffset.y>0) {
-        self.navigationController.navigationBar.alpha = 0;
-    } else {
-        CGFloat yValue = - self.tableView.contentOffset.y;//纵向的差距
-        CGFloat alphValue = yValue/self.tableView.contentInset.top;
-        self.navigationController.navigationBar.alpha =alphValue;
-    }
+//    if (self.tableView.contentOffset.y>0) {
+//        self.navigationController.navigationBar.alpha = 0;
+//    } else {
+//        CGFloat yValue = - self.tableView.contentOffset.y;//纵向的差距
+//        CGFloat alphValue = yValue/self.tableView.contentInset.top;
+//        self.navigationController.navigationBar.alpha =alphValue;
+//    }
 }
 
 -(void)didReceiveMemoryWarning {

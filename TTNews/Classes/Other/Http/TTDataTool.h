@@ -25,6 +25,10 @@
 
 +(void)TTHeaderNewsFromServerOrCacheWithMaxTTHeaderNews:(TTHeaderNews *)headerNews success:(void (^)(NSMutableArray *array))success failure:(void (^)(NSError *error))failure;
 
++(void)VideoCommentsWithParameters:(NSMutableDictionary *)parameters success:(void (^)(NSDictionary *responseObject))success failure:(void (^) (NSError *error))failure;
+
++(void)PictureCommentsWithParameters:(NSMutableDictionary *)parameters success:(void (^)(NSDictionary * responseObject))success failure:(void (^) (NSError *error))failure;
+
 +(void)deletePartOfCacheInSqlite;
 
 

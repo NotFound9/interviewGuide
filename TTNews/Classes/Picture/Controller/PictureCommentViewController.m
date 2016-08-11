@@ -9,7 +9,6 @@
 #import "pictureTableViewCell.h"
 #import "TTpicture.h"
 #import <MJRefresh.h>
-#import <AFNetworking.h>
 #import <SDImageCache.h>
 #import "TTpictureComment.h"
 #import <MJExtension.h>
@@ -18,6 +17,7 @@
 #import "TTConst.h"
 #import "UIView+Extension.h"
 #import <DKNightVersion.h>
+#import "TTDataTool.h"
 
 static NSString * const PictureCommentCellID = @"PictureCommentCell";
 
@@ -41,8 +41,6 @@ static NSString * const PictureCommentCellID = @"PictureCommentCell";
 /** 保存当前的页码 */
 @property (nonatomic, assign) NSInteger page;
 
-/** 管理者 */
-@property (nonatomic, strong) AFHTTPSessionManager *manager;
 
 @property (nonatomic, copy) NSString *currentSkinModel;
 @property (nonatomic, weak) PictureTableViewCell *headerPictureCell;
@@ -50,14 +48,6 @@ static NSString * const PictureCommentCellID = @"PictureCommentCell";
 @end
 
 @implementation PictureCommentViewController
-
-- (AFHTTPSessionManager *)manager
-{
-    if (!_manager) {
-        _manager = [AFHTTPSessionManager manager];
-    }
-    return _manager;
-}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -80,9 +70,6 @@ static NSString * const PictureCommentCellID = @"PictureCommentCell";
         self.picture.top_cmt = self.saved_top_cmt;
         [self.picture setValue:@0 forKeyPath:@"cellHeight"];
     }
-    // 取消所有任务
-    //    [self.manager.tasks makeObjectsPerformSelector:@selector(cancel)];
-    [self.manager invalidateSessionCancelingTasks:YES];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 
 }
@@ -154,9 +141,6 @@ static NSString * const PictureCommentCellID = @"PictureCommentCell";
 #pragma mark 加载更多评论
 - (void)loadMoreComments
 {
-    // 结束之前的所有请求
-    [self.manager.tasks makeObjectsPerformSelector:@selector(cancel)];
-    
     // 页码
     NSInteger page = self.page + 1;
     
@@ -169,7 +153,7 @@ static NSString * const PictureCommentCellID = @"PictureCommentCell";
     TTPictureComment *cmt = [self.latestComments lastObject];
     params[@"lastcid"] = cmt.ID;
     
-    [self.manager GET:@"http://api.budejie.com/api/api_open.php" parameters:params progress:nil success:^(NSURLSessionDataTask *task, id responseObject) {
+    [TTDataTool PictureCommentsWithParameters:params success:^(NSDictionary *responseObject) {
         // 没有数据
         if (![responseObject isKindOfClass:[NSDictionary class]]) {
             self.tableView.mj_footer.hidden = YES;
@@ -194,7 +178,7 @@ static NSString * const PictureCommentCellID = @"PictureCommentCell";
             // 结束刷新状态
             [self.tableView.mj_footer endRefreshing];
         }
-    } failure:^(NSURLSessionDataTask *task, NSError *error) {
+    } failure:^(NSError *error) {
         [self.tableView.mj_footer endRefreshing];
     }];
 }
@@ -202,9 +186,6 @@ static NSString * const PictureCommentCellID = @"PictureCommentCell";
 #pragma mark 加载最新评论
 - (void)loadNewComments
 {
-    // 结束之前的所有请求
-    [self.manager.tasks makeObjectsPerformSelector:@selector(cancel)];
-    
     // 参数
     NSMutableDictionary *params = [NSMutableDictionary dictionary];
     params[@"a"] = @"dataList";
@@ -212,7 +193,7 @@ static NSString * const PictureCommentCellID = @"PictureCommentCell";
     params[@"data_id"] = self.picture.ID;
     params[@"hot"] = @"1";
     
-    [self.manager GET:@"http://api.budejie.com/api/api_open.php" parameters:params progress:nil success:^(NSURLSessionDataTask *task, id responseObject) {
+    [TTDataTool PictureCommentsWithParameters:params success:^(NSDictionary *responseObject) {
         if (![responseObject isKindOfClass:[NSDictionary class]]) {
             [self.tableView.mj_header endRefreshing];
             return;
@@ -235,7 +216,7 @@ static NSString * const PictureCommentCellID = @"PictureCommentCell";
         if (self.latestComments.count >= total) { // 全部加载完毕
             self.tableView.mj_footer.hidden = YES;
         }
-    } failure:^(NSURLSessionDataTask *task, NSError *error) {
+    } failure:^(NSError *error) {
         [self.tableView.mj_header endRefreshing];
     }];
 }

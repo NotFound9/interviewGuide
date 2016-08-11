@@ -21,8 +21,7 @@
 #import <MJExtension.h>
 #import <AFNetworking.h>
 #import <SVProgressHUD.h>
-
-static NSString * const apikey = @"8b72ce2839d6eea0869b4c2c60d2a449";
+#import "TTNetworkManager.h"
 
 @interface TTDataTool()
 
@@ -67,8 +66,7 @@ static FMDatabaseQueue *_queue;
 //            NSString *maxtime = lastVideo.maxtime;
 //            success(videoArray, maxtime);
 //        } else {
-            AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
-        
+    
             NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
             parameters[@"a"] = @"list";
             parameters[@"c"] = @"data";
@@ -78,7 +76,7 @@ static FMDatabaseQueue *_queue;
                 parameters[@"maxtime"] = videoParameters.maxtime;
             }
         
-            [manager GET:@"http://api.budejie.com/api/api_open.php" parameters:parameters progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+            [[TTNetworkManager shareManager] GET:@"http://api.budejie.com/api/api_open.php" parameters:parameters progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
                 NSArray *array = [TTVideo mj_objectArrayWithKeyValuesArray:responseObject[@"list"]];
                 NSString *maxTime = responseObject[@"info"][@"maxtime"];
                 for (TTVideo *video in array) {
@@ -180,7 +178,6 @@ static FMDatabaseQueue *_queue;
 //            NSString *maxtime = lastPicture.maxtime;
 //            success([pictureArray copy], maxtime);
 //        } else {
-            AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
             NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
             parameters[@"a"] = @"list";
             parameters[@"c"] = @"data";
@@ -190,7 +187,7 @@ static FMDatabaseQueue *_queue;
                 parameters[@"maxtime"] = pictureParameters.maxtime;
             }
             
-            [manager GET:@"http://api.budejie.com/api/api_open.php" parameters:parameters progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id _Nullable responseObject) {
+            [[TTNetworkManager shareManager] GET:@"http://api.budejie.com/api/api_open.php" parameters:parameters progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id _Nullable responseObject) {
                 NSArray *array = [TTPicture mj_objectArrayWithKeyValuesArray:responseObject[@"list"]];
                 NSString *maxTime = responseObject[@"info"][@"maxtime"];
                 for (TTPicture *picture in array) {
@@ -280,9 +277,7 @@ static FMDatabaseQueue *_queue;
 //        NSMutableArray *array = [self TTHeaderNewsFromCacheWithMaxTTHeaderNews:headerNews];
 //        success(array);
 //    } else {//有网络
-    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
-    [manager.requestSerializer setValue:apikey forHTTPHeaderField:@"apikey"];
-    [manager GET:@"http://apis.baidu.com/songshuxiansheng/news/news" parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [[TTNetworkManager otherManager] GET:@"http://apis.baidu.com/songshuxiansheng/news/news" parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
         NSMutableArray *headerNewsArray = [TTHeaderNews mj_objectArrayWithKeyValuesArray:responseObject[@"retData"]];
         NSArray *temmArray = [headerNewsArray copy];
         for (TTHeaderNews *headerNews in temmArray) {
@@ -358,14 +353,12 @@ static FMDatabaseQueue *_queue;
 //        success(cacheArray);
 //    } else {
 
-        AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
-        [manager.requestSerializer setValue:apikey forHTTPHeaderField:@"apikey"];
         NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
         parameters[@"channelid"] = normalNewsParameters.channelId;
         parameters[@"channelName"] = [normalNewsParameters.channelName stringByAppendingString:@"最新"];
         parameters[@"title"] = normalNewsParameters.title;
         parameters[@"page"] = @(normalNewsParameters.page);
-        [manager GET:@"http://apis.baidu.com/showapi_open_bus/channel_news/search_news" parameters:parameters progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        [[TTNetworkManager otherManager] GET:@"http://apis.baidu.com/showapi_open_bus/channel_news/search_news" parameters:parameters progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
             NSMutableArray *pictureArray = [TTNormalNews mj_objectArrayWithKeyValuesArray:responseObject[@"showapi_res_body"][@"pagebean"][@"contentlist"]];
             for (TTNormalNews *news in pictureArray) {
                 news.allPages = [responseObject[@"showapi_res_body"][@"pagebean"][@"allPages"] integerValue];
@@ -461,6 +454,26 @@ static FMDatabaseQueue *_queue;
     }];
 }
 
++(void)VideoCommentsWithParameters:(NSMutableDictionary *)parameters success:(void (^)(NSDictionary *))success failure:(void (^)(NSError *))failure {
+    [[TTNetworkManager shareManager] GET:@"http://api.budejie.com/api/api_open.php" parameters:parameters progress:nil success:^(NSURLSessionDataTask *task, id responseObject) {
+        if (![responseObject isKindOfClass:[NSDictionary class]]) {
+            return ;
+        }
+        success(responseObject);
+    } failure:^(NSURLSessionDataTask *task, NSError *error) {
+        failure(error);
+    }];
+}
 
++(void)PictureCommentsWithParameters:(NSMutableDictionary *)parameters success:(void (^)(NSDictionary *))success failure:(void (^)(NSError *))failure {
+    [[TTNetworkManager shareManager] GET:@"http://api.budejie.com/api/api_open.php" parameters:parameters progress:nil success:^(NSURLSessionDataTask *task, id responseObject) {
+        if (![responseObject isKindOfClass:[NSDictionary class]]) {
+            return ;
+        }
+        success(responseObject);
+    } failure:^(NSURLSessionDataTask *task, NSError *error) {
+        failure(error);
+    }];
+}
 
 @end
