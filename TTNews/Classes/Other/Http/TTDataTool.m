@@ -19,7 +19,6 @@
 #import "TTVideoComment.h"
 #import <FMDB.h>
 #import <MJExtension.h>
-#import <AFNetworking.h>
 #import <SVProgressHUD.h>
 #import "TTNetworkManager.h"
 
@@ -48,35 +47,17 @@ static FMDatabaseQueue *_queue;
 }
 
 +(void)videoWithParameters:(TTVideoFetchDataParameter *)videoParameters success:(void (^)(NSArray *array, NSString *maxtime))success failure:(void (^)(NSError *error))failure {
-//    if ([TTJudgeNetworking currentNetworkingType] == NetworkingTypeNoReachable) {//没有网络
-//        [SVProgressHUD showErrorWithStatus:@"无网络连接"];
-//        videoParameters.recentTime = nil;
-//        videoParameters.remoteTime = nil;
-//        NSMutableArray *videoArray = [self selectDataFromCacheWithVideoParameters:videoParameters];
-//        if (videoArray.count>0) {
-//            TTVideo *lastVideo = videoArray.lastObject;
-//            NSString *maxtime = lastVideo.maxtime;
-//            success(videoArray, maxtime);
-//        }
-//        success([videoArray copy], @"");
-//    } else {
-//        NSMutableArray *videoArray = [self selectDataFromCacheWithVideoParameters:videoParameters];
-//        if (videoArray.count>0) {
-//            TTVideo *lastVideo = videoArray.lastObject;
-//            NSString *maxtime = lastVideo.maxtime;
-//            success(videoArray, maxtime);
-//        } else {
+
+    NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
+    parameters[@"a"] = @"list";
+    parameters[@"c"] = @"data";
+    parameters[@"type"] = @(41);
+    parameters[@"page"] = @(videoParameters.page);
+    if (videoParameters.maxtime) {
+        parameters[@"maxtime"] = videoParameters.maxtime;
+    }
     
-            NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
-            parameters[@"a"] = @"list";
-            parameters[@"c"] = @"data";
-            parameters[@"type"] = @(41);
-            parameters[@"page"] = @(videoParameters.page);
-            if (videoParameters.maxtime) {
-                parameters[@"maxtime"] = videoParameters.maxtime;
-            }
-        
-            [[TTNetworkManager shareManager] GET:@"http://api.budejie.com/api/api_open.php" parameters:parameters progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [[TTNetworkManager shareManager] Get:@"http://api.budejie.com/api/api_open.php" Parameters:parameters Success:^(NSURLSessionDataTask *task, id responseObject) {
                 NSArray *array = [TTVideo mj_objectArrayWithKeyValuesArray:responseObject[@"list"]];
                 NSString *maxTime = responseObject[@"info"][@"maxtime"];
                 for (TTVideo *video in array) {
@@ -87,7 +68,7 @@ static FMDatabaseQueue *_queue;
                     [self addVideoArray:array];
                 });
 
-            } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+            } Failure:^(NSError *error) {
                 videoParameters.recentTime = nil;
                 videoParameters.remoteTime = nil;
                 NSMutableArray *videoArray = [self selectDataFromCacheWithVideoParameters:videoParameters];
@@ -159,35 +140,17 @@ static FMDatabaseQueue *_queue;
 }
 
 
-+(void)pictureWithParameters:(TTPictureFetchDataParameter *)pictureParameters success:(void (^)(NSArray *array, NSString *maxtime))success failure:(void (^)(NSError *error))failure {
-//    if ([TTJudgeNetworking currentNetworkingType] == NetworkingTypeNoReachable) {//没有网络
-//        [SVProgressHUD showErrorWithStatus:@"无网络连接"];
-//        pictureParameters.recentTime = nil;
-//        pictureParameters.remoteTime = nil;
-//        NSMutableArray *pictureArray = [self selectDataFromCacheWithPictureParameters:pictureParameters];
-//        if (pictureArray.count>0) {
-//            TTPicture *lastPicture = pictureArray.lastObject;
-//            NSString *maxtime = lastPicture.maxtime;
-//            success([pictureArray copy], maxtime);
-//        }
-//        success([pictureArray copy], @"");
-//    } else {
-//        NSMutableArray *pictureArray = [self selectDataFromCacheWithPictureParameters:pictureParameters];
-//        if (pictureArray.count>0) {
-//            TTPicture *lastPicture = pictureArray.lastObject;
-//            NSString *maxtime = lastPicture.maxtime;
-//            success([pictureArray copy], maxtime);
-//        } else {
-            NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
-            parameters[@"a"] = @"list";
-            parameters[@"c"] = @"data";
-            parameters[@"type"] = @(10);
-            parameters[@"page"] = @(pictureParameters.page);
-            if (pictureParameters.maxtime) {
-                parameters[@"maxtime"] = pictureParameters.maxtime;
-            }
-            
-            [[TTNetworkManager shareManager] GET:@"http://api.budejie.com/api/api_open.php" parameters:parameters progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id _Nullable responseObject) {
++(void)pictureWithParameters:(TTPictureFetchDataParameter *)pictureParameters success:(void (^)(NSArray *array, NSString *maxtime))success failure:(void (^)(NSError *error))failure {            NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
+    parameters[@"a"] = @"list";
+    parameters[@"c"] = @"data";
+    parameters[@"type"] = @(10);
+    parameters[@"page"] = @(pictureParameters.page);
+    if (pictureParameters.maxtime) {
+        parameters[@"maxtime"] = pictureParameters.maxtime;
+    }
+    
+    [[TTNetworkManager shareManager] Get:@"http://api.budejie.com/api/api_open.php" Parameters:parameters Success:^(NSURLSessionDataTask *task, id responseObject) {
+        
                 NSArray *array = [TTPicture mj_objectArrayWithKeyValuesArray:responseObject[@"list"]];
                 NSString *maxTime = responseObject[@"info"][@"maxtime"];
                 for (TTPicture *picture in array) {
@@ -198,7 +161,7 @@ static FMDatabaseQueue *_queue;
                     [self addPictureArray:array];
                 });
 
-            } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+            } Failure:^(NSError *error) {
                 pictureParameters.recentTime = nil;
                 pictureParameters.remoteTime = nil;
                 NSMutableArray *pictureArray = [self selectDataFromCacheWithPictureParameters:pictureParameters];
@@ -209,8 +172,6 @@ static FMDatabaseQueue *_queue;
                 }
                 success([pictureArray copy], @"");
             }];
-//        }
-//    }
 }
 
 
@@ -272,12 +233,7 @@ static FMDatabaseQueue *_queue;
 }
 
 + (void)TTHeaderNewsFromServerOrCacheWithMaxTTHeaderNews:(TTHeaderNews *)headerNews success:(void (^)(NSMutableArray *array))success failure:(void (^)(NSError *error))failure {
-//    if ([TTJudgeNetworking currentNetworkingType] == NetworkingTypeNoReachable) {//没有网络
-//        [SVProgressHUD showErrorWithStatus:@"无网络连接"];
-//        NSMutableArray *array = [self TTHeaderNewsFromCacheWithMaxTTHeaderNews:headerNews];
-//        success(array);
-//    } else {//有网络
-    [[TTNetworkManager otherManager] GET:@"http://apis.baidu.com/songshuxiansheng/news/news" parameters:nil progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+    [[TTNetworkManager shareManager] Get2:@"http://apis.baidu.com/songshuxiansheng/news/news" Parameters:nil Success:^(NSURLSessionDataTask *task, NSDictionary *responseObject) {
         NSMutableArray *headerNewsArray = [TTHeaderNews mj_objectArrayWithKeyValuesArray:responseObject[@"retData"]];
         NSArray *temmArray = [headerNewsArray copy];
         for (TTHeaderNews *headerNews in temmArray) {
@@ -290,14 +246,12 @@ static FMDatabaseQueue *_queue;
         });
         
         success(headerNewsArray);
-    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+    } Failure:^(NSError *error) {
         [SVProgressHUD showErrorWithStatus:@"无网络连接"];
         NSMutableArray *array = [self TTHeaderNewsFromCacheWithMaxTTHeaderNews:headerNews];
                 success(array);
         NSLog(@"%@",error);
         }];
-//    }
-
 }
 
 +(NSMutableArray *)TTHeaderNewsFromCacheWithMaxTTHeaderNews:(TTHeaderNews *)headerNews {
@@ -339,44 +293,29 @@ static FMDatabaseQueue *_queue;
 }
 
 +(void)TTNormalNewsWithParameters:(TTNormalNewsFetchDataParameter *)normalNewsParameters success:(void (^)(NSMutableArray *array))success failure:(void (^)(NSError *error))failure {
-//    if (![TTJudgeNetworking judge]) {
-//        [SVProgressHUD showErrorWithStatus:@"无网络连接"];
-//        TTNormalNewsFetchDataParameter *tempParameters = [[TTNormalNewsFetchDataParameter alloc] init];
-//        tempParameters.channelId = normalNewsParameters.channelId;
-//        NSMutableArray *tempCacheArray = [self selectDataFromTTNormalNewsCacheWithParameters:tempParameters];
-//        success(tempCacheArray);
-//        return;
-//    }
-//    NSMutableArray *cacheArray = [self selectDataFromTTNormalNewsCacheWithParameters:normalNewsParameters];
-//
-//    if (cacheArray.count == 20) {
-//        success(cacheArray);
-//    } else {
+    NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
+    parameters[@"channelid"] = normalNewsParameters.channelId;
+    parameters[@"channelName"] = [normalNewsParameters.channelName stringByAppendingString:@"最新"];
+    parameters[@"title"] = normalNewsParameters.title;
+    parameters[@"page"] = @(normalNewsParameters.page);
 
-        NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
-        parameters[@"channelid"] = normalNewsParameters.channelId;
-        parameters[@"channelName"] = [normalNewsParameters.channelName stringByAppendingString:@"最新"];
-        parameters[@"title"] = normalNewsParameters.title;
-        parameters[@"page"] = @(normalNewsParameters.page);
-        [[TTNetworkManager otherManager] GET:@"http://apis.baidu.com/showapi_open_bus/channel_news/search_news" parameters:parameters progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
-            NSMutableArray *pictureArray = [TTNormalNews mj_objectArrayWithKeyValuesArray:responseObject[@"showapi_res_body"][@"pagebean"][@"contentlist"]];
-            for (TTNormalNews *news in pictureArray) {
-                news.allPages = [responseObject[@"showapi_res_body"][@"pagebean"][@"allPages"] integerValue];
-            }
-         
-            success(pictureArray);
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                [self addTTNormalNewsArray:pictureArray];
-            });
-        } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
-            failure(error);
-            TTNormalNewsFetchDataParameter *tempParameters = [[TTNormalNewsFetchDataParameter alloc] init];
-                tempParameters.channelId = normalNewsParameters.channelId;
-                NSMutableArray *tempCacheArray = [self selectDataFromTTNormalNewsCacheWithParameters:tempParameters];
-                success(tempCacheArray);
-        }];
-//    }
-
+    [[TTNetworkManager shareManager] Get2:@"http://apis.baidu.com/showapi_open_bus/channel_news/search_news" Parameters:parameters Success:^(NSURLSessionDataTask *task, NSDictionary *responseObject) {
+        NSMutableArray *pictureArray = [TTNormalNews mj_objectArrayWithKeyValuesArray:responseObject[@"showapi_res_body"][@"pagebean"][@"contentlist"]];
+        for (TTNormalNews *news in pictureArray) {
+            news.allPages = [responseObject[@"showapi_res_body"][@"pagebean"][@"allPages"] integerValue];
+        }
+     
+        success(pictureArray);
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            [self addTTNormalNewsArray:pictureArray];
+        });
+    } Failure:^(NSError *error) {
+        failure(error);
+        TTNormalNewsFetchDataParameter *tempParameters = [[TTNormalNewsFetchDataParameter alloc] init];
+            tempParameters.channelId = normalNewsParameters.channelId;
+            NSMutableArray *tempCacheArray = [self selectDataFromTTNormalNewsCacheWithParameters:tempParameters];
+            success(tempCacheArray);
+    }];
 }
 
 
@@ -455,23 +394,17 @@ static FMDatabaseQueue *_queue;
 }
 
 +(void)VideoCommentsWithParameters:(NSMutableDictionary *)parameters success:(void (^)(NSDictionary *))success failure:(void (^)(NSError *))failure {
-    [[TTNetworkManager shareManager] GET:@"http://api.budejie.com/api/api_open.php" parameters:parameters progress:nil success:^(NSURLSessionDataTask *task, id responseObject) {
-        if (![responseObject isKindOfClass:[NSDictionary class]]) {
-            return ;
-        }
+      [[TTNetworkManager shareManager] Get:@"http://api.budejie.com/api/api_open.php" Parameters:parameters Success:^(NSURLSessionDataTask *task, id responseObject) {
         success(responseObject);
-    } failure:^(NSURLSessionDataTask *task, NSError *error) {
+    } Failure:^(NSError *error) {
         failure(error);
     }];
 }
 
 +(void)PictureCommentsWithParameters:(NSMutableDictionary *)parameters success:(void (^)(NSDictionary *))success failure:(void (^)(NSError *))failure {
-    [[TTNetworkManager shareManager] GET:@"http://api.budejie.com/api/api_open.php" parameters:parameters progress:nil success:^(NSURLSessionDataTask *task, id responseObject) {
-        if (![responseObject isKindOfClass:[NSDictionary class]]) {
-            return ;
-        }
+    [[TTNetworkManager shareManager] Get:@"http://api.budejie.com/api/api_open.php" Parameters:parameters Success:^(NSURLSessionDataTask *task, id responseObject) {
         success(responseObject);
-    } failure:^(NSURLSessionDataTask *task, NSError *error) {
+    } Failure:^(NSError *error) {
         failure(error);
     }];
 }

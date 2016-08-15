@@ -17,9 +17,9 @@
 #import "UIBarButtonItem+Extension.h"
 #import "TTConst.h"
 #import "UIView+Extension.h"
-#import "TTDataTool.h"
 #import "FullViewController.h"
 #import <DKNightVersion.h>
+#import "TTNetworkManager.h"
 
 static NSString * const VideoCommentCellID = @"VideoCommentCell";
 
@@ -159,11 +159,8 @@ static NSString * const VideoCommentCellID = @"VideoCommentCell";
     params[@"data_id"] = self.video.ID;
     params[@"hot"] = @"1";
     
-    [TTDataTool VideoCommentsWithParameters:params success:^(NSDictionary *responseObject) {
-        if (![responseObject isKindOfClass:[NSDictionary class]]) {
-            [self.tableView.mj_header endRefreshing];
-            return;
-        } // 说明没有评论数据
+//    [TTDataTool VideoCommentsWithParameters:params success:^(NSDictionary *responseObject) {
+    [[TTNetworkManager shareManager] Get:@"http://api.budejie.com/api/api_open.php" Parameters:params Success:^(NSURLSessionDataTask *task, id responseObject) {
         
         // 最热评论
         self.hotComments = [TTVideoComment mj_objectArrayWithKeyValuesArray:responseObject[@"hot"]];
@@ -176,13 +173,13 @@ static NSString * const VideoCommentCellID = @"VideoCommentCell";
         [self.tableView reloadData];
         // 结束刷新
         [self.tableView.mj_header endRefreshing];
-        
+
         // 控制footer的状态
         NSInteger total = [responseObject[@"total"] integerValue];
         if (self.latestComments.count >= total) { // 全部加载完毕
             self.tableView.mj_footer.hidden = YES;
         }
-     } failure:^(NSError *error)  {
+     } Failure:^(NSError *error) {
         [self.tableView.mj_header endRefreshing];
     }];
 }
@@ -203,12 +200,9 @@ static NSString * const VideoCommentCellID = @"VideoCommentCell";
     TTVideoComment *cmt = [self.latestComments lastObject];
     params[@"lastcid"] = cmt.ID;
     
-    [TTDataTool VideoCommentsWithParameters:params success:^(NSDictionary *responseObject) {
+//    [TTDataTool VideoCommentsWithParameters:params success:^(NSDictionary *responseObject) {
         // 没有数据
-        if (![responseObject isKindOfClass:[NSDictionary class]]) {
-            self.tableView.mj_footer.hidden = YES;
-            return;
-        }
+    [[TTNetworkManager shareManager] Get:@"http://api.budejie.com/api/api_open.php" Parameters:params Success:^(NSURLSessionDataTask *task, id responseObject) {
         
         // 最新评论
         NSArray *newComments = [TTVideoComment mj_objectArrayWithKeyValuesArray:responseObject[@"data"]];
@@ -228,7 +222,7 @@ static NSString * const VideoCommentCellID = @"VideoCommentCell";
             // 结束刷新状态
             [self.tableView.mj_footer endRefreshing];
         }
-    } failure:^(NSError *error) {
+    } Failure:^(NSError *error) {
         [self.tableView.mj_footer endRefreshing];
     }];
 }

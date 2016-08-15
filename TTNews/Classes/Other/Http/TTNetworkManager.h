@@ -6,9 +6,23 @@
 //  Copyright © 2016年 瑞文戴尔. All rights reserved.
 //
 
-#import <AFNetworking/AFNetworking.h>
+#import <Foundation/Foundation.h>
 
-@interface TTNetworkManager : AFHTTPSessionManager
+typedef void (^Completion)(NSURLSessionDataTask *task ,NSDictionary *responseObject);
+typedef void (^Failure)(NSError *error);
+
+@interface TTNetworkManager : NSObject
+
 +(TTNetworkManager *)shareManager;
-+(TTNetworkManager *)otherManager;
+
+/**
+ *  有请求头的get请求
+ */
+-(void)Get:(NSString *)url Parameters:(NSDictionary *)parameters Success:(Completion)success Failure:(Failure)failure;
+
+/**
+ *  有请求头的get请求
+ */
+-(void)Get2:(NSString *)url Parameters:(NSDictionary *)parameters Success:(Completion)success Failure:(Failure)failure;
+
 @end

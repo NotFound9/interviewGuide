@@ -18,6 +18,7 @@
 #import "UIView+Extension.h"
 #import <DKNightVersion.h>
 #import "TTDataTool.h"
+#import "TTNetworkManager.h"
 
 static NSString * const PictureCommentCellID = @"PictureCommentCell";
 
@@ -153,12 +154,8 @@ static NSString * const PictureCommentCellID = @"PictureCommentCell";
     TTPictureComment *cmt = [self.latestComments lastObject];
     params[@"lastcid"] = cmt.ID;
     
-    [TTDataTool PictureCommentsWithParameters:params success:^(NSDictionary *responseObject) {
-        // 没有数据
-        if (![responseObject isKindOfClass:[NSDictionary class]]) {
-            self.tableView.mj_footer.hidden = YES;
-            return;
-        }
+//    [TTDataTool PictureCommentsWithParameters:params success:^(NSDictionary *responseObject) {
+    [[TTNetworkManager shareManager] Get:@"http://api.budejie.com/api/api_open.php" Parameters:params Success:^(NSURLSessionDataTask *task, id responseObject) {
         
         // 最新评论
         NSArray *newComments = [TTPictureComment mj_objectArrayWithKeyValuesArray:responseObject[@"data"]];
@@ -178,7 +175,7 @@ static NSString * const PictureCommentCellID = @"PictureCommentCell";
             // 结束刷新状态
             [self.tableView.mj_footer endRefreshing];
         }
-    } failure:^(NSError *error) {
+    } Failure:^(NSError *error) {
         [self.tableView.mj_footer endRefreshing];
     }];
 }
@@ -193,11 +190,8 @@ static NSString * const PictureCommentCellID = @"PictureCommentCell";
     params[@"data_id"] = self.picture.ID;
     params[@"hot"] = @"1";
     
-    [TTDataTool PictureCommentsWithParameters:params success:^(NSDictionary *responseObject) {
-        if (![responseObject isKindOfClass:[NSDictionary class]]) {
-            [self.tableView.mj_header endRefreshing];
-            return;
-        } // 说明没有评论数据
+    [[TTNetworkManager shareManager] Get:@"http://api.budejie.com/api/api_open.php" Parameters:params Success:^(NSURLSessionDataTask *task, id responseObject) {
+        
         
         // 最热评论
         self.hotComments = [TTPictureComment mj_objectArrayWithKeyValuesArray:responseObject[@"hot"]];
@@ -206,17 +200,18 @@ static NSString * const PictureCommentCellID = @"PictureCommentCell";
         // 页码
         self.page = 1;
         
-        // 刷新数据
-        [self.tableView reloadData];
         // 结束刷新
         [self.tableView.mj_header endRefreshing];
         
+        // 刷新数据
+        [self.tableView reloadData];
+        NSLog(@"%@",[NSThread currentThread]);
         // 控制footer的状态
         NSInteger total = [responseObject[@"total"] integerValue];
         if (self.latestComments.count >= total) { // 全部加载完毕
             self.tableView.mj_footer.hidden = YES;
         }
-    } failure:^(NSError *error) {
+    } Failure:^(NSError *error) {
         [self.tableView.mj_header endRefreshing];
     }];
 }

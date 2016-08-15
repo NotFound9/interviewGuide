@@ -97,7 +97,6 @@ static NSString * const noPictureCell = @"NoPictureCell";
 -(void)fetchNewHeaderNews {
     [self.headerView removeTimer];
     [TTDataTool TTHeaderNewsFromServerOrCacheWithMaxTTHeaderNews:self.headerNewsArray.lastObject success:^(NSMutableArray *array) {
-        [SVProgressHUD dismiss];
         self.headerNewsArray = array;
         NSMutableArray *imageUrls = [NSMutableArray array];
         NSMutableArray *titles = [NSMutableArray array];
