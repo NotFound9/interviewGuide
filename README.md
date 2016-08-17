@@ -1,5 +1,6 @@
-# TTNews 也可以到这个网站里面下载项目http://www.codedata.cn/cdetail/Objective-C/Demo/1471438806256270
+# TTNews
 
+bug 收集和讨论地址:   http://www.codedata.cn/cdetail/Objective-C/Demo/1471438806256270
 
 ![image](https://github.com/577528249/TTNews/blob/master/introductionimages/1234.gif)
 
