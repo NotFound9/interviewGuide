@@ -1,6 +1,7 @@
 # TTNews
 
-bug 收集和讨论地址:   http://www.codedata.cn/cdetail/Objective-C/Demo/1471438806256270
+如果下载太慢了，可以来百度云盘下载，链接: https://pan.baidu.com/s/1i5mBhyP 密码: q89i
+或者来这个网站下载http://www.codedata.cn/cdetail/Objective-C/Demo/1471438806256270
 
 
 ![image](https://github.com/577528249/TTNews/blob/master/introductionimages/1234.gif)
@@ -43,7 +44,7 @@ PS:她的新闻数据源来自于百度API Store里的免费新闻api，
 点击右上角Download Zip按钮，将项目压缩包下载至本地，解压后点击文件夹中TTNews.xcworkspace即可运行。
 
 
-如果下载太慢了，可以来百度云盘下载，链接: https://pan.baidu.com/s/1i5mBhyP 密码: q89i
+
 
 
 # 新闻首页
