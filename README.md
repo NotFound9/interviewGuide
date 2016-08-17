@@ -1,4 +1,4 @@
-# TTNews
+# TTNews 也可以到这个网站里面下载项目http://www.codedata.cn/cdetail/Objective-C/Demo/1471438806256270
 
 
 ![image](https://github.com/577528249/TTNews/blob/master/introductionimages/1234.gif)
@@ -33,10 +33,6 @@ PS:她的新闻数据源来自于百度API Store里的免费新闻api，
 
 
 新手项目，多多包涵，谢谢！有相关问题可以在线留言或发邮件至577528249@qq.com，谢谢！
-
-
-
-大家可以多看看http://www.codedata.cn/,  里面也有很多很赞的项目！
 
 
 #使用方法
