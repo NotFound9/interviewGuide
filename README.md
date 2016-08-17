@@ -1,6 +1,8 @@
 # TTNews
 
 如果下载太慢了，可以来百度云盘下载，链接: https://pan.baidu.com/s/1i5mBhyP 密码: q89i
+
+
 或者来这个网站下载http://www.codedata.cn/cdetail/Objective-C/Demo/1471438806256270
 
 
