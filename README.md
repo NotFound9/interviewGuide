@@ -36,7 +36,7 @@ PS:她的新闻数据源来自于百度API Store里的免费新闻api，
 
 
 
-大家可以多看看http://www.codedata.cn/，里面也有很多很赞的项目！
+大家可以多看看http://www.codedata.cn/,  里面也有很多很赞的项目！
 
 
 #使用方法
