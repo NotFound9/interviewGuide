@@ -46,6 +46,18 @@
     return [[[NSBundle mainBundle] loadNibNamed:NSStringFromClass(self) owner:nil options:nil] firstObject];
 }
 
+-(void)layoutSubviews {
+    
+    int k; 
+    
+}
+- (id)initWithCoder:(NSCoder *)aDecoder {
+    self = [super initWithCoder:aDecoder];
+    if (self) {
+    }
+    return self;
+}
+
 - (void)awakeFromNib {
     self.progressView.roundedCorners = 2;
     self.progressView.progressLabel.textColor = [UIColor whiteColor];

@@ -7,7 +7,6 @@ target 'TTNews' do
 
 pod 'MJRefresh'
 pod 'MJExtension'
-pod 'AFNetworking'
 pod 'SDWebImage'
 pod 'pop'
 pod 'SVProgressHUD'

@@ -4,11 +4,6 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
-		<key>AFNetworking.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
 		<key>DACircularProgress.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -62,27 +57,27 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>2F639BAC2BE0057D2AF305181E4637DE</key>
+		<key>0A0ABA9BBE904F5A5C1C77EF3E64D83A</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>53406FD23904169597858D7716FC7645</key>
+		<key>406B313C2CB8ADBA04451C5C956D1B18</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>63491E1EA0E903734AFD83F4D7DC319A</key>
+		<key>6845E5BCBED26E5C7E7990D7BFDA4782</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>806E4E624C1F8FBB9FF320353BACDFB3</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
 		<key>8F74D9EA91F4C43190670066BAC37D44</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>928353533005A4198EBDA5B700D37B64</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -103,11 +98,6 @@
 			<true/>
 		</dict>
 		<key>B4A3E08D49931371F7247521A50EAF79</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>B56BC1B5AF7240A3B2E50EC7A163A638</key>
 		<dict>
 			<key>primary</key>
 			<true/>

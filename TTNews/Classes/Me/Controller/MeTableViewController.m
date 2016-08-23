@@ -184,8 +184,8 @@ CGFloat const footViewHeight = 30;
         [TTDataTool deletePartOfCacheInSqlite];
         [[SDImageCache sharedImageCache] clearDisk];
         [SVProgressHUD showSuccessWithStatus:@"缓存清除完毕!"];
-        UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
-        cell.detailTextLabel.text = [NSString stringWithFormat:@"0.0MB"];
+        TwoLabelCell *cell = [tableView cellForRowAtIndexPath:indexPath];
+        cell.rightLabel.text = [NSString stringWithFormat:@"0.0MB"];
     } else if (indexPath.section == 1 && indexPath.row == 3) {
         [self.navigationController pushViewController:[[SendFeedbackViewController alloc] init] animated:YES];
     } else if (indexPath.section == 1 && indexPath.row == 4) {
