@@ -20,16 +20,12 @@
 #import <DKNightVersion.h>
 #import "SXNewsTableViewPage.h"
 
-@interface NewsViewController()<UIScrollViewDelegate, ChannelCollectionViewCellDelegate,TTTopChannelContianerViewDelegate>
+@interface NewsViewController()<UIScrollViewDelegate>
 @property (nonatomic, strong) NSMutableArray *currentChannelsArray;
-//@property (nonatomic, strong) NSMutableArray *remainChannelsArray;
-//@property (nonatomic, strong) NSMutableArray *allChannelsArray;
-//@property (nonatomic, strong) NSMutableDictionary *channelsUrlDictionary;
 @property (nonatomic, weak) TTTopChannelContianerView *topContianerView;
 @property (nonatomic, weak) UIScrollView *contentScrollView;
-//@property (nonatomic, weak) UICollectionView *collectionView;
-//@property (nonatomic, assign) BOOL isCellShouldShake;
 @property (nonatomic, strong) NSArray *arrayLists;
+
 @end
 
 static NSString * const collectionCellID = @"ChannelCollectionCell";
@@ -81,9 +77,7 @@ static NSString * const collectionViewSectionHeaderID = @"ChannelCollectionHeade
 - (void)setupTopContianerView{
     CGFloat top = CGRectGetMaxY(self.navigationController.navigationBar.frame);
     TTTopChannelContianerView *topContianerView = [[TTTopChannelContianerView alloc] initWithFrame:CGRectMake(0, top, [UIScreen mainScreen].bounds.size.width, 30)];
-//    self.topContianerView.dk_backgroundColorPicker = DKColorPickerWithRGB(0xf0f0f0, 0x343434, 0xfafafa);
     topContianerView.channelNameArray = self.currentChannelsArray;
-    topContianerView.delegate = self;
     self.topContianerView  = topContianerView;
     self.topContianerView.scrollView.delegate = self;
     [self.view addSubview:topContianerView];

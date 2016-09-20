@@ -24,7 +24,7 @@
 - (void)selectChannelButtonWithIndex:(NSInteger)index;
 - (void)deleteChannelButtonWithIndex:(NSInteger)index;
 
-- (void)didShowEditChannelView:(BOOL)value;
+//- (void)didShowEditChannelView:(BOOL)value;
 
 @property (nonatomic, strong) NSArray *channelNameArray;
 @property (nonatomic, weak) UIScrollView *scrollView;

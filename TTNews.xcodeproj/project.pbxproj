@@ -81,9 +81,7 @@
 		EE8A193E1D5B46CE00BAE119 /* DisclosureCell.m in Sources */ = {isa = PBXBuildFile; fileRef = EE8A193D1D5B46CE00BAE119 /* DisclosureCell.m */; };
 		EE8A194C1D5C476C00BAE119 /* TTNetworkManager.m in Sources */ = {isa = PBXBuildFile; fileRef = EE8A194B1D5C476C00BAE119 /* TTNetworkManager.m */; };
 		EEB32A4B1CD38CAF00FF0AB8 /* TTTopChannelContianerView.m in Sources */ = {isa = PBXBuildFile; fileRef = EEB32A4A1CD38CAF00FF0AB8 /* TTTopChannelContianerView.m */; };
-		EEB3DF6E1D8ED0130039ABF5 /* SXNewsCell.m in Sources */ = {isa = PBXBuildFile; fileRef = EEB3DF671D8ED0130039ABF5 /* SXNewsCell.m */; };
 		EEB3DF6F1D8ED0130039ABF5 /* SXNewsEntity.m in Sources */ = {isa = PBXBuildFile; fileRef = EEB3DF691D8ED0130039ABF5 /* SXNewsEntity.m */; };
-		EEB3DF701D8ED0130039ABF5 /* SXNewsTableViewPage.m in Sources */ = {isa = PBXBuildFile; fileRef = EEB3DF6B1D8ED0130039ABF5 /* SXNewsTableViewPage.m */; };
 		EEB3DF761D8ED3730039ABF5 /* SXNetworkTools.m in Sources */ = {isa = PBXBuildFile; fileRef = EEB3DF751D8ED3730039ABF5 /* SXNetworkTools.m */; };
 		EEB3DF9C1D8F913A0039ABF5 /* BigPictureTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = EEB3DF9A1D8F913A0039ABF5 /* BigPictureTableViewCell.m */; };
 		EEB3DF9D1D8F913A0039ABF5 /* BigPictureTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = EEB3DF9B1D8F913A0039ABF5 /* BigPictureTableViewCell.xib */; };
@@ -247,14 +245,10 @@
 		EE8A194B1D5C476C00BAE119 /* TTNetworkManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TTNetworkManager.m; sourceTree = "<group>"; };
 		EEB32A491CD38CAF00FF0AB8 /* TTTopChannelContianerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TTTopChannelContianerView.h; sourceTree = "<group>"; };
 		EEB32A4A1CD38CAF00FF0AB8 /* TTTopChannelContianerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TTTopChannelContianerView.m; sourceTree = "<group>"; };
-		EEB3DF661D8ED0130039ABF5 /* SXNewsCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SXNewsCell.h; path = Controller/SXNewsCell.h; sourceTree = "<group>"; };
-		EEB3DF671D8ED0130039ABF5 /* SXNewsCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SXNewsCell.m; path = Controller/SXNewsCell.m; sourceTree = "<group>"; };
-		EEB3DF681D8ED0130039ABF5 /* SXNewsEntity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SXNewsEntity.h; path = Controller/SXNewsEntity.h; sourceTree = "<group>"; };
-		EEB3DF691D8ED0130039ABF5 /* SXNewsEntity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SXNewsEntity.m; path = Controller/SXNewsEntity.m; sourceTree = "<group>"; };
-		EEB3DF6A1D8ED0130039ABF5 /* SXNewsTableViewPage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SXNewsTableViewPage.h; path = Controller/SXNewsTableViewPage.h; sourceTree = "<group>"; };
-		EEB3DF6B1D8ED0130039ABF5 /* SXNewsTableViewPage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SXNewsTableViewPage.m; path = Controller/SXNewsTableViewPage.m; sourceTree = "<group>"; };
-		EEB3DF741D8ED3730039ABF5 /* SXNetworkTools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SXNetworkTools.h; path = Controller/SXNetworkTools.h; sourceTree = "<group>"; };
-		EEB3DF751D8ED3730039ABF5 /* SXNetworkTools.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SXNetworkTools.m; path = Controller/SXNetworkTools.m; sourceTree = "<group>"; };
+		EEB3DF681D8ED0130039ABF5 /* SXNewsEntity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SXNewsEntity.h; path = ../Controller/SXNewsEntity.h; sourceTree = "<group>"; };
+		EEB3DF691D8ED0130039ABF5 /* SXNewsEntity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SXNewsEntity.m; path = ../Controller/SXNewsEntity.m; sourceTree = "<group>"; };
+		EEB3DF741D8ED3730039ABF5 /* SXNetworkTools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SXNetworkTools.h; path = ../../News/Controller/SXNetworkTools.h; sourceTree = "<group>"; };
+		EEB3DF751D8ED3730039ABF5 /* SXNetworkTools.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SXNetworkTools.m; path = ../../News/Controller/SXNetworkTools.m; sourceTree = "<group>"; };
 		EEB3DF991D8F913A0039ABF5 /* BigPictureTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BigPictureTableViewCell.h; sourceTree = "<group>"; };
 		EEB3DF9A1D8F913A0039ABF5 /* BigPictureTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BigPictureTableViewCell.m; sourceTree = "<group>"; };
 		EEB3DF9B1D8F913A0039ABF5 /* BigPictureTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = BigPictureTableViewCell.xib; sourceTree = "<group>"; };
@@ -455,6 +449,8 @@
 		EE79B0A51CC8C435001029EF /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				EEB3DF681D8ED0130039ABF5 /* SXNewsEntity.h */,
+				EEB3DF691D8ED0130039ABF5 /* SXNewsEntity.m */,
 				EE79B0A61CC8C435001029EF /* TTHeaderNews.h */,
 				EE79B0A71CC8C435001029EF /* TTHeaderNews.m */,
 				EE79B0A81CC8C435001029EF /* TTNormalNews.h */,
@@ -509,6 +505,8 @@
 		EE79B0C41CC8C435001029EF /* Http */ = {
 			isa = PBXGroup;
 			children = (
+				EEB3DF741D8ED3730039ABF5 /* SXNetworkTools.h */,
+				EEB3DF751D8ED3730039ABF5 /* SXNetworkTools.m */,
 				EE79B0C71CC8C435001029EF /* TTDataTool.h */,
 				EE79B0C81CC8C435001029EF /* TTDataTool.m */,
 				EE79B0C91CC8C435001029EF /* TTNormalNewsFetchDataParameter.h */,
@@ -664,14 +662,6 @@
 		EEB3DF7F1D8EDB550039ABF5 /* NewFile */ = {
 			isa = PBXGroup;
 			children = (
-				EEB3DF741D8ED3730039ABF5 /* SXNetworkTools.h */,
-				EEB3DF751D8ED3730039ABF5 /* SXNetworkTools.m */,
-				EEB3DF661D8ED0130039ABF5 /* SXNewsCell.h */,
-				EEB3DF671D8ED0130039ABF5 /* SXNewsCell.m */,
-				EEB3DF681D8ED0130039ABF5 /* SXNewsEntity.h */,
-				EEB3DF691D8ED0130039ABF5 /* SXNewsEntity.m */,
-				EEB3DF6A1D8ED0130039ABF5 /* SXNewsTableViewPage.h */,
-				EEB3DF6B1D8ED0130039ABF5 /* SXNewsTableViewPage.m */,
 			);
 			name = NewFile;
 			sourceTree = "<group>";
@@ -937,14 +927,12 @@
 				EEB3DFA91D8F92920039ABF5 /* TopTextTableViewCell.m in Sources */,
 				EEE3E81E1CD5AD3E00D699E0 /* ChannelsSectionHeaderView.m in Sources */,
 				EE79B13A1CC8C435001029EF /* PictureTableViewCell.m in Sources */,
-				EEB3DF701D8ED0130039ABF5 /* SXNewsTableViewPage.m in Sources */,
 				EE79B1341CC8C435001029EF /* PictureViewController.m in Sources */,
 				EE79B1181CC8C435001029EF /* TTHeaderNews.m in Sources */,
 				EE79B1161CC8C435001029EF /* NewsViewController.m in Sources */,
 				EE79B12C1CC8C435001029EF /* TTVideoFetchDataParameter.m in Sources */,
 				EE79B1241CC8C435001029EF /* UIBarButtonItem+Extension.m in Sources */,
 				EE79B12F1CC8C435001029EF /* TTTabBarController.m in Sources */,
-				EEB3DF6E1D8ED0130039ABF5 /* SXNewsCell.m in Sources */,
 				EE3A071E1CDA1DAD0024C37A /* ContentTableViewController.m in Sources */,
 				EE79B1251CC8C435001029EF /* UIImage+Extension.m in Sources */,
 				EE79B11E1CC8C435001029EF /* NoPictureNewsTableViewCell.m in Sources */,

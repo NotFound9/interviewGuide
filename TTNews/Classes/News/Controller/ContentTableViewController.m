@@ -100,7 +100,6 @@ static NSString * const topPictureCell = @"TopPictureCell";
     [self loadDataForType:1 withURL:allUrlstring];
 }
 
-// ------上拉加载
 - (void)loadMoreData
 {
     NSString *allUrlstring = [NSString stringWithFormat:@"/nc/article/%@/%ld-20.html",self.urlString,(self.arrayList.count - self.arrayList.count%10)];
@@ -108,16 +107,15 @@ static NSString * const topPictureCell = @"TopPictureCell";
     [self loadDataForType:2 withURL:allUrlstring];
 }
 
-// ------公共方法
 - (void)loadDataForType:(int)type withURL:(NSString *)allUrlstring
 {
-    [[[SXNetworkTools sharedNetworkTools] GET:allUrlstring parameters:nil success:^(NSURLSessionDataTask *task, NSDictionary* responseObject) {
+    [[[SXNetworkTools sharedNetworkTools] GET:allUrlstring parameters:nil progress:nil success:^(NSURLSessionDataTask *task, NSDictionary* responseObject) {
         NSLog(@"%@",allUrlstring);
         NSString *key = [responseObject.keyEnumerator nextObject];
         
         NSArray *temArray = responseObject[key];
         
-        NSArray *arrayM = [SXNewsEntity objectArrayWithKeyValuesArray:temArray];
+        NSArray *arrayM = [SXNewsEntity mj_objectArrayWithKeyValuesArray:temArray];
         
         if (type == 1) {
             self.arrayList = [arrayM mutableCopy];
@@ -262,41 +260,8 @@ static NSString * const topPictureCell = @"TopPictureCell";
     }else{
         [self pushToDetailViewControllerWithUrl:NewsModel.url];
     }
-    
-//    TTNormalNews *news = self.normalNewsArray[indexPath.row];
-//    if (news.normalNewsType == NormalNewsTypeMultiPicture) {
-//        ShowMultiPictureViewController *viewController = [[ShowMultiPictureViewController alloc] init];
-//        viewController.imageUrls = news.imageurls;
-//        NSString *text = news.desc;
-//        if (text == nil || [text isEqualToString:@""]) {
-//            text = news.title;
-//        }
-//        viewController.text = text;
-//        [self.navigationController pushViewController:viewController animated:YES];
-//    } else {
-//        [self pushToDetailViewControllerWithUrl:news.link];
-//    }
-    
+
 }
-
-//#pragma mark -UIScrollViewDelegate scrollView将要开始滑动
-//- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
-//    [self.headerView removeTimer];
-//}
-//
-//#pragma mark -UIScrollViewDelegate scrollView已经停止拖动（手指离开屏幕时调用）
-//-(void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
-//    //判断headerview是否在视野内
-//    if (self.tableView.contentOffset.y <= self.headerView.frame.size.height) {
-//        [self.headerView addTimer];
-//    }
-//}
-
-#pragma mark -TTImageCyclePlayViewDelegate 点击了轮播图当前播放的imageView
-//- (void)clickCurrentImageViewInImageCyclePlay {
-//    TTHeaderNews *news = self.headerNewsArray[self.headerView.currentMiddleImageViewIndex];
-//    [self pushToDetailViewControllerWithUrl:news.url];
-//}
 
 #pragma mark --private Method--点击了某一条新闻，调转到新闻对应的网页去
 -(void)pushToDetailViewControllerWithUrl:(NSString *)url {
