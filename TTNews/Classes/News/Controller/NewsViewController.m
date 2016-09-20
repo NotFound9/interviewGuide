@@ -18,7 +18,6 @@
 #import "ChannelsSectionHeaderView.h"
 #import "TTNormalNews.h"
 #import <DKNightVersion.h>
-#import "SXNewsTableViewPage.h"
 
 @interface NewsViewController()<UIScrollViewDelegate>
 @property (nonatomic, strong) NSMutableArray *currentChannelsArray;
