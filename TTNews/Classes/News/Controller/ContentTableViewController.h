@@ -14,6 +14,13 @@
 @property(nonatomic, strong) TTNormalNews *news;
 @property (nonatomic, copy) NSString *channelId;
 @property (nonatomic, copy) NSString *channelName;
-@property (nonatomic, copy) NSString *urlString;
+//@property (nonatomic, copy) NSString *urlString;
+
+/**
+ *  url端口
+ */
+@property(nonatomic,copy) NSString *urlString;
+
+@property (nonatomic,assign) NSInteger index;
 
 @end

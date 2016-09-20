@@ -28,7 +28,7 @@
 
 @property (nonatomic, strong) NSArray *channelNameArray;
 @property (nonatomic, weak) UIScrollView *scrollView;
-@property (nonatomic, weak) UIButton *addButton;
+//@property (nonatomic, weak) UIButton *addButton;
 @property (nonatomic, weak) id<TTTopChannelContianerViewDelegate> delegate;
 
 @end

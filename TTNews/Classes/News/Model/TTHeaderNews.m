@@ -7,7 +7,11 @@
 //
 
 #import "TTHeaderNews.h"
-
+#import <MJExtension.h>
 @implementation TTHeaderNews
++(NSDictionary *)mj_replacedKeyFromPropertyName {
+    return @{@"desc":@"description",
+             };
+}
 
 @end

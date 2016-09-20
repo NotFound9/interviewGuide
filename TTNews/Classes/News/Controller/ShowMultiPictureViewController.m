@@ -7,7 +7,7 @@
 //
 
 #import "ShowMultiPictureViewController.h"
-#import "UIImageView+Extension.h"
+#import <UIImageView+WebCache.h>
 #import "TTConst.h"
 #import <DKNightVersion.h>
 
@@ -55,7 +55,7 @@
         [imageView addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(clickImageView:)]];
         imageView.frame = CGRectMake(i*scrollView.frame.size.width, 0, scrollView.frame.size.width, scrollView.frame.size.height);
         imageView.contentMode = UIViewContentModeScaleAspectFit;
-        [imageView TT_setImageWithURL:[NSURL URLWithString:dict[@"url"]]];
+        [imageView sd_setImageWithURL:[NSURL URLWithString:dict[@"url"]]];
         [scrollView addSubview:imageView];
     }
     

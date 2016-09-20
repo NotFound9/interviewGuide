@@ -9,7 +9,7 @@
 #import "ShowBigPictureViewController.h"
 #import <SVProgressHUD.h>
 #import <DALabeledCircularProgressView.h>
-#import "UIImageView+Extension.h"
+#import <UIImageView+WebCache.h>
 
 @interface ShowBigPictureViewController ()
 @property (weak, nonatomic) IBOutlet UIScrollView *scrollView;
@@ -40,7 +40,7 @@
         self.scrollView.contentSize = CGSizeMake(0, imageHeight);
     }
     
-    [self.imageView TT_setImageWithURL:[NSURL URLWithString:self.picture.image1] placeholderImage:[UIImage imageNamed:@"defaultUserIcon"] options:0 progress:^(NSInteger receivedSize, NSInteger expectedSize) {
+    [self.imageView sd_setImageWithURL:[NSURL URLWithString:self.picture.image1] placeholderImage:[UIImage imageNamed:@"defaultUserIcon"] options:0 progress:^(NSInteger receivedSize, NSInteger expectedSize) {
         
         self.progressView.hidden = NO;
         CGFloat progress = 1.0*receivedSize/expectedSize;
@@ -48,7 +48,7 @@
         self.progressView.progressLabel.text = [text stringByReplacingOccurrencesOfString:@"-" withString:@""];
         [self.progressView setProgress:progress animated:YES];
         
-    } completed:^(UIImage *image, NSError *error) {
+    } completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
         self.progressView.hidden = YES;
     }];
 }

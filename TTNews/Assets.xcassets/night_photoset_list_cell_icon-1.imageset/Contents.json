@@ -2,11 +2,11 @@
   "images" : [
     {
       "idiom" : "universal",
-      "filename" : "allplaceholderImage.png",
       "scale" : "1x"
     },
     {
       "idiom" : "universal",
+      "filename" : "night_photoset_list_cell_icon@2x.png",
       "scale" : "2x"
     },
     {

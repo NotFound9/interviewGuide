@@ -9,11 +9,11 @@
 #import "VideoCommentCell.h"
 #import "TTVideoComment.h"
 #import "TTVideoUser.h"
-#import "UIImage+Extension.h"
-#import "UIImageView+Extension.h"
 #import <DKNightVersion.h>
+#import <SDWebImageManager.h>
+#import <UIImageView+WebCache.h>
 
-@interface VideoCommentCell()
+@interface VideoCommentCell()<SDWebImageManagerDelegate>
 @property (weak, nonatomic) IBOutlet UIImageView *profileImageView;
 @property (weak, nonatomic) IBOutlet UIImageView *sexView;
 @property (weak, nonatomic) IBOutlet UILabel *contentLabel;
@@ -43,6 +43,7 @@
     self.contentLabel.dk_textColorPicker = DKColorPickerWithKey(TEXT);
     self.usernameLabel.dk_textColorPicker = DKColorPickerWithKey(TEXT);
     self.likeCountLabel.dk_textColorPicker = DKColorPickerWithKey(TEXT);
+    [SDWebImageManager sharedManager].delegate = self;
 
 //    self.profileImageView.layer.cornerRadius = self.profileImageView.width * 0.5;
 //    self.profileImageView.layer.masksToBounds = YES;
@@ -52,10 +53,8 @@
 {
     _comment = comment;
     
-    UIImage *placeholder = [[UIImage imageNamed:@"defaultUserIcon"] circleImage];
-    [self.profileImageView TT_setImageWithURL:[NSURL URLWithString:comment.user.profile_image] placeholderImage:placeholder completed:^(UIImage *image, NSError *error) {
-        self.profileImageView.image = image ? [image circleImage] : placeholder;
-    }];
+    [self.profileImageView sd_setImageWithURL:[NSURL URLWithString:comment.user.profile_image] placeholderImage:[UIImage imageNamed:@"defaultUserIcon"] options:SDWebImageTransformAnimatedImage];
+
     
     
     self.sexView.image = [comment.user.sex isEqualToString:@"m"] ? [UIImage imageNamed:@"Profile_manIcon"] : [UIImage imageNamed:@"Profile_womanIcon"];
@@ -70,6 +69,29 @@
         self.voiceButton.hidden = YES;
     }
 }
+- (UIImage *)imageManager:(SDWebImageManager *)imageManager transformDownloadedImage:(UIImage *)image withURL:(NSURL *)imageURL {
 
+    // NO代表透明
+    UIGraphicsBeginImageContextWithOptions(image.size, NO, 0.0);
+    
+    // 获得上下文
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    
+    // 添加一个圆
+    CGRect rect = CGRectMake(0, 0, image.size.width, image.size.height);
+    CGContextAddEllipseInRect(context, rect);
+    
+    // 裁剪
+    CGContextClip(context);
+    
+    // 将图片画上去
+    [image drawInRect:rect];
+    
+    UIImage *resultImage = UIGraphicsGetImageFromCurrentImageContext();
+    
+    UIGraphicsEndImageContext();
+    
+    return resultImage;
+}
 
 @end

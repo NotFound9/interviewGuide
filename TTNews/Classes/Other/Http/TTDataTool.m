@@ -21,6 +21,7 @@
 #import <MJExtension.h>
 #import <SVProgressHUD.h>
 #import "TTNetworkManager.h"
+#import <AFNetworking.h>
 
 @interface TTDataTool()
 
@@ -28,6 +29,7 @@
 
 @implementation TTDataTool
 static FMDatabaseQueue *_queue;
+static NSString * const apikey = @"8b72ce2839d6eea0869b4c2c60d2a449";
 
 +(void)initialize {
     NSString *path = [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:@"data.sqlite"];
@@ -39,7 +41,7 @@ static FMDatabaseQueue *_queue;
         
         [db executeUpdate:@"create table if not exists table_picture(id integer primary key autoincrement, idstr text, time integer, picture blob);"];
         
-        [db executeUpdate:@"create table if not exists table_ttheadernews(id integer primary key autoincrement, title text, url text, abstract text, image_url text);"];
+        [db executeUpdate:@"create table if not exists table_ttheadernews(id integer primary key autoincrement, title text, url text, desc text, picUrl text, ctime text);"];
        
         [db executeUpdate:@"create table if not exists table_normalnews(id integer primary key autoincrement, channelid text, title text, imageurls blob, desc text, link text, pubdate text, createdtime integer, source text);"];
         [db executeUpdate:@"create table if not exists table_videocomment(id integer primary key autoincrement, idstr text, page integer, hotcommentarray blob, latestcommentarray blob, total integer);"];
@@ -233,25 +235,52 @@ static FMDatabaseQueue *_queue;
 }
 
 + (void)TTHeaderNewsFromServerOrCacheWithMaxTTHeaderNews:(TTHeaderNews *)headerNews success:(void (^)(NSMutableArray *array))success failure:(void (^)(NSError *error))failure {
-    [[TTNetworkManager shareManager] Get2:@"http://apis.baidu.com/songshuxiansheng/news/news" Parameters:nil Success:^(NSURLSessionDataTask *task, NSDictionary *responseObject) {
-        NSMutableArray *headerNewsArray = [TTHeaderNews mj_objectArrayWithKeyValuesArray:responseObject[@"retData"]];
-        NSArray *temmArray = [headerNewsArray copy];
-        for (TTHeaderNews *headerNews in temmArray) {
-            if ([headerNews.image_url isEqualToString:@""]) {
-                [headerNewsArray removeObject:headerNews];
+    
+        AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+        [manager.requestSerializer setValue:@"8b72ce2839d6eea0869b4c2c60d2a449" forHTTPHeaderField:@"apikey"];
+        NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
+        parameters[@"num"] = @20;
+        [manager GET:@"http://apis.baidu.com/txapi/social/social" parameters:parameters progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+            NSMutableArray *headerNewsArray = [TTHeaderNews mj_objectArrayWithKeyValuesArray:responseObject[@"newslist"]];
+            NSMutableArray *temmArray = [NSMutableArray array];
+            for (TTHeaderNews *headerNews in headerNewsArray) {
+                if (![headerNews.picUrl isEqualToString:@""]) {
+                    [temmArray addObject:headerNews];
+                }
+                if (temmArray.count>=5) break;
             }
-        }
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            [self addTTHeaderNewsArray:[headerNewsArray copy]];
-        });
-        
-        success(headerNewsArray);
-    } Failure:^(NSError *error) {
-        [SVProgressHUD showErrorWithStatus:@"无网络连接"];
-        NSMutableArray *array = [self TTHeaderNewsFromCacheWithMaxTTHeaderNews:headerNews];
-                success(array);
-        NSLog(@"%@",error);
+            
+            success(temmArray);
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                [self addTTHeaderNewsArray:[temmArray copy]];
+            });
+        } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+            failure(error);
+            [SVProgressHUD showErrorWithStatus:@"无网络连接"];
+            NSMutableArray *array = [self TTHeaderNewsFromCacheWithMaxTTHeaderNews:headerNews];
+                    success(array);
+            NSLog(@"%@",error);
         }];
+
+//    [[TTNetworkManager shareManager] Get2:@"http://apis.baidu.com/songshuxiansheng/news/news" Parameters:nil Success:^(NSURLSessionDataTask *task, NSDictionary *responseObject) {
+//        NSMutableArray *headerNewsArray = [TTHeaderNews mj_objectArrayWithKeyValuesArray:responseObject[@"retData"]];
+//        NSArray *temmArray = [headerNewsArray copy];
+//        for (TTHeaderNews *headerNews in temmArray) {
+//            if ([headerNews.image_url isEqualToString:@""]) {
+//                [headerNewsArray removeObject:headerNews];
+//            }
+//        }
+//        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+//            [self addTTHeaderNewsArray:[headerNewsArray copy]];
+//        });
+//        
+//        success(headerNewsArray);
+//    } Failure:^(NSError *error) {
+//        [SVProgressHUD showErrorWithStatus:@"无网络连接"];
+//        NSMutableArray *array = [self TTHeaderNewsFromCacheWithMaxTTHeaderNews:headerNews];
+//                success(array);
+//        NSLog(@"%@",error);
+//        }];
 }
 
 +(NSMutableArray *)TTHeaderNewsFromCacheWithMaxTTHeaderNews:(TTHeaderNews *)headerNews {
@@ -264,8 +293,10 @@ static FMDatabaseQueue *_queue;
                 TTHeaderNews *headerNews = [[TTHeaderNews alloc] init];
                 headerNews.title = [result stringForColumn:@"title"];
                 headerNews.url = [result stringForColumn:@"url"];
-                headerNews.image_url = [result stringForColumn:@"image_url"];
-                headerNews.abstract = [result stringForColumn:@"abstract"];
+                headerNews.picUrl = [result stringForColumn:@"picUrl"];
+                headerNews.desc = [result stringForColumn:@"desc"];
+                headerNews.ctime = [result stringForColumn:@"ctime"];
+
                 [headerNewsArray addObject:headerNews];
             }
         }];
@@ -280,7 +311,7 @@ static FMDatabaseQueue *_queue;
         NSString *querySql = [NSString stringWithFormat:@"SELECT * FROM table_ttheadernews WHERE url = '%@';",url];
         result = [db executeQuery:querySql];
         if (result.next==NO) {//不存在此条数据
-            [db executeUpdate:@"insert into table_ttheadernews (title ,url, abstract, image_url) values(?,?,?,?);",news.title, news.url, news.abstract, news.image_url];
+            [db executeUpdate:@"insert into table_ttheadernews (title ,url, desc, picUrl, ctime) values(?,?,?,?,?);",news.title, news.url, news.desc, news.picUrl, news.ctime];
         }
         [result close];
     }];

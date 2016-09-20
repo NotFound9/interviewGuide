@@ -7,7 +7,7 @@
 //
 
 #import "TTImageCyclePlayView.h"
-#import "UIImageView+Extension.h"
+#import <UIImageView+WebCache.h>
 #import <DKNightVersion.h>
 
 @interface TTImageCyclePlayView ()<UIScrollViewDelegate>
@@ -127,13 +127,13 @@
     if (self.imageUrls == nil || self.imageUrls.count == 0 || self.titles == nil || self.titles.count == 0) return;
     
     NSInteger leftIndex = (self.currentMiddleImageViewIndex - 1 + self.imageUrls.count)%self.imageUrls.count;
-    [self.leftImageView TT_setImageWithURL:[NSURL URLWithString:self.imageUrls[leftIndex]]];
+    [self.leftImageView sd_setImageWithURL:[NSURL URLWithString:self.imageUrls[leftIndex]]];
     
     self.titleLabel.text = [NSString stringWithFormat:@"   %@", self.titles[self.currentMiddleImageViewIndex]];
-    [self.middleImageView TT_setImageWithURL:[NSURL URLWithString:self.imageUrls[self.currentMiddleImageViewIndex]]];
+    [self.middleImageView sd_setImageWithURL:[NSURL URLWithString:self.imageUrls[self.currentMiddleImageViewIndex]]];
     
     NSInteger rightIndex = (self.currentMiddleImageViewIndex + 1)%self.imageUrls.count;
-    [self.rightImageView TT_setImageWithURL:[NSURL URLWithString:self.imageUrls[rightIndex]]];
+    [self.rightImageView sd_setImageWithURL:[NSURL URLWithString:self.imageUrls[rightIndex]]];
     
     self.pageControl.numberOfPages = self.imageUrls.count;
     self.pageControl.currentPage = self.currentMiddleImageViewIndex;

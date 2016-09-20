@@ -376,7 +376,7 @@
                 <outlet property="videoImageView" destination="Kpd-KR-D7h" id="Lo5-kv-0C0"/>
                 <outlet property="vipImageView" destination="SBW-Kx-Z1T" id="dRt-hc-qYP"/>
             </connections>
-            <point key="canvasLocation" x="186.5" y="259"/>
+            <point key="canvasLocation" x="92.5" y="257"/>
         </tableViewCell>
     </objects>
     <resources>

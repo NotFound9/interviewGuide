@@ -11,12 +11,13 @@
 #import "TTPictureComment.h"
 #import "TTPictureUser.h"
 #import "ShowBigPictureViewController.h"
-#import "UIImageView+Extension.h"
-#import "UIImage+Extension.h"
+#import <UIImageView+WebCache.h>
 #import <DALabeledCircularProgressView.h>
 #import <DKNightVersion.h>
+#import <SDWebImageManager.h>
+#import <UIImageView+WebCache.h>
 
-@interface PictureTableViewCell()
+@interface PictureTableViewCell()<SDWebImageManagerDelegate>
 @property (weak, nonatomic) IBOutlet UIImageView *headerImageView;
 @property (weak, nonatomic) IBOutlet UILabel *nameLabel;
 @property (weak, nonatomic) IBOutlet UILabel *TimeLabel;
@@ -46,11 +47,6 @@
     return [[[NSBundle mainBundle] loadNibNamed:NSStringFromClass(self) owner:nil options:nil] firstObject];
 }
 
--(void)layoutSubviews {
-    
-    int k; 
-    
-}
 - (id)initWithCoder:(NSCoder *)aDecoder {
     self = [super initWithCoder:aDecoder];
     if (self) {
@@ -77,7 +73,7 @@
     self.separatorLine2.dk_backgroundColorPicker = DKColorPickerWithKey(SEP);
     self.separatorLine3.dk_backgroundColorPicker = DKColorPickerWithKey(SEP);
     self.separatorLine4.dk_backgroundColorPicker = DKColorPickerWithKey(SEP);
-    
+    [SDWebImageManager sharedManager].delegate =self;
 
 }
 
@@ -90,23 +86,23 @@
 
 -(void)setPicture:(TTPicture *)picture {
     _picture = picture;
-    [self.headerImageView TT_setImageWithURL:[NSURL URLWithString:picture.profile_image] placeholderImage:[UIImage imageNamed:@"defaultUserIcon"] completed:^(UIImage *image, NSError *error) {
-        self.headerImageView.image = [image circleImage];
-    }];
+    [self.headerImageView sd_setImageWithURL:[NSURL URLWithString:picture.profile_image] placeholderImage:[UIImage imageNamed:@"defaultUserIcon"] options:SDWebImageTransformAnimatedImage];
+    
     self.nameLabel.text = picture.screen_name;
     self.TimeLabel.text = picture.created_at;
     self.contentLabel.text = picture.text;
     self.vipImageView.hidden = !picture.isSina_v;
     
     NSString *extension = picture.image1.pathExtension;
-    [self.pictureImageView TT_setImageWithURL:[NSURL URLWithString:picture.image1] placeholderImage:[UIImage imageNamed:@"allplaceholderImage"] options:0 progress:^(NSInteger receivedSize, NSInteger expectedSize) {
+    [self.pictureImageView sd_setImageWithURL:
+     [NSURL URLWithString:picture.image1] placeholderImage:[UIImage imageNamed:@"allplaceholderImage"] options:0 progress:^(NSInteger receivedSize, NSInteger expectedSize) {
         self.progressView.hidden = NO;
         CGFloat progress = 1.0*receivedSize/expectedSize;
         NSString *text = [NSString stringWithFormat:@"%.0f%%", 100*progress];
         self.progressView.progressLabel.text = [text stringByReplacingOccurrencesOfString:@"-" withString:@""];
         [self.progressView setProgress:progress animated:YES];
         
-    } completed:^(UIImage *image, NSError *error) {
+    } completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
         self.progressView.hidden = YES;
         if (picture.isBigPicture) {
         UIGraphicsBeginImageContextWithOptions(picture.pictureFrame.size, YES, 0.0);
@@ -199,6 +195,30 @@
     }
 }
 
+- (UIImage *)imageManager:(SDWebImageManager *)imageManager transformDownloadedImage:(UIImage *)image withURL:(NSURL *)imageURL {
+    
+    // NO代表透明
+    UIGraphicsBeginImageContextWithOptions(image.size, NO, 0.0);
+    
+    // 获得上下文
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    
+    // 添加一个圆
+    CGRect rect = CGRectMake(0, 0, image.size.width, image.size.height);
+    CGContextAddEllipseInRect(context, rect);
+    
+    // 裁剪
+    CGContextClip(context);
+    
+    // 将图片画上去
+    [image drawInRect:rect];
+    
+    UIImage *resultImage = UIGraphicsGetImageFromCurrentImageContext();
+    
+    UIGraphicsEndImageContext();
+    
+    return resultImage;
+}
 
 
 @end

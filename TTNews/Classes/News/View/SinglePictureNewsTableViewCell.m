@@ -7,7 +7,6 @@
 //
 
 #import "SinglePictureNewsTableViewCell.h"
-#import "UIImageView+Extension.h"
 #import <UIImageView+WebCache.h>
 #import <DKNightVersion.h>
 

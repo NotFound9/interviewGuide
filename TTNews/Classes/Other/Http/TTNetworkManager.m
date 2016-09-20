@@ -73,6 +73,8 @@
                 });
                 return ;
             }
+//            NSString *string = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+//            NSLog(@"%@",string);
             NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:nil];
             dispatch_async(dispatch_get_main_queue(), ^{
                 success(task,dict);

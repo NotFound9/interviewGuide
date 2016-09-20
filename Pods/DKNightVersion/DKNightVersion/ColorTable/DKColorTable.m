@@ -50,7 +50,7 @@ UIColor *DKColorFromRGBA(NSUInteger hex) {
     if (error)
         NSLog(@"Error reading file: %@", error.localizedDescription);
 
-    NSLog(@"DKColorTable:\n%@", fileContents);
+//    NSLog(@"DKColorTable:\n%@", fileContents);
 
 
     NSMutableArray *entries = [[fileContents componentsSeparatedByString:@"\n"] mutableCopy];

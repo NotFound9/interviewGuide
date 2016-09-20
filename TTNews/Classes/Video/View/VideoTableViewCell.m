@@ -10,12 +10,12 @@
 #import "TTVideo.h"
 #import "TTVideoComment.h"
 #import "TTVideoUser.h"
-#import "UIImage+Extension.h"
-#import "UIImageView+Extension.h"
 #import "VideoPlayView.h"
 #import <DKNightVersion.h>
+#import <SDWebImageManager.h>
+#import <UIImageView+WebCache.h>
 
-@interface VideoTableViewCell()<VideoPlayViewDelegate>
+@interface VideoTableViewCell()<VideoPlayViewDelegate,SDWebImageManagerDelegate>
 @property (weak, nonatomic) IBOutlet UIImageView *headerImageView;
 @property (weak, nonatomic) IBOutlet UILabel *nameLabel;
 @property (weak, nonatomic) IBOutlet UILabel *createdTimeLabel;
@@ -63,20 +63,17 @@
 
 
     self.nameLabel.textColor = [UIColor colorWithRed:243/255.0 green:75/255.0 blue:80/255.0 alpha:1.0];
-    self.autoresizingMask = NO;
-    self.autoresizesSubviews = NO;
     UIImageView *imageView = [[UIImageView alloc] init];
     imageView.image = [UIImage imageNamed:@"mainCellBackground"];
     self.backgroundView = imageView;
-    
+    [SDWebImageManager sharedManager].delegate = self;
 }
 
 - (void)setVideo:(TTVideo *)video {
     _video = video;
-    [self.headerImageView TT_setImageWithURL:[NSURL URLWithString:video.profile_image] placeholderImage:[UIImage imageNamed:@"defaultUserIcon"] completed:^(UIImage *image, NSError *error) {
-            self.headerImageView.image = [image circleImage];
 
-    }];
+    [self.headerImageView sd_setImageWithURL:[NSURL URLWithString:video.profile_image] placeholderImage:[UIImage imageNamed:@"defaultUserIcon"] options:SDWebImageTransformAnimatedImage];
+
     self.nameLabel.text = video.screen_name;
     self.createdTimeLabel.text = video.created_at;
     self.contentLabel.text = video.text;
@@ -90,7 +87,8 @@
     }
     NSInteger time = video.videotime.integerValue;
     self.timelabel.text = [NSString stringWithFormat:@"%02ld%02ld",time/60,time%60];
-    [self.videoImageView TT_setImageWithURL:[NSURL URLWithString:video.image1]];
+    
+    [self.videoImageView sd_setImageWithURL:[NSURL URLWithString:video.image1]];
 
     [self setupButton:self.loveButton WithTittle:video.love];
     [self setupButton:self.hatebutton WithTittle:video.cai];
@@ -165,5 +163,32 @@
         [self.delegate clickCommentButton:self.indexPath];
     }
 }
+
+- (UIImage *)imageManager:(SDWebImageManager *)imageManager transformDownloadedImage:(UIImage *)image withURL:(NSURL *)imageURL {
+
+    // NO代表透明
+    UIGraphicsBeginImageContextWithOptions(image.size, NO, 0.0);
+    
+    // 获得上下文
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    
+    // 添加一个圆
+    CGRect rect = CGRectMake(0, 0, image.size.width, image.size.height);
+    CGContextAddEllipseInRect(context, rect);
+    
+    // 裁剪
+    CGContextClip(context);
+    
+    // 将图片画上去
+    [image drawInRect:rect];
+    
+    UIImage *resultImage = UIGraphicsGetImageFromCurrentImageContext();
+    
+    UIGraphicsEndImageContext();
+    
+    return resultImage;
+}
+
+
 
 @end

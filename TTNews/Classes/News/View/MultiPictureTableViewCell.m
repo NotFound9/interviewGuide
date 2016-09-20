@@ -8,7 +8,6 @@
 
 #import "MultiPictureTableViewCell.h"
 #import "TTNormalNews.h"
-#import "UIImageView+Extension.h"
 #import <UIImageView+WebCache.h>
 #import <DKNightVersion.h>
 
@@ -38,16 +37,16 @@
 
 -(void)setImageUrls:(NSArray *)imageUrls{
     _imageUrls = imageUrls;
-    [self.imageView1 sd_setImageWithURL:imageUrls[0][@"url"]];
-    [self.imageView2 sd_setImageWithURL:imageUrls[1][@"url"]];
-    [self.imageView3 sd_setImageWithURL:imageUrls[2][@"url"]];
+    [self.imageView1 sd_setImageWithURL:imageUrls[0]];
+    [self.imageView2 sd_setImageWithURL:imageUrls[1]];
+    [self.imageView3 sd_setImageWithURL:imageUrls[2]];
     self.pictureCountLabel.text = [NSString stringWithFormat:@"%ld图  ",(unsigned long)imageUrls.count];
     self.commentCountLabel.text = [NSString stringWithFormat:@"%d评论",arc4random()%1000];
 }
 
--(void)setTitle:(NSString *)title {
-    _title = title;
-    self.newsTittleLabel.text = title;
+-(void)setTheTitle:(NSString *)theTitle {
+    _theTitle = theTitle;
+    self.newsTittleLabel.text = theTitle;
 
 }
 

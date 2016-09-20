@@ -11,7 +11,7 @@
 @interface MultiPictureTableViewCell : UITableViewCell
 
 @property (nonatomic, strong) NSArray *imageUrls;
-@property (nonatomic, copy) NSString *title;
+@property (nonatomic, copy) NSString *theTitle;
 @property (nonatomic, copy) NSString *iconImage;
 
 @end
