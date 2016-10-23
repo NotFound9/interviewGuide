@@ -1,6 +1,6 @@
 # TTNews
 
-如果下载太慢了，可以来这个网站下载http://www.codedata.cn/cdetail/Objective-C/Demo/1471438806256270
+如果下载太慢了，可以来这个网站上下载http://www.codedata.cn/cdetail/Objective-C/Demo/1471438806256270
 
 
 ![image](https://github.com/577528249/TTNews/blob/master/introductionimages/1234.gif)
