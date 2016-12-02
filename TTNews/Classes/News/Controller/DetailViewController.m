@@ -136,7 +136,7 @@
 }
 
 #pragma mark -UIWebViewDelegate-加载Webview失败
-- (void)webView:(UIWebView *)webView didFailLoadWithError:(nullable NSError *)error {
+- (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error {
     [SVProgressHUD dismiss];
 }
 

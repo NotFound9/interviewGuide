@@ -19,6 +19,8 @@ static NSString * const kShakeAnimationKey = @"kCollectionViewCellShake";
 @implementation ChannelCollectionViewCell
 
 - (void)awakeFromNib {
+    [super awakeFromNib];
+
     self.dk_backgroundColorPicker = DKColorPickerWithRGB(0xffffff, 0x343434, 0xfafafa);
 
     self.channelNameLabel.dk_textColorPicker = DKColorPickerWithKey(TEXT);

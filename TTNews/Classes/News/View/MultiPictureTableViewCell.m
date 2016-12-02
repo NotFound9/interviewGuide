@@ -26,6 +26,8 @@
 @implementation MultiPictureTableViewCell
 
 - (void)awakeFromNib {
+    [super awakeFromNib];
+
     self.selectionStyle = UITableViewCellSelectionStyleNone;
     self.dk_backgroundColorPicker = DKColorPickerWithRGB(0xffffff, 0x343434, 0xfafafa);
 
@@ -40,8 +42,8 @@
     [self.imageView1 sd_setImageWithURL:imageUrls[0]];
     [self.imageView2 sd_setImageWithURL:imageUrls[1]];
     [self.imageView3 sd_setImageWithURL:imageUrls[2]];
-    self.pictureCountLabel.text = [NSString stringWithFormat:@"%ld图  ",(unsigned long)imageUrls.count];
-    self.commentCountLabel.text = [NSString stringWithFormat:@"%d评论",arc4random()%1000];
+    self.pictureCountLabel.text = [NSString stringWithFormat:@"%ld图  ", (unsigned long)imageUrls.count];
+    self.commentCountLabel.text = [NSString stringWithFormat:@"%d评论", arc4random()%1000];
 }
 
 -(void)setTheTitle:(NSString *)theTitle {

@@ -19,7 +19,7 @@
 #import "TTNormalNews.h"
 #import <DKNightVersion.h>
 
-@interface NewsViewController()<UIScrollViewDelegate>
+@interface NewsViewController()<UIScrollViewDelegate,TTTopChannelContianerViewDelegate>
 @property (nonatomic, strong) NSMutableArray *currentChannelsArray;
 @property (nonatomic, weak) TTTopChannelContianerView *topContianerView;
 @property (nonatomic, weak) UIScrollView *contentScrollView;
@@ -78,7 +78,7 @@ static NSString * const collectionViewSectionHeaderID = @"ChannelCollectionHeade
     TTTopChannelContianerView *topContianerView = [[TTTopChannelContianerView alloc] initWithFrame:CGRectMake(0, top, [UIScreen mainScreen].bounds.size.width, 30)];
     topContianerView.channelNameArray = self.currentChannelsArray;
     self.topContianerView  = topContianerView;
-    self.topContianerView.scrollView.delegate = self;
+    topContianerView.delegate = self;
     [self.view addSubview:topContianerView];
 }
 

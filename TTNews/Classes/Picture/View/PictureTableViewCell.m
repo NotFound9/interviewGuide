@@ -55,6 +55,8 @@
 }
 
 - (void)awakeFromNib {
+    [super awakeFromNib];
+
     self.progressView.roundedCorners = 2;
     self.progressView.progressLabel.textColor = [UIColor whiteColor];
     UIImageView *imageView = [[UIImageView alloc] init];

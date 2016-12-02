@@ -21,6 +21,8 @@
 @implementation SinglePictureNewsTableViewCell
 
 - (void)awakeFromNib {
+    [super awakeFromNib];
+
     self.commentCount.text = [NSString stringWithFormat:@"%d评论",arc4random()%1000];
     self.selectionStyle = UITableViewCellSelectionStyleNone;
     self.dk_backgroundColorPicker = DKColorPickerWithRGB(0xffffff, 0x343434, 0xfafafa);

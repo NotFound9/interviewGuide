@@ -54,6 +54,7 @@
 
 - (void)awakeFromNib
 {
+    [super awakeFromNib];
     self.player = [[AVPlayer alloc] init];
     self.playerLayer = [AVPlayerLayer playerLayerWithPlayer:self.player];
     [self.imageView.layer addSublayer:self.playerLayer];
