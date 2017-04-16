@@ -79,7 +79,7 @@ UIView+MJExtension.h        UIView+MJExtension.m
 ```objc
 /** 刷新控件的基类 */
 @interface MJRefreshComponent : UIView
-#pragma mark - 刷新状态控制
+# pragma mark - 刷新状态控制
 /** 进入刷新状态 */
 - (void)beginRefreshing;
 /** 结束刷新状态 */
@@ -87,7 +87,7 @@ UIView+MJExtension.h        UIView+MJExtension.m
 /** 是否正在刷新 */
 - (BOOL)isRefreshing;
 
-#pragma mark - 其他
+# pragma mark - 其他
 /** 根据拖拽比例自动切换透明度 */
 @property (assign, nonatomic, getter=isAutomaticallyChangeAlpha) BOOL automaticallyChangeAlpha;
 @end

@@ -47,7 +47,7 @@ method from the tableView:cellForRowAtIndexPath: UITableViewDataSource method. E
 handled for you, from async downloads to caching management.
 
 ```objective-c
-#import <SDWebImage/UIImageView+WebCache.h>
+# import <SDWebImage/UIImageView+WebCache.h>
 
 ...
 
@@ -316,7 +316,7 @@ $(inherited)
 In the source files where you need to use the library, import the header file:
 
 ```objective-c
-#import <SDWebImage/UIImageView+WebCache.h>
+# import <SDWebImage/UIImageView+WebCache.h>
 ```
 
 ### Build Project
