@@ -41,7 +41,7 @@ PS:她的新闻数据源来自于百度API Store里的免费新闻api，
 新手项目，多多包涵，谢谢！有相关问题可以在线留言或发邮件至577528249@qq.com，谢谢！
 
 
-#使用方法
+# 使用方法
 
 
 点击右上角Download Zip按钮，将项目压缩包下载至本地，解压后点击文件夹中TTNews.xcworkspace即可运行。
@@ -111,7 +111,7 @@ PS:她的新闻数据源来自于百度API Store里的免费新闻api，
 
 
 
-#License
+# License
 The MIT License (MIT)
 
 Copyright (c) 2016 YangJunhui

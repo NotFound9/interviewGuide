@@ -64,7 +64,7 @@ $ pod install
 Import DKNightVersion header file
 
 ```objectivec
-#import <DKNightVersion/DKNightVersion.h>
+# import <DKNightVersion/DKNightVersion.h>
 ```
 
 ## Usage
@@ -73,8 +73,8 @@ Checkout `DKColorTable.txt` file in your project, which locates in `Pods/DKNight
 
 ```
 NORMAL   NIGHT
-#ffffff  #343434 BG
-#aaaaaa  #313131 SEP
+# ffffff  #343434 BG
+# aaaaaa  #313131 SEP
 ```
 
 And then, set color picker like this
@@ -162,16 +162,16 @@ There is a file called `DKColorTable.txt`
 
 ```
 NORMAL   NIGHT
-#ffffff  #343434 BG
-#aaaaaa  #313131 SEP
+# ffffff  #343434 BG
+# aaaaaa  #313131 SEP
 ```
 
 The first line of this file indicated different themes. **NORMAL is required column**, and others are optional. So if you don't need to integrate different themes in your app, just leave the first column in this file, like this:
 
 ```
 NORMAL
-#ffffff BG
-#aaaaaa SEP
+# ffffff BG
+# aaaaaa SEP
 ```
 
 `NORMAL` and `NIGHT` are two different themes, `NORMAL` is default and for normal mode. `NIGHT` is optional and for night mode.
@@ -180,8 +180,8 @@ You can add multiple columns in this `DKColorTable.txt` file as many as you want
 
 ```
 NORMAL   NIGHT    RED
-#ffffff  #343434  #ff0000 BG
-#aaaaaa  #313131  #ff0000 SEP
+# ffffff  #343434  #ff0000 BG
+# aaaaaa  #313131  #ff0000 SEP
 ```
 
 The last column is the key for a color entry, DKNightVersion use the current `themeVersion` (ex: `NORMAL` `NIGHT` and `RED`) and key (ex: `BG`, `SEP`) to find the corresponding color in DKColorTable.
@@ -197,7 +197,7 @@ You can also add another file into your project and fill your color setting in t
 ```
 // color.txt
 NORMAL   NIGHT
-#ffffff  #343434 BG
+# ffffff  #343434 BG
 ```
 
 And change `file` value
@@ -235,9 +235,9 @@ DKColorPicker DKColorPickerWithColors(UIColor *normalColor, ...);
 + (DKColorPicker)colorPickerWithRed:(CGFloat)red green:(CGFloat)green blue:(CGFloat)blue alpha:(CGFloat)alpha;
 + (DKColorPicker)colorPickerWithCGColor:(CGColorRef)cgColor;
 + (DKColorPicker)colorPickerWithPatternImage:(UIImage *)image;
-#if __has_include(<CoreImage/CoreImage.h>)
+# if __has_include(<CoreImage/CoreImage.h>)
 + (DKColorPicker)colorPickerWithCIColor:(CIColor *)ciColor NS_AVAILABLE_IOS(5_0);
-#endif
+# endif
 
 + (DKColorPicker)blackColor;
 + (DKColorPicker)darkGrayColor;
@@ -282,11 +282,11 @@ If your file like this:
 
 ```
 NORMAL   NIGHT    RED
-#ffffff  #343434  #fafafa BG
-#aaaaaa  #313131  #aaaaaa SEP
-#0000ff  #ffffff  #fa0000 TINT
-#000000  #ffffff  #000000 TEXT
-#ffffff  #444444  #ffffff BAR
+# ffffff  #343434  #fafafa BG
+# aaaaaa  #313131  #aaaaaa SEP
+# 0000ff  #ffffff  #fa0000 TINT
+# 000000  #ffffff  #000000 TEXT
+# ffffff  #444444  #ffffff BAR
 ```
 
 Set your image picker in this order:
