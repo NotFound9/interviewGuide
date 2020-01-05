@@ -1,4 +1,4 @@
-《面试指北》最佳阅读地址：https://notfound9.github.io/interviewGuide/
+《面试指北》最佳阅读地址：http://notfound9.github.io/interviewGuide/
 
 ## 为什么要做这个开源项目？
 
