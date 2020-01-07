@@ -17,7 +17,7 @@
 
 流程图如下：
 
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-796b2c6f5ef34321.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/2.png)
 
 #### 1.初始化table
 
@@ -138,7 +138,7 @@ final V putVal(int hash, K key, V value, boolean onlyIfAbsent,
 
 这是我自己阅读源码后，比HashMap的会复杂很多，画的一个流程图如下所示：
 
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-e6c10118e88dc7e6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/3.png)
 
 #### 1.判断null值
 
@@ -700,6 +700,7 @@ abstract class HashIterator {
 单线程操作Iterator不当时也会抛出ConcurrentModificationException异常。（上面的例子就是）
 
 #### 总结
+
 因为ArrayList和HashMap的Iterator都是上面所说的“fail-fast Iterator”，Iterator在获取下一个元素，删除元素时，都会比较expectedModCount和modCount，不一致就会抛出异常。
 
 所以当使用Iterator遍历元素(for-each遍历底层实现也是Iterator)时，需要删除元素，一定需要使用 **Iterator的remove()方法** 来删除，而不是直接调用ArrayList或HashMap自身的remove()方法,否则会导致Iterator中的expectedModCount没有及时更新，之后获取下一个元素或者删除元素时，expectedModCount和modCount不一致，然后抛出ConcurrentModificationException异常。

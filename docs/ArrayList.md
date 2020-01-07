@@ -6,6 +6,7 @@
 #### [2.怎么使ArrayList，LinkedList变成线程安全的呢？](#怎么使ArrayList，LinkedList变成线程安全的呢？)
 #### [3.ArrayList遍历时删除元素有哪些方法？](#ArrayList遍历时删除元素有哪些方法？)
 #### [4.ConcurrentModificationException是什么？](#ConcurrentModificationException是什么？)
+
 #### [5.java容器类的层次是怎么样的？](#java容器类的层次是怎么样的？)
 
 ### ArrayList与LinkedList的区别是什么？
@@ -458,7 +459,7 @@ while (iterator.hasNext()) {
 
 ### java容器类的层次是怎么样的？
 
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-adb190a0520271b8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![1](../static/1.png)
 
 大致是这样一个图，Collection是一个接口，代表是集合，它有三个子接口，分别是有序集合List，队列Queue，无序集合Set。Map代表键值对。实际上关系会更加复杂一些，以ArrayList为例：
 
