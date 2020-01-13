@@ -100,7 +100,7 @@
 
 我平时比较喜欢看书，写技术文章，也比较喜欢讨论技术。这是我的[掘金主页](https://juejin.im/user/5b370a42e51d4558ce5eb969)，希望大家可以关注一下，谢谢了！大家如果有事需要联系我，或者想进技术群，一起讨论技术，也可以扫码加我的微信，谢谢了！
 
-<img src="https://pic.kuaizhan.com/g3/78/db/3cc8-186a-45cf-8b76-893bb0cad69865" width="30%" padding-right= "20%" />
+<img src="static/WechatIMG12.jpg" width="30%" padding-right= "20%" />
 
 ### 关于转载
 
