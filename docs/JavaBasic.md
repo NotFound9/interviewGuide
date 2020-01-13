@@ -279,6 +279,294 @@ stringA = StringA + "2";
 ##### 3.线程安全
 
 StringBuffer的读写方法都使用了synchronized修饰，同一时间只有一个线程进行操作，所以是线程安全的，而StringBuilder不是线程安全的。
+
+### Object类有哪些自带方法？
+
+#### registerNatives
+
+首先Object类有一个本地方法registerNatives()，会在类加载时调用，主要是将Object类中的一些本地方法绑定到指定的函数中去，便于之后调用。例如将hashCode和clone本地方法绑定到JVM_IHashCode和JVM_IHashCode函数。
+
+```java
+    private static native void registerNatives();
+    static {
+        registerNatives();
+    }
+```
+
+想深入了解的朋友可以看看这两篇文章：
+
+[Java之Thread源码registerNatives()深入理解](https://juejin.im/post/5dbb959151882523b5402c8f)
+
+[Object类中的registerNatives方法的作用深入介绍](https://blog.csdn.net/Saintyyu/article/details/90452826)
+
+#### getClass
+
+**getClass()**方法会返回对象的**运行时**类。
+
+```java
+    public final native Class<?> getClass();
+```
+
+具体可以看下面这个例子:
+
+有一个类Son，继承于Father类，instance的编译类型是Father，实际赋值的是一个Son对象，所以调用instance.getClass()获取的是instance对象的运行时类型，打印的类名是"com.test.Son"。
+
+```java
+  package com.test;
+  class Father {}
+
+  class Son extends Father {}
+   
+  Father instance = new Son();
+  Class class1 = instance.getClass();
+  System.out.println("class1 is"class1);
+```
+输出结果：
+```java
+class1 is class com.test.Son
+```
+##### Classs.forName
+与**getClass()**类似的方法还有两个，一个是Class类中的**forName()**方法，也是在**运行时**，根据传入的类名去加载类，然后返回与类关联的Class对象。也正是因为是动态加载，在编译时可以没有这个类，也不会对类名进行检验，所以有可能抛出ClassNotFoundException异常。
+
+```java
+public static Class<?> forName(String className)
+                throws ClassNotFoundException {
+        Class<?> caller = Reflection.getCallerClass();
+        return forName0(className, true, ClassLoader.getClassLoader(caller), caller);
+}
+```
+可以自己尝试运行一下这段代码
+```
+  Class class2 = null;
+  try {
+  	class2 = Class.forName("com.test.Son");//如果实际不存在com.test.Son这个类，那么会抛出ClassNotFoundException异常
+  	System.out.println(class2);
+  } catch (ClassNotFoundException e) {
+  	e.printStackTrace();
+  }
+```
+
+```
+class2 is class com.test.Son
+```
+##### 类名+.class
+还有一种方式是使用**类名+.class**来获取类关联的Class对象，与上面两种方法不同之处在于，它返回的是编译时类型，也就是在编译时，类加载器将类加载到JVM中，然后初始化一个Class对象返回。
+```
+  Class class3 = Son.class;
+  System.out.println(class3);
+```
+输出结果：
+```java
+	class3 is class com.test.Son
+```
+
+PS:无论是使用哪种方式来获取类关联的Class对象，类都是只会加载一次，如果获取Class对象时，不会重复加载类。
+
+#### hashCode()和equal()方法
+
+可以看到Obejct类中的源码如下，可以看到equals()方法的默认实现是判断两个对象的内存地址是否相同来决定返回结果。
+
+```
+    public native int hashCode();
+		public boolean equals(Object obj) {
+        return (this == obj);
+    }
+```
+
+网上很多博客说hashCode的默认实现是返回内存地址，其实不对，以OpenJDK为例，hashCode的默认计算方法有5种，有返回随机数的，有返回内存地址，具体采用哪一种计算方法取决于运行时库和JVM的具体实现。
+
+感兴趣的朋友可以看看这篇博客
+
+[Java的Object.hashCode()的返回值到底是不是对象内存地址？](https://blog.csdn.net/xusiwei1236/article/details/45152201)
+
+##### hashCode()方法的作用有哪些？
+
+* 对对象做散列
+
+  为了将一组键值对均匀得存储在一个数组中，HashMap对key的hashCode进行计算得到一个hash值，用hash对数组长度取模，得到数组下标，将键值对存储在数组下标对应的链表下。
+
+* 快速判断对象是否不相等
+
+  因为两个对象hashCode相等，调用equal()方法的结果不一定为true，
+
+  因为两个对象调用equal()方法相等，hashCode一定相等。
+
+  所以hashCode不相等可以作为两个对象不相等的快速判断条件。
+
+  在往HashMap中添加一个键值对时，计算得到数组下标后，会遍历数组下标下存储的链表中，拿key的hashCode与每个节点的hashCode进行比较，相等时，才调用equal()方法进行继续调用，节约时间。（在一些类的equal()方法的自定义实现中也会对hashCode进行判断）。
+  
+#### 为什么如果要重写，hashCode()和equal()方法要一起重写？
+
+##### 假如只重写hashCode()方法（结果：HashMap无法保证去重）
+
+此时equal()方法的实现是默认实现，也就是当两个对象的内存地址相等时，equal()方法才返回true，假设两个键值对，它们的key类型都是TestObject，的值都是test，但是由于是使用new String()创建而成的字符串对象，key1和key2的内存地址不相等，所以key1==key2的结果会是false，TestObject的equals()方法默认实现是判断两个对象的内存地址，所以 key1.equals(key2)也会是false， 所以两个键值对可以重复地添加到hashMap中去。
+
+```java
+public class TestObject {
+    Integer a;
+    public TestObject(Integer a) {
+        this.a = a;
+    }
+    @Override
+    public int hashCode() {
+        return a;
+    }
+
+    public static void main(String[] args) {
+        TestObject key1 = new TestObject(1);
+        TestObject key2 = new TestObject(1);
+        System.out.println("key1的hashCode为"+ key1 +"key2的hashCode为" + key2);
+        System.out.println("key1.equals(key2)的结果为"+(key1.equals(key2)));
+
+        HashMap<TestObject,String> map = new HashMap<TestObject,String>();
+        map.put(key1,"value1");
+        map.put(key2,"value2");
+        System.out.println("HashMap是"+map.toString());
+		}
+}
+```
+
+输出结果：
+
+```java
+key1的hashCode为com.test.TestObject@1
+key2的hashCode为com.test.TestObject@1
+
+key1.equals(key2)的结果为false
+  
+HashMap是
+{com.test.TestObject@1=value1, 
+com.test.TestObject@1=value2}
+```
+
+##### 假如只重写equals()方法（结果：HashMap无法保证去重）
+
+假设只equals()方法，hashCode方法会是默认实现，具体的计算方法取决于JVM，可能会导致两个相等的对象，它们的hashCode却不相同，从而计算得到的数组下标不相同，存储到hashMap中不同数组下标下的链表中，也会导致HashMap中存在重复元素。
+
+```java
+public class TestObject {
+    Integer a;
+    public TestObject(Integer a) {
+        this.a = a;
+    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TestObject that = (TestObject) o;
+        return Objects.equals(a, that.a);
+    }
+
+    public static void main(String[] args) {
+        TestObject key1 = new TestObject(1);
+        TestObject key2 = new TestObject(1);
+        System.out.println("key1的hashCode为"+ key1 +"key2的hashCode为" + key2);
+        System.out.println("key1.equals(key2)的结果为"+(key1.equals(key2)));
+
+        HashMap<TestObject,String> map = new HashMap<TestObject,String>();
+        map.put(key1,"value1");
+        map.put(key2,"value2");
+        System.out.println("HashMap是"+map.toString());
+		}
+}
+```
+
+输出结果如下：
+
+```java
+key1的hashCode为1288141870 
+key2的hashCode为2054881392
+
+key1.equals(key2)的结果为true
+
+HashMap是
+{com.test.TestObject@4cc77c2e=value1, com.test.TestObject@7a7b0070=value2}
+```
+
+#### clone()方法
+
+clone方法会创建并返回当前对象的副本。副本与原对象的区别在于它们相等，但是存储在不同的内存位置中。
+
+```java
+protected native Object clone() throws CloneNotSupportedException;
+```
+
+要调用clone方法必须实现Cloneable接口，否则调用默认的Object类的clone方法会抛出CloneNotSupportedException异常。默认clone()方法返回的对象是浅拷贝的。
+
+#### toString方法
+
+返回类名+@+hashCode的16进制字符串
+
+```java
+public String toString() {
+    return getClass().getName() + "@" + Integer.toHexString(hashCode());
+}
+```
+
+#### wait()方法和notify()方法
+
+```
+//timeout是超时时间，也就是等待的最大毫秒数，如果为0，代表会一直等待下去
+public final native void wait(long timeout) throws InterruptedException;
+public final native void notify();
+public final native void notifyAll();
+```
+
+##### wait
+
+wait()方法可以让当前线程放弃对象的监视器(可以简单认为监视器就是一个锁)，进入等待队列，进行等待，直到其他线程调用notify()或者notifyAll()后(或者过了超时时间)，线程才会从等待队列，移动到同步队列，再次获得对象的监视器后才能继续执行。
+
+##### notify
+
+notify()可以唤醒等待队列中的某一个线程，线程被唤醒后会从等待队列移动到同步队列，线程再次获得对象的监视器后才能继续执行。（然后调用notify()方法的线程会继续执行，在同步块中执行完毕后，会释放对象的监视器。）
+
+##### notifyAll
+
+notifyAll()方法与notify()方法类似，只是会将等待队列中的所有线程唤醒。
+
+可以看看这张图。
+
+![4](../static/4.png)
+
+#### finalize
+
+```
+//默认为空的实现，子类可以重写这个方法
+protected void finalize() throws Throwable { }
+```
+
+当垃圾回收器确认某个对象不被任何其他对象引用时(即对象处于可恢复状态)，系统在回收对象时，会调用finalize()方法，可以在这个方法中清理资源，在这个方法中，也有可能让对象重新获得引用，从而变成可达状态。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ### 编译型编程语言，解释型编程语言，伪编译型语言的区别是什么？
 
 * 编译型编程语言
@@ -300,20 +588,51 @@ Java
 
 在Java中使用访问控制符修饰成员变量，方法，构造方法时
 
-| 访问范围 | private | default | protected | public |
-| -------- | ------- | ------- | --------- | ------ |
-| 本类中   | 允许    | 允许    | 允许      | 允许   |
-| 同一包中 |         | 允许    | 允许      | 允许   |
-| 子类中   |         |         | 允许      | 允许   |
-| 其他包中 |         |         |           | 允许   |
+| 访问范围       | private | default | protected | public |
+| -------------- | ------- | ------- | --------- | ------ |
+| 本类中         | 允许    | 允许    | 允许      | 允许   |
+| 同一包中       |         | 允许    | 允许      | 允许   |
+| 其他包中的子类 |         |         | 允许      | 允许   |
+| 其他包中       |         |         |           | 允许   |
 
 private 允许在类中访问。
 
 default 允许在类中，同一包中访问。
 
-protected 允许在类中，同一包中，子类中访问。
+protected 允许在类中，同一包中，其他包中的子类 访问。
 
-public 只允许在类中，同一包中，子类中，其他地方中访问。
+public 只允许在类中，同一包中，其他包中的子类中，其他地方中访问。
+
+##### 注意事项:
+
+如果某个类Father一个方法A是没有使用访问修饰符，那么子类Son如果是在其他包中，不能调用这个方法A。但是如果方法A是使用protected修饰的，那么在子类中可以调用。(但是不能是使用父类去调用，就是不能在子类中去创建父类对象，然后用父类对象去调用。)
+
+具体可以看看下面这个例子：
+
+```java
+package com.one;
+//假设有一个Father类在包com.one下
+public class Father {
+    void defalutTest() {}
+    protected void protectedMothod() {}
+}
+
+package com.two;
+import com.one.Father;
+public class Son extends Father {
+    public static void main(String[] args) {
+        Father father = new Father();
+        father.protectedMothod()//位置1.这句代码会报错，因为即便是protected修饰的方法，在其他包中的子类中，也不能用父类去调用，只能按位置2或者位置4那样去调用
+          
+        Son son = new Son();
+        son.protectedMothod();//位置2
+    }
+    void someMethod() {
+        this.defaultMethod();//位置3.这句代码会报错，因为默认的方法不允许在其他包中的子类调用的
+        this.protectedMothod();//位置4.可以调用成功
+    }
+}
+```
 
 ### Java的构造器有哪些特点？
 
@@ -353,3 +672,4 @@ OutClass.InnerClass object = new OutClass.InnerClass();
 OutClass out = new OutClass();
 OutClass.InnerClass object = out.new InnerClass();
 ```
+
