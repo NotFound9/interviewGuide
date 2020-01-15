@@ -1,4 +1,8 @@
+《面试指北》Github地址：https://github.com/NotFound9/interviewGuide
+
 《面试指北》最佳阅读地址：http://notfound9.github.io/interviewGuide/
+
+ 作者博客地址：https://juejin.im/user/5b370a42e51d4558ce5eb969
 
 ## 为什么要做这个开源项目？
 
