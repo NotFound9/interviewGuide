@@ -182,8 +182,29 @@ final V putVal(int hash, K key, V value, boolean onlyIfAbsent,
   
     如果f是TreeBin类型，那么说明当前数组下标存储的是一个红黑树，f是红黑树的根节点，调用putTreeVal方法，插入或更新节点。
   
-  插入完成后，判断binCount（数组下标存储是一个链表时，binCount是链表长度），当binCount超过8时，那么调用treeifyBin方法将链表转换为红黑树。最后break出for循环。
   
+    如果f是TreeBin类型，那么说明当前数组下标存储的是一个红黑树，f是红黑树的根节点，调用putTreeVal方法，插入或更新节点。
+  
+
+
+*   插入完成后，判断binCount（数组下标存储是一个链表时，binCount是链表长度），当binCount超过8时，**并且数组的长度大于64时**，那么调用treeifyBin方法将链表转换为红黑树。最后break出for循环。
+
+### PS：
+
+很多技术文章都是说链表长度大于8就转换为红黑树，我当时也没有注意这个细节，直到有个群里的朋友指正，当原来的链表长度超过8时，确实会调用treeifyBin方法，但是在treeifyBin方法中会判断**当前tab是否为空，或者数组长度是否小于64**，如果满足条件，那么调用resize方法对tab初始化或者扩容，就不会将链表转换为红黑树了。
+
+添加键值对的putVal方法的源码：
+
+![image](../static/12609483-f49199a436960c2b.png)
+
+<figcaption style="box-sizing: border-box; display: block; text-align: center; font-size: 0.8em; line-height: 2em; color: rgb(144, 144, 144);"></figcaption>
+
+treeifyBin方法的源码： MIN_TREEIFY_CAPACITY是64
+
+![image](../static/12609483-31cdd1cc821d9c8d.png)
+
+  
+
 
 #### 4.判断是否需要扩容
 
