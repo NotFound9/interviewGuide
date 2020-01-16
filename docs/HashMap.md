@@ -239,7 +239,7 @@ ConcurrentHashMap底层数据结构跟HashMap一致，底层数据结构是一�
 ##### HashMap 非线程安全
 HashMap是非线程安全的。（例如多个线程插入多个键值对，如果两个键值对的key哈希冲突，可能会使得两个线程在操作同一个链表中的节点，导致一个键值对的value被覆盖）
 
-##### HashMap 非线程安全
+##### HashTable 线程安全
 HashTable是线程安全的，主要通过使用synchronized关键字修饰大部分方法，使得每次只能一个线程对HashTable进行同步修改，性能开销较大。
 ##### ConcurrentHashMap 线程安全
 ConcurrentHashMap是线程安全的，主要是通过CAS操作+synchronized来保证线程安全的。
