@@ -8,7 +8,7 @@
 
 #### [2.Java中单例有哪些写法？](#Java中单例有哪些写法？)
 
-#####  [3.Java中创建线程有哪些方式?](#Java中创建线程有哪些方式?)
+####  [3.Java中创建线程有哪些方式?](#Java中创建线程有哪些方式?)
 
 #### [4.如何解决序列化时可以创建出单例对象的问题?](#如何解决序列化时可以创建出单例对象的问题?)
 
@@ -266,8 +266,15 @@ public interface RunnableFuture<V> extends Runnable, Future<V> {
 
 
 
-
 ### Java中单例有哪些写法？
+
+正确并且可以做到延迟加载的写法其实就是三种：
+
+使用volatile修饰变量并且双重校验的写法。
+
+使用静态内部类来实现（类A有一个静态内部类B，类B有一个静态变量instance，类A的getInstance()方法会返回类B的静态变量instance，因为只有调用getInstance()方法时才会加载静态内部类B，这种写法缺点是不能传参。）
+
+使用枚举来实现（）
 
 #### 第1种 不加锁（裸奔写法）
 
@@ -279,8 +286,8 @@ public class UnsafeLazyInitialization {
 	public static Instance getInstance() {
     if (instance == null) //1
       instance = new Instance(); //2
-      return instance;
     }
+    return instance;
 }
 ```
 
@@ -319,9 +326,10 @@ public class Singleton {
     private static Singleton instance;              
     public static Singleton getInstance() {              
         if (instance == null) {                        
-            synchronized (DoubleCheckedLocking.class) { 
-                if (instance == null)                   
-                    instance = new Singleton();          
+            synchronized (Singleton.class) { 
+                if (instance == null) {                 
+                    instance = new Singleton();        
+                }
             }                                   
         }                                      
         return instance;                        
@@ -350,8 +358,8 @@ public class Singleton {
     private volatile static Singleton instance;              
     public static Singleton getInstance() {              
         if (instance == null) {                        
-            synchronized (DoubleCheckedLocking.class) { 
-                if (instance == null)                   
+            synchronized (Singleton.class) { 
+                if (instance == null)//双重检查存在的一样在于可能会有多个线程进入第一个判断，然后竞争同步锁，线程A得到了同步锁，创建了一个Singleton实例，赋值给instance，然后释放同步锁，此时线程B获得同步锁，又会创建一个Singleton实例，造成初始化覆盖。
                     instance = new Singleton();          
             }                                   
         }                                      
@@ -373,15 +381,13 @@ volatile修饰的变量在编译后，会多出一个lock前缀指令，lock前�
 #### 第6种 - 使用静态内部类来实现
 
 ```java
-public class InstanceFactory {
-    private static class InstanceHolder {
-        public static Instance instance = new Instance();
+ private static class Signleton {
+        private static Signleton instance = new Signleton();
     }
 
-    public static Instance getInstance() {
-        return InstanceHolder.instance ;  // 这里将导致 InstanceHolder 类被初始化 
+    public static Signleton getInstance() {
+        return Signleton.instance ;  // 这里将导致 Signleton 类被初始化 
     }
-}
 ```
 
 因为JVM底层通过加锁实现，保证一个类只会被加载一次，多个线程在对类进行初始化时，只有一个线程会获得锁，然后对类进行初始化，其他线程会阻塞等待。所以可以使用上面的代码来保证instance只会被初始化一次，这种写法的问题在于创建单例时不能传参。
