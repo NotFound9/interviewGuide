@@ -18,8 +18,8 @@
 - [JVM读书摘要](docs/JVMBook.md)
 - [HTTP](docs/HTTP.md)
 - [《剑指Offer》解题记录](docs/CodingInterviews.md)
-- [好书推荐](docs/bookRecommend.md)
 * 读书笔记
   - [Redis设计与实现读书笔记 上](docs/RedisBook1.md)
   - [Redis设计与实现读书笔记 下](docs/RedisBook2.md)
   - [MySQL必知必会读书笔记](docs/MySQLBook1.md)
+- [好书推荐](docs/bookRecommend.md)
