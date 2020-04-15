@@ -148,13 +148,13 @@ public synchronized void start() {
 
 会抛出IllegalThreadStateException异常。其实在Thread#start()方法里面的的注释中有提到，多次调用start()方法是非法的，所以在上面的start()方法源码中一开始就是对threadStatus进行判断，不为0就会抛出IllegalThreadStateException异常。
 
-![image-20200105144159345](/Users/ruiwendaier/Library/Application Support/typora-user-images/image-20200105144159345.png)
+![image-20200105144159345](../static/image-20200105144159345.png)
 
 ##### 注意事项：
 
 start()方法中判断threadStatus是否为0，是判断当前线程是否新建态，0是代表新建态(上图中的源码注释里面有提到)，而不是就绪态，因为Java中，就绪态和运行态是合并在一起的，（Thread的state为RUNNABLE时(也就是threadStatus为4时)，代表线程为就绪态或运行态）。执行start()方法的线程还不是JVM新建的线程，所以不是就绪态。有一些技术文章把这里弄错了，例如这一篇[《深入浅出线程Thread类的start()方法和run()方法》](https://juejin.im/post/5b09274af265da0de25759d5)
 
-![image-20200105144031591](/Users/ruiwendaier/Library/Application Support/typora-user-images/image-20200105144031591.png)
+![image-20200105144031591](../static/image-20200105144031591.png)
 
 ##### 总结
 
@@ -180,7 +180,7 @@ class ThreadTarget implements Runnable {
 
 输出结果如下：
 
-![image-20200105163553969](/Users/ruiwendaier/Library/Application Support/typora-user-images/image-20200105163553969.png)
+![image-20200105163553969](../static/image-20200105163553969.png)
 
 ##### 原理
 
