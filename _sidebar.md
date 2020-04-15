@@ -15,7 +15,7 @@
 - [MySQL](docs/MySQLNote.md)
 - [Kafka](docs/Kafka.md)
 - [ZooKeeper](docs/ZooKeeper.md)
-- [JVM读书摘要](docs/JavaJVM.md)
+- [JVM读书摘要](docs/JVMBook.md)
 - [HTTP](docs/HTTP.md)
 - [《剑指Offer》解题记录](docs/CodingInterviews.md)
 - [好书推荐](docs/bookRecommend.md)
