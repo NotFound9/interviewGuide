@@ -12,6 +12,11 @@
   - [数据结构](docs/RedisDataStruct.md)
   - [持久化(AOF和RDB)](docs/RedisStore.md)
   - [高可用(主从切换和哨兵机制)](docs/RedisUserful.md)
+- [MySQL](docs/MySQLNote.md)
+- [Kafka](docs/Kafka.md)
+- [ZooKeeper](docs/ZooKeeper.md)
+- [HTTP](docs/HTTP.md)
+- [《剑指Offer》解题记录](docs/CodingInterviews.md)
 - [好书推荐](docs/bookRecommend.md)
 * 读书笔记
   - [Redis设计与实现读书笔记 上](docs/RedisBook1.md)

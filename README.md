@@ -90,6 +90,11 @@
     - [2.Redis中哨兵是什么？](docs/RedisUserful.md#Redis中哨兵是什么？)
     - [3.客户端是怎么接入哨兵系统的？](docs/RedisUserful.md#客户端是怎么接入哨兵系统的？)
     - [4.Redis哨兵系统是怎么实现自动故障转移的？](docs/RedisUserful.md#Redis哨兵系统是怎么实现自动故障转移的？)
+- [MySQL](docs/MySQLNote.md)
+- [Kafka](docs/Kafka.md)
+- [ZooKeeper](docs/ZooKeeper.md)
+- [HTTP](docs/HTTP.md)
+- [《剑指Offer》解题记录](docs/CodingInterviews.md)
 - [好书推荐](docs/bookRecommend.md)
 * 读书笔记
   - [Redis设计与实现读书笔记 上](docs/RedisBook1.md)
