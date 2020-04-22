@@ -21,6 +21,10 @@
 
 ####  [10.Java中的内部类是怎么样的？](#Java中的内部类是怎么样的？)
 
+####  [11.Java中的注解是什么？](#Java中的注解是什么)
+
+
+
 ### Java中的多态是什么？
 
 **多态**指的是相同类型的变量在调用通一个方法时呈现出多种**不同的行为特征**。而造成这一现象的原因在于Java中的变量有两个类型：
@@ -672,4 +676,5 @@ OutClass.InnerClass object = new OutClass.InnerClass();
 OutClass out = new OutClass();
 OutClass.InnerClass object = out.new InnerClass();
 ```
-
+### Java中的注解是什么？
+Java中的注解其实是

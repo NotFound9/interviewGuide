@@ -15,7 +15,10 @@ Redis主要通过AOF和RDB实现持久化。
 
 #### AOF持久化
 
-AOF持久化主要是Redis在修改相关的命令后，将命令添加到aof_buf缓存区（aof_buf是Redis中的SDS结构，SDS结构可以认为是对C语言中字符串的扩展）的末尾，然后在每次事件循环结束时，根据appendfsync的配置（always是总是写入，everysec是每秒写入，no是根据操作系统来决定何时写入），判断是否需要将aof_buf写入AOF文件。
+AOF持久化主要是Redis在修改相关的命令后，将命令添加到aof_buf缓存区（aof_buf是Redis中的SDS结构，SDS结构可以认为是对C语言中字符串的扩展）的末尾，然后在每次事件循环结束时，根据appendfsync的配置（always是总是写入，everysec是每秒写入，no是根据操作系统来决定何时写入），判断是否需要将aof_buf写入AOF文件。生产环境中一般用默认配置appendfsync everysec
+
+
+
 ```
 struct redisServer {
  /* AOF buffer, written before entering the event loop */
@@ -34,7 +37,27 @@ struct sdshdr {
 RDB持久化指的是在满足一定的触发条件时（在一个的时间间隔内执行修改命令达到一定的数量，或者手动执行SAVE和BGSAVE命令），对这个时间点的数据库所有键值对信息生成一个压缩文件dump.rdb，然后将旧的删除，进行替换。
 
 ##### 实现原理
-实现原理是fork一个子进程，然后对键值对进行遍历，生成rdb文件，在生成过程中，父进程会继续处理客户端发送的请求，当父进程要对数据进行修改时，会对相关的内存页进行拷贝，修改的是拷贝后的数据。（也就是COPY ON WRITE，写时复制技术，就是当多个调用者同时请求同一个资源，如内存或磁盘上的数据存储，他们会共用同一个指向资源的指针，指向相同的资源，只有当一个调用者试图修改资源的内容时，系统才会真正复制一份专用副本给这个调用者，其他调用者还是使用最初的资源,在ArrayList的实现中，也有用到，添加一个新元素时过程是，加锁，对原数组进行复制，然后添加新元素，然后替代旧数组，解锁）
+实现原理是fork一个子进程，然后对键值对进行遍历，生成rdb文件，在生成过程中，父进程会继续处理客户端发送的请求，当父进程要对数据进行修改时，会对相关的内存页进行拷贝，修改的是拷贝后的数据。（也就是COPY ON WRITE，写时复制技术，就是当多个调用者同时请求同一个资源，如内存或磁盘上的数据存储，他们会共用同一个指向资源的指针，指向相同的资源，只有当一个调用者试图修改资源的内容时，系统才会真正复制一份专用副本给这个调用者，其他调用者还是使用最初的资源,在CopyOnWriteArrayList的实现中，也有用到，添加或者插入一个新元素时过程是，加锁，对原数组进行复制，然后添加新元素，然后替代旧数组，解锁）
+
+```java
+	//CopyOnWriteArrayList的添加元素的方法
+	public boolean add(E e) {
+        final ReentrantLock lock = this.lock;
+        lock.lock();
+        try {
+            Object[] elements = getArray();
+            int len = elements.length;
+            Object[] newElements = Arrays.copyOf(elements, len + 1);
+            newElements[len] = e;
+            setArray(newElements);
+            return true;
+        } finally {
+            lock.unlock();
+        }
+    }
+```
+
+
 
 ### AOF和RDB的区别是什么？
 AOF因为是保存了所有执行的修改命令，粒度更细，进行数据恢复时，恢复的数据更加完整，但是由于需要对所有命令执行一遍，效率比较低，同样因为是保存了所有的修改命令，同样的数据集，保存的文件会比RDB大，而且随着执行时间的增加，AOF文件可能会越来越大，所有会通过执行BGREWRITEAOF命令来重新生成AOF文件，减小文件大小。Redis服务器故障重启后，默认恢复数据的方式首选是通过AOF文件恢复，其次是通过RDB文件恢复。

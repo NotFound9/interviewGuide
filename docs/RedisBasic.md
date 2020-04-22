@@ -14,6 +14,10 @@
 #### [7.阻塞与非阻塞的区别是什么？](#阻塞与非阻塞的区别是什么？)
 #### [8.如何解决Redis缓存穿透问题？](#如何解决Redis缓存穿透问题？)
 #### [9.如何解决Redis缓存雪崩问题？](#如何解决Redis缓存雪崩问题？)
+#### [10.如何解缓存与数据库的数据一致性问题？](#如何解缓存与数据库的数据一致性问题)
+
+
+
 
 ### Redis是什么？
 Redis是一个开源的，基于内存的，也可进行持久化的，基于C语言编写的键值对存储数据库。
@@ -30,32 +34,124 @@ Redis配置项hz定义了serverCron任务的执行周期，默认每次清理时
 
 ##### (3)内存不够时清理
 
-当执行写入命令时，如果发现内存不够，那么就会按照配置的淘汰策略清理内存，淘汰策略主要由以下几种：
+当执行写入命令时，如果发现内存不够，那么就会按照配置的淘汰策略清理内存，淘汰策略一般有6种，Redis4.0版本后又增加了2种，主要由分为三类
 
-1.noeviction，不删除，达到内存限制时，执行写入命令时直接返回错误信息。
+* 第一类 不处理，等报错(默认的配置)
 
-2.allkeys-lru，在所有key中，优先删除最少使用的key。（适合请求符合幂定律分布，也就是一些键访问频繁，一部分键访问较少）
+  * noeviction，发现内存不够时，不删除key，执行写入命令时直接返回错误信息。（Redis默认的配置就是noeviction）
 
-3.allkeys-random，在所有key中，随机删除一部分key。（适合请求分布比较平均）
+* 第二类  从所有结果集中的key中挑选，进行淘汰
 
-4.volatile-lru，在设置了expire的key中，优先删除最少使用的key。
+  * allkeys-random 就是从所有的key中随机挑选key，进行淘汰
+  * allkeys-lru 就是从所有的key中挑选最近使用时间距离现在最远的key，进行淘汰
+  * allkeys-lfu 就是从所有的key中挑选使用频率最低的key，进行淘汰。（这是Redis 4.0版本后新增的策略）
 
-5.volatile-random，在设置了expire的key中，随机删除一部分key。
+* 第三类 从设置了过期时间的key中挑选，进行淘汰
 
-6.volatile-ttl，在设置了expire的key中，优先删除剩余时间段的key。
+  这种就是从设置了expires过期时间的结果集中选出一部分key淘汰，挑选的算法有：
 
-4.0版本后增加以下两种：
+  * volatile-random 从设置了过期时间的结果集中随机挑选key删除。
+  * volatile-lru 从设置了过期时间的结果集中挑选上次使用时间距离现在最久的key开始删除
+  * volatile-ttl 从设置了过期时间的结果集中挑选可存活时间最短的key开始删除(也就是从哪些快要过期的key中先删除)
 
-volatile-lfu：从已设置过期时间的数据集(server.db[i].expires)中挑选最不经常使用的数据淘汰。
-
-allkeys-lfu：当内存不足以容纳新写入数据时，在键空间中，移除最不经常使用的key。
-
-
+  * volatile-lfu 从过期时间的结果集中选择使用频率最低的key开始删除（这是Redis 4.0版本后新增的策略）
+  
 ##### LRU算法
 LRU算法的设计原则是如果一个数据近期没有被访问到，那么之后一段时间都不会被访问到。所以当元素个数达到限制的值时，优先移除距离上次使用时间最久的元素。
 
-可以使用HashMap<String, Node>+双向链表Node来实现，每次访问元素后，将元素移动到链表尾部，当元素满了时，将链表头部的元素移除。
-使用单向链表能不能实现呢，也可以，单向链表的节点虽然获取不到pre节点的信息，但是可以将下一个节点的key和value设置在当前节点上，然后把当前节点的next指针指向下下个节点。
+可以使用双向链表Node+HashMap<String, Node>来实现，每次访问元素后，将元素移动到链表头部，当元素满了时，将链表尾部的元素移除，HashMap主要用于根据key获得Node以及添加时判断节点是否已存在和删除时快速找到节点。
+
+PS:使用单向链表能不能实现呢，也可以，单向链表的节点虽然获取不到pre节点的信息，但是可以将下一个节点的key和value设置在当前节点上，然后把当前节点的next指针指向下下个节点，这样相当于把下一个节点删除了
+
+```java
+//双向链表
+    public static class ListNode {
+        String key;//这里存储key便于元素满时，删除尾节点时可以快速从HashMap删除键值对
+        Integer value;
+        ListNode pre = null;
+        ListNode next = null;
+        ListNode(String key, Integer value) {
+            this.key = key;
+            this.value = value;
+        }
+    }
+
+    ListNode head;
+    ListNode last;
+    int limit=4;
+    
+    HashMap<String, ListNode> hashMap = new HashMap<String, ListNode>();
+
+    public void add(String key, Integer val) {
+        ListNode existNode = hashMap.get(key);
+        if (existNode!=null) {
+            //从链表中删除这个元素
+            ListNode pre = existNode.pre;
+            ListNode next = existNode.next;
+            if (pre!=null) {
+               pre.next = next;
+            }
+            if (next!=null) {
+               next.pre = pre;
+            }
+            //更新尾节点
+            if (last==existNode) {
+                last = existNode.pre;
+            }
+            //移动到最前面
+            head.pre = existNode;
+            existNode.next = head;
+            head = existNode;
+            //更新值
+            existNode.value = val;
+        } else {
+            //达到限制，先删除尾节点
+            if (hashMap.size() == limit) {
+                ListNode deleteNode = last;
+                hashMap.remove(deleteNode.key);
+              //正是因为需要删除，所以才需要每个ListNode保存key
+                last = deleteNode.pre;
+                deleteNode.pre = null;
+                last.next = null;
+            }
+            ListNode node = new ListNode(key,val);
+            hashMap.put(key,node);
+            if (head==null) {
+                head = node;
+                last = node;
+            } else {
+                //插入头结点
+                node.next = head;
+                head.pre = node;
+                head = node;
+            }
+        }
+
+    }
+
+    public ListNode get(String key) {
+        return hashMap.get(key);
+    }
+
+    public void remove(String key) {
+        ListNode deleteNode = hashMap.get(key);
+        ListNode preNode = deleteNode.pre;
+        ListNode nextNode = deleteNode.next;
+        if (preNode!=null) {
+            preNode.next = nextNode;
+        }
+        if (nextNode!=null) {
+            nextNode.pre = preNode;
+        }
+        if (head==deleteNode) {
+            head = nextNode;
+        }
+        if (last == deleteNode) {
+            last = preNode;
+        }
+        hashMap.remove(key);
+    }
+```
 
 ##### LFU算法
 LFU算法的设计原则时，如果一个数据在最近一段时间被访问的时次数越多，那么之后被访问的概率会越大，实现是每个数据
@@ -155,5 +251,37 @@ Redis 缓存穿透指的是攻击者故意大量请求一些Redis缓存中不存
 
 1.在给缓存设置失效时间时加一个随机值，避免集体失效。
 
-2.双缓存机制，缓存A的失效时间为20分钟，缓存B没有失效时间，从缓存A读取数据，缓存A中没有时，去缓存B中读取数据，并且启动一个异步线程来更新缓存A。
+2.双缓存机制，缓存A的失效时间为20分钟，缓存B没有失效时间，从缓存A读取数据，缓存A中没有时，去缓存B中读取数据，并且启动一个异
+3.步线程来更新缓存A。
 
+#### 如何解缓存与数据库的数据一致性问题？
+首先需要明白会导致缓存与数据库的数据不一致的几个诱因：
+多个写请求的执行顺序不同导致脏数据。
+更新时正好有读请求，读请求取到旧数据然后更新上。或者数据库是读写分离的，在主库更新完之后，需要一定的时间，从库才能更新。
+
+##### 1.先更新数据库，后更新缓存
+1.两个写请求，写请求A，写请求B，A先更新数据库，B后更新数据库，但是可能B会先更新缓存，A后更新缓存，这样就会导致缓存里面的是旧数据。
+2.更新缓存时失败也有可能导致缓存是旧数据。
+##### 2.先删除缓存，在更新数据库
+1.删除缓存后，更新数据库之前假如正好有读请求，读请求把旧数据设置到缓存了。
+##### 3.先更新数据库，再删除缓存
+1.更新后删除缓存时，网络不好，删除失败也有可能导致缓存是旧数据。
+
+#### 正确的方案
+
+##### 1.写请求串行化
+
+将写请求更新之前先获取分布式锁，获得之后才能更新，这样实现写请求的串行化，但是会导致效率变低。
+##### 2.先更新数据库，异步删除缓存，删除失败后重试
+
+ 先更新数据库，异步删除缓存，删除缓存失败时，继续异步重试，或者将操作放到消息队列中，再进行删除操作。（如果数据库是读写分离的，那么删除缓存时需要延迟删除，否则可能会在删除缓存时，从库还没有收到更新后的数据，其他读请求就去从库读到旧数据然后设置到缓存中。）
+
+![image](../static/o_update1.png)
+
+##### 3.业务项目更新数据库，其他项目订阅binlog更新
+
+业务项目直接更新数据库，然后其他项目订略binlog，接收到更新数据库操作的消息后，更新缓存，更新缓存失败时，新建异步线程去重试或者将操作发到消息队列，然后后续进行处理。但是这种方案更新mysql后还是有一定延迟，缓冲中才是新值。
+
+![image](../static/o_update2-20200419221055438.png)
+
+参考资料：https://www.cnblogs.com/rjzheng/p/9041659.html
