@@ -3,6 +3,7 @@
 下面是主要是自己看了很多Java容器类相关的博客，以及很多面经中涉及到的Java容器相关的面试题后，自己全部手写的解答，也花了一些流程图，之后会继续更新这一部分。
 
 ####  [1.ArrayList与LinkedList的区别是什么？](#ArrayList与LinkedList的区别是什么？)
+
 #### [2.怎么使ArrayList，LinkedList变成线程安全的呢？](#怎么使ArrayList，LinkedList变成线程安全的呢？)
 #### [3.ArrayList遍历时删除元素有哪些方法？](#ArrayList遍历时删除元素有哪些方法？)
 #### [4.ConcurrentModificationException是什么？](#ConcurrentModificationException是什么？)
@@ -13,7 +14,38 @@
 
 每次遇到一个好看的小姐姐，我们一般都是会去看她的外貌，身材，大小(咳咳，我们指的是年龄大小)等等。同样的，我们在分析Java容器之间的区别时，我们也可以从继承树，底层数据结构，线程安全，执行效率来进行分析。
 
-#### 1.继承树
+#### 1.底层使用的数据结构
+
+* Arraylist 底层使用的是Object数组，初始化时就会指向的会是一个static修饰的空数组，数组长度一开始为**0**，插入第一个元素时数组长度会初始化为**10**，之后每次数组空间不够进行扩容时都是增加为原来的**1.5倍**。ArrayList的空间浪费主要体现在在list列表的结尾会预留一定的容量空间，而LinkedList的空间花费则体现在它的每一个元素都需要消耗比ArrayList更多的空间（因为要存放直接后继和直接前驱以及数据）
+
+* LinkedList 底层使用的是双向链表数据结构，每个节点保存了指向前驱节点和后继结点的指针。初始化时，不执行任何操作，添加第一个元素时，再去构造链表中的节点。
+
+#### 2.是否保证线程安全：
+
+ ArrayList 和 LinkedList 都是不同步的，也就是不保证线程安全。
+
+因为ArrayList的插入元素的方法就是裸奔的，直接将原数组index及后面的元素拷贝到index+1及后面的位置上，然后将index位置设置为插入的值，并发修改时保证不了数据安全性，所以也不允许并发修改，一旦检测到并发修改，会抛出ConcurrentModificationException异常。
+
+```
+//ArrayList的插入元素的方法
+public void add(int index, E element) {
+        rangeCheckForAdd(index);
+        ensureCapacityInternal(size + 1);  // Increments modCount!!
+        System.arraycopy(elementData, index, elementData, index + 1,
+                         size - index);//将原数组index之后的元素拷贝到原数组index+1后面的位置上
+        elementData[index] = element;
+        size++;
+}
+```
+
+
+
+#### 3.插入和删除的复杂度：
+
+* ArrayList 采用数组存储，元素的物理存储地址是连续的，支持以O(1)的时间复杂度对元素快速访问。插入和删除元素后，需要将后面的元素进行移动，所以插入和删除元素的时间复杂度受元素位置的影响。复杂度是 O（n）， 
+* LinkedList 采用链表存储，所以不能快速随机访问。所以首尾插入，删除元素时间复杂度不受元素位置的影响，都是近似 O(1)(如果是插入到中间位置还需要考虑寻找插入位置的时间复杂度)。而数组为近似 O(n)。
+
+#### 4.继承树
 
 * ArrayList继承于AbstractList抽象类，实现了List, RandomAccess, Cloneable, java.io.Serializable接口 。
 * LinkedList继承自AbstractSequentialList 实现List, Deque, Cloneable, java.io.Serializable接口。
@@ -30,26 +62,25 @@ RandomAccess是一个标示性接口，代表ArrayList支持快速访问，而Li
 
 Deque接口是双端队列的意思，代表LinkedList支持两端元素插入和移除。
 
-#### 2.底层使用的数据结构
-
-* Arraylist 底层使用的是Object数组，初始化时就会指向的会是一个static修饰的空数组，数组长度一开始为0，插入第一个元素时变为10，之后每次数组空间不够进行扩容时都是增加为原来的1.5倍。ArrayList的空间浪费主要体现在在list列表的结尾会预留一定的容量空间，而LinkedList的空间花费则体现在它的每一个元素都需要消耗比ArrayList更多的空间（因为要存放直接后继和直接前驱以及数据）
-
-* LinkedList 底层使用的是双向链表数据结构，每个节点保存了指向前驱节点和后继结点的指针。初始化时，不执行任何操作，添加第一个元素时，再去构造链表中的节点。
-
-#### 3.是否保证线程安全：
-
- ArrayList 和 LinkedList 都是不同步的，也就是不保证线程安全。
-
-#### 4.插入和删除的复杂度：
-
-* ArrayList 采用数组存储，元素的物理存储地址是连续的，支持以O(1)的时间复杂度对元素快速访问。插入和删除元素后，需要将后面的元素进行移动，所以插入和删除元素的时间复杂度受元素位置的影响。复杂度是 O（n）， 
-* LinkedList 采用链表存储，所以不能快速随机访问。所以首尾插入，删除元素时间复杂度不受元素位置的影响，都是近似 O(1)(如果是插入到中间位置还需要考虑寻找插入位置的时间复杂度)。而数组为近似 O(n)。
-
 ### 怎么使ArrayList，LinkedList变成线程安全的呢？
 
 #### 1.使用SynchronizedList
 
-SynchronizedList是一个线程安全的包装类。继承于SynchronizedCollection，SynchronizedCollection实现了Collection接口，SynchronizedList包含一个List对象，对List的访问修改方法进行了一些封装，在封装的方法中会对list使用同步锁加锁，然后再进行存取和修改操作。(ArrayList也是如此，只不过返回的是SynchronizedRandomAccessList对象，SynchronizedRandomAccessList是SynchronizedList的子类，只是会多一个以线程安全的方式获取子数组的方法)。
+SynchronizedList是一个线程安全的包装类。继承于SynchronizedCollection，SynchronizedCollection实现了Collection接口，SynchronizedList包含一个List对象，对List的访问修改方法进行了一些封装，在封装的方法中会对list使用同步锁加锁，然后再进行存取和修改操作。
+
+使用方法如下
+
+```
+LinkedList<Integer>    linkedList    = new LinkedList<Integer>();
+//调用Collections的synchronizedList方法，传入一个linkedList，会返回一个SynchronizedList实例对象
+List<Integer> synchronizedList =  Collections.synchronizedList(linkedList);
+
+//调用Collections的synchronizedList方法，ArrayList，返回一个SynchronizedRandomAccessList实例对象
+ArrayList<Integer>    arrayList    = new ArrayList<Integer>();
+List<Integer> synchronizedRandomAccessList =  Collections.synchronizedList(linkedList);
+```
+
+(Collections.synchronizedList()方法会判断传入的对象是否实现了 RandomAccess接口，是的话，会返回一个SynchronizedRandomAccessList对象，SynchronizedRandomAccessList是SynchronizedList的子类，只是会多一个以线程安全的方式获取子数组的方法)。
 
 SynchronizedList类的部分代码如下：
 
@@ -58,8 +89,15 @@ SynchronizedList类的部分代码如下：
         extends SynchronizedCollection<E>
         implements List<E> {
         final List<E> list;//源list
+       final Object mutex; 
+
+        SynchronizedCollection(Collection<E> c) {
+            this.c = Objects.requireNonNull(c);
+            mutex = this;//mutex就是SynchronizedList实例自己，作为同步锁使用
+        }
+        
 				public E get(int index) {
-            synchronized (mutex) {//mutex加同步锁的对象，
+            synchronized (mutex) {
             是父类中的成员变量，在父类中会将list赋值给mutex
             		return list.get(index);
             }
@@ -154,7 +192,7 @@ SynchronizedList是通过对读写方法使用synchronized修饰来实现同步�
     }
 ```
 
-#### 第1种方法 - 普通for循环正序删除（结果：会漏掉元素判断）
+#### 第1种方法 - 普通for循环正序删除（结果：会漏掉对后一个元素的判断）
 
 ```java
 for (int i = 0; i < arrayList.size(); i++) {
@@ -206,6 +244,8 @@ for (int i = 0; i < arrayList.size(); i++) {
 这种方法可以正确删除元素，因为调用remove删除元素时，remove方法调用System.arraycopy()将被删除元素a后面的元素向前移动，而不会影响元素a之前的元素，所以倒序遍历可以正常删除元素。
 
 ### 第3种方法 - for-each循环删除（结果：抛出异常）
+
+抛出异常的根本原因在于for-each是使用Iterator来实现遍历的，调用ArrayList.remove()方法会将modCount+1，而Iterator内部的expectedModCount确没有更新，这样在进行下次循环时调用Iterator.next()会对modCount和expectedModCount进行比较，不一致就会抛出ConcurrentModificationException异常。
 
 ```java
 public static void removeWayThree(ArrayList<Integer> arrayList) {
@@ -291,17 +331,47 @@ private void fastRemove(int index) {
     			System.arraycopy(elementData, index+1, elementData, index,numMoved);
     elementData[--size] = null; // clear to let GC do its work
 }
-
-
 ```
 
 而当删除完元素后，进行下一次循环时，会调用下面源码中Itr.next()方法获取下一个元素，会调用checkForComodification()方法对ArrayList进行校验，判断在遍历ArrayList是否已经被修改，由于之前对modCount+1，而expectedModCount还是初始化时ArrayList.Itr对象时赋的值，所以会不相等，然后抛出ConcurrentModificationException异常。
 
 ##### 那么有什么办法可以让expectedModCount及时更新呢？
 
-可以看到下面Itr的源码中，在Itr.remove()方法中删除元素后会对 expectedModCount更新，所以我们在使用删除元素时使用Itr.remove()方法来删除元素就可以保证expectedModCount的更新了，具体看第5种方法。
+可以看到下面Itr的源码中，在Itr.remove()方法中删除元素后会对 expectedModCount更新，所以我们在使用删除元素时使用Itr.remove()方法来删除元素就可以保证expectedModCount的更新了，具体看**第5种**方法。
 
 ```java
+//使用Iterator遍历元素的方法
+/*
+Iterator遍历时使用next()方法返回下一个元素，主要通过将游标cursor+1，获得下一个元素
+
+调用remove()删除元素时，主要删除lastRet下标对应的元素，并且将cursor设置为lastRet的值，因为后面的元素向前面的空位移动了一位
+
+Iterator遍历过程中，在一次循环中也不能多次调用remove()方法，因为每次remove()后就会将lastRet设置为-1，本次循环中再remove就会抛异常，必须等调用next()方法后对lastRet重新赋值。
+*/
+public void tranverse() {
+  ArrayList<Integer> list = new ArrayList<Integer>();
+        list.add(1);
+        list.add(2);
+        list.add(3);
+        list.add(3);
+        list.add(4);
+        list.add(5);
+	Iterator<Integer> iterator = list.iterator();
+  while (iterator.hasNext()) {
+    Integer value = iterator.next();
+    System.out.println(value);
+    if (value.equals(3)) {
+      iterator.remove();
+      iterator.remove();//在循环中多次调用iterator的remove方法会抛出异常
+      iterator.remove();
+    }
+  }
+}
+```
+
+**Iterator的源代码**
+
+```
 private class Itr implements Iterator<E> {
         int cursor;       // 游标
         int lastRet = -1; // index of last element returned; -1 if no such
@@ -369,7 +439,7 @@ Exception in thread "main" java.util.ConcurrentModificationException
 	at com.test.ArrayListTest1.main(ArrayListTest1.java:25)
 ```
 
-第3种方法在编译后的代码，其实是跟第4种是一样的，所以第四种写法也会抛出ConcurrentModificationException异常。这种需要注意的是，每次调用iterator的next()方法，会导致游标向右移动，从而达到遍历的目的。所以在单次循环中不能多次调用next()方法，不然会导致每次循环时跳过一些元素，我在一些博客里面看到了一些错误的写法，比如这一篇[《在ArrayList的循环中删除元素，会不会出现问题？》](https://juejin.im/post/5b92844a6fb9a05d290ed46c)文章中：
+第4种方法其实是第3种方法在编译后的代码，所以第四种写法也会抛出ConcurrentModificationException异常。这种需要注意的是，每次调用iterator的next()方法，会导致游标向右移动，从而达到遍历的目的。所以在单次循环中不能多次调用next()方法，不然会导致每次循环时跳过一些元素，我在一些博客里面看到了一些错误的写法，比如这一篇[《在ArrayList的循环中删除元素，会不会出现问题？》](https://juejin.im/post/5b92844a6fb9a05d290ed46c)文章中：
 
 ![image-20200101124822998](/Users/ruiwendaier/Library/Application Support/typora-user-images/image-20200101124822998.png)
 

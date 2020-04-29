@@ -144,3 +144,4 @@ UseParallelGC参数会使用Parallel Scavenge+Serial Old的收集器组合，进
 另外这个命令可以查询到更加详细的信息
 
 java -XX:+PrintFlagsFinal -version | grep GC
+

@@ -677,4 +677,28 @@ OutClass out = new OutClass();
 OutClass.InnerClass object = out.new InnerClass();
 ```
 ### Java中的注解是什么？
-Java中的注解其实是
+Java中的注解其实是继承于annotation接口的一个接口，根据@Retention修饰的作用范围，注解可以是作用于源码层面，字节码文件层面，运行时层面。
+
+```
+// 如果@Retention的值是RetentionPolicy.Source 那么在编译时注解就失效了，不会编译进class文件
+// 如果@Retention的值是RetentionPolicy.CLASS 那么会编译进class文件，但是JVM加载class文件时就会丢弃这个注解，在运行时注解就失效了
+// 如果@Retention的值是RetentionPolicy.RUNTIME 在运行时注解同样有效
+```
+
+根据@Retention的值，注解主要分为编译时扫描和运行时扫描，例如@Override注解是作用于源码层面的，只是在编译时，编译器会去检验method是否是真正重写了父类的某个方法。
+
+```
+@Override
+public void method() {
+
+}
+
+
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.SOURCE)
+public @interface Override {
+
+}
+```
+
+除了几个JDK自带的注解以外，通常情况下，我们使用的注解都是运行时注解，在运行时，JVM在运行时会针对注解生成一个动态代理类，通过反射获取注解时，实际上返回的是Java运行时生成的动态代理对象$Proxy1，而Proxy类就是我们注解（接口）的具体实现类。
