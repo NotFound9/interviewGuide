@@ -47,7 +47,7 @@
 
 #### 1.类加载检查
 
-首先代码中new关键字在编译后，会生成一条字节码new指令，当虚拟机遇到一条字节码**new**指令时，会根据类名去方法区**常量池**找类的**符号引用**，检查符号引用代表的类是否已加载，解析和初始化过。如果没有就执行相应的**类加载**过程。
+首先代码中new关键字在编译后，会生成一条字节码new指令，当虚拟机遇到一条字节码**new**指令时，会根据类名去方法区**运行时常量池**找类的**符号引用**，检查符号引用代表的类是否已加载，解析和初始化过。如果没有就执行相应的**类加载**过程。
 
 #### 2.分配内存
 
@@ -519,7 +519,7 @@ System.out.println(SuperClass.str);
 
 #### 验证
 
-确保Class文件中的字节流包含的信息符合规范，不会危害到虚拟机的安全。
+确保Class文件中的字节流包含的信息符合JAVA规范，不会危害到虚拟机的安全。
 
 主要有
 
@@ -543,9 +543,9 @@ public static final int value = 123;//准备阶段就赋初值123
 
 #### 解析
 
-就是将常量池中的符号引用替换为直接引用的过程。主要是针对类，接口，字段，类方法，接口方法，方法类型，方法句柄。
+解析不一定是在类加载时执行，也有可能是只会用到时才执行。就是将常量池中的符号引用替换为直接引用的过程。符号引用其实就是从Class文件中加载出来的字符串，本身没有跟真正的类，方法进行关联。主要是针对类，接口，字段，类方法，接口方法，方法类型，方法句柄。
 
-https://patchouli-know.com/2017/03/11/jvm-symbol-link/
+https://www.zhihu.com/question/30300585
 
 **符号引用**：用一组符号来描述所引用的目标，其实就是在Java中调用一个方法，转换为class字节码以后，是这样的
 
@@ -557,11 +557,96 @@ CONSTANT_Methodref_info {
 }
 ```
 
-例如调用Test包下sub对象的一个inc方法
+例如调用X类的foo()方法中会调用bar()方法，
+Java代码如下：
+```java
+public class X {
+  public void foo() {
+    bar();
+  }
 
-sub.inc(a);在字节码中是test/Sub.inc:(I)I
+  public void bar() { }
+}
+```
+编译后的Class文件如下：
+```java
+Classfile /private/tmp/X.class
+  Last modified Jun 13, 2015; size 372 bytes
+  MD5 checksum 8abb9cbb66266e8bc3f5eeb35c3cc4dd
+  Compiled from "X.java"
+public class X
+  SourceFile: "X.java"
+  minor version: 0
+  major version: 51
+  flags: ACC_PUBLIC, ACC_SUPER
+Constant pool:
+   #1 = Methodref          #4.#16         //  java/lang/Object."<init>":()V
+   #2 = Methodref          #3.#17         //  X.bar:()V
+   #3 = Class              #18            //  X
+   #4 = Class              #19            //  java/lang/Object
+   #5 = Utf8               <init>
+   #6 = Utf8               ()V
+   #7 = Utf8               Code
+   #8 = Utf8               LineNumberTable
+   #9 = Utf8               LocalVariableTable
+  #10 = Utf8               this
+  #11 = Utf8               LX;
+  #12 = Utf8               foo
+  #13 = Utf8               bar
+  #14 = Utf8               SourceFile
+  #15 = Utf8               X.java
+  #16 = NameAndType        #5:#6          //  "<init>":()V
+  #17 = NameAndType        #13:#6         //  bar:()V
+  #18 = Utf8               X
+  #19 = Utf8               java/lang/Object
+{
+  public X();
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0       
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return        
+      LineNumberTable:
+        line 1: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+               0       5     0  this   LX;
 
-这个就是符号引用。
+  public void foo();
+    flags: ACC_PUBLIC
+    Code:
+      stack=1, locals=1, args_size=1
+         0: aload_0       
+         1: invokevirtual #2                  // Method bar:()V
+         4: return        
+      LineNumberTable:
+        line 3: 0
+        line 4: 4
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+               0       5     0  this   LX;
+
+  public void bar();
+    flags: ACC_PUBLIC
+    Code:
+      stack=0, locals=1, args_size=1
+         0: return        
+      LineNumberTable:
+        line 6: 0
+      LocalVariableTable:
+        Start  Length  Slot  Name   Signature
+               0       1     0  this   LX;
+}
+```
+java代码中的` bar();`转换为字节码后是
+`[B6] [00 02]`翻译过来其实是`invokevirtual #2`
+B6是invokevitual指令的操作码，02是常量池中下标为2的常量项。
+而下标为2的常量项是`#3.#17`，也就是`X.bar:()V`,这就是符号引用，解析后会转换为直接引用，就是虚方法表的下标和参数个数，
+`[B6] [00 02]` 翻译结果`invokevirtual #2`
+转换为直接引用后就是
+`[D6] [06] [01]`翻译结果invokevirtual_quick vtable_index=6, args_size=1，也就是执行虚方法表里面偏移量为6的方法，参数个数为1（每个实例方法都有一个隐藏参数，也就是当前对象）。
+所以JVM在执行invokevirtual_quick要调用X.bar()时，只要顺着对象引用查找到虚方法表，然后从中取出第6项的methodblock\*，就可以找到实际应该调用的目标然后调用过去了。
 
 **直接引用**：可以直接指向目标的指针，相对偏移量或者是句柄。
 
@@ -589,11 +674,11 @@ sub.inc(a);在字节码中是test/Sub.inc:(I)I
 
 三层类加载器
 
-**启动类加载器**：主要是在加载JAVA_HOME/lib目录下的特定名称jar包，例如rt.jar包，Object类就在这个类中。
+**启动类加载器**：主要是在加载JAVA_HOME/lib目录下的特定名称jar包，例如rt.jar包，像java.lang就在这个jar包中。
 
 **扩展加载器**：主要是加载JAVA_HOME/lib/ext目录下的具备通用性的类库。
 
-**应用程序加载器**：加载用户类路径下所有的类库，也就是程序中默认的类加载器
+**应用程序加载器**：加载用户类路径下所有的类库，也就是程序中默认的类加载器。
 
 ##### 双亲委派机制（Parents Delegation Model）
 
@@ -601,4 +686,112 @@ sub.inc(a);在字节码中是test/Sub.inc:(I)I
 
 要求除启动类加载器以外，其他加载器都要有自己的父类加载器（父子关系通过组合设计模式来实现），如果一个类加载器收到类加载请求时，先检查是否已经加载过了，没有首先会调用父类的loadClass方法，将请求委派给父类加载器(没有父类加载器就委派给启动类加载器)，父类加载器无法完成时，子加载器尝试自己去加载。
 
-这样可以保证每个类只加载一次，并且是由特定的类加载器进行加载（都是首先让启动类来进行加载）。
+目的是为了保证每个类只加载一次，并且是由特定的类加载器进行加载（都是首先让启动类来进行加载）。
+
+```java
+public abstract class ClassLoader {
+    ...
+    public Class<?> loadClass(String name) throws ClassNotFoundException {
+        return loadClass(name, false);
+    }
+    protected Class<?> loadClass(String name, boolean resolve)
+        throws ClassNotFoundException {
+        synchronized (getClassLoadingLock(name)) {
+            Class<?> c = findLoadedClass(name);
+            if (c == null) {
+                ...
+                try {
+                    if (parent != null) {
+                        c = parent.loadClass(name, false);
+                    } else {
+                        c = findBootstrapClassOrNull(name);
+                    }
+                } catch (ClassNotFoundException e) {
+                }
+
+                if (c == null) {
+                    ...
+                    c = findClass(name);
+                    // do some stats
+                    ...
+                }
+            }
+            if (resolve) {
+                resolveClass(c);
+            }
+            return c;
+        }
+    }
+    protected Class<?> findClass(String name) throws ClassNotFoundException {
+        throw new ClassNotFoundException(name);
+    }
+    ...
+}
+```
+
+### 怎么自定义一个类加载器？
+
+加载一个类时，一般是调用类加载器的loadClass()方法来加载一个类，loadClass()方法的工作流程如下：
+
+1.先调用findLoadedClass(className)来获取这个类，判断类是否已加载。
+
+2.如果未加载，如果父类加载器不为空，调用父类加载器的loadClass()来加载这个类，父类加载器为空，就调用父类加载器加载这个类。
+
+3.父类加载器加载失败，那么调用该类加载器findClass(className)方法来加载这个类。
+
+所以我们我们一般自定义类加载器都是继承ClassLoader，来重新findClass()方法，来实现类加载。
+
+```java
+public class DelegationClassLoader extends ClassLoader {
+  private String classpath;
+
+  public DelegationClassLoader(String classpath, ClassLoader parent) {
+    super(parent);
+    this.classpath = classpath;
+  }
+
+  @Override
+  protected Class<?> findClass(String name) throws ClassNotFoundException {
+    InputStream is = null;
+    try {
+      String classFilePath = this.classpath + name.replace(".", "/") + ".class";
+      is = new FileInputStream(classFilePath);
+      byte[] buf = new byte[is.available()];
+      is.read(buf);
+      return defineClass(name, buf, 0, buf.length);
+    } catch (IOException e) {
+      throw new ClassNotFoundException(name);
+    } finally {
+      if (is != null) {
+        try {
+          is.close();
+        } catch (IOException e) {
+          throw new IOError(e);
+        }
+      }
+    }
+  }
+
+  public static void main(String[] args)
+      throws ClassNotFoundException, IllegalAccessException, InstantiationException,
+      MalformedURLException {
+    sun.applet.Main main1 = new sun.applet.Main();
+
+    DelegationClassLoader cl = new DelegationClassLoader("java-study/target/classes/",
+        getSystemClassLoader());
+    String name = "sun.applet.Main";
+    Class<?> clz = cl.loadClass(name);
+    Object main2 = clz.newInstance();
+
+    System.out.println("main1 class: " + main1.getClass());
+    System.out.println("main2 class: " + main2.getClass());
+    System.out.println("main1 classloader: " + main1.getClass().getClassLoader());
+    System.out.println("main2 classloader: " + main2.getClass().getClassLoader());
+    ClassLoader itrCl = cl;
+    while (itrCl != null) {
+      System.out.println(itrCl);
+      itrCl = itrCl.getParent();
+    }
+  }
+}
+```

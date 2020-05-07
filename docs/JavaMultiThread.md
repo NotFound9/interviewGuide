@@ -342,7 +342,7 @@ public class Singleton {
     public static Singleton getInstance() {              
         if (instance == null) {                        
             synchronized (Singleton.class) { 
-                if (instance == null) { //双重检查存在的一样在于可能会有多个线程进入第一个判断，然后竞争同步锁，线程A得到了同步锁，创建了一个Singleton实例，赋值给instance，然后释放同步锁，此时线程B获得同步锁，又会创建一个Singleton实例，造成初始化覆盖。                
+                if (instance == null) { //双重检查存在的意义在于可能会有多个线程进入第一个判断，然后竞争同步锁，线程A得到了同步锁，创建了一个Singleton实例，赋值给instance，然后释放同步锁，此时线程B获得同步锁，又会创建一个Singleton实例，造成初始化覆盖。                
                     instance = new Singleton();        
                 }
             }                                   
@@ -374,7 +374,7 @@ public class Singleton {
     public static Singleton getInstance() {              
         if (instance == null) {                        
             synchronized (Singleton.class) { 
-                if (instance == null)//双重检查存在的一样在于可能会有多个线程进入第一个判断，然后竞争同步锁，线程A得到了同步锁，创建了一个Singleton实例，赋值给instance，然后释放同步锁，此时线程B获得同步锁，又会创建一个Singleton实例，造成初始化覆盖。
+                if (instance == null)//双重检查存在的意义在于可能会有多个线程进入第一个判断，然后竞争同步锁，线程A得到了同步锁，创建了一个Singleton实例，赋值给instance，然后释放同步锁，此时线程B获得同步锁，又会创建一个Singleton实例，造成初始化覆盖。
                     instance = new Singleton();          
             }                                   
         }                                      

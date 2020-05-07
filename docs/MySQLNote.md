@@ -30,6 +30,7 @@
 #### [MySQL 主从复制的工作流程是什么样的?](#MySQL主从复制的工作流程是什么样的?)
 #### [ char类型与varchar类型的区别?](#char类型与varchar类型的区别)
 #### [ 如何优化MySQL慢查询?](# 如何优化MySQL慢查询)
+#### [SELECT Count(*)怎么优化？](SELECT Count(*)怎么优化)
 
 ### 一条MySQL更新语句的执行过程是什么样的？
 
@@ -915,6 +916,18 @@ innodb会有死锁检测，但是会消耗一些cpu资源，检测到死锁会�
 3.控制并发度
 就是控制访问相同资源的并发事务量。例如将长事务拆分成短事务，这样每次事务占用时间也少，也可以减少其他事务的等待时间。
 
+
+### SELECT Count(*)怎么优化？
+在innodb引擎下，
+##### COUNT(*)和Count(id) 
+SELECT Count(\*)其实是跟SELECT Count(id)是等价的，会去主键的聚集索引下扫描每一行，然后判断行是否为Null，不为Null计入Count。
+##### Count(col)
+也是全表扫描，判断这一行的col值是否为null，不为null，计入Count
+怎么优化count(\*)?
+可以使用查询一个非空的唯一索引键的数量来替代count(\*),因为count(\*)需要遍历主键的聚集索引的叶子节点，读取每一行的数据，而Count(unique_key)会去unique_key的索引下读取每个叶子的节点，因为每个叶子节点只包含unique_key和主键id，数据大小比聚集索引下的叶子节点下，IO会小一些。
+##### Myisam可以缓存count，而innodb不能缓存count
+因为innodb有事务的概念，如果是在PR的隔离级别下，每个事务查询的count应该等于事务开始时count+本事务执行过程中对count的改变，但是由于每个事务可以单独设置会话隔离级别，所以很难实现对count的缓存。
+
 ##### 怎么优化慢查询？
 
 1.首先根据explain+SELECT语句执行，查看结果，
@@ -1040,3 +1053,5 @@ Innodb在1.0之后支持Fast Index Creation，就是添加辅助索引（主键�
 ##### Online DDL
 
 就是innodb在创建索引时，会将数据库的增删改命令写入缓存日志，创建完毕后通过重放日志来保持数据库的最终一致性。
+
+
