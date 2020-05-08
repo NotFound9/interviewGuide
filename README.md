@@ -18,7 +18,7 @@
 * 一方面是督促自己学习。
 * 一方面是将这些面试题整理后，写完解答后分享给大家，希望可以帮助到大家，也欢迎大家一起来完善这个项目，为开源做贡献。为了方便交流，也建了一个技术交流群，欢迎大家扫码加入！会分享一些我自己在看的一些技术资料给大家！同时也希望大家给这个开源项目点一个Star，谢谢大家了!
 
-<img src="http://notfound9.github.io/interviewGuide/static/12609483-f49199a436960c2basfdsf.jpeg" width="30%" padding-left= "20%" />
+<img src="http://notfound9.github.io/interviewGuide/static/2332432609483-f49160c2basfdsf.jpeg" width="30%" padding-left= "20%" />
 
 ## 目录
 
