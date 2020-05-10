@@ -211,6 +211,73 @@ treeifyBin方法的源码： MIN_TREEIFY_CAPACITY是64
 调用addCount()对当前数组长度加1，在addCount()方法中，会判断当前元素个数是否超过sizeCtl(扩容阈值，总长度*0.75)，如果是，那么会进行扩容，如果正处于扩容过程中，当前线程会辅助扩容。
 
 
+ConcurrentHashMap源码：
+```java
+final V putVal(K key, V value, boolean onlyIfAbsent) {
+    if (key == null || value == null) throw new NullPointerException();
+    int hash = spread(key.hashCode());
+    int binCount = 0;
+    for (Node<K,V>[] tab = table;;) {
+        Node<K,V> f; int n, i, fh;
+        if (tab == null || (n = tab.length) == 0)
+            tab = initTable();
+        else if ((f = tabAt(tab, i = (n - 1) & hash)) == null) {
+            if (casTabAt(tab, i, null,
+                         new Node<K,V>(hash, key, value, null)))
+                break;                   // no lock when adding to empty bin
+        }
+        else if ((fh = f.hash) == MOVED)
+            tab = helpTransfer(tab, f);
+        else {
+            V oldVal = null;
+            synchronized (f) {
+                if (tabAt(tab, i) == f) {
+                    if (fh >= 0) {
+                        binCount = 1;
+                        for (Node<K,V> e = f;; ++binCount) {
+                            K ek;
+                            if (e.hash == hash &&
+                                ((ek = e.key) == key ||
+                                 (ek != null && key.equals(ek)))) {
+                                oldVal = e.val;
+                                if (!onlyIfAbsent)
+                                    e.val = value;
+                                break;
+                            }
+                            Node<K,V> pred = e;
+                            if ((e = e.next) == null) {
+                                pred.next = new Node<K,V>(hash, key,
+                                                          value, null);
+                                break;
+                            }
+                        }
+                    }
+                    else if (f instanceof TreeBin) {
+                        Node<K,V> p;
+                        binCount = 2;
+                        if ((p = ((TreeBin<K,V>)f).putTreeVal(hash, key,
+                                                       value)) != null) {
+                            oldVal = p.val;
+                            if (!onlyIfAbsent)
+                                p.val = value;
+                        }
+                    }
+                }
+            }
+            if (binCount != 0) {
+                if (binCount >= TREEIFY_THRESHOLD)
+                    treeifyBin(tab, i);
+                if (oldVal != null)
+                    return oldVal;
+                break;
+            }
+        }
+    }
+    addCount(1L, binCount);
+    return null;
+}
+```
+
 ### HashMap与HashTable，ConcurrentHashMap的区别是什么？
 
 主要从底层数据结构，线程安全，执行效率，是否允许Null值，初始容量及扩容，hash值计算来进行分析。
@@ -232,6 +299,7 @@ HashMap的底层数据结构是一个数组+链表+红黑树，数组的每个�
 Hashtable底层数据结构跟HashMap一致，底层数据结构是一个数组+链表，也是通过链地址法来解决冲突，只是链表过长时，不会转换为红黑树来减少查找时的时间复杂度。Hashtable属于历史遗留类，实际开发中很少使用。
 
 #### ConcurrentHashMap=数组+链表+红黑树
+
 ConcurrentHashMap底层数据结构跟HashMap一致，底层数据结构是一个数组+链表+红黑树。只不过使用了volatile来进行修饰它的属性，来保证内存可见性(一个线程修改了这些属性后，会使得其他线程中对于该属性的缓存失效，以便下次读取时取最新的值)。
 
 #### 2.线程安全
