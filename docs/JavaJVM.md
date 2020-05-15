@@ -252,6 +252,38 @@ Minor GC：对新生代进行回收，不会影响到年老代。因为新生代
 
 Full GC：也叫 Major GC，对整个堆进行回收，包括新生代和老年代。由于Full GC需要对整个堆进行回收，所以比Minor GC要慢，因此应该尽可能减少Full GC的次数，导致Full GC的原因包括：老年代被写满和System.gc()被显式调用等。
 
+### 触发Minor GC的条件有哪些？
+为新对象分配内存时，新生代的Eden区空间不足。
+新生代回收日志：
+```
+2020-05-12T16:15:10.736+0800: 7.803: [GC (Allocation Failure) 2020-05-12T16:15:10.736+0800: 7.803: [ParNew: 838912K->22016K(943744K), 0.0982676 secs] 838912K->22016K(1992320K), 0.0983280 secs] [Times: user=0.19 sys=0.01, real=0.10 secs]
+```
+### 触发Full GC的条件有哪些？
+主要分为三种：
+#### 1.system.gc()
+
+代码中调用system.gc()方法，建议JVM进行垃圾回收。
+
+#### 2.方法区空间不足
+
+  方法区中存放的是一些类的信息，当系统中要加载的类、反射的类和调用的方法较多时，方法区可能会被占满，触发 Full GC
+
+#### 3.老年代空间不足
+
+而老年代空间不足又有很多种情况：
+3.1 Promotion Failed 老年代存放不下晋升对象
+在进行 MinorGC 时， Survivor Space 放不下存活的对象，此时会让这些对象晋升，只能将它们放入老年代，而此时老年代也放不下时造成的。
+还有一些情况也会导致新生代对象晋升，例如存活对象经历的垃圾回收次数超过一定次数（XX:MaxTenuringThreshold参数设置的次数，默认为15），那么会导致晋升，
+或者在Survivor空间中相同年龄所有对象大小的总和大于Survivor空间的一半，年龄大于或等于该年龄的对象就可以直接进入老年代，无须等到MaxTenuringThreshold中要求的年龄。
+3.2 Concurrent Mode Failure
+在执行 CMS GC 的过程中，同时有对象要放入老年代，而此时老年代空间不足造成的。
+3.3 历次晋升的对象平均大小>老年代的剩余空间
+这是一个较为复杂的触发情况， HotSpot为了避免由于年轻代对象晋升到老年代导致老年代空间不足的现象，
+在进行 Minor GC时，做了一个判断，如果之前统计所得到的 MinorGC 晋升到老年代的平均大小大于老年代的剩余空间，那么就直接触发 Full GC。
+3.4 老年代空间不足以为大对象分配内存
+因为超过阀值(-XX:+PrintTenuringDistribution参数设置的大小时)的大对象，会直接分配到老年代，如果老年代空间不足，会触发Full GC。
+
+
 ### 垃圾收集器有哪些？
 
 一般老年代使用的就是标记-整理，或者标记-清除+标记-整理结合（例如CMS）
@@ -567,6 +599,48 @@ jmap -dump:format=b,file=/home/admin/logs/heap.hprof 6214
 ```
 
 
+
+
+### 怎么排查CPU占用率过高的问题？
+1.首先使用`top`命令查看CPU占用率高的进程的pid。
+```
+top - 15:10:32 up 523 days,  3:47,  1 user,  load average: 0.00, 0.01, 0.05
+Tasks:  95 total,   1 running,  94 sleeping,   0 stopped,   0 zombie
+%Cpu(s):  1.7 us,  0.5 sy,  0.0 ni, 95.7 id,  2.2 wa,  0.0 hi,  0.0 si,  0.0 st
+KiB Mem : 16267904 total,  6940648 free,  2025316 used,  7301940 buff/cache
+KiB Swap: 16777212 total, 16776604 free,      608 used. 13312484 avail Mem
+
+  PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND
+14103 hadoop    20   0 2832812 203724  18392 S   3.7  1.3 977:08.04 java
+14010 hadoop    20   0 2897344 285392  18660 S   0.3  1.8 513:30.49 java
+14284 hadoop    20   0 3052556 340436  18636 S   0.3  2.1   1584:47 java
+14393 hadoop    20   0 2912460 504112  18632 S   0.3  3.1 506:43.68 java
+    1 root      20   0  190676   3404   2084 S   0.0  0.0   4:31.47 systemd
+    2 root      20   0       0      0      0 S   0.0  0.0   0:04.77 kthreadd
+    3 root      20   0       0      0      0 S   0.0  0.0   0:10.16 ksoftirqd/0
+```
+2.使用`top -Hp 进程id`获得该进程下各个线程的CPU占用情况，找到占用率最高的线程的pid2，
+使用`printf "%x\n" pid2`命令将pid2转换为16进制的数number。
+```
+top - 15:11:01 up 523 days,  3:48,  1 user,  load average: 0.00, 0.01, 0.05
+Threads:  69 total,   0 running,  69 sleeping,   0 stopped,   0 zombie
+%Cpu(s): 12.8 us,  0.1 sy,  0.0 ni, 87.0 id,  0.1 wa,  0.0 hi,  0.0 si,  0.0 st
+KiB Mem : 16267904 total,  6941352 free,  2024612 used,  7301940 buff/cache
+KiB Swap: 16777212 total, 16776604 free,      608 used. 13313188 avail Mem
+
+  PID USER      PR  NI    VIRT    RES    SHR S %CPU %MEM     TIME+ COMMAND
+14393 hadoop    20   0 2912460 504112  18632 S  0.0  3.1   0:00.01 java
+14411 hadoop    20   0 2912460 504112  18632 S  0.0  3.1   0:01.95 java
+14412 hadoop    20   0 2912460 504112  18632 S  0.0  3.1   0:16.18 java
+14413 hadoop    20   0 2912460 504112  18632 S  0.0  3.1   0:12.79 java
+14414 hadoop    20   0 2912460 504112  18632 S  0.0  3.1   8:09.10 java
+```
+3.使用`jstack pid`获得进程下各线程的堆栈信息，nid=0xnumber的线程即为占用率高的线程，查看它是在执行什么操作。(`jstack 5521 | grep -20 0x1596`可以获得堆栈信息中，会打印匹配到0x1596的上下20行的信息。)
+
+例如这个线程是在执行垃圾回收:
+```
+"GC task thread#0 (ParallelGC)" os_prio=0 tid=0x00007f338c01f000 nid=0x1593 runnable
+```
 
 
 
