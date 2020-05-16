@@ -11,7 +11,7 @@ struct sdshdr {
   char buf[];//字节数组，用于保存字符串
 }
 ```
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-c914918f6dfecfc5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-c914918f6dfecfc5.png)
 
 在上面例子中，使用SDS保存了字符串Redis，SDS的情况如下：
 ·free属性的值为0，表示这个SDS没有分配任何未使用空间。
@@ -60,7 +60,7 @@ typedef struct listNode {
 }listNode
 ```
 这是一个包含三个节点的链表
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-71bd98f13bbe8fa9.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-71bd98f13bbe8fa9.png)
 Redis中的链表具备以下特点：
 双端：每个节点保存了指向前后两个节点的指针
 无环：表头节点的prev为NULL，表尾节点的next为NULL
@@ -71,9 +71,9 @@ Redis中的链表具备以下特点：
 ###字典
 字典是一种用于保存键值对的抽象数据结构。因为C语言没有提供字典的实现，所以Redis使用哈希表实现了字典这种数据结构。
 下图为一个空的哈希表示意图：
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-659c79a0d288942a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-659c79a0d288942a.png)
 下图是普通状态(非rehash期间)下，保存了两个键值对的字典：
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-376f1967e3784961.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-376f1967e3784961.png)
 
 哈希表节点的数据结构如下：
 ```
@@ -180,7 +180,7 @@ Redis需要创建当前服务器进程的子进程，而大多数操作系统都
 
 ##第5章 跳跃表
 跳跃表是一种有序数据结构，通过在每个节点中维持多个指向它3前面节点的指针，来达到快速访问节点的目的。Redis在两个地方用到了跳跃表，一个是在实现有序集合键时，当一个有序集合的元素数量比较多或者元素的成员是比较长的字符串时，会采用跳跃表作为有序集合键的底层实现。一个是在集群节点中用作内部数据结构。
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-78e1877dec1728ca.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-78e1877dec1728ca.png)
 上图是一个跳跃表，最左边的是zskiplist结构，用于保存跳跃表相关的信息，包含以下属性：
 
 ```
@@ -213,7 +213,7 @@ typedef struct zskiplistNode {
 } zskiplistNode;
 ```
 跳跃表遍历过程：
-![](https://upload-images.jianshu.io/upload_images/12609483-2c54436d6108d7f1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![](../static/12609483-2c54436d6108d7f1.png)
 1）迭代程序首先访问跳跃表的第一个节点（表头），然后从第四层的前进指针移动到表中的第二个节点。
 2）在第二个节点时，程序沿着第二层的前进指针移动到表中的第三个节点。
 3）在第三个节点时，程序同样沿着第二层的前进指针移动到表中的第四个节点。
@@ -233,7 +233,8 @@ typedef struct intset {
 }intset;
 ```
 下图是一个包含五个int16_t类型整数值的整数集合
-![](https://upload-images.jianshu.io/upload_images/12609483-71e11f3b05fdd87b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![](../static/12609483-71e11f3b05fdd87b.png)
+
 ##### 升级
 当我们将一个新元素添加到整数集合里面时，如果新元素的类型比整数集合的contents数组的类型要大时，会对集合进行升级。
 升级步骤：
@@ -255,12 +256,12 @@ typedef struct intset {
 哈希表
 当一个哈希键只包含少量键值对，比且每个键值对的键和值要么就是小整数值，要么就是长度比较短的字符串，那么Redis就会使用压缩列表来做哈希键的底层实现。
 ##### 压缩列表构成
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-b142de351caa4bdc.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-b142de351caa4bdc.png)
 下图展示了一个包含三个节点的压缩列表
 列表zlbytes属性的值为0x50（十进制80），表示压缩列表的总长为80字节。
 列表zltail属性的值为0x3c（十进制60），这表示如果我们有一个指向压缩列表起始地址的指针p，那么只要用指针p加上偏移量60，就可以计算出表尾节点entry3的地址。
 列表zllen属性的值为0x3（十进制3），表示压缩列表包含三个节点。
-![](https://upload-images.jianshu.io/upload_images/12609483-6453143eae73ed6f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![](../static/12609483-6453143eae73ed6f.png)
 
 ###### 压缩表节点构成
 每个压缩列表节点都由previous_entry_length、encoding、content三个部分组成，每个压缩列表节点可以保存一个字节数组或者一个整数值，其中，字节数组可以是以下三种长度的其中一种：
@@ -274,29 +275,33 @@ typedef struct intset {
 ·int16_t类型整数；
 ·int32_t类型整数；
 ·int64_t类型整数。
-![](https://upload-images.jianshu.io/upload_images/12609483-f802533e7bf1b7f7.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![](../static/12609483-f802533e7bf1b7f7.png)
+
 ##### previous_entry_length
 因为节点的previous_entry_length属性记录了前一个节点的长度，所以程序可以通过指针运算，根据当前节点的起始地址来计算出前一个节点的起始地址。
 ·如果前一节点的长度<=254字节，那么previous_entry_length属性的长度为1字节：前一节点的长度就保存在这一个字节里面。
 ·如果前一节点的长度>=254字节，那么previous_entry_length属性的长度为5字节：其中属性的第一字节会被设置为0xFE（十进制值254），而之后的四个字节则用于保存前一节点的长度。
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-36e827ab2773002a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-36e827ab2773002a.png)
 图7-5展示了一个包含一字节长previous_entry_length属性的压缩列表节点，属性的值为0x05，表示前一节点的长度为5字节。
 图7-6展示了一个包含五字节长previous_entry_length属性的压缩节点，属性的值为0xFE00002766，其中值的最高位字节0xFE表示这是一个五字节长的previous_entry_length属性，而之后的四字节0x00002766（十进制值10086）才是前一节点的实际长度。
+
 ##### encoding
 节点的encoding属性记录了节点的content属性所保存数据的类型以及长度：
 ·一字节、两字节或者五字节长，值的最高位为00、01或者10的是字节数组编码：这种编码表示节点的content属性保存着字节数组，数组的长度由编码除去最高两位之后的其他位记录；
 ·一字节长，值的最高位以11开头的是整数编码：这种编码表示节点的content属性保存着整数值，整数值的类型和长度由编码除去最高两位之后的其他位记录；
 下图中表7-2记录了所有可用的字节数组编码，而表7-3则记录了所有可用的整数编码”
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-b0ccf7f7ee0ed9cb.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-b0ccf7f7ee0ed9cb.png)
+
 ##### content
 节点的content属性负责保存节点的值，节点值可以是一个字节数组或者整数，值的类型和长度由节点的encoding属性决定。
 下图中展示了一个保存字节数组的节点示例：
 ·编码的最高两位00表示节点保存的是一个字节数组；
 ·编码的后六位001011记录了字节数组的长度11；
 ·content属性保存着节点的值"hello world"。
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-bb767975c2e67a63.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![](../static/1b7102166835857ff8e2597db27e970b.png)
 下图中展示了一个保存整数值的节点示例
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-fea86f8efeff63c0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-fea86f8efeff63c0.png)
+
 ##### 连锁更新
 前面说过，每个节点的previous_entry_length属性都记录了前一个节点的长度：
 ·如果前一节点的长度小于254字节，那么previous_entry_length属性需要用1字节长的空间来保存这个长度值。
@@ -306,7 +311,7 @@ typedef struct intset {
 现在，麻烦的事情来了，e1原本的长度介于250字节至253字节之间，在为previous_entry_length属性新增四个字节的空间之后，e1的长度有可能变成了介于254字节至257字节之间，这样的话，如果要让e2的previous_entry_length属性可以记录下e1的长度，程序需要再次对压缩列表执行空间重分配操作。“正如扩展e1引发了对e2的扩展一样，扩展e2也会引发对e3的扩展，而扩展e3又会引发对e4的扩展……为了让每个节点的previous_entry_length属性都符合压缩列表对节点的要求，程序需要不断地对压缩列表执行空间重分配操作，直到eN为止。
 Redis将这种在特殊情况下产生的连续多次空间扩展操作称之为“连锁更新”（cascade update）
 除了添加新节点可能会引发连锁更新之外，删除节点也可能会引发连锁更新。”
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-4f9566693b78aa1c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-4f9566693b78aa1c.png)
 因为连锁更新在最坏情况下需要对压缩列表执行N次空间重分配操作，而每次空间重分配的最坏复杂度为O（N），所以连锁更新的最坏复杂度为O（N^2）。
 要注意的是，尽管连锁更新的复杂度较高，但它真正造成性能问题的几率是很低的：
 ·首先，压缩列表里要恰好有多个连续的、长度介于250字节至253字节之间的节点，连锁更新才有可能被引发，在实际中，这种情况并不多见；
@@ -329,66 +334,67 @@ typedef struct redisObject {
 ```
 ##### 类型
 type取值范围如下：
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-ab82c3317f8d0b3c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-ab82c3317f8d0b3c.png)
 
 ##### 编码和底层实现
 Redis可以根据使用场景，对每种Redis对象使用不同底层数据结构来做为实现，而使用哪种数据结构作为底层实现用encoding属性标识
 编码对应表如下：
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-2bbc4ac66f3fc019.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-2bbc4ac66f3fc019.png)
 
 ##### 字符串对象
 字符串对象的编码可以是int，raw或者embstr，具体如下图所示：
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-0569068844757572.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-0569068844757572.png)
 
 int
 当字符串对象保存的是一个整数值，并且可以使用long类型表示，那么字符串对象就会把整数值保存在字符串对象的 ptr 属性里面。这样做的优点是：
  1、节省内存
  2、对于整数值的字符串对象可能会被执行INCR操作，SDS需要先将字符串转成整形，在执行加减操作，再将结果转成字符串保存如果底层保存一个整形变量就不需要做类型转换了(将void*转换成long)
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-ef708d9fdeca1857.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-ef708d9fdeca1857.png)
 
 raw
 如果字符串对象保存的是一个字符串，并且字符串值的长度大于32，那么字符串对象将使用一个简单动态字符串来保存这个字符串值，并将对象的编码设置为raw。
 下图是一个使用raw编码的字符串对象
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-ac3e3e5a7b3b427e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-ac3e3e5a7b3b427e.png)
 
 embstr
 embstr编码是一种专门用于保存短字符串的优化编码方式，这种编码和raw编码一样，都是使用redisObject和sdshdr结构来表示字符串对象，但是raw编码会调用两次内存分配函数来分别创建redisObject和sdshdr结构，而embstr编码是通过调用一次内存分配函数来分配一块连续的空间。除此以外，因为所有数据都保存在一块连续的内存里面，可以更好利用缓存带来的优势。
 
-![embstr](https://upload-images.jianshu.io/upload_images/12609483-293bd833c87dda4c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![embstr](../static/12609483-293bd833c87dda4c.png)
 
 最后，如果是浮点数，在Redis中也是使用字符串来进行表示的，在有需要进行数值计算时，会将字符串转换为浮点数，然后进行计算。
 
 ##### 列表对象
 列表对象的底层实现可以是ziplist或者linkedlist，当列表对象保存的字符串长度小于64字节时且元素个数小于512个时，列表对象会使用ziplist编码来实现，否则会使用linkedlist来实现。（这两个上限值可以通过配置参数修改）
 下图是保存了1，"three"，5三个元素的列表对象，使用ziplist实现，
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-66ad206714156a51.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-66ad206714156a51.png)
 
 下图是保存了1，"three"，5三个元素的列表对象，使用linkedlist实现，linkedlist的双端链表结构包含了多个字符串对象，字符串对象是五种类型中唯一一种会被其他四种类型对象嵌套的对象。
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-55942da80ed331dc.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-55942da80ed331dc.png)
 
 ##### 哈希对象
 哈希对象的底层实现可以是ziplist或者hashtable，当哈希对象保存的字符串长度小于64字节时且元素个数小于512个时，哈希对象会使用ziplist编码来实现，否则会使用hashtable来实现。（这两个上限值可以通过配置参数修改）
 当使用ziplist实现的列表对象时，当有新的键值对要加入到哈希表时，Redis会先将键推入压缩列表表尾，然后再将值加入压缩列表表尾，保证同一键值对的两个节点紧挨在一起。如下图所示：
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-79f894260bd7a035.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
-![](https://upload-images.jianshu.io/upload_images/12609483-ee0a70ad12f8437c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-79f894260bd7a035-9624539.png)
+![](../static/12609483-ee0a70ad12f8437c.png)
 当使用hashtable实现哈希对象时，哈希对象中的每个键值对都是使用一个字典键值对来保存，字典的每个键和值都是一个字符串对象，如下图所示：
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-6d3ccb46dfb9e99b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-6d3ccb46dfb9e99b.png)
 
 ##### 集合对象
 集合对象的底层实现可以是inset或者hashtable，当集合对象保存的都是整数值且元素个数小于512个时，集合对象会使用inset编码来实现，否则会使用hashtable来实现。（这两个上限值可以通过配置参数修改）
 inset编码的集合对象使用整数集合作为底层实现，所有元素都保存在整数集合里面。如下图所示：
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-25a4fa2be26ec351.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-25a4fa2be26ec351.png)
 hashtable编码的结婚对象使用字典作为底层实现，字典的每个键是一个字符串对象，保存集元素，字典的值则全部被设置为NULL。如下图所示：
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-43f76e0c7cc3f4d5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-43f76e0c7cc3f4d5.png)
 
 ##### 有序集合对象
 有序集合对象的底层实现可以是ziplist或者skiplist，当有序集合对象保存的元素长度都小于64字节且元素个数小于512个时，集合对象会使用ziplist编码来实现，否则会使用skiplist来实现。（这两个上限值可以通过配置参数修改）
 ziplist
 当有序集合对象使用ziplist作为底层实现时，每个集合元素使用两个挨在一起的压缩列表节点报错，第一个节点保存元素的成员，第二个节点保存元素的分值，压缩列表内按分值从小到大排序，分值较小的放置在靠近表头的位置，分值较大的放置在靠近表尾的方向。如下图所示：
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-90c7eac6c6d06828.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-b1fe8217cff50300.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-90c7eac6c6d06828-9624547.png)
+![image.png](../static/12609483-b1fe8217cff50300.png)
 skiplist
 skiplist编码的有序集合对象使用zset结构作为底层实现，一个在set结构同时包含一个字典和一个跳跃表：
+
 ```
 typedef struct zset {
   zskiplist *zsl;
@@ -399,9 +405,9 @@ zset结构中的zsl跳跃表按分值从小到大保存了所有集合元素，�
 zset结构中的dict字典为有序结合创建了一个从成员到分支的映射，字典的键保存了元素的成员，值保存了元素的分值。
 有序集合之所以采用字典和跳跃表两个数据结构的原因是字典可以以O(1)复杂度查找成员的分值，而跳跃表可以以O(NlogN)的复杂度来实现范围型查找操作，缺一不可。
 有序集合如下图所示：
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-27d2db1766354b36.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-27d2db1766354b36.png)
 
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-45e8e5dfa59aa8d3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-45e8e5dfa59aa8d3.png)
 
 ##### 对象共享
 当一个键已经创建了一个整数值的字符串对象时，后续其他键也需要这个整数值的字符串对象时，不会重新创建一个新的整数值的字符串对象，而是将字符串对象的引用计数加一，两个键一起使用这些共享对象。Redis会在初始化服务器时，创建一万个字符串对象，这些对象包含了从0到9999的所有整数值）
@@ -429,7 +435,8 @@ dict保存了数据库中的所有键值对，每个键都是字符串对象，�
 ·alphabet是一个列表键，键的名字是一个包含字符串"alphabet"的字符串对象，键的值则是一个包含三个元素的列表对象。
 ·book是一个哈希表键，键的名字是一个包含字符串"book"的字符串对象，键的值则是一个包含三个键值对的哈希表对象。
 ·message是一个字符串键，键的名字是一个包含字符串"message"的字符串对象，键的值则是一个包含字符串"hello world"的字符串对象。
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-3b8557ed89a19b8a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-3b8557ed89a19b8a.png)
+
 ##### 读写键空间的维护操作
 (1)读写一个建时，会根据键是否存在来更新键空间命中次数和不命中次数
 (2)如果读写的键存在，那么会更新建的LRU(最近一次的使用时间)
@@ -441,9 +448,10 @@ dict保存了数据库中的所有键值对，每个键都是字符串对象，�
 通过EXPIRE命令或者PEXPIRE命令，客户端可以以秒或者毫秒精度为数据库中的某个键设置生存时间（Time To Live，TTL）
 redisDb结构的expires字典保存了数据库中所有键的过期时间，过期字典的键是一个指针，这个指针指向键空间中的某个键对象（也即是某个数据库键）。过期字典的值是一个long long类型的整数，这个整数保存了键所指向的数据库键的过期时间——一个毫秒精度的UNIX时间戳。
 下图展示了一个带有过期字典的数据库例子：
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-59b70f5258b10ec2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![](../static/70b12d74e6433967e7d8d115425ae028.png)
 第一个键值对的键为alphabet键对象，值为1385877600000，这表示数据库键alphabet的过期时间为1385877600000（2013年12月1日零时）。
 ·第二个键值对的键为book键对象，值为1388556000000，这表示数据库键book的过期时间为1388556000000（2014年1月1日零时）。
+
 ##### 其他命令
 使用PERSIST命令可以移除一个键的过期时间。
 ```
@@ -567,13 +575,13 @@ save 900 1
 save 300 10
 save 60 10000”
 ```
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-d3f2cd0e07a28217.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-d3f2cd0e07a28217.png)
 #####dirty计数器和lastsave属性
 Redis执行了修改命令后，会对dirty计数器+1，lastsave属性记录了上次成功执行SAVE和BGSAVE命令的时间。
 Redis的服务器周期性操作函数serverCron默认每隔100毫秒就会执行一次，该函数用于对正在运行的服务器进行维护，它的其中一项工作就是根据检查dirty计数器和lastsave属性来判断save选项所设置的保存条件是否已经满足，如果满足的话，就执行BGSAVE命令。
 #####RDB文件结构
 一个RDB文件由Redis字符串，db_version,database,EOF,check_sum五部分组成。如下图所示：
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-e3090ff08c7c67c5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-e3090ff08c7c67c5.png)
 REDIS部分
 RDB最开始的是REDIS部分，长度是5字节，保存了'REDIS'五个字符，用于载入文件时快速判断是否是RDB文件。
 db_version部分
@@ -584,19 +592,21 @@ EOF部分
 EOF常量长度为1字节，标志这个RDB文件正文结束。
 check_sum部分
 check_sum是一个8字节长的无符号整数，保存着一个校验和，这个校验和是程序通过对REDIS、db_version、databases、EOF四个部分的内容进行计算得出的。服务器在载入RDB文件时，会将载入数据所计算出的校验和与check_sum所记录的校验和进行对比，以此来检查RDB文件是否有出错或者损坏的情况出现。
+
 #####database部分
 database部分会包含一个或多个数据库，如下图所示：
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-b587ac0f04f12a51.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-b587ac0f04f12a51.png)
 每个数据库由SELECTDB，db_number、key_value_pairs三个部分组成，
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-c3480da40113b984.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-c3480da40113b984.png)
 SELECTDB常量是一个字节，用于标识，接下来的内容是数据库号码。
 db_number是一个数据库号码，可以是1字节，2字节或5字节。
 key_value_pairs保存了数据库的所有键值对，键值对分为不包含过期时间的键值对和包含过期时间的键值对，如下图所示，
 
 #####不包含过期时间的键值对
 主要由type，key，value组成
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-9daf19837b2b6b8d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-9daf19837b2b6b8d.png)
 type取值范围由以下几种,在还原数据时，读取键值对时，程序会根据type的取值来解析后面value。
+
 ```
 ·REDIS_RDB_TYPE_STRING
 ·REDIS_RDB_TYPE_LIST
@@ -611,50 +621,57 @@ type取值范围由以下几种,在还原数据时，读取键值对时，程序
 #####包含过期时间的键值对
 由EXPIRETIME_MS，ms，TYPE，key，value组成
 EXPIRETIME_MS是1字节，用于标识，告知程序接下来的内容是一个以毫秒为单位的过期时间，ms是过期时间。
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-97f154661ed5ecd0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-08f52cca19a78a04.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-97f154661ed5ecd0.png)
+![image.png](../static/12609483-08f52cca19a78a04.png)
+
 #####value的编码
 value部分保存的是值对象，根据类型的不同，value部分的结构也不太一样。
 #####字符串对象
 字符串对象保存的是整数值时，
 value结构如下：
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-5fdce25bd4b132d4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-0734e513fe56a194.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-5fdce25bd4b132d4.png)
+![image.png](../static/12609483-0734e513fe56a194.png)
 ENCODING可以是REDIS_RDB_ENC_INT8、REDIS_RDB_ENC_INT16或者REDIS_RDB_ENC_INT32三个常量的其中一个，它们分别代表RDB文件使用8位（bit）、16位或者32位来保存整数值integer
 字符串对象保存的是字符串时，字节小于20字节时，会原样保存，否则会进行压缩，结构如下图所示：
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-19da8a08046df094.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-84857b07e81cc097.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-9f59a2ed26c36799.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-19da8a08046df094.png)
+![image.png](../static/12609483-84857b07e81cc097.png)
+![image.png](../static/12609483-9f59a2ed26c36799.png)
 “REDIS_RDB_ENC_LZF常量标志着字符串已经被LZF算法压缩过了，读入程序在碰到这个常量时，会根据之后的compressed_len压缩字符串长度、origin_len原字符串长度和compressed_string压缩字符串三部分，对字符串进行解压缩。
+
 #####列表对象
+
 如果TYPE的值为REDIS_RDB_TYPE_LIST，那么value保存的就是一个REDIS_ENCODING_LINKEDLIST编码的列表对象，结构如下图所示，list_length记录了列表的长度，它记录列表保存了多少个项（item),读入程序可以通过这个长度知道自己应该读入多少个列表项。
 图中以item开头的部分代表列表的项，因为每个列表项都是一个字符串对象，所以程序会以处理字符串对象的方式来保存和读入列表项。示例中第一个数字3是列表的长度，之后跟着的分别是第一个列表项、第二个列表项和第三个列表项，其中：
 ·第一个列表项的长度为5，内容为字符串"hello"。
 ·第二个列表项的长度也为5，内容为字符串"world"。
 ·第三个列表项的长度为1，内容为字符串"！"。
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-e996e9bd2572dc30.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-dcb976d2039fbc30.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-e996e9bd2572dc30-9624620.png)
+![image.png](../static/12609483-dcb976d2039fbc30.png)
+
 #####集合对象
 如果TYPE的值为REDIS_RDB_TYPE_SET，那么value保存的就是一个REDIS_ENCODING_HT编码的集合对象，结构跟列表结构类似，也是集合大小，然后后面是集合元素。如下图所示。结构中的第一个数字4记录了集合的大小，之后跟着的是集合的四个元素：
 ·第一个元素的长度为5，值为"apple"。
 ·第二个元素的长度为6，值为"banana"。
 ·第三个元素的长度为3，值为"cat"。
 ·第四个元素的长度为3，值为"dog"。
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-af0238d029c8e4e7.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-e174c1c5d4283c0d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-af0238d029c8e4e7.png)
+![image.png](../static/12609483-e174c1c5d4283c0d.png)
+
 #####哈希表对象
 如果TYPE的值为REDIS_RDB_TYPE_HASH，那么value保存的就是一个REDIS_ENCODING_HT编码的集合对象，由hash_size和key_value_pair组成。
 ·hash_size记录了哈希表的大小，也即是这个哈希表保存了多少键值对，读入程序可以通过这个大小知道自己应该读入多少个键值对。
 ·以key_value_pair开头的部分代表哈希表中的键值对，键值对的键和值都是字符串对象，所以程序会以处理字符串对象的方式来保存和读入键值对。
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-3232802e8c4f14a5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-5a15791898c0a7cf.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-3232802e8c4f14a5-9624639.png)
+![image.png](../static/12609483-5a15791898c0a7cf.png)
+
 #####有序集合对象
 如果TYPE的值为REDIS_RDB_TYPE_ZSET，那么value保存的就是一个REDIS_ENCODING_SKIPLIST编码的有序集合对象，结构如下图所示，
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-00ab7a17aa0f4d61.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-00ab7a17aa0f4d61.png)
 在下图中，第一个数字2记录了有序集合的元素数量，之后跟着的是两个有序集合元素：
 ·第一个元素的成员是长度为2的字符串"pi"，分值被转换成字符串之后变成了长度为4的字符串"3.14"。
 ·第二个元素的成员是长度为1的字符串"e"，分值被转换成字符串之后变成了长度为3的字符串"2.7"。”
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-a5f0454ae3254fb5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-a5f0454ae3254fb5.png)
+
 #####INTSET编码的集合
 如果TYPE的值为REDIS_RDB_TYPE_SET_INTSET，那么value保存的就是一个整数集合对象，RDB文件保存这种对象的方法是，先将整数集合转换为字符串对象，然后将这个字符串对象保存到RDB文件里面。
 如果程序在读入RDB文件的过程中，碰到由整数集合对象转换成的字符串对象，那么程序会根据TYPE值的指示，先读入字符串对象，再将这个字符串对象转换成原来的整数集合对象。
@@ -759,12 +776,12 @@ SET key value
 *3\r\n$3\r\nSET\r\n$3\r\nkey\r\n$5\r\nvalue\r\n
 命令与命令参数
 在服务器将客户端发送的命令请求保存到客户端状态的querybuf属性之后，服务器将对命令请求的内容进行分析，并将得出的命令参数以及命令参数的个数分别保存到客户端状态的argv属性和argc属性。如下图所示：
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-3850a513cef3ae99.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-3850a513cef3ae99.png)
 命令的实现函数
 当服务器从协议内容中分析并得出argv属性和argc属性的值之后，服务器将根据项argv[0]的值，在命令表中查找命令所对应的命令实现函数，找到后将redisClient中的cmd属性指向对应的命令实现函数。
 命令表是一个字典，字典的键是一个SDS结构，保存了命令的名字，字典的值是命令所对应的redisCommand结构，这个结构保存了命令的实现函数、命令的标志、命令应该给定的参数个数、命令的总执行次数和总消耗时长等统计信息。如下图所示：
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-d2dd19e0d29e9b1e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-354d0c595c824428.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-d2dd19e0d29e9b1e-9624693.png)
+![image.png](../static/12609483-354d0c595c824428.png)
 
 输出缓冲区
 每个客户端都有两个输出缓冲区可用，一个缓冲区的大小是固定的，另一个缓冲区的大小是可变的，用于保存执行命令后的回复。
@@ -822,8 +839,9 @@ client->cmd->proc(client);
 当以上操作都执行完了之后，服务器对于当前命令的执行到此就告一段落了，之后服务器就可以继续从文件事件处理器中取出并处理下一个命令请求了。
 8.命令实现函数将命令回复保存到客户端的输出缓冲区里面，并为客户端的Socket关联命令回复处理器，当客户端套接字变为可写状态时，服务器就会执行命令回复处理器，将保存在客户端输出缓冲区中的命令回复发送给客户端。当命令回复发送完毕之后，回复处理器会清空redisClient的输出缓冲区，为处理下一个命令请求做好准备。
 9.当客户端接收到协议格式的命令回复之后，它会将这些回复转换成人类可读的格式，并打印给用户观看。
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-b05ceaabc0e3b6a6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-b4d2e3ca90ae600b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-b05ceaabc0e3b6a6.png)
+![image.png](../static/12609483-b4d2e3ca90ae600b.png)
+
 ###serverCron函数
 Redis服务器中的serverCron函数默认每隔100毫秒执行一次，这个函数负责管理服务器的资源，并保持服务器自身的良好运转，在serverCron函数中会对以下属性进行更新：
 1.缓存的秒级精度系统时间和毫秒级精度系统时间（默认100毫秒更新一次）
@@ -840,10 +858,11 @@ Redis服务器中的serverCron函数默认每隔100毫秒执行一次，这个�
 ·如果有信号到达，那么表示新的RDB文件已经生成完毕（对于BGSAVE命令来说），或者AOF文件已经重写完毕（对于BGREWRITEAOF命令来说），服务器需要进行相应命令的后续操作，比如用新的RDB文件替换现有的RDB文件，或者用重写后的AOF文件替换现有的AOF文件。
 ·如果没有信号到达，那么表示持久化操作未完成，程序不做动作。
 如果没有在进行持久化，那么会判断当前是否满足进行RDB持久话或者AOF持久化的条件，满足就执行相关操作。如下图所示：
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-b4263d32e9ae0d5f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-b4263d32e9ae0d5f.png)
 10.如果服务器开启了AOF持久化功能，并且AOF缓冲区里面还有待写入的数据，那么serverCron函数会调用相应的程序，将AOF缓冲区中的内容写入到AOF文件里面。
 11.关闭异步客户端，服务器会关闭那些输出缓冲区大小超出限制的客户端。
 12.增加cronloops计数器的值。服务器状态的cronloops属性记录了serverCron函数执行的次数，主要用于复制模块中实现“每执行serverCron函数N次就执行一次指定代码”的功能。
+
 #####初始化服务器
 一个Redis服务器从启动到能够接受客户端的命令请求，需要经过一系列的初始化和设置过程。主要由以下步骤：
 1.初始化服务器状态结构
@@ -855,3 +874,4 @@ Redis服务器中的serverCron函数默认每隔100毫秒执行一次，这个�
 4.还原数据库状态
 在完成了对服务器状态server变量的初始化之后，服务器需要载入RDB文件或者AOF文件，并根据文件记录的内容来还原服务器的数据库状态。
 5.以上步骤执行完后，开始执行事件循环。
+

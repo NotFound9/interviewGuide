@@ -1,5 +1,4 @@
 建了一个技术交流群，大家可以进群一起交流学习，如果二维码失效了，也可以添加我的微信 ruiwendelll ，我拉大家进群
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-00f19fdda90757e8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
 
 ### 为什么写这篇文章
@@ -168,15 +167,14 @@ BETWEEN 在指定两个值之间
 
 例如:
 
-![image-20190623163255511.png](https://upload-images.jianshu.io/upload_images/12609483-af171a3a50700ec3?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
-
+![](../static/01b10b5a725f31ceaac7247bb9dd0306.png)
 
 ### 第七章 数据过滤
 
 这一章主要说的是AND，OR， IN，NOT这四个操作符，
 
 #### 计算次序
-![image-20190623172741572.png](https://upload-images.jianshu.io/upload_images/12609483-b99ab81c7b597945?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![](../static/2b995dc63cc6f999a810396859e9f868.png)
 
 
 组合AND和OR使用时，因为AND优先级最高计算时会优先处理AND操作符，会将AND两边的条件进行提取，所以上面这个SQL语句其实会等价于
@@ -199,10 +197,10 @@ SELECT prod_name, prod_price FROM products WHERE (vend_id = 1002 OR vend_id = 10
 
 #### IN操作符
 
-![image-20190623173234935.png](https://upload-images.jianshu.io/upload_images/12609483-af8591f99a0ef451?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image-20190623173234935.png](../static/12609483-af8591f99a0ef451.png)
 
 #### OR操作符
-![image-20190623173257225.png](https://upload-images.jianshu.io/upload_images/12609483-fff5e4e51fd4b74f?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image-20190623173257225.png](../static/12609483-fff5e4e51fd4b74f.png)
 
 在指定条件范围进行匹配时，IN和OR都能满足需求，但是IN有一些优点：
 
@@ -216,7 +214,7 @@ SELECT prod_name, prod_price FROM products WHERE (vend_id = 1002 OR vend_id = 10
 
 其他DBMS允许使用NOT对各种条件取反，但在MySQL中，只支持使用NOT对IN、BETWEEN和EXISTS子句取反。
 
-![image-20190623174919095.png](https://upload-images.jianshu.io/upload_images/12609483-247cddd987b8a7dc?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image-20190623174919095.png](../static/12609483-247cddd987b8a7dc.png)
 
 
 ### 第八章 用通配符进行过滤
@@ -230,10 +228,10 @@ LIKE主要是配合通配符一起使用的，LIKE 操作符用于在 WHERE 子�
 #### %通配符
 
 %代表搜索模式中给定位置的0个、1个或多个字符。
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-b15a13b54ef52bcd?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-b15a13b54ef52bcd.png)
 在一个查询语句中也可以使用多个%通配符
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-3d649e6e34f13ce9?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-3e2f092a320b1904?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-3d649e6e34f13ce9.png)
+![image.png](../static/12609483-3e2f092a320b1904.png)
 
 #### 尾空格
 可能会干扰通配符匹配。例如，在保存词 anvil时，如果它后面有一个或多个空格，则子句WHERE prod_name LIKE '%anvil'将不会匹配它们，因为在最后的l 后有多余的字符。解决这个问题的一个简单的办法是在搜索模式最后附加一个%。一个更好的办法是使用函数(第11章将会 介绍)去掉首尾空格。
@@ -241,7 +239,7 @@ LIKE主要是配合通配符一起使用的，LIKE 操作符用于在 WHERE 子�
 虽然似乎%通配符可以匹配任何东西，但有一个例 外，即NULL。即使是WHERE prod_name LIKE '%'也不能匹配 用值NULL作为产品名的行。
 下划线(_)通配符
 _通配符与%通配符类似，只不过只能匹配单个字符，不能匹配0个字符，也不能匹配多个字符
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-bd97bcf1a54970ab?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-bd97bcf1a54970ab.png)
 
 #### 使用通配符的技巧
 1.在能使用其他操作符的请款下，尽量不要使用通配符，因为它的搜索事件要比其他操作符的长
@@ -257,57 +255,65 @@ _通配符与%通配符类似，只不过只能匹配单个字符，不能匹配
 某些场景下，存储在的表中的数据不是我们所需要的，我们需要对它进行转换、计算或格式化过，这就是计算字段的用途。
 #### 使用Concat()函数对字段进行拼接
 多数DBMS使用+或||来实现拼接， MySQL则使用Concat()函数来对字段进行拼接。Concat()可以将多个字符串拼接成一个，如下图所示：
-![image](https://upload-images.jianshu.io/upload_images/12609483-525097b9e86c4bcb?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image](../static/12609483-525097b9e86c4bcb.png)
+
 #### 使用Trim()函数来去除空格
 Trim()函数 ：去除字符串左右两边的空格
 LTrim()函数 ：去除字符串左边的空格
 RTrim()函数 ：去除字符串右边的空格
 下面是使用RTrim()函数的例子
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-c93badac7f87621c?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-c93badac7f87621c.png)
+
 #### 使用别名
 我们使用Concat()函数拼接出来的字段是没有名字的，可以使用AS关键字给它赋予一个名字，当然当已有的字段包含不符合规定的字符时，也可以AS关键字给一个已有字段起别名。
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-5758b86fedd81704?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-5758b86fedd81704.png)
+
 #### 执行算术计算
-除了使用Concat()函数得到一个计算字符，也可以使用+，-，*，/计算得到一个字段。如图所示：
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-4e35333651c29262?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+
+除了使用Concat()函数得到一个计算字符，也可以使用+，-，*，/计算得到一个字段。如图所示：*
+
+![](../static/0894a336d0cfbf05c51cd8b41d1a8090.png)
+
+
 expanded_price列为一个计算字段，是由
 quantity*item_price计算得到的。
 
 ### 第十一章 使用数据处理函数
+
 除了使用SQL语句对数据进行处理，还可以使用一些函数对数据进行处理，需要注意的是，函数没有SQL的可移植性那么强。
 
 #### 文本处理函数
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-892ba4177926f667?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-892ba4177926f667.png)
 
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-efff2ee9978ac306?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-efff2ee9978ac306.png)
 
 使用案例：
 这是使用Upper()函数将文本处理成大写的案例
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-23b6ddcfaa60225b?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![](../static/bd319063b4d107251f125efe1cf25d9b.png)
 
 上面这些常见函数大家可能都能够理解，只有Soundex()不太常见，SOUNDEX是一个将任何文 本串转换为描述其语音表示的字母数字模式的算法。
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-1ef1d215da9c4aa4?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-1ef1d215da9c4aa4.png)
 如上图所示，假设有一个顾客的cust_contact值为Y.Lee，但是我们不知道Y.Lee，只知道这个顾客的名字的发音近似于Y.Lie，这个时候我们可以使用Soundex()将cust_contact列值转换为它的SOUNDEX值，因为Y.Lee和 Y.Lie发音相似，所以它们的SOUNDEX值匹配，因此可以查询到这个顾客。
 
 #### 常用日期和时间处理函数
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-05767921ed3dad2a?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-05767921ed3dad2a.png)
 举例，使用Date函数提取日期部分：
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-4ecd4a7222b8642c?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-4ecd4a7222b8642c.png)
 
 #### 数值处理函数
-![image](https://upload-images.jianshu.io/upload_images/12609483-e796b57f35c2bacc?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image](../static/12609483-e796b57f35c2bacc.png)
 
 ### 第十二章 汇总数据
 在日常开发中，我们除了获得检索得到的数据，还可以使用聚合函数对数据汇总，得到处理后的结果。
 
 #### SQL聚合函数
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-1707e382f5058cf9?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-1707e382f5058cf9.png)
 
 #### AVG()函数
 AVG()是计算特定列的平均值，会忽略掉值为NULL的列。
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-ce42aae525de4f33?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-ce42aae525de4f33.png)
 AVG()函数也可以搭配DISTINCT关键字使用，将重复的数据去重后，然后计算平均值，如下图所示：
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-8f63c4fe8cf743f5?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-8f63c4fe8cf743f5.png)
 在使用了DISTINCT后，此例子中的avg_price比较高，因为有多个物品具有相同的较低价格。排除它们提升了平均价格。
 
 #### COUNT()函数
@@ -320,7 +326,7 @@ AVG()函数也可以搭配DISTINCT关键字使用，将重复的数据去重后�
 这一章主要讲了如果使用GROUP BY 对数据进行分组。
 
 #### 创建分组
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-d18fbaa9eb21d3cf?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-d18fbaa9eb21d3cf.png)
 
 #### 过滤分组
 如果要对分组进行过滤，我们可以使用WHERE语句对表中数据进行过滤后，然后使用GROUP BY进行分组，也可以在使用GROUP BY进行分组后，再使用HAVING语句过滤掉一些分组。
@@ -340,17 +346,17 @@ SELECT id，COUNT(*) FROM table WHERE id != 3 GROUP BY id;
 SELECT id，COUNT(*) FROM table GROUP BY id HAVING id !=3;
 ```
 当然在过滤分组这方面，HAVING要比WHERE更加强大，比如我们想要对数据分组，并且得到数量大于2的组，那么WHERE就无法实现，只能用HAVING语句。如下：
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-4e2f87d8d19f6349?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-4e2f87d8d19f6349.png)
 
 #### 分组和排序
 使用GROUP BY在对数据进行分组后，输出的组的顺序通常是按从小到到大，从A到Z升序输出的，但是SQL规范并没有对此进行明确要求，所以有可能不是顺序的，可以使用ORDER BY来对分组进行升序或者降序排序。
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-31c0f328654affff?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-31c0f328654affff.png)
 
 #### SELECT子句顺序
 在使用这些语句时，它们的先后顺序应该要按下面的表中顺序来写
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-6576136fd07e6686?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-6576136fd07e6686.png)
 
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-55a1e1bbfe1627f6?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-55a1e1bbfe1627f6.png)
 
 ### 第十四章 使用子查询
 
@@ -364,7 +370,7 @@ SELECT id，COUNT(*) FROM table GROUP BY id HAVING id !=3;
 (1) 查询包含物品TNT2的所有订单的编号。
 (2) 根据订单编号查询所有客户的ID。 
 (3) 根据客户的ID查询名字和联系方式。
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-d2ec43d839dc3f9c?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-d2ec43d839dc3f9c.png)
 
 在WHERE子句中使用子查询能够编写出功能很强并且很灵活的 SQL语句。对于能嵌套的子查询的数目没有限制，不过在实际使用时由于 性能的限制，不能嵌套太多的子查询。
 
@@ -378,7 +384,7 @@ SELECT id，COUNT(*) FROM table GROUP BY id HAVING id !=3;
 
 #### 子查询结果作为计算字段
 例如：我们想要在获取顾客的信息的同时，获取客户的订单数，可以使用子查询来实现，如下图所示：
-![image](https://upload-images.jianshu.io/upload_images/12609483-f60146d5eaffeba0?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image](../static/12609483-f60146d5eaffeba0.png)
 当然这个需求也可以使用JOIN来实现
 
 ### 第十五章 连接表
@@ -387,7 +393,7 @@ SELECT id，COUNT(*) FROM table GROUP BY id HAVING id !=3;
 #### 笛卡尔积
 在进行连接查询时，如果不指定任何WHERE 条件，那么返回的结果会是笛卡尔积，会拿第一个表中的行数与第二个表中的所有行进行配对，最终总行数会是第一个表的行数乘以第二个表中的行数。
 
-![image-20190627195354062.png](https://upload-images.jianshu.io/upload_images/12609483-1200a07007edb639?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image-20190627195354062.png](../static/12609483-1200a07007edb639.png)
 
 #### WHERE条件
 
@@ -395,22 +401,22 @@ SELECT id，COUNT(*) FROM table GROUP BY id HAVING id !=3;
 
 #### 等值连接(内连接)
 
-![image-20190627195542156.png](https://upload-images.jianshu.io/upload_images/12609483-232a5ad60979603b?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image-20190627195542156.png](../static/12609483-232a5ad60979603b.png)
 
 上面的这种连接其实是等值连接，可以用连接的语法来写，可以更加明确连接类型
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-e831050cd046fede?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-e831050cd046fede.png)
 
 #### 连接多个表
 
 一条SELECT语句可以连接的表的数量没有限制，可以连接多个表，进行查询
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-bbdf1cc5ac1a4ef0?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-bbdf1cc5ac1a4ef0.png)
 
 
 #### 使用连接来替代子查询
 
 之前通过子查询嵌套来完成多表查询，现在可以使用连接来实现
 
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-c41c27cd14c59c4d?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-c41c27cd14c59c4d.png)
 
 
 ### 第十六章 创建高级联结
@@ -430,22 +436,22 @@ SELECT id，COUNT(*) FROM table GROUP BY id HAVING id !=3;
 例如：
 某物品(其ID为DTNTR)存在问题，因此想知道生产该物 品的供应商生产的其他物品是否也存在这些问题。此查询要求首先找到 生产ID为DTNTR的物品的供应商，然后找出这个供应商生产的其他物品。
 可以使用自连接的实现：
-![image](https://upload-images.jianshu.io/upload_images/12609483-e9a01efc5be2b1b0?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image](../static/12609483-e9a01efc5be2b1b0.png)
 
 此查询中需要的两个表实际上是相同的表，因此products表在
 FROM子句中出现了两次。虽然这是完全合法的，但对products 的引用具有二义性，所以使用表别名避免歧义。
 当然解决上面的这个查询需求也可以使用子查询来实现，如下图所示：
-![image](https://upload-images.jianshu.io/upload_images/12609483-2e06d5c0cc55c67b?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image](../static/12609483-2e06d5c0cc55c67b.png)
 
 #### 外连接
 内部连接会将一个表中的行与另一个表中的行想关联，有时候也需要包含不满足关联条件的那些行，这就是外连接。
 例如：
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-4af826237ddda349?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-4af826237ddda349.png)
 这条SELECT语句使用了关键字OUTER JOIN来指定联结的类型(而不是在WHERE子句中指 定)。但是，与内部联结关联两个表中的行不同的是，外部联结还包括没 有关联行的行。在使用OUTER JOIN语法时，必须使用RIGHT或LEFT关键字 指定包括其所有行的表(RIGHT指出的是OUTER JOIN右边的表，而LEFT 指出的是OUTER JOIN左边的表)。上面的例子使用LEFT OUTER JOIN从FROM 子句的左边表(customers表)中选择所有行。
 
 使用带聚集函数的连接
 聚集函数也可以和连接结合起来使用。
-![image](https://upload-images.jianshu.io/upload_images/12609483-7c3063235346d100?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image](../static/12609483-7c3063235346d100.png)
 在这个例子中，使用INNER JOIN将customers和orders表互相关联。GROUP BY子句按客户分组数据，因此，函数调用COUNT (orders.order_num)对每个客户的订单计数，将它作为num_ord返回。
 
 #### 注意事项：
@@ -464,7 +470,7 @@ FROM子句中出现了两次。虽然这是完全合法的，但对products 的�
 
 #### 使用UNION
 例如我们需要价格小于等于5的所有物品的一个列表，而且 还想包括供应商1001和1002生产的所有物品(不考虑价格)，
-![image](https://upload-images.jianshu.io/upload_images/12609483-c73d7b850397558a?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image](../static/12609483-c73d7b850397558a.png)
 
 这条语句由前面的两条SELECT语句组成，语句中用UNION关键
 字分隔。UNION指示MySQL执行两条SELECT语句，并把输出组 合成单个查询结果集，当然这个需求也可以使用多条WHERE语句来实现。
@@ -479,7 +485,7 @@ FROM子句中出现了两次。虽然这是完全合法的，但对products 的�
 4.在用UNION组合查询时，如果需要对结果进行排序，只能使用一条ORDER BY子句，它必须出现在最后一条SELECT语句之后。对 于结果集，不存在用一种方式排序一部分，而又用另一种方式排序另一 部分的情况，因此不允许使用多条ORDER BY子句。
 
 5.UNION从查询结果集中自动去除了重复的行(换句话说，它的行为与 单条SELECT语句中使用多个WHERE子句条件一样)。因为供应商1002生产 的一种物品的价格也低于5，所以两条SELECT语句都返回该行。在使用 UNION时，重复的行被自动取消。这是UNION的默认行为，但是如果允许重复，可以使用UNION ALL而不是UNION。如下图所示：
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-6de69717b1e77bc6?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-6de69717b1e77bc6.png)
 
 ### 第十八章 组合查询
 当我们需要对文本进行匹配，可以使用LIKE+通配符，或正则表达式的方式来实现，但是这样会存在很多限制：
@@ -493,7 +499,8 @@ FROM子句中出现了两次。虽然这是完全合法的，但对products 的�
 #### 启用全文本搜索支持
 在建表时或者建表以后使用FULLTEXT语句指定全文搜索的列，MySQL根据子句FULLTEXT(note_text)的指示对它进行索引，在之后该列增加、更新或删除行时， 索引随之自动更新
 如下图所示：
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-529e2cf20c540145?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-529e2cf20c540145.png)
+
 #### 注意事项：
 如果正在导入数据到一个新表， 此时不应该启用FULLTEXT索引。应该首先导入所有数据，然后再修改表，定义FULLTEXT，这样花费的时间会更少。
 
@@ -502,19 +509,20 @@ FROM子句中出现了两次。虽然这是完全合法的，但对products 的�
 Match() 指定被搜索的列
 Against() 指定要使用的搜索表达式
 如下图所示：SELECT语句检索单个列note_text，将包含rabbit的行进行返回。(全文搜索默认不区分大小写，除非使用BINARY语句进行修饰)
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-69f72d04b83e18d4?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-13b966cad4481566?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-69f72d04b83e18d4.png)
+![image.png](../static/12609483-13b966cad4481566.png)
 
 全文搜索还可以使用Rank对结果进行排序，Match()和Against() 用来建立一个计算列(别名为rank)，此列包含全文本搜索计算出的等级 值。等级由MySQL根据行中词的数目、唯一词的数目、整个索引中词的 总数以及包含该词的行的数目计算出来。不包含搜索词的行等级为0(因此不被前一例子中的WHERE子句选择)。确实包含搜索词的两个行每行都有一个等级值，文本中词靠前的行的等级值比词靠后的行的等级值高。如下图所示：
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-6d1abd9d8ecbe769?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-2650e43d71ae45e3?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-6d1abd9d8ecbe769.png)
+![image.png](../static/12609483-2650e43d71ae45e3.png)
 
 如果指定多个搜索项，则包含多数匹配词的 那些行将具有比包含较少词(或仅有一个匹配)的那些行高的 等级值。
 
 #### 使用查询扩展
+
 查询扩展用来设法放宽所返回的全文本搜索结果的范围，它可以先进行一个基本的全文本搜索，找出与搜索条件匹配的所有行。其次，MySQL检查这些匹配行并选择所有有用的词，再其次，MySQL再次进行全文本搜索，这次不仅使用原来的条件， 而且还使用所有有用的词。如下图所示；
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-810b67dd5e9b46e9?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-dc91fefa6c8067c2?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-810b67dd5e9b46e9.png)
+![image.png](../static/12609483-dc91fefa6c8067c2.png)
 
 #### 布尔文本搜索
 MySQL支持全文本搜索的另外一种形式，称为布尔方式(boolean
@@ -522,13 +530,13 @@ mode)。可以指定要匹配的词，要排斥的词，排列提示(指定某�
 例如:
 在下图里面的查询中，会匹配词heavy，但-rope*明确地
 分析指示MySQL排除包含rope*(任何以rope开始的词，包括 ropes)的行。
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-231d3ec0b1d24103?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-231d3ec0b1d24103.png)
 
 除了布尔操作符-和*，-排除一个词，而* 是截断操作符(可想象为用于词尾的一个通配符)。还有以下全文本布尔操作符：
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-ad60c82070093caf?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-ad60c82070093caf.png)
 
 下面是一些全文本布尔操作符使用案例：
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-178537093cafab1a?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-178537093cafab1a.png)
 
 全文本搜索的使用说明
 
@@ -563,8 +571,8 @@ INSERT INTO Customers(name, age) VALUES("tom", "29")；
 
 #### 插入检索出的数据
 INSERT一般用来给表插入一个指定列值的行。但是，INSERT还存在 另一种形式，可以利用它将一条SELECT语句的结果插入表中。如下图所示，这个例子使用INSERT SELECT从custnew表中将所有数据导入customers表
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-cd0ab58840e43364?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-5593c6a8abdc9c5d?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-cd0ab58840e43364.png)
+![image.png](../static/12609483-5593c6a8abdc9c5d.png)
 
 
 ### 第二十章 更新和删除数据
@@ -576,7 +584,7 @@ SET 列名 = 新值
 WHERE 过滤条件;
 ```
 如下图所示：
-![image](https://upload-images.jianshu.io/upload_images/12609483-1134d72ac589b510?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image](../static/12609483-1134d72ac589b510.png)
 需要注意的是：
 
 1.在使用UPDATE语句时，不要省略WHERE子句 ，否则就会更新表中所有行。
@@ -590,7 +598,7 @@ DELETE FROM 表名
 WHERE 过滤条件;
 
 如下图所示：
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-d66c9d1ce490a96c?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-d66c9d1ce490a96c.png)
 需要注意的是：
 
 1.在使用DELETE语句时，不要省略DELETE子句 ，否则会删除表中所有行。
@@ -615,7 +623,7 @@ WHERE 过滤条件;
 ### 第二十一章 创建和操纵表
 #### 创建表
 使用CREATE语句来创建一个表，大家都很熟悉了，如下图所示
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-16cd9cf2320a5c0b?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-16cd9cf2320a5c0b.png)
 
 需要注意的有以下几点：
 
@@ -638,7 +646,7 @@ MyISAM
 
 #### 更新表
 在表建立以后，如果需要对表结构进行修改，我们可以使用ALTER TABLE语句对表进行修改。例如：
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-a02d8ee4216a48af?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-a02d8ee4216a48af.png)
 
 
 复杂的表结构更改一般需要手动删除过程，它涉及以下步骤: 
@@ -671,9 +679,9 @@ RENAME TABLE customers2 to customers;
 ### 第二十二章 使用视图
 视图为虚拟的表。它们包含的不是数据而是根据需要检索数据的查 询。视图提供了一种MySQL的SELECT语句层次的封装，可用来简化数据 处理以及重新格式化基础数据或保护基础数据。
 
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-bd74b09698d89898?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-bd74b09698d89898.png)
 后面就可以把productcustomers视图看成一个虚拟表进行查询，如下图所示：
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-847d713416f5fdff?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-847d713416f5fdff.png)
 
 #### 视图主要的用途：
 
@@ -716,14 +724,15 @@ RENAME TABLE customers2 to customers;
 我们上面的例子中视图的作用其实是简化复杂SQL的使用，其实视图还有其他的作用，例如：
 
 #### 用视图重新格式化检索出的数据
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-62986b21673088de?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-3403c7d1aac4d4d1?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-62986b21673088de.png)
+
+![image.png](../static/12609483-3403c7d1aac4d4d1.png)
 
 #### 用视图过滤不想要的数据
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-69338fc49a4509a6?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-69338fc49a4509a6.png)
 
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-6f4a20afd0628edf?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-6f4a20afd0628edf.png)
 
 #### 更新视图
 视图是可更新的(也就是可以对它们使用INSERT、UPDATE和DELETE)。更新一个视图将更新其基表(可以回忆一下，视图本身没有数据)。如果你对视图增加或删除行，实际上是对其基表增加或删除行。但是当视图定义中有以下操作时，则不能进行视图的更新:
@@ -746,11 +755,11 @@ RENAME TABLE customers2 to customers;
 #### 创建和执行存储过程
 简单的示例：
 使用CREATE PROCEDURE语句创建一个存储过程，对一个SELECT语句进行封装，之后可以使用CALL语句来执行这个存储过程。
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-1942478235258bac?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-1942478235258bac.png)
 
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-cbcfb324cea0f1bb?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-cbcfb324cea0f1bb.png)
 需要注意的是，因为在存储过程中会包含一些;分隔符，而在命令行实用程序中，使用;字符来作为语句分隔符，为了避免语法错误，可以使用DELIMITER语句来定义一个新的语句结束分隔符。如下图所示：
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-2353b802cd0c8d1a?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-2353b802cd0c8d1a.png)
 
 #### 删除存储过程
  可以使用DROP PROCEDURE 语句来删除一个存储过程，例如：
@@ -761,18 +770,18 @@ DROP PROCEDURE productpricing；
 #### 使用参数
 在创建存储过程时，可以使用IN语句来存储传入参数，OUT语句来存储返回结果。
 在下面这个例子中，20005是传入参数，@total是返回结果。传入参数和返回结果也可以定义多个。
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-67fdc1962265c48c?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-684e68614fb23645?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
-![，](https://upload-images.jianshu.io/upload_images/12609483-05ffe2378a7a63eb?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-67fdc1962265c48c.png)
+![image.png](../static/12609483-684e68614fb23645-9624353-9624370-9624377-9624398-9624404.png)
+![，](../static/12609483-05ffe2378a7a63eb.png)
 
 #### 建立智能存储过程
 在创建存储过程中，也可以使用IF，THEN，END IF语句来设置判断条件，这是存储过程与简单的语句封装最大的区别。
 
 例如：
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-f63c9314fc23399e?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-92df97def8212433?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-f63c9314fc23399e.png)
+![image.png](../static/12609483-92df97def8212433.png)
 
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-2b5a351a9cea481f?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-2b5a351a9cea481f.png)
 添加了另外一个 参数taxable，它是一个布尔值(如果要增加税则为真，否则为假)。在 存储过程体中，用DECLARE语句定义了两个局部变量。DECLARE要求指定 变量名和数据类型，它也支持可选的默认值(这个例子中的taxrate的默 认被设置为6%)。SELECT语句已经改变，因此其结果存储到total(局部 变量)而不是ototal。IF语句检查taxable是否为真，如果为真，则用另 一SELECT语句增加营业税到局部变量total。最后，用另一SELECT语句将 total(它增加或许不增加营业税)保存到ototal。
 BOOLEAN值指定为1表示真，指定为0表示假(实际上，非零值 都考虑为真，只有0被视为假)。通过给中间的参数指定0或1，可以有条件地将营业税加到订单合计上。
 
@@ -785,7 +794,7 @@ BOOLEAN值指定为1表示真，指定为0表示假(实际上，非零值 都考
 #### 创建游标
 
 定义了一个名为ordernumbers的游标
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-37c40b2102434890?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-37c40b2102434890.png)
 
 #### 打开和关闭游标
 打开名为ordernumbers的游标
@@ -799,8 +808,8 @@ CLOSE ordernumbers;
 如果不明确关闭游标，MySQL将会在到达END语句时自动关闭它。
 
 #### 使用游标数据
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-fc2ea16adcffe4b5?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-ab790e64ff6b6e17?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-fc2ea16adcffe4b5.png)
+![image.png](../static/12609483-ab790e64ff6b6e17.png)
 这个例子使用FETCH检索当前order_num到声明的名为o的变量中。但与前一个例子不一样的是，这个 例子中的FETCH是在REPEAT内，因此它反复执行直到done为真(由UNTIL done END REPEAT;规定)。为使它起作用，用一个DEFAULT 0(假，不结 束)定义变量done。当在 FETCH 语句中引用的游标位置处于结果表最后一行之后时，SQLSTATE会为02000，这个时候done会为真，停止循环。
 
 ### 第二十五章 使用触发器
@@ -827,20 +836,20 @@ DROP TRIGGER newproduct;删除名为newproduct的触发器
 2. 在BEFORE INSERT触发器中，NEW中的值也可以被更新(允许更改 被插入的值);
 
 3. 对于AUTO_INCREMENT列，NEW在INSERT执行之前列的值会是0，在INSERT 执行之后包含新的自动生成值。
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-c50ea2a774c79417?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-a2cd8a6bb15c770c?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-c50ea2a774c79417.png)
+![image.png](../static/12609483-a2cd8a6bb15c770c.png)
 上面的例子中创建一个名为neworder的触发器，它按照AFTER INSERT ON orders执行。在插入一个新订单到orders表时，MySQL生 成一个新订单号并保存到order_num中。触发器从NEW. order_num取得这个值并返回它。
 
 #### DELETE触发器
 
 DELETE触发器在DELETE语句执行之前或之后执行，在DELETE触发器代码内，你可以引用一个名为OLD的虚拟表，访问被删除的行。OLD中的值全都是只读的，不能更新。
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-a0cfc3f69174cec6?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-a0cfc3f69174cec6.png)
 上面这个例子中，在任意订单被删除前将执行此触发器。它使用一条INSERT语句将OLD中的值(要被删除的订单)保存到一个名为archive_ orders的存档表中(为实际使用这个例子，你需要用与orders相同的列 创建一个名为archive_orders的表)。
 
 #### UPDATE触发器
 
 UPDATE触发器在UPDATE语句执行之前或之后执行。在UPDATE触发器代码中，你可以引用一个名为OLD的虚拟表访问 以前(UPDATE语句前)的值，引用一个名为NEW的虚拟表访问新 更新的值。在BEFORE UPDATE触发器中，NEW中的值可能也被更新(允许更改 将要用于UPDATE语句中的值)。OLD中的值全都是只读的，不能更新。
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-4c56c2be3b977b77?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-4c56c2be3b977b77.png)
 上面面的例子保证州名缩写总是大写(不管UPDATE语句中给出的是大 写还是小写)
 
 #### 注意事项：
@@ -873,8 +882,8 @@ holder)，你可以对它发布回退(与回退整个事务处理不同)。
 ```
 #### 使用ROLLBACK
 MySQL的ROLLBACK命令用来回退(撤销)MySQL语句。例如：
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-665f81152013e93c?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-1048ece433706d22?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-665f81152013e93c.png)
+![image.png](../static/12609483-1048ece433706d22.png)
 从显示ordertotals表(此表在第24章中填充)的内
 容开始。首先执行一条SELECT以显示该表不为空。然后开始一 个事务处理，用一条DELETE语句删除ordertotals中的所有行。另一条 SELECT语句验证ordertotals确实为空。这时用一条ROLLBACK语句回退 START TRANSACTION之后的所有语句，最后一条SELECT语句显示该表不为空。
 ROLLBACK只能在一个事务处理内使用(在执行一条START TRANSACTION命令之后)。可以回退INSERT、UPDATE和 DELETE语句。不能回退SELECT，CREATE，DROP语句。
@@ -882,7 +891,7 @@ ROLLBACK只能在一个事务处理内使用(在执行一条START TRANSACTION命
 #### 使用COMMIT
 一般的MySQL语句都是直接针对数据库表执行和编写的。这就是所谓的隐含提交(implicit commit)，即提交(写或保存)操作是自动进行的。但是，在事务处理块中，提交不会隐含地进行。为进行明确的提交， 使用COMMIT语句。
 
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-1867c2cea2e07c0f?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-1867c2cea2e07c0f.png)
 在这个例子中，从系统中完全删除订单20010。因为涉及更新
 两个数据库表orders和orderItems，所以使用事务处理块来 保证订单不被部分删除。最后的COMMIT语句仅在不出错时写出更改。如 果第一条DELETE起作用，但第二条失败，则DELETE不会提交(会被自动撤销)。
 
@@ -923,7 +932,7 @@ show VARIABLES like 'character%'；查看字符集相关的配置
 show VARIABLES like 'collation%'；查看校对相关的配置
 ```
 #### 给表指定字符集和校对
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-a7bf91e24890bdf5?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-a7bf91e24890bdf5.png)
 这个例子中指定了CHARACTER SET和COLLATE两者。一般，MySQL如
 下确定使用什么样的字符集和校对。
 
@@ -934,18 +943,18 @@ show VARIABLES like 'collation%'；查看校对相关的配置
 3.如果既不指定CHARACTER SET，也不指定COLLATE，则使用数据库默认。
 
 #### 对列指定字符集和校对
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-008d6304d53ba2a2?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-008d6304d53ba2a2.png)
 
 #### 查询时指定校对顺序
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-d36a73cde36c31ec?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-d36a73cde36c31ec.png)
 此SELECT使用COLLATE指定一个备用的校对顺序(在这个例子 中，为区分大小写的校对)。除了这里看到的在ORDERBY子 句中使用以外，COLLATE还可以用于GROUP BY、HAVING、聚集 函数、别名等。
 
 ### 第二十八章 安全管理
 MySQL用户账号和信息存储在名为mysql的MySQL数据库中。
 获得所有用户账号列表
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-6305ecdf2f8995f9?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-6305ecdf2f8995f9.png)
 
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-1dbb238efbfcfdfc?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-1dbb238efbfcfdfc.png)
 
 #### 创建用户账号
 CREATE USER ben IDENTIFIED BY 'passwOrd';
@@ -963,7 +972,7 @@ DROP USER bforta;
 
 #### 设置访问权限
 为看到赋予用户账号的权限，使用SHOW GRANTS FOR，如下图所示:
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-f62b69326ef4844d?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-f62b69326ef4844d.png)
 输出结果显示用户bforta有一个权限USAGE ON *.*。此结果表示在任意数据库和任意表上对任何数据没有权限。
 用户定义为user@host MySQL的权限将会把用户名和主机名结合定义。如果不指定主机名，则使用默认的主机名%(授予用户访问权限而不管主机名)。
 
@@ -978,7 +987,7 @@ GRANT允许用户在crashcourse.*(crashcourse数据库的所
 有表)上使用SELECT语句。
 
 SHOW GRANTS可以用来显示bforta用户的权限
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-05e1a6bce1c29051?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-05e1a6bce1c29051.png)
 
 #### REVOKE
 GRANT的反操作为REVOKE，用它来撤销特定的权限。
@@ -1000,9 +1009,9 @@ GRANT和REVOKE可在几个层次上控制访问权限:
 5.特定的存储过程。
 
 下面是可以授予或撤销的每个权限：
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-199bd1a12bee5cc3?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-199bd1a12bee5cc3.png)
 
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-66b5c2d55ba4d32a?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-66b5c2d55ba4d32a.png)
 #### 注意事项:
 #### 提前授权
 在使用GRANT和REVOKE时，用户账号必须存在， 但对所涉及的对象没有这个要求。这允许管理员在创建数据库 和表之前设计和实现安全措施。这样做的副作用是，当某个数据库或表被删除时(用DROP语 句)，相关的访问权限仍然存在。而且，如果将来重新创建该 数据库或表，这些权限仍然起作用。
@@ -1028,7 +1037,7 @@ SET PASSWORD = Password('123456');
 #### 数据库维护
 ANALYZE TABLE
 用来检查表键是否正确,返回的状态信息如下:
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-c4adf66192e77225?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-c4adf66192e77225.png)
 
 CHECK TABLE
 用来针对许多问题对表进行检查。在MyISAM表上还对索引进行检查。
@@ -1049,7 +1058,7 @@ MEDIUM
 QUICK
 只进行快速扫描
 如下所示，CHECK TABLE发现和修复问题:
-![image.png](https://upload-images.jianshu.io/upload_images/12609483-f12252aa0fbd3724?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![image.png](../static/12609483-f12252aa0fbd3724.png)
 
 如果MyISAM表访问产生不正确和不一致的结果，可能需要用REPAIR TABLE来修复相应的表。这条语句不应该经常使用，如果需要经常使用，可能会有更大的问题要解决。
 如果从一个表中删除大量数据，应该使用OPTIMIZE TABLE来收回所用的空间，从而优化表的性能。
