@@ -3,33 +3,34 @@
 
 下面是主要是自己看了《高性能MySQL》及一些博客后，找了一些MySQL相关的面试题，通过翻书，查资料写的解答，之后会继续更新和完善这一部分内容。
 
-#### [1.一条MySQL更新语句的执行过程是什么样的?](#一条MySQL更新语句的执行过程是什么样的?)
-#### [2.脏页是什么?](#脏页是什么?)
-#### [3.Checkpoint是什么?](#Checkpoint是什么?)
-#### [4.undo log，redo log，bin log是什么?](#undolog，redolog，binlog是什么?)
-#### [5.MySQL中的事务是什么?](#MySQL中的事务是什么?)
-#### [6.MySQL的隔离级别是怎么样的?](#MySQL的隔离级别是怎么样的?)
-#### [7.MVCC的实现原理是怎么样的?](#MVCC的实现原理是怎么样的?)
-#### [8.MySQL是怎么解决幻读的问题的?](#MySQL是怎么解决幻读的问题的)
-#### [9.MySQL中有哪些锁?](#MySQL中有哪些锁?)
-#### [10.B树是什么?](#B树是什么?)
-#### [11.B树与B+树的区别是什么?](#B树与B+树的区别是什么?)
-#### [12.索引是什么?](#索引是什么?)
-#### [13.字符串索引和数字类型索引的区别?](#字符串索引和数字类型索引的区别?)
-#### [14.union和union all的区别是什么?](#union和union)
-#### [15.Join的工作流程是怎么样的，怎么进行优化?](#Join的工作流程是怎么样的，怎么进行优化)
-#### [16.聚集索引是什么?](#聚集索引是什么?)
-#### [17.联合索引是什么?](#联合索引是什么?)
-#### [18.覆盖索引是什么?](#覆盖索引是什么?)
-#### [19.哪些情况不要建索引?](#哪些情况不要建索引?)
-#### [20.主键，唯一性索引，普通索引的区别是什么?](#主键，唯一性索引，普通索引的区别是什么?)
-#### [21.InnoDB和MyISAM的区别是什么?](#InnoDB和MyISAM的区别是什么?)
-#### [22.什么是分库分表?](#什么是分库分表?)
-#### [23.怎么实现跨库分页查询?](#怎么实现跨库分页查询?)
-#### [24.MySQL主从复制的工作流程是什么样的?](#MySQL主从复制的工作流程是什么样的?)
-#### [25.char类型与varchar类型的区别?](#char类型与varchar类型的区别)
-#### [26.如何优化MySQL慢查询?](# 如何优化MySQL慢查询)
-#### [27.SELECT Count(*)怎么优化？](SELECT Count(*)怎么优化)
+#### [1.一条MySQL更新语句的执行过程是什么样的？](#一条MySQL更新语句的执行过程是什么样的？)
+#### [2.脏页是什么？](#脏页是什么？)
+#### [3.Checkpoint是什么？](#Checkpoint是什么？)
+#### [4.undo log，redo log，bin log是什么？](#undolog，redolog，binlog是什么？)
+#### [5.MySQL中的事务是什么？](#MySQL中的事务是什么？)
+#### [6.MySQL的隔离级别是怎么样的？](#MySQL的隔离级别是怎么样的？)
+#### [7.MVCC的实现原理是怎么样的？](#MVCC的实现原理是怎么样的？)
+#### [8.MySQL是怎么解决幻读的问题的？](#MySQL是怎么解决幻读的问题的)
+#### [9.MySQL中有哪些锁？](#MySQL中有哪些锁？)
+#### [10.B树是什么？](#B树是什么？)
+#### [11.B树与B+树的区别是什么？](#B树与B+树的区别是什么？)
+#### [12.索引是什么？](#索引是什么？)
+#### [13.字符串索引和数字类型索引的区别？](#字符串索引和数字类型索引的区别？)
+#### [14.union和union all的区别是什么？](#union和unionall的区别是什么？)
+#### [15.Join的工作流程是怎么样的，怎么进行优化？](#Join的工作流程是怎么样的，怎么进行优化？)
+#### [16.聚集索引是什么？](#聚集索引是什么？)
+#### [17.联合索引是什么？](#联合索引是什么？)
+#### [18.覆盖索引是什么？](#覆盖索引是什么？)
+#### [19.哪些情况不要建索引？](#哪些情况不要建索引？)
+#### [20.主键，唯一性索引，普通索引的区别是什么？](#主键，唯一性索引，普通索引的区别是什么？)
+#### [21.InnoDB和MyISAM的区别是什么？](#InnoDB和MyISAM的区别是什么？)
+#### [22.什么是分库分表？](#什么是分库分表？)
+#### [23.怎么实现跨库分页查询？](#怎么实现跨库分页查询？)
+#### [24.MySQL主从复制的工作流程是什么样的？](#MySQL主从复制的工作流程是什么样的？)
+#### [25.char类型与varchar类型的区别？](#char类型与varchar类型的区别)
+#### [26.查询数量SELECT Count(*)怎么优化？](#怎么优化数量查询？)
+#### [27.如何优化MySQL慢查询？](#如何优化MySQL慢查询？)
+#### [28.MySQL的join的实现是怎么样的？](#MySQL的join的实现是怎么样的？)
 
 ### 一条MySQL更新语句的执行过程是什么样的？
 
@@ -511,7 +512,7 @@ https://blog.csdn.net/chai471793/article/details/99563704
 
 效率的话，100万的数据量，字符串索引查询600ms，数字查询20ms。
 
-### union和union all的区别是什么？
+### union和unionall的区别是什么？
 
 union就是将两个SELECT语句查询的结果集合并(两个SELECT可以是同一个表，也可以是不同表)，如果需要排序，在第二个SELECT语句后加ORDER BY语句，会对所有结果进行排序。
 
@@ -689,7 +690,7 @@ SELECT a,b,c FROM user where a = 1
 
 这个就是覆盖索引。
 
-https://mp.weixin.qq.com/s?src=11&timestamp=1586078743&ver=2260&signature=s1B5IvEAHXmba8XNgw2q4VXKTN8CpXfX1gjQA*Rcm1M4VpRlWzXAbExHcyLoI2hqJQWNSFZCJ3xdeZsRaph1ZpIAlYt-uTvlgX93gGXhKNiMTm1LCyGosANoDYRHe49N&new=1
+https://mp.weixin.qq.com/s？src=11&timestamp=1586078743&ver=2260&signature=s1B5IvEAHXmba8XNgw2q4VXKTN8CpXfX1gjQA*Rcm1M4VpRlWzXAbExHcyLoI2hqJQWNSFZCJ3xdeZsRaph1ZpIAlYt-uTvlgX93gGXhKNiMTm1LCyGosANoDYRHe49N&new=1
 
 哪些情况需要建索引：
 1. 主键，唯一索引
@@ -938,13 +939,13 @@ innodb会有死锁检测，但是会消耗一些cpu资源，检测到死锁会�
 就是控制访问相同资源的并发事务量。例如将长事务拆分成短事务，这样每次事务占用时间也少，也可以减少其他事务的等待时间。
 
 
-### SELECT Count(*)怎么优化？
+### 怎么优化数量查询？
 在innodb引擎下，
 ##### COUNT(*)和Count(id) 
 SELECT Count(\*)其实是跟SELECT Count(id)是等价的，会去主键的聚集索引下扫描每一行，然后判断行是否为Null，不为Null计入Count。
 ##### Count(col)
 也是全表扫描，判断这一行的col值是否为null，不为null，计入Count
-怎么优化count(\*)?
+怎么优化count(\*)？
 可以使用查询一个非空的唯一索引键的数量来替代count(\*),因为count(\*)需要遍历主键的聚集索引的叶子节点，读取每一行的数据，而Count(unique_key)会去unique_key的索引下读取每个叶子的节点，因为每个叶子节点只包含unique_key和主键id，数据大小比聚集索引下的叶子节点下，IO会小一些。
 ##### Myisam可以缓存count，而innodb不能缓存count
 因为innodb有事务的概念，如果是在PR的隔离级别下，每个事务查询的count应该等于事务开始时count+本事务执行过程中对count的改变，但是由于每个事务可以单独设置会话隔离级别，所以很难实现对count的缓存。
@@ -1030,7 +1031,7 @@ varchar的存储方式是，对每个英文字符占用2个字节，汉字也占
 
 效率上其实varchar会好一点，其实网上没有比较详尽的测试，看一个博客对1000w的数据进行测试时，varchar会略高一点。
 
-###  如何优化MySQL慢查询?
+###  如何优化MySQL慢查询？
 首先对EXPLAIN 分析查询语句后extral字段中出现的一些参数进行说明：
 ##### Using index 
 使用了索引进行查询
@@ -1076,8 +1077,7 @@ Innodb在1.0之后支持Fast Index Creation，就是添加辅助索引（主键�
 就是innodb在创建索引时，会将数据库的增删改命令写入缓存日志，创建完毕后通过重放日志来保持数据库的最终一致性。
 
 
-
-#### Mysql的join算法：Index Nested-Loop Join和Block Nested-Loop Join
+### MySQL的join的实现是怎么样的？
 
 https://blog.csdn.net/u010841296/article/details/89790399
 

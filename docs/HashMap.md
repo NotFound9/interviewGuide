@@ -8,7 +8,7 @@
 #### [4.HashMap扩容后是否需要rehash？](#HashMap扩容后是否需要rehash？)
 #### [5.HashMap扩容是怎样扩容的，为什么都是2的N次幂的大小？](#HashMap扩容是怎样扩容的，为什么都是2的N次幂的大小？)
 #### [6.ConcurrentHashMap是怎么记录元素个数size的？](#ConcurrentHashMap是怎么记录元素个数size的？)
-#### [7.为什么ConcurrentHashMap，HashTable不支持key，value为null?](#为什么ConcurrentHashMap，HashTable不支持key，value为null?)
+#### [7.为什么ConcurrentHashMap，HashTable不支持key，value为null？](#为什么ConcurrentHashMap，HashTable不支持key，value为null？)
 #### [8.HashSet和HashMap的区别？](#HashSet和HashMap的区别？ )
 #### [9.HashMap遍历时删除元素的有哪些实现方法？](#HashMap遍历时删除元素的有哪些实现方法？)
 
@@ -30,7 +30,7 @@
 ```java
 static final int hash(Object key) {
     int h;
-    return (key == null) ? 0 : (h = key.hashCode()) ^ (h >>> 16);
+    return (key == null) ？ 0 : (h = key.hashCode()) ^ (h >>> 16);
 }
 ```
 
@@ -289,7 +289,7 @@ final V putVal(K key, V value, boolean onlyIfAbsent) {
     
     transient volatile Node<K,V>[] table;//ConcurrentHashMap
     
-    private transient Entry<?,?>[] table;//HashTable
+    private transient Entry<？,？>[] table;//HashTable
 ```
 
 #### HashMap=数组+链表+红黑树
@@ -385,7 +385,7 @@ HashMap的key和null都可以为null，如果key为null，那么计算的hash值
 ```
 static final int hash(Object key) {
 	int h;
-	return (key == null) ? 0 : (h = key.hashCode()) ^ (h >>> 16);
+	return (key == null) ？ 0 : (h = key.hashCode()) ^ (h >>> 16);
 }
 ```
 
@@ -397,7 +397,7 @@ public synchronized V put(K key, V value) {
         if (value == null) {
             throw new NullPointerException();
         }
-        Entry<?,?> tab[] = table;
+        Entry<？,？> tab[] = table;
         int hash = key.hashCode();
         ...其他代码
 }
@@ -430,7 +430,7 @@ HashTable会扩容为2n+1，HashTable之所以容量取11，及扩容时是是2n
 public synchronized V put(K key, V value) {
          ...其他代码
         // Makes sure the key is not already in the hashtable.
-        Entry<?,?> tab[] = table;
+        Entry<？,？> tab[] = table;
         int hash = key.hashCode();
         int index = (hash & 0x7FFFFFFF) % tab.length;
         ...其他代码
@@ -443,7 +443,7 @@ HashMap和ConcurrentHashMap的hash值都是通过将key的hashCode()高16位与�
 //HashMap计算hash值的方法
 static int hash(Object key) {
     int h;
-    return (key == null) ? 0 : (h = key.hashCode()) ^ (h >>> 16); 
+    return (key == null) ？ 0 : (h = key.hashCode()) ^ (h >>> 16); 
 }
 //ConcurrentHashMap计算hash值的方法 
 static  int spread(int h) {//h是对象的hashCode
@@ -542,13 +542,13 @@ ConcurrentHashMap记录键值对数量的实现如下：
 //size方法最大只能返回Integer.MAX_VALUE
 public int size() {
     long n = sumCount();
-    return ((n < 0L) ? 0 : (n > (long)Integer.MAX_VALUE) ?Integer.MAX_VALUE : (int)n);
+    return ((n < 0L) ？ 0 : (n > (long)Integer.MAX_VALUE) ？Integer.MAX_VALUE : (int)n);
 }
 
 //mappingCount方法可以返回long类型的最大值，
 public long mappingCount() {
     long n = sumCount();
-    return (n < 0L) ? 0L : n; // ignore transient negative values
+    return (n < 0L) ？ 0L : n; // ignore transient negative values
 }
 
 private transient volatile long baseCount;
