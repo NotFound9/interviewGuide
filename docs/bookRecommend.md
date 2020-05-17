@@ -52,7 +52,7 @@
 
 ### 《Redis深度历险：核心原理与应用实践》
 
-<img src="https://upload-images.jianshu.io/upload_images/12609483-883506f456096074.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" width="30%" padding-left= "20%" />
+<img src="../static/12609483-883506f456096074.png" width="30%" padding-left= "20%" />
 
 - 推荐指数：五星
 
