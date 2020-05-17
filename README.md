@@ -59,7 +59,7 @@
     - [4.Java中创建线程有哪些方式?](docs/JavaMultiThread.md#Java中创建线程有哪些方式?)
     - [5.如何解决序列化时可以创建出单例对象的问题?](docs/JavaMultiThread.md#如何解决序列化时可以创建出单例对象的问题?)
     - [6.悲观锁和乐观锁是什么？](docs/JavaMultiThread.md#悲观锁和乐观锁是什么？)
-    - [7.volatile 关键字有什么用？怎么理解可见性，一般什么场景去用可见性？](docs/JavaMultiThread.md#volatile 关键字有什么用？怎么理解可见性，一般什么场景去用可见性？)
+    - [7.volatile关键字有什么用？怎么理解可见性，一般什么场景去用可见性？](docs/JavaMultiThread.md#volatile关键字有什么用？怎么理解可见性，一般什么场景去用可见性？)
     - [8.sychronize的实现原理是怎么样的？](docs/JavaMultiThread.md#sychronize的实现原理是怎么样的？)
 * Redis
   - [基础](docs/RedisBasic.md)
@@ -90,10 +90,7 @@
     - [2.Redis中哨兵是什么？](docs/RedisUserful.md#Redis中哨兵是什么？)
     - [3.客户端是怎么接入哨兵系统的？](docs/RedisUserful.md#客户端是怎么接入哨兵系统的？)
     - [4.Redis哨兵系统是怎么实现自动故障转移的？](docs/RedisUserful.md#Redis哨兵系统是怎么实现自动故障转移的？)
-  - [《Redis设计与实现》读书笔记 上](docs/RedisBook1.md)
-  - [《Redis设计与实现》读书笔记 下](docs/RedisBook2.md)
 * MySQL
-  - [《MySQL必知必会》读书笔记](docs/MySQLBook1.md)
   - [MySQL相关的面试题总结](docs/MySQLNote.md)
     - [1.一条MySQL更新语句的执行过程是什么样的？](docs/MySQLNote.md#一条MySQL更新语句的执行过程是什么样的？)
     - [2.脏页是什么？](docs/MySQLNote.md#脏页是什么？)
@@ -124,7 +121,6 @@
     - [27.如何优化MySQL慢查询？](docs/MySQLNote.md#如何优化MySQL慢查询？) 
     - [28.MySQL的join的实现是怎么样的？](docs/MySQLNote.md#MySQL的join的实现是怎么样的？) 
 * JVM
-  - [《深入理解Java虚拟机-第三版》读书笔记](docs/JVMBook.md)
   - [JVM相关的面试题总结](docs/JavaJVM.md)
     - [1.Java内存区域怎么划分的？](docs/JavaJVM.md#Java内存区域怎么划分的？)
     - [2.Java中对象的创建过程是怎么样的？](docs/JavaJVM.md#Java中对象的创建过程是怎么样的？)
@@ -141,7 +137,12 @@
 - [Kafka](docs/Kafka.md)
 - [ZooKeeper](docs/ZooKeeper.md)
 - [HTTP](docs/HTTP.md)
-- [《剑指Offer》解题思考](docs/CodingInterviews.md)  
+- [《剑指Offer》解题思考](docs/CodingInterviews.md)
+* 读书笔记
+  - [《Redis设计与实现》读书笔记 上](docs/RedisBook1.md)
+  - [《Redis设计与实现》读书笔记 下](docs/RedisBook2.md)
+  - [《MySQL必知必会》读书笔记](docs/MySQLBook1.md)
+  - [《深入理解Java虚拟机-第三版》读书笔记](docs/JVMBook.md)  
 - [好书推荐](docs/bookRecommend.md)
 
 ### 如何为这个开源项目做贡献？
