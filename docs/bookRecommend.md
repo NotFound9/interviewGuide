@@ -4,7 +4,7 @@
 
 ### 《深入理解Java虚拟机 第三版》
 
-<img src="https://img9.doubanio.com/view/subject/l/public/s33531736.jpg" width="30%" padding-left= "20%" />
+<img src="../static/s33531736.jpg" width="30%" padding-left= "20%" />
 
   - 推荐指数：五星
   - 阅读进度：20%
@@ -12,7 +12,7 @@
 
 ### 《疯狂Java讲义》
 
-<img src="https://img1.doubanio.com/view/subject/l/public/s32306279.jpg" width="30%" padding-left= "20%" />
+<img src="../static/s32306279.jpg" width="30%" padding-left= "20%" />
 
 - 推荐指数：五星
 
@@ -22,7 +22,7 @@
 
 ### 《Java核心技术 卷I》
 
-<img src="https://img9.doubanio.com/view/subject/l/public/s29063065.jpg width="30%" padding-left= "20%" />
+<img src="../static/s29063065.jpg" width="30%" padding-left= "20%" />
 
 * 推荐指数：三星
 
@@ -32,7 +32,7 @@
 
 ### 《Effective Java》
 
-<img src="https://img3.doubanio.com/view/subject/l/public/s32282160.jpg" width="30%" padding-left= "20%"/>
+<img src="../static/s32282160.jpg" width="30%" padding-left= "20%"/>
 
 - 推荐指数：四星
 
@@ -42,7 +42,7 @@
 
 ### 《Redis设计与实现》
 
-<img src="https://img1.doubanio.com/view/subject/l/public/s27297117.jpg" width="30%" padding-left= "20%" />
+<img src="../static/s27297117.jpg" width="30%" padding-left= "20%" />
 
   - 推荐指数：五星
 
@@ -63,7 +63,7 @@
 
 ### 《MySQL必知必会》
 
-<img src="https://img9.doubanio.com/view/subject/l/public/s5968156.jpg" width="30%" padding-left= "20%" />
+<img src="../static/s5968156.jpg" width="30%" padding-left= "20%" />
 
 - 推荐指数：三星
 
@@ -73,7 +73,7 @@
 
 ### 《操作系统导论》
 
-<img src="https://img9.doubanio.com/view/subject/l/public/s32332106.jpg" width="30%" padding-left= "20%" />
+<img src="../static/s32332106.jpg" width="30%" padding-left= "20%" />
 
 - 推荐指数：五星
 
@@ -85,7 +85,7 @@
 
 ### 《大话数据结构》
 
-<img src="https://img3.doubanio.com/view/subject/l/public/s6382631.jpg" width="30%" padding-left= "20%" />
+<img src="../static/s6382631.jpg" width="30%" padding-left= "20%" />
 
 - 推荐指数：五星
 

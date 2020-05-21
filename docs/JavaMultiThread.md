@@ -11,6 +11,7 @@
 #### [5.如何解决序列化时可以创建出单例对象的问题?](#如何解决序列化时可以创建出单例对象的问题?)
 #### [6.悲观锁和乐观锁是什么？](#悲观锁和乐观锁是什么？)
 #### [7.volatile关键字有什么用？怎么理解可见性，一般什么场景去用可见性？](#volatile关键字有什么用？怎么理解可见性，一般什么场景去用可见性？)
+
 #### [8.sychronize的实现原理是怎么样的？](#sychronize的实现原理是怎么样的？)
 
 
@@ -533,7 +534,7 @@ public final int getAndAddInt(Object var1, long var2, int var4) {
 }
 ```
 
-### volatile 关键字有什么用？怎么理解可见性，一般什么场景去用可见性？
+### volatile关键字有什么用？怎么理解可见性，一般什么场景去用可见性？
 
 当线程进行一个volatile变量的写操作时，JIT编译器生成的汇编指令会在写操作的指令后面加上一个“lock”指令。
 Java代码如下:
@@ -690,3 +691,352 @@ JVM的开发者发现在很多情况下，在Java程序运行时，同步块中�
 [死磕Synchronized底层实现--概论](https://github.com/farmerjohngit/myblog/issues/12)
 
 [浅谈偏向锁、轻量级锁、重量级锁](https://www.jianshu.com/p/36eedeb3f912)
+
+### 进程和线程的区别？并行和并发的区别？了解协程么？
+
+#### 批处理操作系统
+
+**批处理操作系统**就是把一系列需要操作的指令写下来，形成一个清单，一次性交给计算机。用户将多个需要执行的程序写在磁带上，然后交由计算机去读取并逐个执行这些程序，并将输出结果写在另一个磁带上。
+
+批处理操作系统在一定程度上提高了计算机的效率，但是由于**批处理操作系统的指令运行方式仍然是串行的，内存中始终只有一个程序在运行**，后面的程序需要等待前面的程序执行完成后才能开始执行，而前面的程序有时会由于I/O操作、网络等原因阻塞，导致CPU闲置所以**批处理操作效率也不高**。
+
+#### 进程的提出
+
+批处理操作系统的瓶颈在于内存中只存在一个程序，进程的提出，可以让内存中存在多个程序，每个程序对应一个进程，进程是操作系统资源分配的最小单位。CPU采用时间片轮转的方式运行进程：CPU为每个进程分配一个时间段，称作它的时间片。如果在时间片结束时进程还在运行，则暂停这个进程的运行，并且CPU分配给另一个进程（这个过程叫做上下文切换）。如果进程在时间片结束前阻塞或结束，则CPU立即进行切换，不用等待时间片用完。多进程的好处在于一个在进行IO操作时可以让出CPU时间片，让CPU执行其他进程的任务。
+
+#### 线程的提出
+随着计算机的发展，对CPU的要求越来越高，进程之间的切换开销较大，已经无法满足越来越复杂的程序的要求了。于是就发明了线程，线程是程序执行中一个单一的顺序控制流程，是程序执行流的最小单元，是处理器调度和分派的基本单位。一个进程可以有一个或多个线程，各个线程之间共享程序的内存空间(也就是所在进程的内存空间)。
+#### 进程和线程的区别
+进程是一个独立的运行环境，而线程是在进程中执行的一个任务。他们两个本质的区别是是否**单独占有内存地址空间及其它系统资源（比如I/O）**：
+
+* 进程单独占有一定的内存地址空间，所以进程间存在内存隔离，数据是分开的，数据共享复杂但是同步简单，各个进程之间互不干扰；而线程共享所属进程占有的内存地址空间和资源，数据共享简单，但是同步复杂。
+
+* 进程单独占有一定的内存地址空间，一个进程出现问题不会影响其他进程，不影响主程序的稳定性，可靠性高；一个线程崩溃可能影响整个程序的稳定性，可靠性较低。
+
+* 进程单独占有一定的内存地址空间，进程的创建和销毁不仅需要保存寄存器和栈信息，还需要资源的分配回收以及页调度，开销较大；线程只需要保存寄存器和栈信息，开销较小。
+
+另外一个重要区别是，进程是操作系统进行资源分配的基本单位，而线程是操作系统进行调度的基本单位，即CPU分配时间的单位 。
+
+#### Java中线程的状态是怎么样的？
+
+在操作系统中，线程等同于轻量级的进程。
+
+
+
+![img](../static/4621.png)
+
+所以传统的操作系统线程一般有以下状态
+
+1. 新建状态:
+   使用 new 关键字和 Thread 类或其子类建立一个线程对象后，该线程对象就处于新建状态。它保持这个状态直到程序 start() 这个线程。
+
+2. 就绪状态:
+   当线程对象调用了start()方法之后，该线程就进入就绪状态。就绪状态的线程处于就绪队列中，要等待JVM里线程调度器的调度。
+
+3. 运行状态:
+   如果就绪状态的线程获取 CPU 资源，就可以执行 run()，此时线程便处于运行状态。处于运行状态的线程最为复杂，它可以变为阻塞状态、就绪状态和死亡状态。
+
+4. 阻塞状态:
+
+   如果一个线程执行了sleep（睡眠）、suspend（挂起）等方法，失去所占用资源之后，该线程就从运行状态进入阻塞状态。在睡眠时间已到或获得设备资源后可以重新进入就绪状态。可以分为三种：
+
+   - 等待阻塞：运行状态中的线程执行 wait() 方法，使线程进入到等待阻塞状态。
+   - 同步阻塞：线程在获取 synchronized同步锁失败(因为同步锁被其他线程占用)。
+   - 其他阻塞：通过调用线程的 sleep() 或 join() 发出了 I/O请求时，线程就会进入到阻塞状态。当sleep() 状态超时，join() 等待线程终止或超时，或者 I/O 处理完毕，线程重新转入就绪状态。
+
+5. 死亡状态:
+   一个运行状态的线程完成任务或者其他终止条件发生时，该线程就切换到终止状态。
+
+但是Java中Thread对象的状态划分跟传统的操作系统线程状态有一些区别。
+
+```java
+public enum State {
+    NEW,//新建态
+    RUNNABLE,//运行态
+    BLOCKED,//阻塞态
+    WAITING,//等待态
+    TIMED_WAITING,//有时间限制的等待态
+    TERMINATED;//死亡态
+}
+```
+
+![线程状态图](../static/watermark.jpeg)
+
+
+
+#### NEW 新建态
+
+处于NEW状态的线程此时尚未启动，还没调用Thread实例的start()方法。
+
+#### RUNNABLE 运行态
+
+表示当前线程正在运行中。处于RUNNABLE状态的线程可能在Java虚拟机中运行，也有可能在等待其他系统资源（比如I/O）。
+
+> Java线程的**RUNNABLE**状态其实是包括了传统操作系统线程的**ready**和**running**两个状态的。
+
+#### BLOCKED 阻塞态
+
+阻塞状态。处于BLOCKED状态的线程正等待锁的释放以进入同步区。
+
+#### WAITING 等待态
+
+等待状态。处于等待状态的线程变成RUNNABLE状态需要其他线程唤醒。
+
+调用如下3个方法会使线程进入等待状态：
+
+- Object.wait()：使当前线程处于等待状态直到另一个线程调用notify唤醒它；
+- Thread.join()：等待线程执行完毕，底层调用的是Object实例的wait()方法；
+- LockSupport.park()：除非获得调用许可，否则禁用当前线程进行线程调度。
+
+####  TIMED_WAITING 超时等待状态
+
+超时等待状态。线程等待一个具体的时间，时间到后会被自动唤醒。
+
+调用如下方法会使线程进入超时等待状态：
+
+- Thread.sleep(long millis)：使当前线程睡眠指定时间；
+
+- Object.wait(long timeout)：线程休眠指定时间，等待期间可以通过notify()/notifyAll()唤醒；
+
+- Thread.join(long millis)：等待当前线程最多执行millis毫秒，如果millis为0，则会一直执行；
+
+- LockSupport.parkNanos(long nanos)： 除非获得调用许可，否则禁用当前线程进行线程调度指定时间；
+
+- LockSupport.parkUntil(long deadline)：同上，也是禁止线程进行调度指定时间；
+
+#### TERMINATED 终止态
+
+终止状态。此时线程已执行完毕。
+
+#### 状态转换
+
+1.BLOCKED与RUNNABLE状态的转换
+
+处于BLOCKED状态的线程是因为在等待锁的释放，当获得锁之后就转换为RUNNABLE状态。
+
+2.WAITING状态与RUNNABLE状态的转换
+
+**Object.wait()**，**Thread.join()**和**LockSupport.park()**这3个方法可以使线程从RUNNABLE状态转为WAITING状态。
+
+3.TIMED_WAITING与RUNNABLE状态转换
+
+TIMED_WAITING与WAITING状态类似，只是TIMED_WAITING状态等待的时间是指定的。
+
+调用**Thread.sleep(long)**，**Object.wait(long)**，**Thread.join(long)**会使得RUNNABLE状态转换为TIMED_WAITING状态
+
+### Java线程间的通信
+
+首先需要对wait()，join()，sleep()方法进行介绍。
+
+#### Object.wait()方法是什么？
+
+调用wait()方法前线程必须持有对象Object的锁。线程调用wait()方法后，会释放当前的Object锁，进入锁的monitor对象的等待队列，直到有其他线程调用notify()/notifyAll()方法唤醒等待锁的线程。
+
+需要注意的是，其他线程调用notify()方法只会唤醒单个等待锁的线程，如果有多个线程都在等待这个锁的话，不一定会唤醒到之前调用wait()方法的线程。
+
+同样，调用notifyAll()方法唤醒所有等待锁的线程之后，也不一定会马上把时间片分给刚才放弃锁的那个线程，具体要看系统的调度。
+
+#### Thread.join()方法是什么？
+
+join()方法是Thread类的一个实例方法。它的作用是让当前线程陷入“等待”状态，等join的这个线程threadA执行完成后，再继续执行当前线程。
+
+实现原理是join()方法本身是一个sychronized修饰的方法，也就是调用join()这个方法需要先获取threadA的锁，获得锁之后再调用wait()方法来进行等待，一直到threadA执行完成后，threadA会调用notify_all()方法,唤醒所有等待的线程，当前线程才会结束等待。
+
+```
+Thread threadA = new Thread();
+threadA.join();
+```
+
+join()方法的源码：
+
+```java
+public final void join() throws InterruptedException {
+    join(0);//0的话代表没有超时时间一直等下去
+}
+public final synchronized void join(long millis)
+throws InterruptedException {
+    long base = System.currentTimeMillis();
+    long now = 0;
+
+    if (millis < 0) {
+        throw new IllegalArgumentException("timeout value is negative");
+    }
+
+    if (millis == 0) {
+        while (isAlive()) {
+            wait(0);
+        }
+    } else {
+        while (isAlive()) {
+            long delay = millis - now;
+            if (delay <= 0) {
+                break;
+            }
+            wait(delay);
+            now = System.currentTimeMillis() - base;
+        }
+    }
+}
+```
+
+这是jvm中Thead的源码，在线程执行结束后会调用notify_all来唤醒等待的线程。
+
+```java
+//一个c++函数：
+void JavaThread::exit(bool destroy_vm, ExitType exit_type) ；
+//里面有一个贼不起眼的一行代码
+ensure_join(this);
+
+static void ensure_join(JavaThread* thread) {
+  Handle threadObj(thread, thread->threadObj());
+
+  ObjectLocker lock(threadObj, thread);
+
+  thread->clear_pending_exception();
+
+  java_lang_Thread::set_thread_status(threadObj(), java_lang_Thread::TERMINATED);
+
+  java_lang_Thread::set_thread(threadObj(), NULL);
+
+  //同志们看到了没，别的不用看，就看这一句
+  //thread就是当前线程，是啥？就是刚才例子中说的threadA线程
+  lock.notify_all(thread);
+
+  thread->clear_pending_exception();
+}
+```
+
+#### sleep()方法是什么？
+
+sleep方法是Thread类的一个静态方法。它的作用是让当前线程睡眠一段时间。：**sleep方法是不会释放当前的锁的，而wait方法会。**
+
+sleep与wait方法的区别：
+
+- wait可以指定时间，也可以不指定；而sleep必须指定时间。
+- wait释放cpu资源，同时释放锁；sleep释放cpu资源，但是不释放锁，所以易死锁。（调用join()方法也不会释放锁）
+- wait必须放在同步块或同步方法中，而sleep可以再任意位置。
+
+参考文章：
+
+http://redspider.group:4000/article/01/4.html
+
+https://www.jianshu.com/p/5d88b122a050
+
+### 线程间怎么通信？
+
+1.通过sychronized锁来进行同步，让一次只能一个线程来执行。
+
+#### 2.等待/通知机制
+
+```java
+//假设我们的需求是B执行结束后A才能执行
+//线程A的代码
+synchronized(对象) { while(条件不满足) {
+    while(条件不满足) {
+        对象.wait(); //线程A进行等待
+    }
+    //线程A执行相关的的逻辑
+ } 
+ 
+//线程B的代码
+ synchronized(对象) { 
+ 		//线程B执行相关的的逻辑
+ 		//线程B唤醒线程A
+ 		对象.notifyAll();
+ }
+ 
+```
+
+等待/通知机制，是指一个线程A调用了对象objectA的wait()方法进入等待状态，而另一个线程B调用了对象objectA的notify()或者notifyAll()方法，线程A收到通知后从对象objectA的wait()方法返回，进而执行后续操作。上述两个线程通过对象objectA来完成交互，而对象上的wait()和notify/notifyAll()的关系就如同开关信号一样，用来完成等待方和通知方之间的交互工作。
+
+![image-20200518195123985](../static/image-20200518195123985.png)
+
+1)使用wait()、notify()和notifyAll()时需要先对调用对象加锁。 
+
+2)调用wait()方法后，线程状态由RUNNING变为WAITING，并将当前线程放置到对象的 
+
+等待队列。 
+
+3)notify()或notifyAll()方法调用后，等待线程依旧不会从wait()返回，因为等待线程只是从等待队列到了同步队列，需要调用notify()或 notifAll()的线程释放锁之后，等待线程获得锁，才能从同步队列中移除，才有机会从wait()返回，才能继续往下执行。  
+
+4)notify()方法将等待队列中的一个等待线程从等待队列中移到同步队列中，而notifyAll() 方法则是将等待队列中所有的线程全部移到同步队列，被移动的线程状态由WAITING变为 BLOCKED。 
+
+5)从wait()方法返回的前提是获得了调用对象的锁。 
+
+![image-20200518195448708](../static/image-20200518195448708.png)
+
+##### 3.管道
+
+管道输入/输出流 管道输入/输出流和普通的文件输入/输出流或者网络输入/输出流不同之处在于，它主要 用于线程之间的数据传输，而传输的媒介为内存。 管道输入/输出流主要包括了如下4种具体实现:PipedOutputStream、PipedInputStream、 PipedReader和PipedWriter，前两种面向字节，而后两种面向字符。
+
+ PipedReader和PipedWriter可以一个线程A调用PipedWriter实例的write()方法，往里面写数据，然后与PipedWriter实例建立连接的PipedReader实例可以读到数据，线程B可以通过PipedReader实例读到数据。
+
+在代码清单4-12所示的例子中，创建了printThread，它用来接受main线程的输入，任何 main线程的输入均通过PipedWriter写入，而printThread在另一端通过PipedReader将内容读出并打印。 
+
+代码清单4-12 Piped.java 
+```
+public class Piped {
+       public static void main(String[] args) throws Exception {
+          PipedWriter out = new PipedWriter();
+          PipedReader in = new PipedReader();
+          // 将输出流和输入流进行连接，否则在使用时会抛出IOException 											out.connect(in);
+          Thread printThread = new Thread(new Print(in), "PrintThread"); printThread.start();
+          int receive = 0;
+          try {
+							while ((receive = System.in.read()) != -1) { 				out.write(receive);
+									}
+					} finally {	out.close(); }
+       }
+       static class Print implements Runnable {
+           private PipedReader in;
+           public Print(PipedReader in) {
+								this.in = in; 
+					}
+				public void run() { 
+							int receive = 0; 
+							try {
+									while ((receive = in.read()) != -1) { System.out.print((char) receive);
+                   }
+               } catch (IOException ex) {
+       			}
+     	}
+		}
+}    
+```
+
+运行该示例，输入一组字符串，可以看到被printThread进行了原样输出。 
+
+Repeat my words. 
+Repeat my words. 
+
+#### 4.Thread.join
+
+Thread.join()的使用如果一个线程A执行了thread.join()语句，当前线程A会一直等待thread线程终止之后才从thread.join()返回，向下执行。线程Thread除了提供join()方法之外，还提供了join(long millis)和join(long millis,int nanos)两个具备超时参数的方法。
+
+#### 5.ThreadLocal的使用 
+
+ThreadLocal，即线程变量，是一个以ThreadLocal对象为键、任意对象为值的存储结构。这 个结构被附带在线程上，也就是说一个线程可以根据一个ThreadLocal对象查询到绑定在这个 线程上的一个值。 
+
+```
+public class Profiler {
+    // 第一次get()方法调用时会进行初始化(如果set方法没有调用)，每个线程会调用一次
+    private static final ThreadLocal<Long> TIME_THREADLOCAL = new ThreadLocal<Long>() {
+        protected Long initialValue() { return System.currentTimeMillis();} 
+    };
+    public static final void begin() { 
+        TIME_THREADLOCAL.set(System.currentTimeMillis());
+    }
+    public static final long end() {
+        return System.currentTimeMillis() - TIME_THREADLOCAL.get(); 
+    }
+    public static void main(String[] args) throws Exception { 
+        Profiler.begin();
+        TimeUnit.SECONDS.sleep(1);
+        System.out.println("Cost: " + Profiler.end() + " mills");
+    } 
+}
+```
+
+Profiler可以被复用在方法调用耗时统计的功能上，在方法的入口前执行begin()方法，在 
+
+方法调用后执行end()方法，好处是两个方法的调用不用在一个方法或者类中，比如在AOP(面 向方面编程)中，可以在方法调用前的切入点执行begin()方法，而在方法调用后的切入点执行 end()方法，这样依旧可以获得方法的执行耗时。 
