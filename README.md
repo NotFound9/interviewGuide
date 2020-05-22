@@ -119,7 +119,8 @@
     - [25.char类型与varchar类型的区别？](docs/MySQLNote.md#char类型与varchar类型的区别？)
     - [26.查询数量SELECT Count(*)怎么优化？](docs/MySQLNote.md#怎么优化数量查询？)
     - [27.如何优化MySQL慢查询？](docs/MySQLNote.md#如何优化MySQL慢查询？) 
-    - [28.MySQL的join的实现是怎么样的？](docs/MySQLNote.md#MySQL的join的实现是怎么样的？) 
+    - [28.MySQL的join的实现是怎么样的？](docs/MySQLNote.md#MySQL的join的实现是怎么样的？)
+  - [MySQL慢查询优化](docs/MySQLWork.md) 
 * JVM
   - [JVM相关的面试题总结](docs/JavaJVM.md)
     - [1.Java内存区域怎么划分的？](docs/JavaJVM.md#Java内存区域怎么划分的？)

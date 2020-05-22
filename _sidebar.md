@@ -12,6 +12,7 @@
   - [高可用(主从切换和哨兵机制)](docs/RedisUserful.md)
 * MySQL
   - [MySQL相关的面试题总结](docs/MySQLNote.md)
+  - [MySQL慢查询优化](docs/MySQLWork.md)
 * JVM
   - [JVM相关的面试题总结](docs/JavaJVM.md)
 - [Kafka](docs/Kafka.md)
