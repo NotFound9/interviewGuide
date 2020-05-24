@@ -1,8 +1,7 @@
 (PS：扫描[首页里面的二维码](README.md)进群，分享我自己在看的技术资料给大家，希望和大家一起学习进步！)
 
-
-
 #### [1.HTTPS建立连接的过程是怎么样的？](#HTTPS建立连接的过程是怎么样的？)
+#### [2.HTTP的缓存策略是怎么样的？](#HTTP的缓存策略是怎么样的？)
 
 ### HTTPS建立连接的过程是怎么样的？
 
@@ -21,36 +20,53 @@
 
 
 
-##### HTTP 缓存策略
+### HTTP的缓存策略是怎么样的？
 
-//优先级 强缓存>协商缓存 cache-control>expires
+HTTP 缓存主要分为强缓存和对比缓存两种，从优先级上看，强缓存大于对比缓存。
 
-HTTP 缓存主要分为强缓存和协商缓存
-强缓存 浏览器缓存数据库里有缓存数据就不再去向服务器发请求了
-expires
-header中的 expires保存了一个过期时间，
- 如果当前时间小于过期时间，就不去像服务器发请求了，但是是一个绝对时间，
- 如果客户端时间修改了，与服务端时间不同步，并且相差较大的话就会有问题。
+#### 强缓存
 
-Cache-Control（优先级高于expires）
-可以取多个值，
-private 只有客户端可以缓存
-public 客户端和代理服务器都可以缓存
-no-cache 不能使用强缓存，需要使用对比缓存
-no-store 机密内容，不能使用缓存
-max-age=11 缓存在多少秒之后失效
+![img](../static/13002258-3191bc567f09cd99.png)
 
-对比缓存
-需要给服务器发请求，并且带上缓存数据的缓存标识，
-让服务端进行对比，如果数据没有更改就只返回header部分，
-body为空，状态码是304，浏览器使用缓存数据
-如果数据有更改，就返回更新后的数据。
+ 强缓缓存就是浏览器缓存数据库里有缓存数据就不再去向服务器发请求了
 
-Last-Modified/If-Modified-Since
-就是 response header会返回Last-Modified 资源上次的修改时间，
-发请求时 request-header会带上If-Modified-Since资源上次修改时间，
-服务器判断资源是否有更新
+可以造成强制缓存的字段有Expires和Cache-Control两个：
 
-Etag/If-None-Match(优先级高于Last-Modified/If-Modified-Since）
-就是 response header会返回Etag 资源的标识，
-发请求时 request-header会带上If-Modified-Since资源的标识
+Expires：该字段标识缓存到期时间，是一个绝对时间，也就是服务器时间+缓存有效时间。
+缺点：如果客户端修改了本地时间，会造成缓存失效。如果本地时间与服务器时间不一致，也会导致缓存失效。
+
+Cache-Control：该字段表示缓存最大有效时间，该时间是一个相对时间。
+使用相对时间的话，即使本地时间与服务器时间不一致，也不会导致缓存失效。
+ 下面列举一下Cache-Control的字段可以带的值：
+
+> - max-age：即最大有效时间
+> - no-cache：表示没有缓存，即告诉浏览器该资源并没有设置缓存
+> - s-maxage：同max-age，但是仅用于共享缓存，如CDN缓存
+> - public：多用户共享缓存，默认设置
+> - private：不能够多用户共享，HTTP认证之后，字段会自动转换成private。
+
+#### 对比缓存
+
+![img](../static/13002258-488a103decf49453.png)
+
+对比缓存的实现原理时，先给给服务器发请求，并且带上缓存的资源文件的缓存标识，让服务端进行对比，如果资源文件没有更改，就只返回header部分，body为空，状态码是304，浏览器使用缓存的资源文件。如果数据有更改，就返回更新后的资源文件。
+
+可以实现对比缓存的机制有Last-Modified/If-Modified-Since和Etag/If-None-Match两种：
+
+##### Last-Modified/If-Modified-Since
+就是 请求的response header中会返回Last-Modified字段，代表资源文件最近的修改时间，发请求时 request header中会带上If-Modified-Since字段，代表上次获取的资源文件的最近修改时间，服务器判断资源文件是否有更新，来决定返回最新的资源文件（返回200），还是让浏览器使用缓存(返回304)。
+
+缺点：
+
+1. Last-Modified标注的最后修改只能精确到秒级，如果某些文件在1秒钟以内，被修改多次的话，它将不能准确标注文件的修改时间。
+
+2. 如果某些文件会被定期生成，当有时内容并没有任何变化，但Last-Modified却改变了，导致文件没法使用缓存。
+
+##### Etag/If-None-Match
+
+就是 response header中会返回Etag，代表资源文件的版本号，发请求时 request header中会加上If-None-Match字段，值是上次请求的资源的文件的版本号，代表上次请求的资源文件的版本号，服务器判断资源文件是否有更新，来决定返回最新的资源文件（返回200），还是让浏览器使用缓存(返回304)。
+
+##### 优先级
+
+优先级方面排序是 强缓存（Cache-Control）> 强缓存（Expires）> 对比缓存（Etag/If-None-Match）> 对比缓存（Last-Modified/If-Modified-Since）
+
