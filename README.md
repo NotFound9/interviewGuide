@@ -1,24 +1,20 @@
-《面试指北》Github地址：https://github.com/NotFound9/interviewGuide
+#《面试指北》
 
-《面试指北》最佳阅读地址：http://notfound9.github.io/interviewGuide/
+最佳阅读地址：http://notfound9.github.io/interviewGuide/
 
- 作者博客地址：https://juejin.im/user/5b370a42e51d4558ce5eb969
+Github地址：https://github.com/NotFound9/interviewGuide
 
-## 为什么要做这个开源项目？
+作者博客地址：https://juejin.im/user/5b370a42e51d4558ce5eb969
 
-我就是个普通的程序员，只是喜欢在空闲时看一些技术书籍，但是发现看完后，即便每一章都写了读书笔记，看到一些相关的面试题时，自己还是一脸茫然，所以我认为学习一项技术分为三个阶段：
+为了方便技术交流，及便于大家领取《面试指北》的PDF版本，也建了一个技术交流群，欢迎大家扫码加入！（如果入群二维码过期了，也可以扫下面二维码，加我微信，我拉你进群）
 
-1.看过入门教程，会用API。
+<figure class="half">
 
-2.看过相关的技术书籍，了解一部分原理。
+<img src="http://notfound9.github.io/interviewGuide/static/49160c2basfdsf.jpeg" width="30%"/>
 
-3.能够对面试题进行分析，做出正确的解答，这样才能对技术有较为深入的理解，在工作中遇到复杂问题时，才能解决。
+<img src="http://notfound9.github.io/interviewGuide/static/image1.jpg" width="30%"/>
 
-所以我发起了这个项目，
-* 一方面是督促自己学习。
-* 一方面是将这些面试题整理后，写完解答后分享给大家，希望可以帮助到大家，也欢迎大家一起来完善这个项目，为开源做贡献。为了方便交流，也建了一个技术交流群，欢迎大家扫码加入！会分享一些我自己在看的一些技术资料给大家！同时也希望大家给这个开源项目点一个Star，谢谢大家了!
-
-<img src="http://notfound9.github.io/interviewGuide/static/49160c2basfdsf.jpeg" width="30%" padding-left= "20%" />
+</figure>
 
 ## 目录
 
@@ -91,7 +87,7 @@
     - [3.客户端是怎么接入哨兵系统的？](docs/RedisUserful.md#客户端是怎么接入哨兵系统的？)
     - [4.Redis哨兵系统是怎么实现自动故障转移的？](docs/RedisUserful.md#Redis哨兵系统是怎么实现自动故障转移的？)
 * MySQL
-  - [MySQL相关的面试题总结](docs/MySQLNote.md)
+  - [面试题总结](docs/MySQLNote.md)
     - [1.一条MySQL更新语句的执行过程是什么样的？](docs/MySQLNote.md#一条MySQL更新语句的执行过程是什么样的？)
     - [2.脏页是什么？](docs/MySQLNote.md#脏页是什么？)
     - [3.Checkpoint是什么？](docs/MySQLNote.md#Checkpoint是什么？)
@@ -120,9 +116,9 @@
     - [26.查询数量SELECT Count(*)怎么优化？](docs/MySQLNote.md#怎么优化数量查询？)
     - [27.如何优化MySQL慢查询？](docs/MySQLNote.md#如何优化MySQL慢查询？) 
     - [28.MySQL的join的实现是怎么样的？](docs/MySQLNote.md#MySQL的join的实现是怎么样的？)
-  - [MySQL慢查询优化](docs/MySQLWork.md) 
+  - [慢查询优化实践](docs/MySQLWork.md) 
 * JVM
-  - [JVM相关的面试题总结](docs/JavaJVM.md)
+  - [面试题总结](docs/JavaJVM.md)
     - [1.Java内存区域怎么划分的？](docs/JavaJVM.md#Java内存区域怎么划分的？)
     - [2.Java中对象的创建过程是怎么样的？](docs/JavaJVM.md#Java中对象的创建过程是怎么样的？)
     - [3.Java对象的内存布局是怎么样的？](docs/JavaJVM.md#Java对象的内存布局是怎么样的？)
@@ -146,17 +142,30 @@
   - [《深入理解Java虚拟机-第三版》读书笔记](docs/JVMBook.md)  
 - [好书推荐](docs/bookRecommend.md)
 
-### 如何为这个开源项目做贡献？
+## 为什么要做这个开源项目？
+
+我就是个普通的程序员，只是喜欢在空闲时看一些技术书籍，但是发现看完后，即便每一章都写了读书笔记，看到一些相关的面试题时，自己还是一脸茫然，所以我认为学习一项技术分为三个阶段：
+
+1.看过入门教程，会用API。
+
+2.看过相关的技术书籍，了解一部分原理。
+
+3.能够对面试题进行分析，做出正确的解答，这样才能对技术有较为深入的理解，在工作中遇到复杂问题时，才能解决。
+
+所以我发起了这个项目，
+* 一方面是督促自己学习。
+* 一方面是将这些面试题整理后，写完解答后分享给大家，希望可以帮助到大家，也欢迎大家一起来完善这个项目，为开源做贡献。
+
+
+## 如何为这个开源项目做贡献？
 
 如果你想一起参与这个项目，可以提Pull Request，可以扫上面的入群二维码进群，如果入群二维码失效了，也可以扫我的微信，我们一起聊聊！
 
-### 关于我
+## 关于我
 
-我平时比较喜欢看书，写技术文章，也比较喜欢讨论技术。这是我的[掘金主页](https://juejin.im/user/5b370a42e51d4558ce5eb969)，希望大家可以关注一下，谢谢了！大家如果有事需要联系我，或者想进技术群，一起讨论技术，也可以扫码加我的微信，谢谢了！
+我平时比较喜欢看书，写技术文章，也比较喜欢讨论技术。这是我的[掘金主页](https://juejin.im/user/5b370a42e51d4558ce5eb969)，希望大家可以关注一下，谢谢了！大家如果有事需要联系我，或者想进技术群，一起讨论技术，也可以扫码加我的[微信](#《面试指北》)，谢谢了！
 
-<img src="http://notfound9.github.io/interviewGuide/static/image1.jpg" width="30%" padding-left= "20%" />
-
-### 关于转载
+## 关于转载
 
 如果你需要转载本仓库的一些文章到自己的博客的话，记得注明原文地址就可以了。
 
