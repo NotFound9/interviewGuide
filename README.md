@@ -1,4 +1,4 @@
-#《面试指北》
+# 《面试指北》
 
 最佳阅读地址：http://notfound9.github.io/interviewGuide/
 
@@ -6,7 +6,7 @@ Github地址：https://github.com/NotFound9/interviewGuide
 
 作者博客地址：https://juejin.im/user/5b370a42e51d4558ce5eb969
 
-为了方便技术交流，及便于大家领取《面试指北》的PDF版本，也建了一个技术交流群，欢迎大家扫码加入！（如果入群二维码过期了，也可以扫下面二维码，加我微信，我拉你进群）
+为了方便技术交流，及便于大家领取《面试指北》的PDF版本，也建了一个技术交流群，欢迎大家扫码加入！（如果入群二维码过期了，也可以扫描[主页中我的微信二维码](http://notfound9.github.io/interviewGuide/#/)，加我微信，我拉你进群）
 
 <figure class="half">
 
@@ -163,7 +163,7 @@ Github地址：https://github.com/NotFound9/interviewGuide
 
 ## 关于我
 
-我平时比较喜欢看书，写技术文章，也比较喜欢讨论技术。这是我的[掘金主页](https://juejin.im/user/5b370a42e51d4558ce5eb969)，希望大家可以关注一下，谢谢了！大家如果有事需要联系我，或者想进技术群，一起讨论技术，也可以扫码加我的[微信](#《面试指北》)，谢谢了！
+我平时比较喜欢看书，写技术文章，也比较喜欢讨论技术。这是我的[掘金主页](https://juejin.im/user/5b370a42e51d4558ce5eb969)，希望大家可以关注一下，谢谢了！大家如果有事需要联系我，或者想进技术群，一起讨论技术，也可以扫描[主页中我的微信二维码](http://notfound9.github.io/interviewGuide/#/)加我，谢谢了！
 
 ## 关于转载
 
