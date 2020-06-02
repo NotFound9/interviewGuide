@@ -22,7 +22,8 @@ Github项目主页：https://github.com/NotFound9/interviewGuide
 
 - [首页](README.md)
 - [大厂面试系列](docs/BATInterview.md)
-  -[【大厂面试01期】高并发场景下，如何保证缓存与数据库一致性？](docs/BATInterview.md#【大厂面试01期】高并发场景下，如何保证缓存与数据库一致性？)
+  -[【大厂面试01期】高并发场景下，如何保证缓存与数据库一致性？](https://mp.weixin.qq.com/s/hwMpAVZ1_p8gLfPAzA8X9w)
+  -[【大厂面试02期】Redis过期key是怎么样清理的？](https://mp.weixin.qq.com/s/J_nOPKS17Uax2zGrZsE8ZA)
 * Java
   - [基础](docs/JavaBasic.md)
     - [1.Java中的多态是什么？](docs/JavaBasic.md#Java中的多态是什么？)
@@ -71,8 +72,9 @@ Github项目主页：https://github.com/NotFound9/interviewGuide
     - [6.同步与异步的区别是什么？](docs/RedisBasic.md#同步与异步的区别是什么？)
     - [7.阻塞与非阻塞的区别是什么？](docs/RedisBasic.md#阻塞与非阻塞的区别是什么？)
     - [8.如何解决Redis缓存穿透问题？](docs/RedisBasic.md#如何解决Redis缓存穿透问题？)
-    - [9.如何解决Redis缓存雪崩问题？](docs/RedisBasic.md#如何解决Redis缓存雪崩问题？)
-    - [10.如何解决缓存与数据库的数据一致性问题？](docs/RedisBasic.md#如何解决缓存与数据库的数据一致性问题？)
+    - [9.如何解决Redis缓存击穿问题？](docs/RedisBasic.md#如何解决Redis缓存击穿问题？)
+    - [10.如何解决Redis缓存雪崩问题？](docs/RedisBasic.md#如何解决Redis缓存雪崩问题？)
+    - [11.如何解决缓存与数据库的数据一致性问题？](docs/RedisBasic.md#如何解决缓存与数据库的数据一致性问题？)
   - [数据结构](docs/RedisDataStruct.md)
     - [1.Redis常见的数据结构有哪些？](docs/RedisDataStruct.md#Redis常见的数据结构有哪些？)
     - [2.谈一谈你对Redis中简单动态字符串的理解？](docs/RedisDataStruct.md#谈一谈你对Redis中简单动态字符串的理解？)
