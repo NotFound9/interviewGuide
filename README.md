@@ -6,7 +6,7 @@ Github项目主页：https://github.com/NotFound9/interviewGuide
 
 作者博客地址：https://juejin.im/user/5b370a42e51d4558ce5eb969
 
-关注我的公众号"大厂面试"，可以领取《大厂面试指北》的PDF版本，为了方便技术交流，也建了一个技术交流群，欢迎大家扫码加入！（如果入群二维码过期了，也可以扫描[主页中我的微信二维码](http://notfound9.github.io/interviewGuide/#/)，加我微信，我拉你进群）
+关注我的公众号"大厂面试"，可以领取《大厂面试指北》的PDF版本，为了方便技术交流，也建了一个技术交流群，欢迎大家扫码加入！（如果下面的图挂了，是你所在的网络访问不了Github域名下的图片，可以去[最佳阅读地址里面看图](http://notfound9.github.io/interviewGuide/#/)，或者是去[gitee的项目主页](https://gitee.com/notfound9/interviewGuide)里面看，谢谢了）
 
 ![](http://notfound9.github.io/interviewGuide/static/wdsfsdfsmaster.png)
 
