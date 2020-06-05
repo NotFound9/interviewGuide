@@ -24,6 +24,8 @@ Github项目主页：https://github.com/NotFound9/interviewGuide
 - [大厂面试系列](docs/BATInterview.md)
   -[【大厂面试01期】高并发场景下，如何保证缓存与数据库一致性？](https://mp.weixin.qq.com/s/hwMpAVZ1_p8gLfPAzA8X9w)
   -[【大厂面试02期】Redis过期key是怎么样清理的？](https://mp.weixin.qq.com/s/J_nOPKS17Uax2zGrZsE8ZA)
+  - [【大厂面试03期】MySQL是怎么解决幻读问题的？](https://mp.weixin.qq.com/s/8D6EmZM3m6RiSk0-N5YCww)
+  - [【大厂面试04期】讲讲一条MySQL更新语句是怎么执行的？](https://mp.weixin.qq.com/s/pNe1vdTT24oEoJS_zs-5jQ)
 * Java
   - [基础](docs/JavaBasic.md)
     - [1.Java中的多态是什么？](docs/JavaBasic.md#Java中的多态是什么？)
