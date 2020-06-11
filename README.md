@@ -40,6 +40,8 @@ Github项目主页：https://github.com/NotFound9/interviewGuide
     - [8.Java中的访问控制符有哪些？](docs/JavaBasic.md#Java中的访问控制符有哪些？)
     - [9.Java的构造器有哪些特点？](docs/JavaBasic.md#Java的构造器有哪些特点？)
     - [10.Java中的内部类是怎么样的？](docs/JavaBasic.md#Java中的内部类是怎么样的？)
+    - [11.Java中的注解是什么？](docs/JavaBasic.md#Java中的注解是什么?)
+    - [12.为什么hashCode()和equal()方法要一起重写？](docs/JavaBasic.md#为什么hashCode()和equal()方法要一起重写？)
   * 容器
     - [ArrayList和LinkedList](docs/ArrayList.md)
       - [1.ArrayList与LinkedList的区别是什么？](docs/ArrayList.md#ArrayList与LinkedList的区别是什么？)
