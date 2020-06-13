@@ -22,6 +22,7 @@
 ### [【大厂面试04期】讲讲一条MySQL更新语句是怎么执行的？](https://mp.weixin.qq.com/s/pNe1vdTT24oEoJS_zs-5jQ)
 ### [【大厂面试05期】说一说你对MySQL中锁的理解？](https://mp.weixin.qq.com/s/pTpPE33X-iYULYt8DOPp2w)
 ### [【大厂面试06期】谈一谈你对Redis持久化的理解？](https://mp.weixin.qq.com/s/nff4fd5TnM-CMWb1hQIT9Q)
+### [【大厂面试07期】说一说你对synchronized锁的理解？](https://mp.weixin.qq.com/s/H8Cd2fj82qbdLZKBlo-6Dg)
 
 
 

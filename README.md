@@ -13,7 +13,6 @@ Github项目主页：https://github.com/NotFound9/interviewGuide
 <figure class="half">
 
 <img src="http://notfound9.github.io/interviewGuide/static/49160c2basfdsf.jpeg" width="30%"/>
-
 <img src="http://notfound9.github.io/interviewGuide/static/image1.jpg" width="30%"/>
 
 </figure>
@@ -28,6 +27,7 @@ Github项目主页：https://github.com/NotFound9/interviewGuide
   - [【大厂面试04期】讲讲一条MySQL更新语句是怎么执行的？](https://mp.weixin.qq.com/s/pNe1vdTT24oEoJS_zs-5jQ)
   - [【大厂面试05期】说一说你对MySQL中锁的理解？](https://mp.weixin.qq.com/s/pTpPE33X-iYULYt8DOPp2w)
   - [【大厂面试06期】谈一谈你对Redis持久化的理解？](https://mp.weixin.qq.com/s/nff4fd5TnM-CMWb1hQIT9Q)
+  - [【大厂面试07期】说一说你对synchronized锁的理解？](https://mp.weixin.qq.com/s/H8Cd2fj82qbdLZKBlo-6Dg)
 * Java
   - [基础](docs/JavaBasic.md)
     - [1.Java中的多态是什么？](docs/JavaBasic.md#Java中的多态是什么？)
