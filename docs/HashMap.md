@@ -3,6 +3,7 @@
 下面是主要是自己看了很多Java容器类相关的博客，以及很多面经中涉及到的Java容器相关的面试题后，自己全部手写的解答，也花了一些流程图，之后会继续更新这一部分。
 
 #### [1.HashMap添加一个键值对的过程是怎么样的？](#HashMap添加一个键值对的过程是怎么样的？)
+
 #### [2.ConcurrentHashMap添加一个键值对的过程是怎么样的？](#ConcurrentHashMap添加一个键值对的过程是怎么样的？)
 #### [3.HashMap与HashTable，ConcurrentHashMap的区别是什么？](#HashMap与HashTable，ConcurrentHashMap的区别是什么？)
 #### [4.HashMap扩容后是否需要rehash？](#HashMap扩容后是否需要rehash？)
@@ -305,6 +306,7 @@ ConcurrentHashMap底层数据结构跟HashMap一致，底层数据结构是一�
 #### 2.线程安全
 
 ##### HashMap 非线程安全
+
 HashMap是非线程安全的。（例如多个线程插入多个键值对，如果两个键值对的key哈希冲突，可能会使得两个线程在操作同一个链表中的节点，导致一个键值对的value被覆盖）
 
 ##### HashTable 线程安全
