@@ -23,7 +23,7 @@
 ### [【大厂面试05期】说一说你对MySQL中锁的理解？](https://mp.weixin.qq.com/s/pTpPE33X-iYULYt8DOPp2w)
 ### [【大厂面试06期】谈一谈你对Redis持久化的理解？](https://mp.weixin.qq.com/s/nff4fd5TnM-CMWb1hQIT9Q)
 ### [【大厂面试07期】说一说你对synchronized锁的理解？](https://mp.weixin.qq.com/s/H8Cd2fj82qbdLZKBlo-6Dg)
-
+### [【大厂面试08期】谈一谈你对HashMap的理解？](https://mp.weixin.qq.com/s/b4f5NIPl9uVLkRg_UpWSJQ)
 
 
 
