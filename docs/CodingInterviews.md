@@ -156,6 +156,13 @@
 
 输入一个链表，按链表值从尾到头的顺序返回一个ArrayList。
 
+总结：
+
+首先通过开始的判断，来排除链表为空的情况，直接返回空数组，链表不为空，取下一个节点，判断下一个节点是否为空，
+
+- 不为空，那么递归调用printListFromTailToHead方法来获取后面的节点反序生成的ArrayList，然后添加当前的节点的值，然后返回arrayList。
+- 为空，那么说明当前节点是链表尾部节点，直接创建一个ArrayList，然后添加当前节点的值，然后返回arrayList。
+
 ```java
 ArrayList<Integer> printListFromTailToHead(ListNode listNode) {
     if(listNode == null) { return new ArrayList<Integer>(); }
@@ -171,24 +178,30 @@ ArrayList<Integer> printListFromTailToHead(ListNode listNode) {
     return arrayList;
 }
 ```
+或者是这样写，其实原理就是先递归遍历，然后再打印，这样链表打印的顺序就是逆序的了。
+```java
+ArrayList<Integer> list = new ArrayList<Integer>();
+public ArrayList<Integer> printListFromTailToHead(ListNode listNode) {
+		if(listNode == null ){
+				return list;
+		}
+		printListFromTailToHead(listNode.next);
+		list.add(listNode.val);
+		return list;
+}
+```
 
-总结：
 
-首先通过开始的判断，来排除链表为空的情况，直接返回空数组，链表不为空，取下一个节点，判断下一个节点是否为空，
-
-* 不为空，那么递归调用printListFromTailToHead方法来获取后面的节点反序生成的ArrayList，然后添加当前的节点的值，然后返回arrayList。
-
-* 为空，那么说明当前节点是链表尾部节点，直接创建一个ArrayList，然后添加当前节点的值，然后返回arrayList。
 
 ## 题006重建二叉树
 
 输入某二叉树的前序遍历和中序遍历的结果，请重建出该二叉树。假设输入的前序遍历和中序遍历的结果中都不含重复的数字。例如输入前序遍历序列{1,2,4,7,3,5,6,8}和中序遍历序列{4,7,2,1,5,3,8,6}，则重建二叉树并返回。
 
-![image-20200129220514693](../static/image-20200129220514693.png)
+![image-20200624204953477](../static/image-20200624204953477.png)
 
 前序遍历结果和中序遍历结果：
 
-![image-20200129220547195](../static/image-20200129220547195.png)
+![image-20200624204944577](../static/image-20200624204944577.png)
 
 前序遍历结果分布是二叉树根节点，左子树，右子树。
 
@@ -287,7 +300,7 @@ int minNumberInRotateArray(int[] array) {
 
 思路：旋转数组其实就是一个递增的数组，整体移动了一下元素，类似3，4，5，1，2这种。要查找最小的元素，可以遍历一遍数组，复杂度为O(N)，这样就太暴力了，因为这个旋转数组其实是有规律的，可以根据左边界，右边界，中间值来判断最小值的位置
 
-* 左边界<=中间值 说明左边界到中间值这一段是递增的，也就是最小值不处于这一段。这样可以排除掉这一段，然后去另一段里面查找。
+* 左边界<=中间值 说明左边界到中间值这一段是递增的，也就是最小值不处于这一段。这样可以排除掉这一段，然后去另一段里面遍历查找。
 
 * 中间值<=右边界 说明中间值到右边界这一段是递增的，也就是最小值不处于这一段。这样可以排除掉这一段，然后去另一段里面查找。
 
@@ -322,11 +335,40 @@ int Fibonacci(int n) {
 
 输入一个整数，输出该数二进制表示中1的个数。其中负数用补码表示。
 
-第一种解法就是每次拿二进制数最低位与1取&结果，如果结果为1，代表最低位为1，count+1，然后将二进制数>>1位，让倒数第二位成为最低位然后比较。
+第一种解法就是每次拿二进制数最低位与1取&结果，如果结果为1，代表最低位为1，count+1，然后将二进制数>>1位，让倒数第二位成为最低位然后比较。（负数右移动，左边的空位是会补1的，所以如果是负数A右移动，会先变成变成A/2，最终变为-1，-1的二进制数继续右移还是-1）
 
-这种解法的问题在于负数的最高位是1，向右移动一位后，为了保证移位后还是一个负数，最高位还是设置为1，这样就会陷入死循环。
+在计算机中，数值都是使用补码进行表示的，可以将符号位和数值域统一处理；同时，加法和减法也可以统一处理。正数的补码就是原码，负数的补码就是绝对值取原码，取反得到反码，然后再+1
+
+```
+-1的补码是
+1、先取1的原码：00000000 00000000 00000000 00000001
+2、得反码： 11111111 11111111 11111111 11111110
+3、得补码： 11111111 11111111 11111111 11111111
+
+-2的补码是
+1、先取1的原码：00000000 00000000 00000000 00000010
+2、得反码： 11111111 11111111 11111111 11111101
+3、得补码： 11111111 11111111 11111111 11111110
+```
+
+这种解法的问题在于负数的最高位是1，向右移动一位后，为了保证移位后还是一个负数，最高位还是设置为1，这样就会陷入死循环（-1右移动还-1）。
 
 第二种解法就是不拿最低位去进行比较了，而是定义一个变量flag=1，拿二进制数与flag进行比较，判断最低位是否为1，为1那么count+1，然后将flag<<1位，拿二进制数与flag进行比较，判断倒数第二位是否为1，然后一直把每一位都判断完，但是在Java中，int是4字节，32位，这样需要判断32次。
+
+```java
+public int NumberOf1(int n) {
+		int count = 0;
+		int flag = 1;
+		int times =0;
+		while(times<32) {
+        int value = flag&n;
+				if(value != 0) {count++;}
+				times++;
+				flag = flag<<1;
+		}
+    return count;
+}
+```
 
 第三种解法可以做到二进制数有多少个1就判断多少次。具体原理是
 
@@ -336,7 +378,7 @@ n&(n-1)的结果其实是将n的最右边的1去掉，所以多次执行n&(n-1)�
 public int NumberOf1(int n) {
         int count = 0;
         while (n != 0) {
-            ++count;
+            count++;
             n = n & (n-1);
         }
         return count;
@@ -384,9 +426,7 @@ double Power(double base ,int exponent) {
 
 如果可以使用额外的内存空间，可以对数组遍历两遍，一遍将奇数取出，存放在额外的数组中去，一遍把剩下的偶数存放到额外的数组中去。
 
-如果不能使用额外的内存空间，就是查找奇数，然后与前面的元素替换，一直到替换到最后一个奇数的后面，有点像是插入排序
-
-(插入排序就是向一个已经排好序的序列中插入元素。过程是遍历数组，对每个元素A与前面的元素比较，如果前面的元素大于A，就会将前面的元素后移，直到找到一个小于A的元素，然后将A放在这个元素后面。)。
+如果不能使用额外的内存空间，就是查找奇数，然后与前面的元素互换，一直到替换到最后一个奇数的后面，有点像是冒泡排序
 
 冒泡排序是其实是交换，从头开始，依次判断两个相邻的元素，将更大的元素向右交换，遍历一次后可以将当前序列最大的元素交换到最后面去，下次遍历就不用管最后一个元素。
 
@@ -477,6 +517,33 @@ public static ListNode ReverseList(ListNode head) {
     return lastNode;
 }
 ```
+
+这种解法好理解一点，就是使用first，second，three保存三个连续的节点，依次后移动
+
+```java
+public ListNode findLastNode(ListNode node) {
+		if(node==null ||node.next ==null) {
+				return node;
+		}
+		//至少有两个节点
+		ListNode first = node;
+		ListNode second = node.next;
+		ListNode three = second.next;
+		first.next = null;
+		while(second!=null) {
+				second.next = first;
+				first = second;
+				second = three;
+				if (three == null){break};
+				else {
+					three = three.next;
+				}
+		}
+		return first;
+}
+```
+
+
 
 ## 题015 合并链表
 

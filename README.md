@@ -6,7 +6,13 @@ Github项目主页：https://github.com/NotFound9/interviewGuide
 
 作者博客地址：https://juejin.im/user/5b370a42e51d4558ce5eb969
 
-关注我的公众号"大厂面试"，可以领取《大厂面试指北》的PDF版本，为了方便技术交流，也建了一个技术交流群，欢迎大家扫码加入！（如果下面的图挂了，是你所在的网络访问不了Github主页下的图片，可以去[最佳阅读地址里面看图](http://notfound9.github.io/interviewGuide/#/)，或者是去[gitee的项目主页](https://gitee.com/notfound9/interviewGuide)里面看，谢谢了）
+拜托大家三件事：
+
+1.为了方便技术交流，我建了一个技术氛围浓厚的学习群，欢迎大家扫描下面的入群二维码加入！进群还可以领取《大厂面试指北》的PDF版本（如果下面的图挂了，是你所在的网络访问不了Github主页下的图片，可以去[最佳阅读地址里面看图](http://notfound9.github.io/interviewGuide/#/)，或者是去[gitee的项目主页](https://gitee.com/notfound9/interviewGuide)里面看，谢谢了）
+
+2.原创不易，麻烦大家帮我关注一下我做的原创公众号"大厂面试"，谢谢了！
+
+3.另外看到技术群里面有很多老哥都是单身，平时认识女生也比较少，所以我也建了一个程序员相亲群，在"大厂面试"公众号里面点击菜单栏里面的"进各种群"-"交友群"，可以获取进群二维码，想要认识更多小姐姐的朋友可以进一下！
 
 ![](http://notfound9.github.io/interviewGuide/static/wdsfsdfsmaster.png)
 
