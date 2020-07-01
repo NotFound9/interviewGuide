@@ -18,7 +18,7 @@
 int[] sorted(int[] array) {
   if (array == null || array.length ==0 || array.length ==1) {return array;}
   
-  for(int i = array.length-1;i>=1;i--) {
+  for(int i = array.length-1;i>=1;i--) {//i代表遍历的最大范围
     int sortedFlag = 0;
     for(int j = 1;j<=i;j++) {
       if(array[j]<array[j-1]) {//进行交换
@@ -245,5 +245,11 @@ public ListNode findLastNode(ListNode node) {
 		return first;
 }
 
+```
+
+```
+public ArrayList Premutation(String string) {
+			
+}
 ```
 

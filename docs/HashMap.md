@@ -7,6 +7,7 @@
 #### [2.ConcurrentHashMap添加一个键值对的过程是怎么样的？](#ConcurrentHashMap添加一个键值对的过程是怎么样的？)
 #### [3.HashMap与HashTable，ConcurrentHashMap的区别是什么？](#HashMap与HashTable，ConcurrentHashMap的区别是什么？)
 #### [4.HashMap扩容后是否需要rehash？](#HashMap扩容后是否需要rehash？)
+
 #### [5.HashMap扩容是怎样扩容的，为什么都是2的N次幂的大小？](#HashMap扩容是怎样扩容的，为什么都是2的N次幂的大小？)
 #### [6.ConcurrentHashMap是怎么记录元素个数size的？](#ConcurrentHashMap是怎么记录元素个数size的？)
 #### [7.为什么ConcurrentHashMap，HashTable不支持key，value为null？](#为什么ConcurrentHashMap，HashTable不支持key，value为null？)
@@ -294,7 +295,7 @@ final V putVal(K key, V value, boolean onlyIfAbsent) {
 ```
 
 #### HashMap=数组+链表+红黑树
-HashMap的底层数据结构是一个数组+链表+红黑树，数组的每个元素存储是一个链表的头结点，链表中存储了一组哈希值冲突的键值对，通过链地址法来解决哈希冲突的。为了避免链表长度过长，影响查找元素的效率，当链表的长度>8时，会将链表转换为红黑树，链表的长度<6时，将红黑树转换为链表。之所以临界点为8是因为红黑树的查找时间复杂度为logN，链表的平均时间查找复杂度为N/2，当N为8时，logN为3，是小于N/2的，正好可以通过转换为红黑树减少查找的时间复杂度。
+HashMap的底层数据结构是一个数组+链表+红黑树，数组的每个元素存储是一个链表的头结点，链表中存储了一组哈希值冲突的键值对，通过链地址法来解决哈希冲突的。为了避免链表长度过长，影响查找元素的效率，当链表的长度>8时，会将链表转换为红黑树，链表的长度<6时，将红黑树转换为链表(但是红黑树转换为链表的时机不是在删除链表时，而是在扩容时，发现红黑树分解后的两个链表<6，就按链表处理，否则就建立两个小的红黑树，设置到扩容后的位置)。之所以临界点为8是因为红黑树的查找时间复杂度为logN，链表的平均时间查找复杂度为N/2，当N为8时，logN为3，是小于N/2的，正好可以通过转换为红黑树减少查找的时间复杂度。
 
 #### Hashtable=数组+链表
 Hashtable底层数据结构跟HashMap一致，底层数据结构是一个数组+链表，也是通过链地址法来解决冲突，只是链表过长时，不会转换为红黑树来减少查找时的时间复杂度。Hashtable属于历史遗留类，实际开发中很少使用。
@@ -491,7 +492,7 @@ table = newTab;
 
 这一步就很有意思，也是HashMap是非线程安全的表现之一，因为此时newTab还是一个空数组，如果有其他线程访问HashMap，根据key去newTab中找键值对，会返回null。实际上可能key是有对应的键值对的，只不过键值对都保存在旧table中，还没有迁移过来。
 
-（与之相反，HashTable在解决扩容时其他线程访问的问题，是通过对大部分方法使用sychronized关键字修饰，也就是某个线程在执行扩容方法时，会对HashTable对象加锁，其他线程无法访问HashTable。ConcurrentHashMap在解决扩容时其他线程访问的问题，是通过设置ForwardingNode标识节点来解决的，扩容时，某个线程对数组中某个下标下所有Hash冲突的元素进行迁移时，那么会将数组下标的数组元素设置为一个标识节点ForwardingNode，之后其他线程在访问时，如果发现key的hash值映射的数组下标对应是一个标识节点ForwardingNode（ForwardingNode继承于普通Node，区别字啊呀这个节点的hash值会设置为-1，并且会多一个指向扩容过程中新tab的指针nextTable），那么会根据ForwardingNode中的nextTable变量，去新的tab中查找元素。（如果是添加新的键值对时发现是ForwardingNode，那么辅助扩容或阻塞等待，扩容完成后去新数组中更新或插入元素）
+（与之相反，HashTable在解决扩容时其他线程访问的问题，是通过对大部分方法使用sychronized关键字修饰，也就是某个线程在执行扩容方法时，会对HashTable对象加锁，其他线程无法访问HashTable。ConcurrentHashMap在解决扩容时其他线程访问的问题，是通过设置ForwardingNode标识节点来解决的，扩容时，某个线程对数组中某个下标下所有Hash冲突的元素进行迁移时，那么会将数组下标的数组元素设置为一个标识节点ForwardingNode，之后其他线程在访问时，如果发现key的hash值映射的数组下标对应是一个标识节点ForwardingNode（ForwardingNode继承于普通Node，区别字啊呀这个节点的hash值会设置为-1，并且会多一个指向扩容过程中新tab的指针nextTable），那么会根据ForwardingNode中的nextTable变量，去新的tab中查找元素。（如果是添加新的键值对时发现是ForwardingNode，当前线程会进行辅助扩容或阻塞等待，扩容完成后去新数组中更新或插入元素）
 
 #### 迁移元素
 

@@ -53,6 +53,52 @@
 
 在0.11之后增加了对幂等的支持，就是在建立连接时，给每个生产者初始化时生成一个pid，然后这个生产者发的消息都会带有一个pid，sequenceNumber，每个分区也会存这个生产者当前最大的sequencenumber，如果这个消息的sequenceNumber比缓存的sequenceNumber大才处理。但是如果生产者挂掉后，会重新生成生产者id也会出现有数据重复的现象；所以幂等性解决在单次会话的单个分区的数据重复，但是在分区间或者跨会话的是数据重复的是无法解决的。所以可以消费者去做去重。
 
+#### 幂等性发送
+
+上文提到，实现`Exactly Once`的一种方法是让下游系统具有幂等处理特性，而在Kafka Stream中，Kafka Producer本身就是“下游”系统，因此如果能让Producer具有幂等处理特性，那就可以让Kafka Stream在一定程度上支持`Exactly once`语义。
+
+为了实现Producer的幂等语义，Kafka引入了`Producer ID`（即`PID`）和`Sequence Number`。每个新的Producer在初始化的时候会被分配一个唯一的PID，该PID对用户完全透明而不会暴露给用户。
+
+对于每个PID，该Producer发送数据的每个`<Topic, Partition>`都对应一个从0开始单调递增的`Sequence Number`。
+
+类似地，Broker端也会为每个`<PID, Topic, Partition>`维护一个序号，并且每次Commit一条消息时将其对应序号递增。对于接收的每条消息，如果其序号比Broker维护的序号（即最后一次Commit的消息的序号）大一，则Broker会接受它，否则将其丢弃：
+
+- 如果消息序号比Broker维护的序号大一以上，说明中间有数据尚未写入，也即乱序，此时Broker拒绝该消息，Producer抛出`InvalidSequenceNumber`
+- 如果消息序号小于等于Broker维护的序号，说明该消息已被保存，即为重复消息，Broker直接丢弃该消息，Producer抛出`DuplicateSequenceNumber`
+
+上述设计解决了0.11.0.0之前版本中的两个问题：
+
+- Broker保存消息后，发送ACK前宕机，Producer认为消息未发送成功并重试，造成数据重复
+- 前一条消息发送失败，后一条消息发送成功，前一条消息重试后成功，造成数据乱序
+
+#### 事务性保证
+
+上述幂等设计只能保证单个Producer对于同一个`<Topic, Partition>`的`Exactly Once`语义。
+
+另外，它并不能保证写操作的原子性——即多个写操作，要么全部被Commit要么全部不被Commit。
+
+更不能保证多个读写操作的的原子性。尤其对于Kafka Stream应用而言，典型的操作即是从某个Topic消费数据，经过一系列转换后写回另一个Topic，保证从源Topic的读取与向目标Topic的写入的原子性有助于从故障中恢复。
+
+事务保证可使得应用程序将生产数据和消费数据当作一个原子单元来处理，要么全部成功，要么全部失败，即使该生产或消费跨多个`<Topic, Partition>`。
+
+另外，有状态的应用也可以保证重启后从断点处继续处理，也即事务恢复。
+
+为了实现这种效果，应用程序必须提供一个稳定的（重启后不变）唯一的ID，也即`Transaction ID`。`Transactin ID`与`PID`可能一一对应。区别在于`Transaction ID`由用户提供，而`PID`是内部的实现对用户透明。
+
+另外，为了保证新的Producer启动后，旧的具有相同`Transaction ID`的Producer即失效，每次Producer通过`Transaction ID`拿到PID的同时，还会获取一个单调递增的epoch。由于旧的Producer的epoch比新Producer的epoch小，Kafka可以很容易识别出该Producer是老的Producer并拒绝其请求。
+
+有了`Transaction ID`后，Kafka可保证：
+
+- 跨Session的数据幂等发送。当具有相同`Transaction ID`的新的Producer实例被创建且工作时，旧的且拥有相同`Transaction ID`的Producer将不再工作。
+- 跨Session的事务恢复。如果某个应用实例宕机，新的实例可以保证任何未完成的旧的事务要么Commit要么Abort，使得新实例从一个正常状态开始工作。
+
+需要注意的是，上述的事务保证是从Producer的角度去考虑的。从Consumer的角度来看，该保证会相对弱一些。尤其是不能保证所有被某事务Commit过的所有消息都被一起消费，因为：
+
+- 对于压缩的Topic而言，同一事务的某些消息可能被其它版本覆盖
+- 事务包含的消息可能分布在多个Segment中（即使在同一个Partition内），当老的Segment被删除时，该事务的部分数据可能会丢失
+- Consumer在一个事务内可能通过seek方法访问任意Offset的消息，从而可能丢失部分消息
+- Consumer可能并不需要消费某一事务内的所有Partition，因此它将永远不会读取组成该事务的所有消息
+
 ### 消息队列的使用场景有哪些？
 
 1. **异步通信**：有些业务不想也不需要立即处理消息。消息队列提供了异步处理机制，允许用户把一个消息放入队列，但并不立即处理它。想向队列中放入多少消息就放多少，然后在需要的时候再去处理它们。

@@ -798,14 +798,6 @@ public int min() {
 
 其实就是二叉树的宽度优先遍历，一般就是使用一个队列，一开始将根节点加入队列，每次从队列取出最前面的节点，将节点打印，并将左右节点加入到队列，从队列中取出头结点，然后重复这个操作。
 
-深度优先遍历一般是使用栈来实现，一开始将
-
-1.根节点加入栈，
-
-2.将栈顶元素出栈，打印这个节点，然后将它的右子节点入栈，将其左节点入栈
-
-3.重复2操作，知道栈中元素为空。
-
 ```java
 public ArrayList<Integer> PrintFromTopToBottom(TreeNode root) {
         ArrayList<Integer> arrayList = new ArrayList<Integer>();
@@ -824,9 +816,32 @@ public ArrayList<Integer> PrintFromTopToBottom(TreeNode root) {
 }
 ```
 
-
-
 也可以通过队列来实现，将根节点添加到队列中，然后对队列进行循环，每次从队列取出一个元素，添加到ArrayList中去，然后将左，右子节点添加到队列中去，然后继续循环，一直到队列中取不到元素。(Java中队列的实现Queue，add(),remove())
+
+##### 深度优先遍历
+
+一般是使用栈来实现，一开始将
+
+1.根节点加入栈，
+
+2.将栈顶元素出栈，打印这个节点，然后将它的右子节点入栈，将其左节点入栈
+
+3.重复2操作，一直到栈中元素为空。
+
+也可以使用递归实现，深度遍历递归实现
+
+```
+ArrayList<TreeNode> list = new ArrayList<TreeNode>();
+void deepTranverse(TreeNode node) {
+			if(node!=null) {
+					list.add(node);
+					deepTranverse(node.left);
+          deepTranverse(node.right);
+			}
+}
+```
+
+
 
 ## 题022 判断是否是二叉搜索树的后序遍历
 
@@ -869,8 +884,6 @@ public static boolean VerifySquenceOfBST(int[] sequence, int start, int end) {
     return VerifySquenceOfBST(sequence,start,rightChildIndex-1) && VerifySquenceOfBST(sequence,rightChildIndex, end-1);
 }
 ```
-
-
 
 ## 题023 二叉树中和为某一值的路径
 
@@ -972,23 +985,22 @@ public RandomListNode Clone(RandomListNode pHead)
 二叉搜索树的中序遍历的结果就是递增的序列，所以递归实现二叉搜索树的中序遍历
 
 ```java
-		TreeNode head = null;
-    TreeNode   lastNode = null;
+		TreeNode head = null;//主要记录双向链表头结点
+    TreeNode   lastNode = null;//主要记录中序遍历时，上一次遍历的节点
     public TreeNode Convert(TreeNode pRootOfTree) {
         if (pRootOfTree == null) {
             return null;
         }
         Convert(pRootOfTree.left);
-        if (head == null) {
+        if (head == null) {//这里相当于是把第一次执行Convert方法的元素设置为链表头结点，也就是中序遍历第一个位置的节点，也就最左边的叶子节点。
             head = pRootOfTree;
         }
-        if (lastNode == null) {
-            lastNode = pRootOfTree;
-        } else {
-            lastNode.right = pRootOfTree;
+        if (lastNode != null) {//中序遍历时，假设存在上一个遍历的节点，将上一个节点与这个节点进行关联
+						lastNode.right = pRootOfTree;
             pRootOfTree.left = lastNode;
-            lastNode = pRootOfTree;
-        }
+        } 
+      	//完成对当前节点的遍历，将当前设置为lastNode。
+        lastNode = pRootOfTree;
         Convert(pRootOfTree.right);
         return head;
     }
@@ -1014,7 +1026,7 @@ public void Permutation(ArrayList arrayList,  String str, int start,int end) {
     if (str == null || str.length() == 0|| start>end) {
         return;
     }
-    if (end - start == 0) {
+    if (end == start) {//当前只有一个元素
         arrayList.add(str);
         return;
     }
@@ -1024,13 +1036,56 @@ public void Permutation(ArrayList arrayList,  String str, int start,int end) {
         Character currentChar = stringBuffer.charAt(i);
         if (set.contains(currentChar)==false) {
             set.add(currentChar);
+            //元素交换
             Character temp = currentChar;
             stringBuffer.setCharAt(i,stringBuffer.charAt(start));
             stringBuffer.setCharAt(start,temp);
+          
+          //这种写法调用完毕后不用交换，因为传过去的string不会改变当前的stringBuffer
             Permutation(arrayList, stringBuffer.toString(), start +1, end);
+          
         }
     }
 }
+```
+
+
+
+```
+ public ArrayList<String> Permutation(String string) {
+        char[] charArray = string.toCharArray();
+        ArrayList<String> list = new ArrayList<String>();
+        PermutationHelper(charArray,0,list);
+        Collections.sort(list);
+
+        return list;
+    }
+
+    public void PermutationHelper(char[] charArray,int start,ArrayList<String> list) {
+        if (charArray == null || charArray.length == 0) {
+            return;
+        }
+        if(start == charArray.length-1) {//最后一个元素
+            list.add(String.valueOf(charArray));
+            return;
+        }
+        HashSet<Character> set = new HashSet<Character>();
+        for(int i = start;i<charArray.length;i++) {
+            if(set.contains(charArray[i]) == false) {
+                set.add(charArray[i]);
+                //交换
+                char temp = charArray[i];
+                charArray[i] = charArray[start];
+                charArray[start] = temp;
+
+                PermutationHelper(charArray,start+1,list);
+
+                //交换
+                charArray[start] = charArray[i];
+                charArray[i] = temp;
+            }
+        }
+    }    
 ```
 
 ## 题027数组中出现的次数超过一半的数字
@@ -1038,6 +1093,8 @@ public void Permutation(ArrayList arrayList,  String str, int start,int end) {
 数组中有一个数字出现的次数超过数组长度的一半，请找出这个数字。例如输入一个长度为9的数组{1,2,3,2,2,2,5,4,2}。由于数字2在数组中出现了5次，超过数组长度的一半，因此输出 2 。如果不存在则输出 0 。
 
 就是一个数组，假设包含一个超过次数一半的元素，那么去除掉两个不相等的元素后，剩下的数组中，这个元素还是会出现次数超过一半。
+
+（原理就是每次排除两个不相等的元素，最后剩下的一个元素，或者两个元素一定是次数超过一半的这个数字。）
 
 ```java
 public int MoreThanHalfNum_Solution(int [] array) {
@@ -1059,18 +1116,15 @@ public int MoreThanHalfNum_Solution(int [] array) {
             times--;
         }
     }
-    if (times==0) {
-        return 0;
-    } else {
-        int statTimes = 0;
-        for (int i = 0; i < array.length; i++) {
-            if (array[i] == result) {
-                statTimes++;
-            }
-        }
-        if (statTimes>array.length/2) {
-            return result;
-        }
+    //下面就是判断这个数字是否满足条件
+    int statTimes = 0;
+    for (int i = 0; i < array.length; i++) {
+      if (array[i] == result) {
+        statTimes++;
+      }
+    }
+    if (statTimes>array.length/2) {
+      return result;
     }
     return 0;
 }
@@ -1078,7 +1132,7 @@ public int MoreThanHalfNum_Solution(int [] array) {
 
 ## 题028最小的k个数
 
-输入n个整数，找出其中最小的K个数。例如输入4,5,1,6,2,7,3,8这8个数字，则最小的4个数字是1,2,3,4,。
+输入n个整数，找出其中最小的K个数。例如输入4,5,1,6,2,7,3,8这8个数字，则最小的4个数字是1,2,3,4。
 
 其实就是插入排序，只不过只是对k个数进行插入排序
 
@@ -1086,20 +1140,20 @@ public int MoreThanHalfNum_Solution(int [] array) {
 public ArrayList<Integer> GetLeastNumbers_Solution(int [] input, int k) {
         ArrayList<Integer> arrayList = new ArrayList<Integer>();
         if(input==null || input.length==0 ||input.length<k || k == 0) {
-            return arrayList;
+            return null;
         }
         arrayList.add(input[0]);
         for (int i = 1; i < input.length; i++) {
             if (arrayList.size() < k) {//子数组个数没有达到K
                 arrayList.add(input[i]);
-            } else if (input[i] > arrayList.get(arrayList.size()-1)) {//子数组个数没有达到K，并且当前数比子数组最后一个数大
+            } else if (input[i] > arrayList.get(arrayList.size()-1)) {//子数组个数达到了K，并且当前数比子数组最后一个数大
                 continue;
             } else if (input[i] < arrayList.get(arrayList.size()-1)) {
                 arrayList.remove(arrayList.size()-1);
                 arrayList.add(input[i]);
             }
 
-            //将最后一个元素插入合适的位置
+            //将最后一个元素移动合适的位置
             for (int j = arrayList.size()-1; j > 0 ; j--) {
                 if (arrayList.get(j) < arrayList.get(j-1)) {
                     int temp = arrayList.get(j);
@@ -1175,7 +1229,7 @@ public int NumberOf1Between1AndN_Solution(int n) {
 
 就是把小的数排前面，这样排出来的数就是最小的，
 
-思路就是冒泡排序，将小数往后面挪动，只是判断数A与数B直接的大小，是以AB和BA的大小来决定的，所以对A和B进行拼接成，AB和BA，通过字符串比较，判断AB和BA的大小，AB>BA,说明A排起来会比较大，往后面挪。
+思路就是冒泡排序，将小数往后面挪动，只是判断数A与数B之间的大小，是以AB和BA的大小来决定的，所以对A和B进行拼接成，AB和BA，通过字符串比较，判断AB和BA的大小，AB>BA,说明A排起来会比较大，往后面挪。
 
 ```java
 public String PrintMinNumber(int [] numbers) {
@@ -1231,7 +1285,7 @@ public int GetUglyNumber_Solution(int index) {
     if (index == 0) return 0;
     int[] array = new int[index];
     array[0] = 1;//最小的丑数是1
-    int index2 =0 ,index3 = 0, index5 = 0;
+    int index2 =0 ,index3 = 0, index5 = 0;//分别代表上一次乘了2，3，5的index
     for (int i = 1; i< index;i++){
         int temp2 = array[index2]*2;
         int temp3 = array[index3]*3;
@@ -1260,14 +1314,14 @@ public int GetUglyNumber_Solution(int index) {
 
 在一个字符串(0<=字符串长度<=10000，全部由字母组成)中找到第一个只出现一次的字符,并返回它的位置, 如果没有则返回 -1（需要区分大小写）.
 
-因为java中的字符char类型是 1字节的，也就是8位，所以只有256种可能，所以可以使用一个数组来对字符出现的次数进行记录。第一遍扫描字符串，统计字符出现次数，第二遍扫码字符串，返回只出现一次的字符的下标。
+因为java中的字符char类型是 2字节的，也就是16位，所以只有256*256种可能，所以可以使用一个数组来对字符出现的次数进行记录。第一遍扫描字符串，统计字符出现次数，第二遍扫码字符串，返回只出现一次的字符的下标。
 
 ```java
  public int FirstNotRepeatingChar(String str) {
         if (str == null|| str.length() == 0) {
             return -1;
         }
-        int[] array = new int[256];
+        int[] array = new int[256*256];
         for (int i = 0; i < str.length(); i++) {
             char value = str.charAt(i);
             array[value]++;
@@ -1590,7 +1644,7 @@ public int IsBalanced_Solution_Depth(TreeNode root) {
 }
 ```
 
-## 题039 数组中只出现一次的数组
+## 题039 数组中只出现一次的数
 
 一个整型数组里除了两个数字之外，其他的数字都出现了两次。请写程序找出这两个只出现一次的数字。
 
@@ -1825,7 +1879,7 @@ n为1时，f(n,m)为0
 
 n>1时，
 
-f(n,m)=(f(n-1,m)+m%)n
+f(n,m)=(f(n-1,m)+m)%n
 
 ```
 public int LastRemaining_Solution(int n, int m) {
@@ -1858,12 +1912,27 @@ public int Sum_Solution(int n) {
 
 写一个函数，求两个整数之和，要求在函数体内不得使用+、-、*、/四则运算符号。
 
-
 就是A^B，A异或B的结果其实就是A，B二进制位中不相同的结果，也就是A+B，但是不进位的相加结果，A+B进位的结果等于(A&B)<<1,所以在循环中一直用A^B+A&B,一直到A&B等于0。
 
-```
-public int Add(int num1,int num2) {
 
+
+A+B = A^B + A&B<<1 
+
+如果A&B为0的话也就不需要进行进位了，此时就等于A+B = A^B
+
+```java
+public int Add(int num1,int num2) {
+	if(num2 == 0) {
+    return num1;
+  } 
+  return Add(num1^num2, (num1&num2)<<1);
+}
+```
+
+
+
+```java
+public int Add(int num1,int num2) {
     while (num2!=0) {
         int temp  = num1 ^ num2;
         int temp2 = (num1 & num2) << 1;
@@ -1924,7 +1993,7 @@ public static int StrToInt(String str) {
 
 解法一就是在遍历时将每个元素添加到hashSet，通过判断hashset中是否包含当前元素，来判断是否重复，由于这个长度为n数组中元素的取值范围是0-n-1，所以可以使用一个长度为n的数组array来代替hashSet记录元素是否出现，例如x出现了，将数组array[x]设置为1。
 
-解法二就是将当前数组作为标记数组，每次遍历到下标为i的元素时，将array[array[i]]与当前元素交换，并且将array[i]设置为-1，代表已经这个元素是重复元素。
+解法二就是将当前数组作为标记数组，每次遍历到下标为i的元素时，将array[array[i]]与当前元素交换，并且将array[array[i]]设置为-1，代表已经这个元素是重复元素，然后i- -，继续遍历交换后的这个元素。
 
 ```
 public boolean duplicate(int numbers[],int length,int [] duplication) {
@@ -2018,7 +2087,9 @@ public char FirstAppearingOnce()
 
 另一种解决方法是，假设存在环，环的长度为x，第一个指针先走x步，然后第二个指针从链表头结点出发，两个指针一起走，当第而个指针刚好走到环入口时，第一个指针正好在环中走了一圈，也在环的入口，此时的节点就是环的的入口节点，
 
-怎么得到环的长度呢，就是一个指针每次走2步，一个指针每次走一步，他们相遇时的节点肯定就是在环中的某个节点，然后这个节点在环中遍历一圈，回到原点，就可以得到环的长度。
+怎么得到环的长度呢，就是一个指针每次走2步，一个指针每次走一步，他们相遇时的节点肯定就是在环中的某个节点，然后这个节点在环中遍历一圈，回到原点，就可以得到环的长度count。
+
+两个指针从头出发，第一个指针先走count步，然后两个指针每次都只走一步，相遇的地方就是环的入口，
 
 ```
 public ListNode EntryNodeOfLoop(ListNode pHead)
@@ -2051,9 +2122,9 @@ public ListNode EntryNodeOfLoop(ListNode pHead)
         tempNode = tempNode.next;
         count++;
     }
-    //从链表头结点出发，第一个指针先走count步，
+    //从链表头结点出发，第一个指针先走count步，然后两个指针每次只走一步，相遇的地方就是环的入口，
     // 然后第一个指针和第二个指针一起走，当第二个指针刚好走了x步到环入口时，
-    // 第一个指针正好走了x+count步，在环中走了一圈，也在环的入口
+    // 第一个指针正好走了x+count步，在环中走了一圈，也在环的入口，
     quickNode = pHead;
     for (int i = 0; i < count; i++) {
         quickNode = quickNode.next;
@@ -2092,7 +2163,13 @@ public ListNode EntryNodeOfLoop1(ListNode pHead)
 
 ## 题055 删除链表中重复的节点
 
-就先创建一个我们自己的节点ourHead，ourHead.next= head，
+在一个排序的链表中，存在重复的结点，请删除该链表中重复的结点，重复的结点不保留，返回链表头指针。 例如，链表1->2->3->3->4->4->5 处理后为 1->2->5
+
+解法：
+
+就先创建一个我们自己的节点ourHead，
+
+ourHead.next= head，
 
 pre = ourHead
 
@@ -2104,7 +2181,7 @@ currentNode = pre.next
 
 不相等，那么就直接让pre和currentNode向后移动一步。
 
-```
+```java
 public ListNode deleteDuplication(ListNode pHead)
 {
     if (pHead == null || pHead.next == null) {
@@ -2117,8 +2194,8 @@ public ListNode deleteDuplication(ListNode pHead)
     ListNode preNode = ourHead;
     ListNode currentNode = ourHead.next;
     
-    while (currentNode!=null) {
-        if (currentNode.next!=null && currentNode.val == currentNode.next.val) {
+    while (currentNode!=null) {//往后遍历
+        if (currentNode.next!=null && currentNode.val == currentNode.next.val) {//如果当前节点与下一个节点相等，就找到一个与当前节点不相等的节点，然后把中间多出来的这些相等的节点都删除掉
             ListNode tempNode = currentNode.next;
             //找到第一个不相等的节点
             while (tempNode!=null) {
@@ -2127,7 +2204,7 @@ public ListNode deleteDuplication(ListNode pHead)
             }
             preNode.next = tempNode;
             currentNode = preNode.next;
-        } else {
+        } else {//如果当前节点与下一个节点相等，就跳过，遍历下一个节点
             preNode = preNode.next;
             currentNode = currentNode.next;
         }
@@ -2162,7 +2239,7 @@ public ListNode deleteDuplication(ListNode pHead)
 
 ​				父节点是左子树，直接返回父节点。
 
-​				父节点是右子树，一直向上遍历，直到找到祖先节点是左子树的，找到就返回，找不到就返回空。	
+​				父节点是右子树，一直向上遍历，直到找到一个父节点，他是祖先节点是左节点的，找到就返回祖先节点，找不到就返回空。	
 
 ```
 public TreeLinkNode GetNext(TreeLinkNode pNode)
@@ -2240,13 +2317,13 @@ boolean isSymmetrical(TreeNode leftRoot,TreeNode rightRoot)
 
 当前出于偶数层时，每次对stack2出栈，将出栈的节点的值打印，然后依次将节点的右子节点，左子节点加入大屏stack2，一直到stack2的全部元素出栈。
 
-```
+```java
 public ArrayList<ArrayList<Integer>> Print(TreeNode pRoot) {
     ArrayList<ArrayList<Integer>> arrayLists = new ArrayList<ArrayList<Integer>>();
     if (pRoot==null) return arrayLists;
     Stack<TreeNode> stack1 = new Stack<TreeNode>();//存放奇数层的栈
     Stack<TreeNode> stack2 = new Stack<TreeNode>();//存放偶数层的栈
-     int flag = 0;
+     int flag = 0;//代表当前遍历的是奇数层还是偶数层。区别在于添加子节点的顺序。
      stack1.add(pRoot);
      while ((flag == 0 && stack1.size()>0) || (flag == 1 && stack2.size()>0)) {
          if (flag==0) {
@@ -2274,6 +2351,49 @@ public ArrayList<ArrayList<Integer>> Print(TreeNode pRoot) {
     return arrayLists;
 }
 ```
+这是另外一种写法。
+```java
+public ArrayList<ArrayList<Integer>> Print(TreeNode pRoot) {
+        ArrayList<ArrayList<Integer>> list = new ArrayList<ArrayList<Integer>>();
+        Stack<TreeNode> otherStack = new Stack<TreeNode>();
+        Stack<TreeNode> currentStack = new Stack<TreeNode>();
+        if(pRoot == null) {
+            return list;
+        }
+        currentStack.push(pRoot);
+        int addChildFromRightFlag = 0;//
+        while(currentStack.size()>0 || otherStack.size()>0) {
+            ArrayList<Integer> array = new ArrayList<Integer>();
+            while(currentStack.size()>0) {
+
+                TreeNode node = currentStack.pop();
+                array.add(node.val);
+                if(addChildFromRightFlag == 0) {//根据层数的不同，决定从右边还是左边添加节点。
+                    if(node.left!=null) {
+                        otherStack.add(node.left);
+                    }
+                    if(node.right!=null) {
+                        otherStack.add(node.right);
+                    }
+                } else {
+                    if(node.right!=null) {
+                        otherStack.add(node.right);
+                    }
+                    if(node.left!=null) {
+                        otherStack.add(node.left);
+                    }
+                }
+            }
+            list.add(array);
+            addChildFromRightFlag = addChildFromRightFlag == 0 ? 1:0;
+            currentStack = otherStack;
+            otherStack = new Stack<TreeNode>();
+        }
+         return list;
+    }
+```
+
+
 
 ## 题059 把二叉树打印成多行
 
@@ -2894,23 +3014,32 @@ public class Test003 {
 
 
 
+### 【面试算法题】阿拉伯数字转化为中文读法
 
+例如我们要将10100转换为中文，总体流程就是先拿10100/1个亿，发现结果为0，说明不会包含亿这个数量级，然后10100/1万，得到结果result为1，余数remain为100，说明包含万这个数量级，我们的结果肯定是等于 "result的中文表示"+单位"万"+"余数的中文表示"，所以就对问题进行了分解，f(n) = f(n/数量级)+数量级单位+f(n%数量级)
 
+```
+    static String[] nameArray1 = {"","一","二","三","四","五","六","七","八","九"};
+    static String[] nameArray2 = {"","十","百","千","万","亿"};
+    static int[] intArray = {1,10,100,1000,10000,100000000};
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    public static String numToChinese(int num) {
+        for (int i = intArray.length-1; i >= 0; i--) {
+            int part1 = num/intArray[i];
+            int part2 = num%intArray[i];
+            if (i==0) {//到个位了
+                return nameArray1[part1];
+            }
+            if (part1>0) {
+                //整除部分，例如10100，整除部分就是十
+                String left = numToChinese(part1);
+                //整除部分的单位，例如10100，整除部分的单位就是万
+                String unitString = nameArray2[i];
+                //余数部分，例如10100，余数部分就是一百
+                String right = numToChinese(part2);
+                return left + unitString + right;
+            }
+        }
+        return "";
+    }
+```
