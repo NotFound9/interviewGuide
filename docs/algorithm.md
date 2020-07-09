@@ -247,9 +247,92 @@ public ListNode findLastNode(ListNode node) {
 
 ```
 
+### 查找第K大的数
+
+### 快排解法
+
+就是选左边的下标作为基准版，从首尾进行遍历，对元素交换，将大的元素交换到前面来，让序列变成递减的序列。然后根据当前的基准元素的下标i+1得到基准元素在序列中是第index大的元素，然后判断index与K的大小，相等就返回基准元素，index>K，说明第K大的数在左边，继续从左边的子序列中找，index<K，说明在右边，去右边的子序列中找。
+
+平均时间复杂度O(2N)，最坏时间复杂度O(N的平方)
+
+```java
+ public static Integer findK(int[] array,int start,int end,int K) {
+        if (array==null||array.length ==0|| start>=end) {
+            return null;
+        }
+
+        int base = array[start];
+        int i = start;
+        int j = end;
+        while (i<j) {
+            while (array[j] < base && i<j) {j--;}
+            while (array[i] >= base && i<j) {i++;}
+            if (i<j) {
+                int temp = array[i];
+                array[i] = array[j];
+                array[j] = temp;
+            }
+        }
+        array[start] = array[i];
+        array[i] = base;
+        int index = i+1;//index代表array[i]是第几大的数
+        if (index == K) {//如果array[]
+            return array[i];
+        } else if (index>K) {//说明数在左边的区间
+            return findK(array, start, i-1, K);
+        } else {//说明数在右边的区间
+            return findK(array,i+1,end, K);
+        }
+ }
 ```
-public ArrayList Premutation(String string) {
-			
+
+### 堆排写法
+
+PriorityQueue是一个优先级队列，可以认为是一个小顶堆，每次poll元素出来都是poll出最小的元素，所以queue中包含K个元素，每次遍历时将元素添加到queue中，并且将最小的元素poll出。
+
+```java
+private static Integer findKWayTwo(int array[], int K) {
+				PriorityQueue<Integer> queue = new PriorityQueue<Integer>();
+        for (int i = 0; i < array.length; i++) {
+            queue.add(array[i]);
+            if (queue.size()>K) {
+                queue.poll();
+            }
+        }
+        return queue.peek();
 }
+```
+
+### 插入排序解法
+
+就是一个长度为K的排序好的序列，每次遍历时拿元素A与这个序列里面的最小元素B进行比较，A>B，就将A往排序好的序列里面插入。
+
+```
+public static Integer findKByPickSort(int[] input, int k) {
+        ArrayList<Integer> arrayList = new ArrayList<Integer>();
+        if(input==null || input.length==0 ||input.length<k || k == 0) {
+            return null;
+        }
+        arrayList.add(input[0]);
+        for (int i = 1; i < input.length; i++) {
+            if (arrayList.size() < k) {//子数组个数没有达到K
+                arrayList.add(input[i]);
+            } else if (input[i] > arrayList.get(arrayList.size()-1)) {//子数组个数达到了K，并且当前数比子数组最后一个数小
+                arrayList.remove(arrayList.size()-1);
+                arrayList.add(input[i]);
+            } else {
+                continue;
+            }
+            //将最后一个元素移动合适的位置
+            for (int j = arrayList.size()-1; j > 0 ; j--) {
+                if (arrayList.get(j) > arrayList.get(j-1)) {
+                    int temp = arrayList.get(j);
+                    arrayList.set(j, arrayList.get(j-1));
+                    arrayList.set(j-1, temp);
+                }
+            }
+        }
+        return arrayList.get(k-1);
+    }
 ```
 

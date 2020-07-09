@@ -1,4 +1,4 @@
-# 《大厂面试指北》
+# 《后端知识总结》
 
 最佳阅读地址：http://notfound9.github.io/interviewGuide/
 
@@ -6,35 +6,22 @@ Github项目主页：https://github.com/NotFound9/interviewGuide
 
 作者博客地址：https://juejin.im/user/5b370a42e51d4558ce5eb969
 
-拜托大家三件事：
 
-1.为了方便技术交流，我建了一个技术氛围浓厚的学习群，欢迎大家扫描下面的入群二维码加入！进群还可以领取《大厂面试指北》的PDF版本（如果下面的图挂了，是你所在的网络访问不了Github主页下的图片，可以去[最佳阅读地址里面看图](http://notfound9.github.io/interviewGuide/#/)，或者是去[gitee的项目主页](https://gitee.com/notfound9/interviewGuide)里面看，谢谢了）
+## 为什么要做这个开源项目？
 
-2.原创不易，麻烦大家帮我关注一下我做的原创公众号"大厂面试"，谢谢了！
+之前喜欢在空闲时看一些技术书籍，但是发现看完后，即便每一章都写了读书笔记，看到一些实际的问题时，自己还是一脸茫然，所以我认为学习一项技术分为三个阶段：
 
-3.另外看到技术群里面有很多老哥都是单身，平时认识女生也比较少，所以我也建了一个程序员相亲群，在"大厂面试"公众号里面点击菜单栏里面的"进各种群"-"交友群"，可以获取进群二维码，想要认识更多小姐姐的朋友可以进一下！
+1.看过入门教程，会用API。
 
-![](http://notfound9.github.io/interviewGuide/static/wdsfsdfsmaster.png)
+2.看过相关的技术书籍，了解一部分原理。
 
-<figure class="half">
+3.能够根据了解的原理对实际的问题进行分析，解决问题，这样才能对技术有较为深入的理解，在工作中遇到复杂问题时，才能解决。
 
-<img src="http://notfound9.github.io/interviewGuide/static/qe222wewewqere.jpeg" width="30%"/>
-<img src="http://notfound9.github.io/interviewGuide/static/image1.jpg" width="30%"/>
-
-</figure>
+所以我发起了这个项目，一方面是便于自己复习巩固，一方面是将这些自己写的解答开源出来分享给大家，希望可以帮助到大家，也欢迎大家一起来完善这个项目，为开源做贡献。
 
 ## 目录
 
 - [首页](README.md)
-- [大厂面试系列](docs/BATInterview.md)
-  - [【大厂面试01期】高并发场景下，如何保证缓存与数据库一致性？](https://mp.weixin.qq.com/s/hwMpAVZ1_p8gLfPAzA8X9w)
-  - [【大厂面试02期】Redis过期key是怎么样清理的？](https://mp.weixin.qq.com/s/J_nOPKS17Uax2zGrZsE8ZA)
-  - [【大厂面试03期】MySQL是怎么解决幻读问题的？](https://mp.weixin.qq.com/s/8D6EmZM3m6RiSk0-N5YCww)
-  - [【大厂面试04期】讲讲一条MySQL更新语句是怎么执行的？](https://mp.weixin.qq.com/s/pNe1vdTT24oEoJS_zs-5jQ)
-  - [【大厂面试05期】说一说你对MySQL中锁的理解？](https://mp.weixin.qq.com/s/pTpPE33X-iYULYt8DOPp2w)
-  - [【大厂面试06期】谈一谈你对Redis持久化的理解？](https://mp.weixin.qq.com/s/nff4fd5TnM-CMWb1hQIT9Q)
-  - [【大厂面试07期】说一说你对synchronized锁的理解？](https://mp.weixin.qq.com/s/H8Cd2fj82qbdLZKBlo-6Dg)
-  - [【大厂面试08期】谈一谈你对HashMap的理解？](https://mp.weixin.qq.com/s/b4f5NIPl9uVLkRg_UpWSJQ)
 * Java
   - [基础](docs/JavaBasic.md)
     - [1.Java中的多态是什么？](docs/JavaBasic.md#Java中的多态是什么？)
@@ -155,27 +142,21 @@ Github项目主页：https://github.com/NotFound9/interviewGuide
 - [ZooKeeper](docs/ZooKeeper.md)
 - [HTTP](docs/HTTP.md)
 - [《剑指Offer》解题思考](docs/CodingInterviews.md)
+- [大厂面试系列](docs/BATInterview.md)
+  - [【大厂面试01期】高并发场景下，如何保证缓存与数据库一致性？](https://mp.weixin.qq.com/s/hwMpAVZ1_p8gLfPAzA8X9w)
+  - [【大厂面试02期】Redis过期key是怎么样清理的？](https://mp.weixin.qq.com/s/J_nOPKS17Uax2zGrZsE8ZA)
+  - [【大厂面试03期】MySQL是怎么解决幻读问题的？](https://mp.weixin.qq.com/s/8D6EmZM3m6RiSk0-N5YCww)
+  - [【大厂面试04期】讲讲一条MySQL更新语句是怎么执行的？](https://mp.weixin.qq.com/s/pNe1vdTT24oEoJS_zs-5jQ)
+  - [【大厂面试05期】说一说你对MySQL中锁的理解？](https://mp.weixin.qq.com/s/pTpPE33X-iYULYt8DOPp2w)
+  - [【大厂面试06期】谈一谈你对Redis持久化的理解？](https://mp.weixin.qq.com/s/nff4fd5TnM-CMWb1hQIT9Q)
+  - [【大厂面试07期】说一说你对synchronized锁的理解？](https://mp.weixin.qq.com/s/H8Cd2fj82qbdLZKBlo-6Dg)
+  - [【大厂面试08期】谈一谈你对HashMap的理解？](https://mp.weixin.qq.com/s/b4f5NIPl9uVLkRg_UpWSJQ)
 * 读书笔记
   - [《Redis设计与实现》读书笔记 上](docs/RedisBook1.md)
   - [《Redis设计与实现》读书笔记 下](docs/RedisBook2.md)
   - [《MySQL必知必会》读书笔记](docs/MySQLBook1.md)
   - [《深入理解Java虚拟机-第三版》读书笔记](docs/JVMBook.md)  
 - [好书推荐](docs/bookRecommend.md)
-
-## 为什么要做这个开源项目？
-
-我就是个普通的程序员，只是喜欢在空闲时看一些技术书籍，但是发现看完后，即便每一章都写了读书笔记，看到一些相关的面试题时，自己还是一脸茫然，所以我认为学习一项技术分为三个阶段：
-
-1.看过入门教程，会用API。
-
-2.看过相关的技术书籍，了解一部分原理。
-
-3.能够对面试题进行分析，做出正确的解答，这样才能对技术有较为深入的理解，在工作中遇到复杂问题时，才能解决。
-
-所以我发起了这个项目，
-* 一方面是督促自己学习。
-* 一方面是将这些面试题整理后，写完解答后分享给大家，希望可以帮助到大家，也欢迎大家一起来完善这个项目，为开源做贡献。
-
 
 ## 如何为这个开源项目做贡献？
 
