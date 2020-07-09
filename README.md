@@ -166,6 +166,12 @@ Github项目主页：https://github.com/NotFound9/interviewGuide
 
 我平时比较喜欢看书，写技术文章，也比较喜欢讨论技术。这是我的[掘金主页](https://juejin.im/user/5b370a42e51d4558ce5eb969)，希望大家可以关注一下，谢谢了！大家如果有事需要联系我，或者想进技术群，一起讨论技术，也可以扫描[主页中我的微信二维码](http://notfound9.github.io/interviewGuide/#/)加我，谢谢了！
 
+<figure class="half">
+
+<img src="http://notfound9.github.io/interviewGuide/static/qe222wewewqere.jpeg" width="30%"/>
+<img src="http://notfound9.github.io/interviewGuide/static/image1.jpg" width="30%"/>
+
+</figure>
 ## 关于转载
 
 如果你需要转载本仓库的一些文章到自己的博客的话，记得注明原文地址就可以了。
