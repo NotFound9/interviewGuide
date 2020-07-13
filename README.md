@@ -1,4 +1,4 @@
-# 《后端知识总结》
+# 《后端技术总结》
 
 最佳阅读地址：http://notfound9.github.io/interviewGuide/
 
