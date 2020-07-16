@@ -834,10 +834,29 @@ public ArrayList<Integer> PrintFromTopToBottom(TreeNode root) {
 ArrayList<TreeNode> list = new ArrayList<TreeNode>();
 void deepTranverse(TreeNode node) {
 			if(node!=null) {
-					list.add(node);
+			    list.add(node);
 					deepTranverse(node.left);
           deepTranverse(node.right);
 			}
+}
+//栈的解法
+void deepTranverse(TreeNode node) {
+      Stack<TreeNode> stack=new Stack<TreeNode>();
+     List<Integer> list=new ArrayList<Integer>();
+     if(root==null)
+            return list;
+     //压入根节点
+        stack.push(root);
+    //然后就循环取出和压入节点，直到栈为空，结束循环
+        while (!stack.isEmpty()){
+            TreeNode t=stack.pop();
+            if(t.right!=null)
+                stack.push(t.right);
+            if(t.left!=null)
+                stack.push(t.left);
+            list.add(t.val);
+        }
+        return  list;
 }
 ```
 
