@@ -1038,3 +1038,423 @@ public class Profiler {
 Profiler可以被复用在方法调用耗时统计的功能上，在方法的入口前执行begin()方法，在 
 
 方法调用后执行end()方法，好处是两个方法的调用不用在一个方法或者类中，比如在AOP(面 向方面编程)中，可以在方法调用前的切入点执行begin()方法，而在方法调用后的切入点执行 end()方法，这样依旧可以获得方法的执行耗时。 
+
+### 实现一个生产者消费者
+
+使用queue作为一个队列，存放数据，并且充当锁，每次只能同时存在一个线程来生产或者消费数据，一旦队列容量>10,就进入waiting状态，一旦成功往队列添加数据，那么就唤醒所有线程（主要是生产者线程起来消费）。生产者消费时一旦发现队列容量==0，也会主动进入waiting状态。
+
+```java
+public static void main(String[] args) {
+    Queue<Integer> queue    = new LinkedList<>();
+    final Customer customer = new Customer(queue);
+    final Producer producer = new Producer(queue);
+    ExecutorService pool = Executors.newCachedThreadPool();
+    for (int i = 0; i < 1000; i++) {
+        pool.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                Integer a = customer.removeObject();
+                System.out.println("消费了数据 "+a);
+            }
+        });
+        pool.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                Random  random = new Random();
+                Integer a      = random.nextInt(1000);
+                System.out.println("生成了数据 "+a);
+                producer.addObject(a);
+            }
+        });
+    }
+}
+private static class Customer {
+    Queue<Integer> queue;
+    Customer(Queue<Integer> queue) { this.queue = queue; }
+    public Integer removeObject() {
+        synchronized (queue) {
+            try {
+                while (queue.size()==0) {
+                    System.out.println("队列中没有元素了，进行等待");
+                    queue.wait();
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            Integer number = queue.poll();
+            System.out.println("唤醒所有生产线程，当前queue大小是" + queue.size());
+            queue.notifyAll();
+            return number;
+        }
+    }
+}
+private static class Producer {
+    Queue<Integer> queue;
+    Producer(Queue<Integer> queue) { this.queue = queue; }
+    public void addObject(Integer number) {
+        synchronized (queue) {
+            try {
+                while (queue.size()>10) {
+                    queue.wait();
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            queue.add(number);
+            queue.notifyAll();
+            System.out.println("唤醒所有消费线程，当前queue大小是"+queue.size());
+        }
+    }
+}
+```
+
+#### 使用Lock和Condition来实现
+
+调用Object.wait()方法可以让线程进入等待状态，被添加到Object的monitor监视器的等待队列中，Object.notifyAll()可以唤醒monitor监视器等待队列中的所有线程。
+
+而调用lock的newCondition()方法,可以返回一个ConditionObject实例对象，每个ConditionObject包含一个链表，存储等待队列。可以认为一个ReentrantLock有一个同步队列（存放没有获得锁的线程），和多个等待队列（存放调用await()方法的线程）。
+
+```java
+ReentrantLock lock = new ReentrantLock();
+Condition customerQueue = lock.newCondition();
+```
+ReentrantLock的Condition相关的实现
+
+![img](../static/640-5667220.jpeg)
+
+```java
+abstract static class Sync extends AbstractQueuedSynchronizer {
+    final ConditionObject newCondition() {
+        return new ConditionObject();
+    }
+}
+//AQS内部类 ConditionObject
+public class ConditionObject implements Condition, java.io.Serializable {
+    private static final long serialVersionUID = 1173984872572414699L;
+    //链表头结点
+    private transient Node firstWaiter;
+    //链表尾结点
+    private transient Node lastWaiter;
+    //真正的创建Condition对象
+    public ConditionObject() { }
+}
+```
+
+消费者-生产者实现
+
+```java
+public static void main(String[] args) {
+    ReentrantLock lock = new ReentrantLock();
+    Condition customerQueue = lock.newCondition();
+    Condition producerQueue = lock.newCondition();
+
+    Queue<Integer>     queue    = new LinkedList<>();
+    final Customer customer = new Customer(lock,customerQueue, producerQueue,queue);
+    final Producer producer = new  Producer(lock,customerQueue, producerQueue,queue);
+
+    ExecutorService    pool     = Executors.newCachedThreadPool();
+    for (int i = 0; i < 1000; i++) {
+        pool.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                Integer a = customer.take();
+//                    System.out.println("消费了数据 "+a);
+            }
+        });
+        pool.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                Random  random = new Random();
+                Integer a      = random.nextInt(1000);
+//                    System.out.println("生成了数据 "+a);
+                producer.add(a);
+            }
+        });
+    }
+}
+
+private static class Customer {
+    private ReentrantLock lock;
+    private Condition customer;
+    private Condition producer;
+    private Queue<Integer> queue;
+
+    Customer(ReentrantLock lock, Condition customer, Condition producer,Queue<Integer> queue) {
+        this.lock = lock;
+        this.customer = customer;
+        this.producer = producer;
+        this.queue = queue;
+    }
+
+    public Integer take() {
+        lock.lock();
+        Integer element = null;
+        try {
+            while (queue.size() == 0) {
+                customer.await();
+            }
+            element = queue.poll();
+            System.out.println("消费者线程取出来元素"+element);
+            producer.signalAll();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            lock.unlock();
+        }
+        return element;
+    }
+}
+
+private static class Producer {
+    private ReentrantLock lock;
+    private Condition customer;
+    private Condition producer;
+    private Queue<Integer> queue;
+
+    Producer(ReentrantLock lock, Condition customer, Condition producer,Queue<Integer> queue) {
+        this.lock = lock;
+        this.customer = customer;
+        this.producer = producer;
+        this.queue = queue;
+    }
+
+    public void add( Integer element) {
+        lock.lock();
+        try {
+            while (queue.size() > 10) {
+                producer.await();
+            }
+             queue.add(element);
+            System.out.println("生成和线程添加元素"+element);
+            customer.signalAll();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            lock.unlock();
+        }
+    }
+}
+```
+#### BlockingQueue
+利用阻塞队列BlockingQueue的特征进行生产和消费的同步(其实阻塞队列内部也是基于Lock,condition实现的 )
+
+```java
+public class BlockQueueRepository<T> extends AbstractRepository<T> implements Repository<T> {
+    public BlockQueueRepository() {
+        products = new LinkedBlockingQueue<>(cap);
+    }
+
+    @Override
+    public void put(T t) {
+        if (isFull()) {
+            log.info("repository is full, waiting for consume.....");
+        }
+        try {
+          //如果队列长度已满，那么会阻塞等待
+            ((BlockingQueue) products).put(t);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public T take() {
+        T product = null;
+        if (isEmpty()) {
+            log.info("repository is empty, waiting for produce.....");
+        }
+        try {
+            //如果队列元素为空，那么也会阻塞等待
+            product = (T) ((BlockingQueue) products).take();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return product;
+    }
+}
+```
+
+### AQS是什么？
+
+AQS就是AbstractQueuedSynchronizer，队列同步器，内部实现了一个同步队列（一个双向链表，存放没有获取到锁的线程），一个条件等待队列，负责存放等待被唤醒的线程，唤醒后会进入到同步队列。
+
+ReentrantLock其实就是有一个变量sync，Sync父类是AbstractQueuedSynchronizer
+
+```java
+public class ReentrantLock implements Lock, java.io.Serializable {
+	private final Sync sync;
+}
+```
+
+ReentrantLock的非公平锁与公平锁的区别在于非公平锁在CAS更新state失败后会调用tryAcquire()来判断是否需要进入同步队列，会再次判断state的值是否为0，为0会去CAS更新state值，更新成功就直接获得锁，否则就进入等待队列。
+
+而公平锁首先判断state是否为0，为0并且等待队列为空，才会去使用CAS操作抢占锁，抢占成功就获得锁，没成功并且当前线程不是获得锁的线程，都会被加入到等待队列。
+
+参考资料：
+
+[深入理解ReentrantLock的实现原理]https://mp.weixin.qq.com/s?src=11&timestamp=1595675057&ver=2482&signature=tM4jJR1bsGMBZxest2FY-VBXE8UDCEbqXwezlhRbJy5Ylsp0cWxx-DYrCMMzN2Z1E3rMrOndXCJXdThYx1xc*VBbpYfL4De3WtFgqndniaDTsgGrpBTVhVVx*ASCgZbX&new=1
+
+### 谈一谈你对线程池的理解？
+
+#### 首先线程池有什么作用？
+
+* 1.提高响应速度，如果线程池有空闲线程的话，可以直接复用这个线程执行任务，而不用去创建。
+
+* 2.减少资源占用，每次都创建线程都需要申请资源，而使用线程池可以复用已创建的线程。
+
+* 3.可以控制并发数，可以通过设置线程池的最大线程数量来控制最大并发数，如果每次都是创建新线程，来了大量的请求，可能会因为创建的线程过多，造成内存溢出。
+
+* 4.更加方便来管理线程资源。
+
+#### 线程池有哪些参数？
+
+##### corePoolSize 核心线程数
+
+该线程池中**核心线程数最大值**，添加任务时，即便有空闲线程，只要当前线程池线程数<corePoolSize,都是会新建线程来执行这个任务。并且核心线程空闲时间超过keepAliveTime也是不会被回收的。（从阻塞队列取任务时，如果阻塞队列为空，核心线程的会一直卡在`workQueue.take`方法，被阻塞并挂起，不会占用CPU资源。非核心线程会workQueue.poll(keepAliveTime, TimeUnit.NANOSECONDS) ，如果超时还没有拿到，下一次循环判断**compareAndDecrementWorkerCount**就会返回`null`,Worker对象的`run()`方法循环体的判断为`null`,任务结束，然后线程被系统回收）
+
+##### maximumPoolSize 最大线程数
+
+**该线程池中线程总数最大值** ，一般是用于当线程池线程都在执行任务，并且等待队列满了时，如果当前线程数<maximumPoolSize,可以创建一个新线程来执行任务。maximumPoolSize一般也可以用来现在最大线程并发执行量。
+
+##### **workQueue 等待队列**
+
+等待队列，一般是抽象类**BlockingQueue**的子类。
+
+| ArrayBlockingQueue    | 有界队列，一种使用数组实现的先进先出的有界阻塞队列。支持公平锁和非公平锁，底层数据结构是数组，需要指定队列的大小。 |
+| --------------------- | ------------------------------------------------------------ |
+| LinkedBlockingQueue   | 无界队列，一种使用链表实现的先进先出的有界阻塞队列。默认的容量是`Interge.MAX_VALUE`，相比于`ArrayBlockingQueue`具有更高的吞吐量，但是却丢失了随机存储的特性。默认大小是`Integer.MAX_VALUE`，也可以指定大小。newFixedThreadPool()和newSingleThreadExecutor()的等待队列都是这个阻塞队列。 |
+| LinkedBlockingDeque   | 一种使用链表实现的具有双向存取功能的有界阻塞队列。在高并发下，相比于`LinkedBlockingQueue`可以将锁竞争降低最多一半 |
+| PriorityBlockingQueue | 一种提供了优先级排序的无界阻塞队列。如果没有提供具体的排列方法，那么将会使用自然排序进行排序，会抛出`OOM`异常。 |
+| SynchronousQueue      | 一种不存储任务的同步队列。每一次的插入操作都必须等待其他线程进行相应的删除操作。支持公平锁和非公平锁。同步队列，内部容量为0，每个put操作必须等待一个take操作，反之亦然。newCachedThreadPool()的等待队列都是SynchronousQueue，所以一般都是对于每一个任务都是创建一个新线程去执行。 |
+| LinkedTransferQueue   | 一种使用链表实现的无界阻塞队列。                             |
+| DelayQueue            | 一种无界的延时队列，可以设置每个元素需要等待多久才能从队列中取出。 延迟队列，该队列中的元素只有当其指定的延迟时间到了，才能够从队列中获取到该元素 。一般是用于定时任务线程池newScheduledThreadPool。 |
+
+**keepAliveTime**：**非核心线程闲置超时时长**。
+
+非核心线程如果处于闲置状态超过该值，就会被销毁。如果设置allowCoreThreadTimeOut(true)，则会也作用于核心线程。
+
+**RejectedExecutionHandler 拒绝处理策略**
+
+**拒绝处理策略**，线程数量大于最大线程数就会采用拒绝处理策略，四种拒绝处理的策略为 ：
+
+1. ThreadPoolExecutor.AbortPolicy：**默认拒绝处理策略**，丢弃任务并抛出RejectedExecutionException异常。
+2. ThreadPoolExecutor.DiscardPolicy：丢弃新来的任务，但是不抛出异常。
+3. ThreadPoolExecutor.DiscardOldestPolicy：丢弃等待队列头部（最旧的）的任务，然后重新尝试执行程序，将任务添加到队列中（如果再次失败，重复此过程）。
+4. ThreadPoolExecutor.CallerRunsPolicy：由调用线程处理该任务。
+
+##### 线程池执行任务的过程？
+
+![asd21](../static/asd21.png)
+
+#### Executors提供的四种线程池的使用场景。
+
+Executors提供四种线程池，分别为：
+
+##### newFixedThreadPool 定长线程池
+
+创建一个定长线程池，可控制线程最大并发数，超出的线程会在队列中等待（比较适合需要控制并发量的情况）。主要是通过将核心线程数设置为与最大线程数相等实现的。缺点是LinkedBlockingQueue队列的默认长度是Integer.MAX_VALUE，也存在内存溢出的风险。
+
+**与CachedThreadPool的区别**：
+
+- 因为 corePoolSize == maximumPoolSize ，所以FixedThreadPool只会创建核心线程。 而CachedThreadPool因为corePoolSize=0，所以只会创建非核心线程。
+- 在 getTask() 方法，如果队列里没有任务可取，线程会一直阻塞在 LinkedBlockingQueue.take() ，线程不会被回收。 CachedThreadPool会在60s后收回。
+- 由于线程不会被回收，会一直卡在阻塞，所以**没有任务的情况下， FixedThreadPool占用资源更多**。
+- 都几乎不会触发拒绝策略，但是原理不同。FixedThreadPool是因为阻塞队列可以很大（最大为Integer最大值），故几乎不会触发拒绝策略；CachedThreadPool是因为线程池很大（最大为Integer最大值），几乎不会导致线程数量大于最大线程数，故几乎不会触发拒绝策略。
+
+```java
+public static ExecutorService newFixedThreadPool(int nThreads) {
+    return new ThreadPoolExecutor(nThreads, nThreads,
+                                  0L, TimeUnit.MILLISECONDS,
+                                  new LinkedBlockingQueue<Runnable>());
+}
+public LinkedBlockingQueue() {
+    this(Integer.MAX_VALUE);
+}
+```
+
+##### newSingleThreadExecutor 单线程池
+
+创建一个单线程化的线程池，它只会用唯一的工作线程来执行任务，保证所有任务按照指定顺序(FIFO, LIFO, 优先级)执行。主要是通过将核心线程数和最大线程数都设置为1来实现。
+
+```java
+public static ExecutorService newSingleThreadExecutor() {
+        return new FinalizableDelegatedExecutorService
+            (new ThreadPoolExecutor(1, 1,
+                                    0L, TimeUnit.MILLISECONDS,
+                                    new LinkedBlockingQueue<Runnable>()));
+    }
+```
+
+##### newCachedThreadPool可缓存线程池
+
+创建一个可缓存线程池，如果线程池长度超过处理需要，可灵活回收空闲线程，若无可回收，则新建线程。但是由于最大线程数设置的是Integer.MAX_VALUE，存在内存溢出的风险。
+
+```java
+public static ExecutorService newCachedThreadPool() {
+        return new ThreadPoolExecutor(0, Integer.MAX_VALUE,
+                                      60L, TimeUnit.SECONDS,
+                                      new SynchronousQueue<Runnable>());
+}
+```
+
+`CacheThreadPool`的**运行流程**如下：
+
+1. 提交任务进线程池。
+2. 因为**corePoolSize**为0的关系，不创建核心线程，线程池最大为Integer.MAX_VALUE。
+3. 尝试将任务添加到**SynchronousQueue**队列。
+4. 如果SynchronousQueue入列成功，等待被当前运行的线程空闲后拉取执行。如果当前没有空闲线程，那么就创建一个非核心线程，然后从SynchronousQueue拉取任务并在当前线程执行。
+5. 如果SynchronousQueue已有任务在等待，入列操作将会阻塞。
+
+当需要执行很多**短时间**的任务时，CacheThreadPool的线程复用率比较高， 会显著的**提高性能**。而且线程60s后会回收，意味着即使没有任务进来，CacheThreadPool并不会占用很多资源。
+
+##### newScheduledThreadPool定时执行线程池
+
+创建一个定时执行的线程池，主要是通过DelayedWorkQueue来实现（该队列中的元素只有当其指定的延迟时间到了，才能够从队列中获取到该元素）。支持定时及周期性任务执行。但是由于最大线程数设置的是Integer.MAX_VALUE，存在内存溢出的风险。
+
+```java
+public ScheduledThreadPoolExecutor(int corePoolSize,
+                                   ThreadFactory threadFactory) {
+    super(corePoolSize, Integer.MAX_VALUE, 0, NANOSECONDS,
+          new DelayedWorkQueue(), threadFactory);
+}
+```
+
+### 线程池有哪些状态？
+
+线程池生命周期：
+
+- **RUNNING**：表示线程池处于运行状态，这时候的线程池可以接受任务和处理任务。值是-1
+
+- **SHUTDOWN **：表示线程池不接受新任务，但仍然可以处理队列中的任务。二进制值是0
+
+- **STOP**：表示线程池不接受新任务，也不处理队列中的任务，同时中断正在执行任务的线程。值是1
+
+- **TIDYING**：表示所有的任务都已经终止，并且工作线程的数量为0。值是2
+
+- **TERMINATED**：表示线程池处于终止状态。值是3
+
+  ![img](../static/640-20200728210136673.jpeg)
+
+参考链接：
+
+https://mp.weixin.qq.com/s?src=11&timestamp=1595941110&ver=2487&signature=i8CGBfTlDi4SaG5SSOWYJo-Sgb*bauWAv8MEMYqWQMy4lFBQwjTY4*99R2-8PhC4WtBc4uBy-m3IveQ9a0RlQn53unVD6Xalfl2r30*IbwAdK7CPlbW6-8icKhG4OjKE&new=1

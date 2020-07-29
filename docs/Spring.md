@@ -5,8 +5,6 @@
 
 实现AOP有三种方式：静态代理，使用JDK的Proxy类实现动态代理，使用CGLIB实现动态代理。
 
-
-
 #### 静态代理
 
 就是在代码里面创建一个代理类，实现目标类的接口，目标对象是代理类的成员变量，外界需要执行方法时，调用代理类的方法，代理类的方法内部先执行额外的操作，日志记录等，然后再调用目标类的方法。
@@ -104,6 +102,8 @@ TestInterface proxyInstance = (TestInterface) Proxy.newProxyInstance(test.getCla
 
 ### CGLIB动态代理
 
+CGLIB主要是通过创建一个代理类，继承原来的类，并且重写父类的方法，然后将代理类实例返回，后续调用代理类的方法时，先执行一些额外的AOP相关的记录操作，然后再去执行父类的方法。（由于在Java中子类只能继承父类的非private的属性和方法，所以**由CGLIB创建的代理类，不会包含父类中的final或者private修饰的方法，**aop也无法捕获private相关的方法）
+
 创建一个类，继承MethodInterceptor类，重写intercept方法，接受方法调用。创建一个Enhancer实例，设置代理类的父类为目标类，设置回调。
 
 ```java
@@ -157,10 +157,6 @@ public static class Test implements TestInterface {
   }
 
 ```
-
-
-
-
 
 ### 区别
 

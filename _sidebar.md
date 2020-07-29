@@ -11,10 +11,10 @@
   - [持久化(AOF和RDB)](docs/RedisStore.md)
   - [高可用(主从切换和哨兵机制)](docs/RedisUserful.md)
 * MySQL
-  - [面试题总结](docs/MySQLNote.md)
+  - [面试题解答](docs/MySQLNote.md)
   - [慢查询优化实践](docs/MySQLWork.md)
 * JVM
-  - [面试题总结](docs/JavaJVM.md)
+  - [面试题解答](docs/JavaJVM.md)
 - [Kafka](docs/Kafka.md)
 - [ZooKeeper](docs/ZooKeeper.md)
 - [HTTP](docs/HTTP.md)

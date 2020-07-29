@@ -541,36 +541,6 @@ protected void finalize() throws Throwable { }
 
 当垃圾回收器确认某个对象不被任何其他对象引用时(即对象处于可恢复状态)，系统在回收对象时，会调用finalize()方法，可以在这个方法中清理资源，在这个方法中，也有可能让对象重新获得引用，从而变成可达状态。
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ### 编译型编程语言，解释型编程语言，伪编译型语言的区别是什么？
 
 * 编译型编程语言
@@ -605,7 +575,7 @@ default 允许在类中，同一包中访问。
 
 protected 允许在类中，同一包中，其他包中的子类 访问。
 
-public 只允许在类中，同一包中，其他包中的子类中，其他地方中访问。
+public 只允许在所有地方访问。
 
 ##### 注意事项:
 
@@ -702,3 +672,23 @@ public @interface Override {
 ```
 
 除了几个JDK自带的注解以外，通常情况下，我们使用的注解都是运行时注解，在运行时，JVM在运行时会针对注解生成一个动态代理类，通过反射获取注解时，实际上返回的是Java运行时生成的动态代理对象$Proxy1，而Proxy类就是我们注解（接口）的具体实现类。
+
+### Java 异常体系是怎么样的？
+
+![img](../static/1415794-20190804110605330-45276489.png)
+
+Throwable的子类为Error和Exception
+
+Exception的子类为RuntimeException异常和RuntimeException以外的异常（例如IOException）。
+
+主要分为Error，RuntimeException异常和RuntimeException以外的异常。
+
+Error就是一些程序处理不了的错误，代表JVM出现了一些错误，应用程序无法处理。例如当 JVM 不再有继续执行操作所需的内存资源时，将出现 OutOfMemoryError。
+
+RuntimeException异常就是应用程序运行时，可能会抛出的异常。这些异常是不检查异常，编译时Java编译器不会去检查，不会强制程序员添加处理异常的代码。程序中可以选择捕获处理，也可以不处理。如NullPointerException(空指针异常)、IndexOutOfBoundsException(下标越界异常)等。
+
+RuntimeException以外的异常可以认为是编译时异常，从程序语法角度讲是必须进行处理的异常，编译时编译器就会要求有相关的异常捕获处理的代码逻辑。如IOException、SQLException。
+
+##### PS：
+
+@Transaction默认检测异常为RuntimeException及其子类，如果有其他异常需要回滚事务的需要自己手动配置，例如：@Transactional(rollbackFor = Exception.class)

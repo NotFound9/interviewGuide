@@ -94,7 +94,7 @@ Github项目主页：https://github.com/NotFound9/interviewGuide
     - [3.客户端是怎么接入哨兵系统的？](docs/RedisUserful.md#客户端是怎么接入哨兵系统的？)
     - [4.Redis哨兵系统是怎么实现自动故障转移的？](docs/RedisUserful.md#Redis哨兵系统是怎么实现自动故障转移的？)
 * MySQL
-  - [面试题总结](docs/MySQLNote.md)
+  - [面试题解答](docs/MySQLNote.md)
     - [1.一条MySQL更新语句的执行过程是什么样的？](docs/MySQLNote.md#一条MySQL更新语句的执行过程是什么样的？)
     - [2.脏页是什么？](docs/MySQLNote.md#脏页是什么？)
     - [3.Checkpoint是什么？](docs/MySQLNote.md#Checkpoint是什么？)
@@ -125,7 +125,7 @@ Github项目主页：https://github.com/NotFound9/interviewGuide
     - [28.MySQL的join的实现是怎么样的？](docs/MySQLNote.md#MySQL的join的实现是怎么样的？)
   - [慢查询优化实践](docs/MySQLWork.md) 
 * JVM
-  - [面试题总结](docs/JavaJVM.md)
+  - [面试题解答](docs/JavaJVM.md)
     - [1.Java内存区域怎么划分的？](docs/JavaJVM.md#Java内存区域怎么划分的？)
     - [2.Java中对象的创建过程是怎么样的？](docs/JavaJVM.md#Java中对象的创建过程是怎么样的？)
     - [3.Java对象的内存布局是怎么样的？](docs/JavaJVM.md#Java对象的内存布局是怎么样的？)

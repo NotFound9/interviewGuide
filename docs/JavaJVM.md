@@ -3,6 +3,7 @@
 目前还只是买了最新版的[《深入理解JVM虚拟机 第三版》](backend/bookRecommend？#《深入理解Java虚拟机-第三版》),还没有完全看完，看完之后会从网上的面经中找一些实际的面试题，然后自己通过翻书查资料，写面试题解答。
 
 ####  [1.Java内存区域怎么划分的？](#Java内存区域怎么划分的？)
+
 ####  [2.Java中对象的创建过程是怎么样的？](#Java中对象的创建过程是怎么样的？)
 ####  [3.Java对象的内存布局是怎么样的？](#Java对象的内存布局是怎么样的？)
 ####  [4.垃圾回收有哪些特点？](#垃圾回收有哪些特点？)
@@ -298,11 +299,11 @@ Java虚拟机层面会对对象做一些初始化操作， 将对象的一些信
 
 会浪费一半的内存，
 
-解决方案是新生代的内存配比是Eden:From Survivor: To Survivor = 8:1:1
+解决方案是新生代的内存配比是Eden:From Survivor: To Survivor = 8比1比1
 
 每次使用时，Eden用来分配新的对象，From Survivor存放上次垃圾回收存活的对象，只使用Eden和From Survivor的空间，To Survivor是空的，垃圾回收时将存活对象拷贝到To Survivor，当空间不够时，从老年代进行分配担保。
 
-####标记-整理算法
+#### 标记-整理算法
 
 就是让存活对象往内存空间一端移动，然后直接清理掉边界以外的内存。（parallel Old和Serial old收集器就是采用该算法进行回收的）
 
@@ -378,8 +379,9 @@ Minor GC：对新生代进行回收，不会影响到年老代。因为新生代
 Full GC：也叫 Major GC，对整个堆进行回收，包括新生代和老年代。由于Full GC需要对整个堆进行回收，所以比Minor GC要慢，因此应该尽可能减少Full GC的次数，导致Full GC的原因包括：老年代被写满和System.gc()被显式调用等。
 
 ### 触发Minor GC的条件有哪些？
-为新对象分配内存时，新生代的Eden区空间不足。
+1.为新对象分配内存时，新生代的Eden区空间不足。
 新生代回收日志：
+
 ```
 2020-05-12T16:15:10.736+0800: 7.803: [GC (Allocation Failure) 2020-05-12T16:15:10.736+0800: 7.803: [ParNew: 838912K->22016K(943744K), 0.0982676 secs] 838912K->22016K(1992320K), 0.0983280 secs] [Times: user=0.19 sys=0.01, real=0.10 secs]
 ```
@@ -403,7 +405,7 @@ Full GC：也叫 Major GC，对整个堆进行回收，包括新生代和老年�
 3.2 Concurrent Mode Failure
 在执行 CMS GC 的过程中，同时有对象要放入老年代，而此时老年代空间不足造成的。
 3.3 历次晋升的对象平均大小>老年代的剩余空间
-这是一个较为复杂的触发情况， HotSpot为了避免由于年轻代对象晋升到老年代导致老年代空间不足的现象，
+这是一个较为复杂的触发情况， HotSpot为了避免由于新生代对象晋升到老年代导致老年代空间不足的现象，
 在进行 Minor GC时，做了一个判断，如果之前统计所得到的 MinorGC 晋升到老年代的平均大小大于老年代的剩余空间，那么就直接触发 Full GC。
 3.4 老年代空间不足以为大对象分配内存
 因为超过阀值(-XX:+PrintTenuringDistribution参数设置的大小时)的大对象，会直接分配到老年代，如果老年代空间不足，会触发Full GC。
@@ -512,6 +514,8 @@ CMS英文是Concurrent Mark Sweep，是基于标记-清除法实现的，步骤�
 
 JDK9以前，服务端模式默认的收集器是Parallel Scavenge+Parallel Old，JDK9之后，默认收集器是G1。G1不按照新生代，老年代进行划分，而是将Java堆划分为多个大小相等的独立Region，每一个Region可以根据需要，扮演新生代的Eden空间，Survivor空间，老年代Old空间和用于分配大对象的Humongous区。回收思路是G1持续跟踪各个Region的回收价值（回收可释放的空间和回收所需时间），然后维护一个优先级列表，在用户设定的最大收集停顿时间内，优先回收那些价值大的Region。
 
+JDK 8 和9中，Region的大小是通过(最大堆大小+最小堆大小)的平均值/2048，一般是需要在1到32M之间。G1认为2048是比较理想的Region数量
+
 ![img](../static/640.jpeg)
 
 **G1对象分配策略**
@@ -521,7 +525,7 @@ JDK9以前，服务端模式默认的收集器是Parallel Scavenge+Parallel Old�
 1. 栈上分配
 2. TLAB(Thread Local Allocation Buffer)线程本地分配缓冲区
 3. 共享Eden区中分配
-4. Humongous区分配
+4. Humongous区分配（超过Region大小50%的对象）
 
 对象在分配之前会做逃逸分析，如果该对象只会被本线程使用，那么就将该对象在栈上分配。这样对象可以在函数调用后销毁，减轻堆的压力，避免不必要的gc。 如果对象在栈是上分配不成功，就会使用TLAB来分配。TLAB为线程本地分配缓冲区，它的目的为了使对象尽可能快的分配出来。如果对象在一个共享的空间中分配，我们需要采用一些同步机制来管理这些空间内的空闲空间指针。在Eden空间中，每一个线程都有一个固定的分区用于分配对象，即一个TLAB。分配对象时，线程之间不再需要进行任何的同步。
 
@@ -541,16 +545,22 @@ Young GC主要是对Eden区进行GC，它在Eden空间耗尽时会被触发。�
 
 在CMS中，也有RSet的概念，在老年代中有一块区域用来记录指向新生代的引用。这是一种point-out，在进行Young GC时，扫描根时，仅仅需要扫描这一块区域，而不需要扫描整个老年代。
 
-但在G1中，并没有使用point-out，这是由于一个分区太小，分区数量太多，如果是用point-out的话，会造成大量的扫描浪费，有些根本不需要GC的分区引用也扫描了。于是G1中使用point-in来解决。point-in的意思是哪些分区引用了当前分区中的对象。这样，仅仅将这些对象当做根来扫描就避免了无效的扫描。由于新生代有多个，那么我们需要在新生代之间记录引用吗？这是不必要的，原因在于每次GC时，所有新生代都会被扫描，所以只需要记录老年代到新生代之间的引用即可。
+但在G1中，并没有使用point-out（就是记录当前Region对其他Region中对象的引用），这是由于一个Region太小，Region数量太多，如果是用point-out的话，如果需要计算一个Region的可回收的对象数量，需要把所有Region都是扫描一遍会造成大量的扫描浪费，有些根本不需要GC的分区引用也扫描了。于是G1中使用point-in来解决。point-in的意思是哪些Region引用了当前Region中的对象。这样只需要将当前Region中这些对象当做初始标记时的根对象来扫描就可以扫描出因为有跨代引用需要存活的对象，避免了无效的扫描。
 
-需要注意的是，如果引用的对象很多，赋值器需要对每个引用做处理，赋值器开销会很大，为了解决赋值器开销这个问题，在G1 中又引入了另外一个概念，卡表（Card Table）。一个Card Table将一个分区在逻辑上划分为固定大小的连续区域，每个区域称之为卡。卡通常较小，介于128到512字节之间。CardTable通常为字节数组，由Card的索引（即数组下标）来标识每个分区的空间地址。默认情况下，每个卡都未引用。当一个地址空间有引用时，这个地址空间对应的数组索引的值被标记为"0"，即标记为脏引用，此外RSet也将这个数组下标记录下来。一般情况下，这个RSet其实是一个Hash Table，Key是别的Region的起始地址，Value是一个集合，里面的元素是Card Table的Index。
+由于新生代有多个，那么我们需要在新生代之间记录引用吗？这是不必要的，原因在于每次GC时，所有新生代都会被扫描，所以只需要记录老年代的Region对新生代的这个Region之间的引用即可。
+
+需要注意的是，如果引用的对象很多，赋值器需要对每个引用做处理，赋值器开销会很大，为了解决赋值器开销这个问题，在G1 中又引入了另外一个概念，卡表（Card Table）。一个Card Table将一个分区在逻辑上划分为固定大小的连续区域，每个区域称之为卡。卡通常较小，介于128到512字节之间。CardTable通常为字节数组，由Card的索引（即数组下标）来标识每个分区的空间地址。默认情况下，每个卡都未引用。当一个地址空间有引用时，这个地址空间对应的数组索引的值被标记为"0"，即标记为脏引用，此外RSet也将这个数组下标记录下来。一般情况下，这个RSet其实是一个Hash Table集合（每个线程对应一个Hash Table，主要是为了减少多线程并发更新RSet的竞争），每个哈希表的Key是别的Region的起始地址，Value是一个集合，里面的元素是Card Table的Index。
+
+如果Rset是记录每个外来Region对当前Region中对象的引用，这样数量就太多了，所以Card Table只是有很多Byte字节，每个字节记录了Region对应的一个内存区域(卡页)是否是dirty的，为1代表dirty，也就是有其他Region对这个卡页中的对象进行引用。
+
+![img](../static/2579123-e0b8898d895aee05.png)
 
 - 阶段1：根扫描
   表态和本地对象被扫描
 - 阶段2：更新RS
   处理dirty card队列更新RS
 - 阶段3：处理RS
-  检测从年轻代指向老年代的对象
+  检测从新生代指向老年代的对象
 - 阶段4：对象拷贝
   拷贝存活的对象到survivor/old区域
 - 阶段5：处理引用队列
@@ -558,7 +568,7 @@ Young GC主要是对Eden区进行GC，它在Eden空间耗尽时会被触发。�
 
 **G1 MixGC**
 
-MixGC不仅进行正常的新生代垃圾收集，同时也回收部分后台扫描线程标记的老年代分区。
+MixGC不仅进行正常的新生代垃圾收集，同时也回收部分后台扫描线程标记的老年代分区。Young GC回收是把新生代活着的对象都拷贝到Survivor的特定区域（Survivor to），剩下的Eden和Survivor from就可以全部回收清理了。那么，mixed GC就是把一部分老年区的region加到Eden和Survivor from的后面，合起来称为collection set, 就是将被回收的集合，下次mixed GC evacuation把他们所有都一并清理。选old region的顺序是垃圾多的（存活对象少）优先。
 
 它的GC步骤分2步：
 
@@ -570,13 +580,13 @@ MixGC不仅进行正常的新生代垃圾收集，同时也回收部分后台扫
 在G1 GC中，它主要是为Mixed GC提供标记服务的，并不是一次GC过程的一个必须环节。global concurrent marking的执行过程分为五个步骤：
 
 - 初始标记（initial mark，STW）
-      在此阶段，G1 GC 对根进行标记。该阶段与常规的     (STW) 年轻代垃圾回收密切相关。
+     在此阶段，G1 GC 对根进行标记。该阶段与常规的(STW) 新生代垃圾回收密切相关。
 - 根区域扫描（root region scan）
-      G1 GC 在初始标记的存活区扫描对老年代的引用，并标记被引用的对象。该阶段与应用程序（非 STW）同时运行，并且只有完成该阶段后，才能开始下一次 STW 年轻代垃圾回收。
+      G1 GC 在初始标记的存活区扫描对老年代的引用，并标记被引用的对象。该阶段与应用程序（非 STW）同时运行，并且只有完成该阶段后，才能开始下一次 STW 新生代垃圾回收。
 - 并发标记（Concurrent Marking）
-      G1 GC 在整个堆中查找可访问的（存活的）对象。该阶段与应用程序同时运行，可以被 STW 年轻代垃圾回收中断
+      G1 GC 在整个堆中查找可访问的（存活的）对象。该阶段与应用程序同时运行，可以被 STW 新生代垃圾回收中断
 - 最终标记（Remark，STW）
-      该阶段是 STW 回收，帮助完成标记周期。G1 GC     清空 SATB 缓冲区，跟踪未被访问的存活对象，并执行引用处理。
+      该阶段是 STW 回收，帮助完成标记周期。G1 GC清空 SATB 缓冲区，跟踪未被访问的存活对象，并执行引用处理。
 - 清除垃圾（Cleanup，STW）
       在这个最后阶段，G1 GC 执行统计和 RSet 净化的 STW 操作。在统计期间，G1 GC 会识别完全空闲的区域和可供进行混合垃圾回收的区域。清理阶段在将空白区域重置并返回到空闲列表时为部分并发。
 
@@ -591,6 +601,10 @@ MixGC不仅进行正常的新生代垃圾收集，同时也回收部分后台扫
 **最终标记** 对并发标记阶段，由于用户线程执行造成的改动进行修正，使用原始快照方法。
 
 **筛选回收** 对Region进行排序，根据回收价值，选择任意多个Region构成回收集，将存活对象复制到空的Region中去，因为涉及到存活对象的移动，所以是暂停用户线程的。
+
+相关资料：
+
+https://www.jianshu.com/p/aef0f4765098
 
 ### 垃圾收集器相关的参数
 
@@ -655,7 +669,7 @@ JDK8默认情况下服务端模式下JVM垃圾回收参数是-XX:+UseParallelGC�
 
 Max memory = [-Xmx] + [-XX:MaxPermSize] + number_of_threads * [-Xss]
 
--Xss128k:设置每个线程的堆栈大小.JDK5.0以后每个线程堆栈大小为1M。
+-Xss128k:设置每个线程的堆栈大小.JDK5.0以后每个线程的栈大小为1M。
 
 -Xms 堆内存的初始大小，默认为物理内存的1/64
 -Xmx 堆内存的最大大小，默认为物理内存的1/4
@@ -1025,3 +1039,210 @@ https://www.zhihu.com/question/30300585
 - **并非所有的类都需要在它们的class文件中拥有<clinit>()方法，** 如果类没有声明任何类变量，也没有静态初始化语句，那么它就不会有`<clinit>()`方法。如果类声明了类变量，但没有明确的使用类变量初始化语句或者静态代码块来初始化它们，也不会有`<clinit>()`方法。如果类仅包含静态`final`常量的类变量初始化语句，而且这些类变量初始化语句采用编译时常量表达式，类也不会有`<clinit>()`方法。**只有那些需要执行Java代码来赋值的类才会有<clinit>()**
 - `final`常量：Java虚拟机在使用它们的任何类的常量池或字节码中直接存放的是它们表示的常量值。
 
+### JVM调优有哪些工具？
+
+#### jstat
+
+jstat可以打印出当前JVM运行的各种状态信息，例如新生代内存使用情况，老年代内存使用情况，Minor GC发生总次数，总耗时，Full GC发生总次数，总耗时。
+```
+//5828是java进程id，1000是打印间隔，每1000毫秒打印一次，100是总共打印100次
+jstat -gc 5828 1000 100
+```
+
+打印结果如下：
+
+![image-20200725204237083](../static/image-20200725204237083.png)
+
+各个参数的含义如下：
+
+`S0C` 新生代中第一个survivor（幸存区）的总容量 (字节) 
+
+`S1C `新生代中第二个survivor（幸存区）的总容量 (字节) 
+
+`S0U` 新生代中第一个survivor（幸存区）目前已使用空间 (字节) 
+
+`S1U` 新生代中第二个survivor（幸存区）目前已使用空间 (字节) 
+
+`EC` 新生代中Eden（伊甸园）的总容量 (字节) 
+
+`EU` 新生代中Eden（伊甸园）目前已使用空间 (字节) 
+
+`OC` 老年代的总容量 (字节) 
+
+`OU` 老年代代目前已使用空间 (字节) 
+
+`YGC` 目前新生代垃圾回收总次数 
+
+`YGCT` 目前新生代垃圾回收总消耗时间 
+
+`FGC` 目前full gc次数总次数
+
+`FGCT` 目前full gc次数总耗时，单位是秒
+
+`GCT` 垃圾回收总耗时
+
+一般还可以使用`jstat -gcutil <pid>`:统计gc信息，这样打印出来的结果是百分比，而不是实际使用的空间，例如jstat -gcutil 1 1000 100
+
+例如，S0代表 新生代中第一个survivor区的空间使用了73.19%，E代表新生代Eden区使用了51%，O代表老年代食堂了98%
+
+![image-20200725204859356](../static/image-20200725204859356.png)
+
+#### jstack
+
+jstack可以生成当前JVM的线程快照，也就是当前每个线程当前的状态及正在执行的方法，锁相关的信息。`jstack -l 进程id  `，-l代表除了堆栈信息外，还会打印锁的附加信息。jstack还会检测出死锁信息。一般可以用于定位线程长时间停顿，线程间死锁等问题。
+
+例如在下面的例子中，第一个线程获取到lock1，再去获取lock2，第二个线程先获取到lock2，然后再去获取lock1。每个线程都只获得了一个锁，同时在获取另外一个锁，就会进入死锁状态。
+
+```java
+public static void main(String[] args) {
+        final Integer lock1 = new Integer(1);
+        final String  lock2 = new String();
+        ExecutorService executorService = Executors.newCachedThreadPool();
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                synchronized (lock1) {
+                    System.out.println("线程1获得了lock1");
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    System.out.println("线程1休眠结束");
+                    System.out.println("线程1开始尝试获取lock2");
+                    synchronized (lock2) {
+                        System.out.println("线程1获得了lock2");
+                    }
+                }
+            }
+        });
+        executorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                synchronized (lock2) {
+                    System.out.println("线程2获得了lock2");
+                    System.out.println("线程2开始尝试获取lock1");
+                    synchronized (lock1) {
+                        System.out.println("线程2获得了lock2");
+                    }
+                }
+            }
+        });
+    }
+```
+
+使用`jstack -l 进程id`就可以打印出当前的线程信息
+
+![image-20200726165954263](../static/image-20200726165954263.png)
+
+以及各个线程的状态，执行的方法（pool-1-thread-1和pool-1-thread-2分别代表线程池的第一个线程和第二个线程）：
+
+![image-20200726170056096](../static/image-20200726170056096.png)
+
+#### jmap
+
+一般可以生成当前堆栈快照。使用 jmap -heap可以打印出当前各个分区的内存使用情况，使用`jmap -dump:format=b,file=dump.hprof 进程id`可以生成当前的堆栈快照，堆快照和对象统计信息，对生成的堆快照进行分析，可以分析堆中对象所占用内存的情况，检查大对象等。执行`jvisualvm`命令打开使用Java自带的工具Java VisualVM来打开堆栈快照文件，进行分析。可以用于排查内存溢出，内存泄露问题。
+
+也可以配置启动时的JVM参数，让发送内存溢出时，自动生成堆栈快照文件。
+
+```
+//出现 OOM 时生成堆 dump: 
+-XX:+HeapDumpOnOutOfMemoryError
+//生成堆文件地址：
+-XX:HeapDumpPath=/home/liuke/jvmlogs/
+```
+
+*查看内存使用情况*
+
+![image-20200726173723112](../static/image-20200726173723112.png)
+
+
+
+ **jmap -histo**打印出当前堆中的对象统计信息，包括类名，每个类的实例数量，总占用内存大小。
+
+```java
+instances列：表示当前类有多少个实例。
+bytes列：说明当前类的实例总共占用了多少个字节
+class name列：表示的就是当前类的名称，class name 对于基本数据类型，使用的是缩写。解读：B代表byte ，C代表char ，D代表double， F代表float，I代表int，J代表long，Z代表boolean 
+前边有[代表数组，[I 就相当于int[] 
+对象数组用`[L+类名`表示 
+```
+
+![image-20200726174009407](../static/image-20200726174009407.png) 
+
+使用**jmap -dump:format=b,file=/存放路径/heapdump.hprof 进程id**就可以得到堆转储文件，然后执行jvisualvm命令就可以打开JDK自带的jvisualvm软件。
+
+例如在这个例子中会造成OOM问题，通过生成heapdump.hprof文件，可以使用jvisualvm查看造成OOM问题的具体代码位置。
+
+```
+public class Test018 {
+
+    ArrayList<TestObject> arrayList = new ArrayList<TestObject>();
+
+    public static void main(String[] args) {
+        Test018 test018 =new Test018();
+        Random random = new Random();
+        for (int i = 0; i < 10000000; i++) {
+            TestObject testObject = new TestObject();
+            test018.arrayList.add(testObject);
+        }
+    }
+    private static class TestObject {
+        public byte[] placeholder = new byte[64 * 1024];//每个变量是64k
+    }
+}
+
+-Xms20m -Xmx20m -verbose:gc -XX:+PrintGCDetails -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/存放路径/heapdump.hprof
+```
+
+造成OOM问题的代码位置：
+
+![image-20200726190137193](../static/image-20200726190137193.png)
+
+堆内对象列表
+
+![image-20200726190451781](../static/image-20200726190451781.png)
+
+占用内存最多的实例对象就是这个placeholder对象
+
+![image-20200726190549717](../static/image-20200726190549717.png)
+
+#### MAT
+
+MAT主要可以用于分析内存泄露，可以查询dump堆转储文件中的对象列表，以及潜在的内存泄露的对象。
+
+通过导入hprof文件，主页会展示潜在的内存泄露问题，比如下面这个例子中
+
+```java
+public class Test018 {
+    static ArrayList<TestObject> arrayList = new ArrayList<TestObject>();
+    public static void main(String[] args) {
+        Random random = new Random();
+        for (int i = 0; i < 10000000; i++) {
+            TestObject testObject = new TestObject();
+            Test018.arrayList.add(testObject);
+        }
+    }
+    private static class TestObject {
+        public byte[] placeholder = new byte[64 * 1024];
+    }
+}
+```
+
+在详情页面Shortest Paths To the Accumulation Point表示GC root对象到内存消耗聚集点的最短路径，内存聚集点的意思就是占用了大量内存的对象，也就是可能发生； 内存泄露的对象。
+
+![image-20200726205127282](../static/image-20200726205127282.png)
+
+
+
+然后在主页点击Histogram，进入Histogram页面可以看到对象列表，with incomming references 也就是可以查看所有对这个对象的引用（思路一般优先看占用内存最大对象；其次看数量最多的对象。）。我们这个例子中主要是byte[]数组分配了占用了大量的内存空间，而byte[]主要来自于Test018类的静态变量arrayList的每个TestObject类型的元素的placeholder属性。
+
+![image-20200726205515840](../static/image-20200726205515840.png)
+
+![image-20200726205837727](../static/image-20200726205837727.png)
+
+同时可以点击 内存快照对比 功能对两个dump文件进行对比，判断两个dump文件生成间隔期间，各个对象的数量变化，以此来判断内存泄露问题。
+
+![img](../static/640-20200726210041919.jpeg)
+
+![img](../static/640-20200726210058837.jpeg)
