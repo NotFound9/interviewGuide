@@ -796,3 +796,132 @@ abstract class HashIterator {
 因为ArrayList和HashMap的Iterator都是上面所说的“fail-fast Iterator”，Iterator在获取下一个元素，删除元素时，都会比较expectedModCount和modCount，不一致就会抛出异常。
 
 所以当使用Iterator遍历元素(for-each遍历底层实现也是Iterator)时，需要删除元素，一定需要使用 **Iterator的remove()方法** 来删除，而不是直接调用ArrayList或HashMap自身的remove()方法,否则会导致Iterator中的expectedModCount没有及时更新，之后获取下一个元素或者删除元素时，expectedModCount和modCount不一致，然后抛出ConcurrentModificationException异常。
+
+### 谈一谈你对LinkedHashMap的理解？
+
+LinkedHashMap是HashMap的子类，与HashMap的实现基本一致，只是说所有的节点都有一个before和after指针，根据插入顺序形成一个双向链表。所以可以根据插入顺序进行遍历，默认accessOrder是false，也就是按照插入顺序来排序的，map.keySet().iterator().next()第一个元素是最早插入的元素的key。LinkedHashMap可以用来实现LRU算法。(accessOrder为true，会按照访问顺序来排序。)
+LRU算法实现：
+
+```java
+//使用LinkedHashMap实现LRU算法(accessOrder为false的实现方式)
+// LinkedHashMap默认的accessOrder为false，也就是会按照插入顺序排序，
+// 所以在插入新的键值对时，总是添加在队列尾部，
+// 如果是访问已存在的键值对，或者是put操作的键值对已存在，那么需要将键值对先移除再添加。
+public class LRUCache{
+    int capacity;
+    Map<Integer, Integer> map;
+    public LRUCache(int capacity) {
+        this.capacity = capacity;
+        map = new LinkedHashMap<>();
+    }
+    public int get(int key) {
+        if (!map.containsKey(key)) { return -1; }
+        //先删除旧的位置，再放入新位置
+        Integer value = map.remove(key);
+        map.put(key, value);
+        return value;
+    }
+    public void put(int key, int value) {
+        if (map.containsKey(key)) {
+            map.remove(key);
+            map.put(key, value);
+            return;
+        }
+        map.put(key, value);
+        //超出capacity，删除最久没用的,利用迭代器，删除第一个
+        if (map.size() > capacity) {
+  	map.remove(map.keySet().iterator().next());
+        }
+    }
+}
+//使用LinkedHashMap实现LRU算法(accessOrder为true的实现方式)
+//如果是将accessOrder设置为true，get和put已有键值对时就不需要删除key了
+public static class LRUCache2 {
+    int capacity;
+    LinkedHashMap<Integer, Integer> linkedHashMap;
+    LRUCache2(int capacity) {
+      this.capacity = capacity;
+      linkedHashMap = new LinkedHashMap<Integer, Integer>(16,0.75f,true);
+    }
+    public int get(int key) {
+      Integer value = linkedHashMap.get(key);
+      return value == null ? -1 : value;
+    }
+    public void put(int key, int val) {
+      Integer value = linkedHashMap.get(key);
+      linkedHashMap.put(key, val);
+      if (linkedHashMap.size() > capacity) {
+       linkedHashMap.remove(linkedHashMap.keySet().iterator().next());
+      }
+    }
+}
+```
+#### LinkedHashMap是怎么保存节点的插入顺序或者访问顺序的呢？
+默认accessOrder为false，保存的是插入顺序，插入时调用的还是父类HashMap的putVal()方法，在putVal()中创建新节点时是会调用newNode()方法来创建一个节点，在newNode()方法中会调用linkNodeLast()方法将节点添加到双向链表的尾部。
+```java 
+final V putVal(int hash, K key, V value, boolean onlyIfAbsent,
+                   boolean evict) {
+//省略了部分代码...
+tab[i] = newNode(hash, key, value, null);
+//省略了部分代码...
+}
+//创建新节点
+Node<K,V> newNode(int hash, K key, V value, Node<K,V> e) {
+		LinkedHashMap.Entry<K,V> p = new LinkedHashMap.Entry<K,V>(hash, key, value, e);
+		linkNodeLast(p);
+		return p;
+}
+//移动到双向链表尾部
+private void linkNodeLast(LinkedHashMap.Entry<K,V> p) {
+    LinkedHashMap.Entry<K,V> last = tail;
+    tail = p;
+    if (last == null) head = p;
+    else {
+    		p.before = last;
+    		last.after = p;
+    }
+}
+```
+
+如果accessOrder为true，会保存访问顺序，在访问节点时，会调用afterNodeAccess()方法将节点先从双向链表移除，然后添加到链表尾部。
+```java
+public class LinkedHashMap<K,V>
+    extends HashMap<K,V>
+    implements Map<K,V>
+{
+//头结点，指向最老的元素
+    transient LinkedHashMap.Entry<K,V> head;
+//尾节点，指向最新的元素
+    transient LinkedHashMap.Entry<K,V> tail;
+//如果accssOrder为true，代表节点需要按照访问顺序排列，每次访问了元素，会将元素移动到尾部（代表最新的节点）。
+public V get(Object key) {
+        Node<K,V> e;
+        if ((e = getNode(hash(key), key)) == null)
+            return null;
+        if (accessOrder)
+            afterNodeAccess(e);
+        return e.value;
+}
+//将节点从双向链表中删除，移动到尾部。
+void afterNodeAccess(Node<K,V> e) { // move node to last
+        LinkedHashMap.Entry<K,V> last;
+        if (accessOrder && (last = tail) != e) {
+            LinkedHashMap.Entry<K,V> p =
+                (LinkedHashMap.Entry<K,V>)e, 
+            b = p.before, a = p.after;
+            p.after = null;
+            if (b == null) head = a;
+            else b.after = a;
+            if (a != null) a.before = b;
+            else last = b;
+            if (last == null) head = p;
+            else {
+                p.before = last;
+                last.after = p;
+            }
+            tail = p;
+            ++modCount;
+        }
+    }
+}
+```

@@ -1,8 +1,5 @@
 (PS：扫描[首页里面的二维码](README.md)进群，分享我自己在看的技术资料给大家，希望和大家一起学习进步！)
-
-目前还只是买了最新版的[《操作系统导论》](backend/bookRecommend?#《操作系统导论》),还没有完全看完，看完之后会从网上的面经中找一些实际的面试题，然后自己通过翻书查资料，写面试题解答。
-
-
+# 多线程专题
 
 #### [1.进程与线程的区别是什么？](#进程与线程的区别是什么？)
 #### [2.进程间如何通信？](#进程间如何通信？)
@@ -11,16 +8,41 @@
 #### [5.如何解决序列化时可以创建出单例对象的问题?](#如何解决序列化时可以创建出单例对象的问题?)
 #### [6.悲观锁和乐观锁是什么？](#悲观锁和乐观锁是什么？)
 #### [7.volatile关键字有什么用？怎么理解可见性，一般什么场景去用可见性？](#volatile关键字有什么用？怎么理解可见性，一般什么场景去用可见性？)
-
-#### [8.sychronize的实现原理是怎么样的？](#sychronize的实现原理是怎么样的？)
-
-
+#### [8.Java中线程的状态是怎么样的？](#Java中线程的状态是怎么样的？)
+#### [9.wait()，join()，sleep()方法有什么作用？](#wait()，join()，sleep()方法有什么作用？)
+#### [10.Thread.sleep(),Object.wait(),LockSupport.park()有什么区别？](#Thread.sleep(),Object.wait(),LockSupport.park()有什么区别？)
+#### [11.谈一谈你对线程中断的理解？](#谈一谈你对线程中断的理解？)
+#### [12.线程间怎么通信？](#线程间怎么通信？)
+#### [13.怎么实现实现一个生产者消费者？](#怎么实现实现一个生产者消费者？)
+#### [14.谈一谈你对线程池的理解？](#谈一谈你对线程池的理解？)
+#### [15.线程池有哪些状态？](#线程池有哪些状态？)
 
 ### 进程与线程的区别是什么？
+#### 批处理操作系统
 
-进程是计算机中已运行程序的实体，进程是操作系统资源分配的最小单位，拥有独立的地址空间，具备独立性，动态性，并发性。
+**批处理操作系统**就是把一系列需要操作的指令写下来，形成一个清单，一次性交给计算机。用户将多个需要执行的程序写在磁带上，然后交由计算机去读取并逐个执行这些程序，并将输出结果写在另一个磁带上。
 
-线程是CPU调度和执行的最小单位，线程共享同一进程的资源，上下文切换成本更加低，线程间的通信成本也会低一些。
+批处理操作系统在一定程度上提高了计算机的效率，但是由于**批处理操作系统的指令运行方式仍然是串行的，内存中始终只有一个程序在运行**，后面的程序需要等待前面的程序执行完成后才能开始执行，而前面的程序有时会由于I/O操作、网络等原因阻塞，导致CPU闲置所以**批处理操作效率也不高**。
+
+#### 进程的提出
+
+批处理操作系统的瓶颈在于内存中只存在一个程序，进程的提出，可以让内存中存在多个程序，每个程序对应一个进程，进程是操作系统资源分配的最小单位。CPU采用时间片轮转的方式运行进程：CPU为每个进程分配一个时间段，称作它的时间片。如果在时间片结束时进程还在运行，则暂停这个进程的运行，并且CPU分配给另一个进程（这个过程叫做上下文切换）。如果进程在时间片结束前阻塞或结束，则CPU立即进行切换，不用等待时间片用完。多进程的好处在于一个在进行IO操作时可以让出CPU时间片，让CPU执行其他进程的任务。
+
+#### 线程的提出
+
+随着计算机的发展，对CPU的要求越来越高，进程之间的切换开销较大，已经无法满足越来越复杂的程序的要求了。于是就发明了线程，线程是程序执行中一个单一的顺序控制流程，是程序执行流的最小单元，是处理器调度和分派的基本单位。一个进程可以有一个或多个线程，各个线程之间共享程序的内存空间(也就是所在进程的内存空间)。
+
+#### 进程和线程的区别
+
+进程是计算机中已运行程序的实体，进程是操作系统资源分配的最小单位。而线程是在进程中执行的一个任务，是CPU调度和执行的最小单位。他们两个本质的区别是是否**单独占有内存地址空间及其它系统资源（比如I/O）**：
+
+* 进程单独占有一定的内存地址空间，所以进程间存在内存隔离，数据是分开的，数据共享复杂但是同步简单，各个进程之间互不干扰；而线程共享所属进程占有的内存地址空间和资源，数据共享简单，但是同步复杂。
+
+* 进程单独占有一定的内存地址空间，一个进程出现问题不会影响其他进程，不影响主程序的稳定性，可靠性高；一个线程崩溃可能影响整个程序的稳定性，可靠性较低。
+
+* 进程单独占有一定的内存地址空间，进程的创建和销毁不仅需要保存寄存器和栈信息，还需要资源的分配回收以及页调度，开销较大；线程只需要保存寄存器和栈信息，开销较小。
+
+另外一个重要区别是，进程是操作系统进行资源分配的基本单位，而线程是操作系统进行调度的基本单位，即CPU分配时间的单位 。
 
 #### 独立性
 
@@ -563,163 +585,10 @@ instance = new Singleton(); // instance是volatile变量
 
 用于单例模式用于保证内存可见性，以及防止指令重排序。
 
-### sychronize的实现原理是怎么样的？
 
-```java
-public class SyncTest {
-    public void syncBlock(){
-        synchronized (this){
-            System.out.println("hello block");
-        }
-    }
-    public synchronized void syncMethod(){
-        System.out.println("hello method");
-    }
-}
-```
-
-当SyncTest.java被编译成class文件的时候，`synchronized`关键字和`synchronized`方法的字节码略有不同，我们可以用`javap -v` 命令查看class文件对应的JVM字节码信息，部分信息如下：
-
-```java
-{
-  public void syncBlock();
-    descriptor: ()V
-    flags: ACC_PUBLIC
-    Code:
-      stack=2, locals=3, args_size=1
-         0: aload_0
-         1: dup
-         2: astore_1
-         3: monitorenter				 	  // monitorenter指令进入同步块
-         4: getstatic     #2                  // Field java/lang/System.out:Ljava/io/PrintStream;
-         7: ldc           #3                  // String hello block
-         9: invokevirtual #4                  // Method java/io/PrintStream.println:(Ljava/lang/String;)V
-        12: aload_1
-        13: monitorexit						  // monitorexit指令退出同步块
-        14: goto          22
-        17: astore_2
-        18: aload_1
-        19: monitorexit						  // monitorexit指令退出同步块
-        20: aload_2
-        21: athrow
-        22: return
-      Exception table:
-         from    to  target type
-             4    14    17   any
-            17    20    17   any
- 
-
-  public synchronized void syncMethod();
-    descriptor: ()V
-    flags: ACC_PUBLIC, ACC_SYNCHRONIZED      //添加了ACC_SYNCHRONIZED标记
-    Code:
-      stack=2, locals=1, args_size=1
-         0: getstatic     #2                  // Field java/lang/System.out:Ljava/io/PrintStream;
-         3: ldc           #5                  // String hello method
-         5: invokevirtual #4                  // Method java/io/PrintStream.println:(Ljava/lang/String;)V
-         8: return
- 
-}
-```
-
-对于`synchronized`关键字而言，`javac`在编译时，会生成对应的`monitorenter`和`monitorexit`指令分别对应`synchronized`同步块的进入和退出，有两个`monitorexit`指令的原因是为了保证抛异常的情况下也能释放锁，所以`javac`为同步代码块添加了一个隐式的try-finally，在finally中会调用`monitorexit`命令释放锁。
-
-而对于`synchronized`方法而言，`javac`为其生成了一个`ACC_SYNCHRONIZED`关键字，在JVM进行方法调用时，发现调用的方法被`ACC_SYNCHRONIZED`修饰，则会先尝试获得锁。
-
-#### 锁
-
-这是网上看到的一个流程图：
-
-![sychronize](../static/sychronize.png)
-
-就是Java对象的内存布局其实由对象头+实例数据+对齐填充三部分组成，而对象头主要包含Mark Word+指向对象所属的类的指针组成。Mark Word主要用于存储对象自身的运行时数据，哈希码，GC分代年龄，锁标志等。
-
-下面就是Mark Word的数据映射表
-
-![image](../static/68747470733a2f2f757365722d676f6c642d63646e2e786974752e696f2f323031382f31312f32382f313637353964643162306239363236383f773d37323026683d32353026663d6a70656726733d3337323831.jpeg)
-
-##### 偏向锁
-
-根据上面的表来看，Mark Word后三位为101时，加锁对象的状态为偏向锁，偏向锁的意义在于同一个线程访问sychronize代码块时不需要进行加锁，解锁操作，性能开销更低（HotSpot[1]的作者经过研究发现，大多数情况下，锁不仅不存在多线程竞争，而且总是由同一线程多次获得，为了让线程获得锁的代价更低而引入了偏向锁。）
-
-因为正常情况下，当一个线程访问同步块并获取轻量级锁时，需要进行CAS操作将对象头的锁记录里指向当前线程的栈中的锁记录，执行完毕后需要释放轻量级锁。如果是同一个线程多次访问sychronize代码块，多次获取和释放轻量级，开销会偏大，所以会一开始判断对象是无锁状态，会将对象头设置为偏向锁，并且这个的线程ID到Mark Word，后续同一线程判断加锁标志是偏向锁，并且线程ID一致就可以直接执行。
-
-![img](../static/16315cb9175365f5.png)
-
-#### 轻量级锁
-
-JVM的开发者发现在很多情况下，在Java程序运行时，同步块中的代码都是不存在竞争的，不同的线程交替的执行同步块中的代码。这种情况下，用重量级锁是没必要的。因此JVM引入了轻量级锁的概念。
-
-线程在执行同步块之前，JVM会先在当前的线程的栈帧中创建一个`Lock Record`，其包括一个用于存储对象头中的 `mark word`（官方称之为`Displaced Mark Word`）以及一个指向对象的指针。下图右边的部分就是一个`Lock Record`。
-
-![img](../static/68747470733a2f2f757365722d676f6c642d63646e2e786974752e696f2f323031382f31312f32382f313637353964643162323461633733643f773d38363926683d33353126663d706e6726733d3331313531.png)
-
-(1)轻量级锁加锁 
-
-线程在执行同步块之前，JVM会先在当前线程的栈桢中创建用于存储锁记录的空间，并 将对象头中的Mark Word复制到锁记录中，官方称为Displaced Mark Word。然后线程尝试使用 CAS将对象头中的Mark Word替换为指向锁记录的指针。如果成功，当前线程获得锁，如果失败，表示其他线程竞争锁，当前线程便尝试使用自旋来获取锁，自旋获取锁失败的次数达到一定次数后就会进行锁升级，将锁升级为重量级锁，当前线程就会被阻塞，直到获得轻量级锁的线程执行完毕，释放锁，唤醒阻塞的线程。 
-
-(2)轻量级锁解锁 
-
-轻量级解锁时，会使用原子的CAS操作将Displaced Mark Word替换回到对象头，如果成 功，则表示没有竞争发生。如果失败，表示当前锁存在竞争，锁就会膨胀成重量级锁。图2-2是 两个线程同时争夺锁，导致锁膨胀的流程图。 
-
-![img](../static/16315cb9193719c2.png)
-
-### 重量级锁
-
-重量级锁是我们常说的传统意义上的锁，其利用操作系统底层的同步机制去实现Java中的线程同步。
-
-重量级锁的状态下，对象的`mark word`为指向一个堆中monitor对象的指针。
-
-一个monitor对象包括这么几个关键字段：cxq（下图中的ContentionList），EntryList ，WaitSet，owner。
-
-其中cxq ，EntryList ，WaitSet都是由ObjectWaiter的链表结构，owner指向持有锁的线程。
-
-![image-20200516203630962](../static/image-20200516203630962.png)
-
-当一个线程尝试获得锁时，如果该锁已经被占用，则会将该线程封装成一个ObjectWaiter对象插入到cxq的队列尾部，然后暂停当前线程。当持有锁的线程释放锁前，会将cxq中的所有元素移动到EntryList中去，并唤醒EntryList的队首线程。
-
-如果一个线程在同步块中调用了`Object#wait`方法，会将该线程对应的ObjectWaiter从EntryList移除并加入到WaitSet中，然后释放锁。当wait的线程被notify之后，会将对应的ObjectWaiter从WaitSet移动到EntryList中。
-
-#### 三种锁的优缺点对比
-
-![image-20200516203659737](../static/image-20200516203659737.png)
-
-参考文章：
-
-[死磕Synchronized底层实现--概论](https://github.com/farmerjohngit/myblog/issues/12)
-
-[浅谈偏向锁、轻量级锁、重量级锁](https://www.jianshu.com/p/36eedeb3f912)
-
-### 进程和线程的区别？并行和并发的区别？了解协程么？
-
-#### 批处理操作系统
-
-**批处理操作系统**就是把一系列需要操作的指令写下来，形成一个清单，一次性交给计算机。用户将多个需要执行的程序写在磁带上，然后交由计算机去读取并逐个执行这些程序，并将输出结果写在另一个磁带上。
-
-批处理操作系统在一定程度上提高了计算机的效率，但是由于**批处理操作系统的指令运行方式仍然是串行的，内存中始终只有一个程序在运行**，后面的程序需要等待前面的程序执行完成后才能开始执行，而前面的程序有时会由于I/O操作、网络等原因阻塞，导致CPU闲置所以**批处理操作效率也不高**。
-
-#### 进程的提出
-
-批处理操作系统的瓶颈在于内存中只存在一个程序，进程的提出，可以让内存中存在多个程序，每个程序对应一个进程，进程是操作系统资源分配的最小单位。CPU采用时间片轮转的方式运行进程：CPU为每个进程分配一个时间段，称作它的时间片。如果在时间片结束时进程还在运行，则暂停这个进程的运行，并且CPU分配给另一个进程（这个过程叫做上下文切换）。如果进程在时间片结束前阻塞或结束，则CPU立即进行切换，不用等待时间片用完。多进程的好处在于一个在进行IO操作时可以让出CPU时间片，让CPU执行其他进程的任务。
-
-#### 线程的提出
-随着计算机的发展，对CPU的要求越来越高，进程之间的切换开销较大，已经无法满足越来越复杂的程序的要求了。于是就发明了线程，线程是程序执行中一个单一的顺序控制流程，是程序执行流的最小单元，是处理器调度和分派的基本单位。一个进程可以有一个或多个线程，各个线程之间共享程序的内存空间(也就是所在进程的内存空间)。
-#### 进程和线程的区别
-进程是一个独立的运行环境，而线程是在进程中执行的一个任务。他们两个本质的区别是是否**单独占有内存地址空间及其它系统资源（比如I/O）**：
-
-* 进程单独占有一定的内存地址空间，所以进程间存在内存隔离，数据是分开的，数据共享复杂但是同步简单，各个进程之间互不干扰；而线程共享所属进程占有的内存地址空间和资源，数据共享简单，但是同步复杂。
-
-* 进程单独占有一定的内存地址空间，一个进程出现问题不会影响其他进程，不影响主程序的稳定性，可靠性高；一个线程崩溃可能影响整个程序的稳定性，可靠性较低。
-
-* 进程单独占有一定的内存地址空间，进程的创建和销毁不仅需要保存寄存器和栈信息，还需要资源的分配回收以及页调度，开销较大；线程只需要保存寄存器和栈信息，开销较小。
-
-另外一个重要区别是，进程是操作系统进行资源分配的基本单位，而线程是操作系统进行调度的基本单位，即CPU分配时间的单位 。
-
-#### Java中线程的状态是怎么样的？
+### Java中线程的状态是怎么样的？
 
 在操作系统中，线程等同于轻量级的进程。
-
-
 
 ![img](../static/4621.png)
 
@@ -822,7 +691,7 @@ TIMED_WAITING与WAITING状态类似，只是TIMED_WAITING状态等待的时间�
 
 调用**Thread.sleep(long)**，**Object.wait(long)**，**Thread.join(long)**会使得RUNNABLE状态转换为TIMED_WAITING状态
 
-### Java线程间的通信
+### wait()，join()，sleep()方法有什么作用？
 
 首先需要对wait()，join()，sleep()方法进行介绍。
 
@@ -920,6 +789,40 @@ http://redspider.group:4000/article/01/4.html
 
 https://www.jianshu.com/p/5d88b122a050
 
+### Thread.sleep(),Object.wait(),LockSupport.park()有什么区别？
+
+1.这三个方法都会让线程挂起，释放CPU时间片，进入到阻塞态。但是Object.wait()需要释放锁，所以必须在synchronized同步锁中使用，同理配套的Object.notify()也是。而Thead.sleep(),LockSupport.park()不需要在synchronized同步锁中使用，并且在调用时也不会释放锁。
+
+2.由于Thread.sleep()没有对应的唤醒线程的方法，所以必须指定超时时间，超过时间后，线程恢复。所以调用Thread.sleep()后的线程一般是出于TIME_WAITING状态，而调用了Object.wait()，LockSupport.park()的方法是进入到WAITING状态。
+
+3.Object.wait()对应的唤醒方法为Object.notify()，LockSupport.park()对应的唤醒方法为LockSupport.unpark()。
+
+4.在代码中必须能保证wait方法比notify方法先执行，如果notify方法比wait方法早执行的话，就会导致因wait方法进入休眠的线程接收不到唤醒通知的问题。而park、unpark则不会有这个问题，我们可以先调用unpark方法释放一个许可证，这样后面线程调用park方法时，发现已经许可证了，就可以直接获取许可证而不用进入休眠状态了。（**LockSupport.park() 的实现原理是通过二元信号量做的阻塞，要注意的是，这个信号量最多只能加到1，也就是无论执行多少次unpark()方法，也最多只会有一个许可证。**）
+
+5.三种方法让线程进入阻塞态后，都可以响应中断，也就是调用Thread.interrupt()方法会设置中断标志位，之前执行Thread.sleep(),Object.wait()了的线程会抛出InterruptedException异常，然后需要代码进行处理。而调用了park()方法的线程在响应中断只会相当于一次正常的唤醒操作（等价于调用unpark()方法），让线程唤醒，继续执行后面的代码，不会抛出InterruptedException异常。
+
+![img](../static/5bff9535e4b04dd2799a6ae8.png)
+
+参考链接：
+
+https://blog.csdn.net/u013332124/article/details/84647915
+
+### 谈一谈你对线程中断的理解？
+
+在Java中认为，一个线程不应该由其他线程来强制中断或者停止，所以一些会强制中断线程的方法Thread.stop, Thread.suspend都已经废弃了。所以一般是通过调用thread.interrupt();方法来设置线程的中断标识，
+
+1.这样如果线程是处于阻塞状态，会抛出InterruptedException异常，代码可以进行捕获，进行一些处理。（例如Object#wait、Thread#sleep、BlockingQueue#put、BlockingQueue#take。其中BlockingQueue主要调用conditon.await()方法进行等待，底层通过LockSupport.park()实现）
+
+2.如果线程是处于RUNNABLE状态，也就是正常运行，调用thread.interrupt();只是会设置中断标志位，不会有什么其他操作。
+
+```java
+//将线程的中断标识设置为true
+thread.interrupt();
+//判断线程的中断标识是否为true
+thread.isInterrupted()
+//会返回当前的线程中断状态，并且重置线程的中断标识，将中断标识设置为false
+thread.interrupted()
+```
 ### 线程间怎么通信？
 
 1.通过sychronized锁来进行同步，让一次只能一个线程来执行。
@@ -1039,8 +942,9 @@ Profiler可以被复用在方法调用耗时统计的功能上，在方法的入
 
 方法调用后执行end()方法，好处是两个方法的调用不用在一个方法或者类中，比如在AOP(面 向方面编程)中，可以在方法调用前的切入点执行begin()方法，而在方法调用后的切入点执行 end()方法，这样依旧可以获得方法的执行耗时。 
 
-### 实现一个生产者消费者
+### 怎么实现实现一个生产者消费者？
 
+#### 1.使用Object.wait()和Object.notify()实现
 使用queue作为一个队列，存放数据，并且充当锁，每次只能同时存在一个线程来生产或者消费数据，一旦队列容量>10,就进入waiting状态，一旦成功往队列添加数据，那么就唤醒所有线程（主要是生产者线程起来消费）。生产者消费时一旦发现队列容量==0，也会主动进入waiting状态。
 
 ```java
@@ -1118,11 +1022,11 @@ private static class Producer {
 }
 ```
 
-#### 使用Lock和Condition来实现
+#### 2.使用Lock和Condition来实现
 
 调用Object.wait()方法可以让线程进入等待状态，被添加到Object的monitor监视器的等待队列中，Object.notifyAll()可以唤醒monitor监视器等待队列中的所有线程。
 
-而调用lock的newCondition()方法,可以返回一个ConditionObject实例对象，每个ConditionObject包含一个链表，存储等待队列。可以认为一个ReentrantLock有一个同步队列（存放没有获得锁的线程），和多个等待队列（存放调用await()方法的线程）。
+而调用lock的newCondition()方法,可以返回一个ConditionObject实例对象，每个ConditionObject包含一个链表，存储等待队列。可以认为一个ReentrantLock有一个同步队列（存放没有获得锁的线程），和多个等待队列（存放调用await()方法的线程）。使用Condition.singal()和Condition.singalAll()可以更加精准的唤醒线程，也就是唤醒的都是这个Condition对应的等待队列里面的线程，而Object.notify()和Object.notifyAll()只能唤醒唯一的等待队列中的线程。
 
 ```java
 ReentrantLock lock = new ReentrantLock();
@@ -1255,7 +1159,7 @@ private static class Producer {
     }
 }
 ```
-#### BlockingQueue
+#### 3.使用BlockingQueue实现
 利用阻塞队列BlockingQueue的特征进行生产和消费的同步(其实阻塞队列内部也是基于Lock,condition实现的 )
 
 ```java
@@ -1293,26 +1197,6 @@ public class BlockQueueRepository<T> extends AbstractRepository<T> implements Re
     }
 }
 ```
-
-### AQS是什么？
-
-AQS就是AbstractQueuedSynchronizer，队列同步器，内部实现了一个同步队列（一个双向链表，存放没有获取到锁的线程），一个条件等待队列，负责存放等待被唤醒的线程，唤醒后会进入到同步队列。
-
-ReentrantLock其实就是有一个变量sync，Sync父类是AbstractQueuedSynchronizer
-
-```java
-public class ReentrantLock implements Lock, java.io.Serializable {
-	private final Sync sync;
-}
-```
-
-ReentrantLock的非公平锁与公平锁的区别在于非公平锁在CAS更新state失败后会调用tryAcquire()来判断是否需要进入同步队列，会再次判断state的值是否为0，为0会去CAS更新state值，更新成功就直接获得锁，否则就进入等待队列。
-
-而公平锁首先判断state是否为0，为0并且等待队列为空，才会去使用CAS操作抢占锁，抢占成功就获得锁，没成功并且当前线程不是获得锁的线程，都会被加入到等待队列。
-
-参考资料：
-
-[深入理解ReentrantLock的实现原理]https://mp.weixin.qq.com/s?src=11&timestamp=1595675057&ver=2482&signature=tM4jJR1bsGMBZxest2FY-VBXE8UDCEbqXwezlhRbJy5Ylsp0cWxx-DYrCMMzN2Z1E3rMrOndXCJXdThYx1xc*VBbpYfL4De3WtFgqndniaDTsgGrpBTVhVVx*ASCgZbX&new=1
 
 ### 谈一谈你对线程池的理解？
 
@@ -1443,13 +1327,13 @@ public ScheduledThreadPoolExecutor(int corePoolSize,
 
 线程池生命周期：
 
-- **RUNNING**：表示线程池处于运行状态，这时候的线程池可以接受任务和处理任务。值是-1
+- **RUNNING**：表示线程池处于运行状态，这时候的线程池可以接受任务和处理任务。值是-1，
 
-- **SHUTDOWN **：表示线程池不接受新任务，但仍然可以处理队列中的任务。二进制值是0
+- **SHUTDOWN **：表示线程池不接受新任务，但仍然可以处理队列中的任务，二进制值是0。调用showdown()方法会进入到SHUTDOWN状态。
 
-- **STOP**：表示线程池不接受新任务，也不处理队列中的任务，同时中断正在执行任务的线程。值是1
+- **STOP**：表示线程池不接受新任务，也不处理队列中的任务，同时中断正在执行任务的线程，值是1。调用showdownNow()方法会进入到STOP状态。
 
-- **TIDYING**：表示所有的任务都已经终止，并且工作线程的数量为0。值是2
+- **TIDYING**：表示所有的任务都已经终止，并且工作线程的数量为0。值是2。SHUTDOWN和STOP状态的线程池任务执行完了，工作线程也为0了就会进入到TIDYING状态。
 
 - **TERMINATED**：表示线程池处于终止状态。值是3
 

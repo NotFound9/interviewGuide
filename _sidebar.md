@@ -5,6 +5,7 @@
   	- [ArrayList和LinkedList](docs/ArrayList.md)
   	- [HashMap和ConcurrentHashMap](docs/HashMap.md)
   - [多线程](docs/JavaMultiThread.md)
+  - [锁相关](docs/Lock.md)
 * Redis
   - [基础](docs/RedisBasic.md)
   - [数据结构](docs/RedisDataStruct.md)

@@ -2929,105 +2929,92 @@ public int findByHalf(int[] array, int target) {
 
 LRU其实就是Last Recent Used，就是最近使用淘汰策略，所以当空间满了时，就根据最近使用时间来删除。一般是使用一个双向链表来实现，同时为了快速访问节点，会使用一个HashMap来存储键值映射关系。(需要注意的是，为了在内存满时删除最后一个节点时，可以以O(1)时间复杂度从HashMap中删掉这个键值对，每个节点除了存储value以外，还需要存储key)。
 
-```
-public class Test003 {
-    //双向链表
-    public static class ListNode {
-        String key;
-        Integer value;
-        ListNode pre = null;
-        ListNode next = null;
-        ListNode(String key, Integer value) {
-            this.key = key;
-            this.value = value;
-        }
-    }
+#### 添加新元素的过程：
 
-    ListNode head;
-    ListNode last;
-    int limit=4;
-    HashMap<String, ListNode> hashMap = new HashMap<String, ListNode>();
+首先我们增加两个方法，remove()方法用于删除一个节点，addNewNodeToHead()代表添加一个节点到头部。
 
-    public void add(String key, Integer val) {
-        ListNode existNode = hashMap.get(key);
-        if (existNode!=null) {
-            //从链表中删除这个元素
-            ListNode pre = existNode.pre;
-            ListNode next = existNode.next;
-            if (pre!=null) {
-               pre.next = next;
-            }
-            if (next!=null) {
-               next.pre = pre;
-            }
-            //更新尾节点
-            if (last==existNode) {
-                last = existNode.pre;
-            }
-            //移动到最前面
-            head.pre = existNode;
-            existNode.next = head;
-            head = existNode;
-            //更新值
-            existNode.value = val;
-        } else {
-            //达到限制，先删除尾节点
-            if (hashMap.size() == limit) {
-                ListNode deleteNode = last;
-                hashMap.remove(deleteNode.key);//正是因为需要删除，所以才需要每个ListNode保存key
-                last = deleteNode.pre;
-                deleteNode.pre = null;
-                last.next = null;
-            }
-            ListNode node = new ListNode(key,val);
-            hashMap.put(key,node);
-            if (head==null) {
-                head = node;
-                last = node;
-            } else {
-                //插入头结点
-                node.next = head;
-                head.pre = node;
-                head = node;
-            }
-        }
+1.判断节点是否已经存在于链表中，是的话，找出节点，
+
+1.1更新value，
+
+1.2调用remove()方法删除节点，
+
+1.3调用addNewNodeToHead()将节点添加到链表头部。
+
+2.节点不存在于链表中，那么判断链表长度是否超出限制，
+
+2.1是的话remove(lastNode.key)
+
+2.2创建一个新节点，调用addNewNodeToHead()将节点添加到链表头部。
+
+
+
+remove()方法的细节，主要是更新node的前后节点的next或pre指针，以及更新后需要判断删除的节点是否是headNode或者lastNode，是的话同时需要更新headNode或者lastNode。
+
+addNewNodeToHead()方法细节，主要是要先判断head是否为null，是的话说明链表为空，需要将headNode和lastNode都设置为node，不为null就执行添加操作，将headNode.pre设置为node,node的next设置为headNode，headNode=node；
+
+
+
+```java
+//双向链表
+public static class ListNode {
+    String key;
+    Integer value;
+    ListNode pre = null;
+    ListNode next = null;
+    ListNode(String key, Integer value) {
+        this.key = key;
+        this.value = value;
     }
-    public ListNode get(String key) {
-        return hashMap.get(key);
+}
+ListNode headNode;
+ListNode lastNode;
+int limit=4;
+HashMap<String, ListNode> hashMap = new HashMap<String, ListNode>();
+public void put(String key, Integer val) {
+    ListNode existNode = hashMap.get(key);
+    if (existNode!=null) {//有老的节点，只是更新值，先从链表移除，然后从头部添加
+        existNode.value=val;
+        remove(key);
+        addNewNodeToHead(existNode);
+    } else {
+        //达到限制，先删除尾节点
+        if (hashMap.size() == limit) { remove(lastNode.key); }
+        ListNode newNode = new ListNode(key,val);
+        addNewNodeToHead(newNode);
     }
-    public void remove(String key) {
-        ListNode deleteNode = hashMap.get(key);
-        ListNode preNode = deleteNode.pre;
-        ListNode nextNode = deleteNode.next;
-        if (preNode!=null) {
-            preNode.next = nextNode;
-        }
-        if (nextNode!=null) {
-            nextNode.pre = preNode;
-        }
-        if (head==deleteNode) {
-            head = nextNode;
-        }
-        if (last == deleteNode) {
-            last = preNode;
-        }
-        hashMap.remove(key);
+}
+public ListNode get(String key) {
+  
+    ListNode node = hashMap.get(key);
+    if(node == null) {
+        return null;
     }
-    public static void main(String[] args) {
-        Test003 test003 = new Test003();
-        for (int i = 0; i < 5; i++) {
-            test003.add("key="+i,i);
-            for (ListNode j  = test003.head; j!=null ; j=j.next) {
-                System.out.println("for 循环"+j.key+j.value);
-            }
-            System.out.println("\n");
-        }
-        test003.remove("key=3");
-        System.out.println("\n");
-        for (ListNode i = test003.head; i!=null ; i=i.next) {
-            System.out.println("删除节点后"+i.key+i.value);
-        }
+    remove(node.key);
+    addNewNodeToHead(node);
+    return node;
+}
+public void remove(String key) {
+    ListNode deleteNode = hashMap.get(key);
+    hashMap.remove(key);
+    ListNode preNode = deleteNode.pre;
+    ListNode nextNode = deleteNode.next;
+    //删除操作需要更新pre节点的next指针和next节点的pre指针，以及更新head和last
+    if (preNode!=null) { preNode.next = nextNode; }
+    if (nextNode!=null) { nextNode.pre = preNode; }
+    if (headNode == deleteNode) { headNode = nextNode; }
+    if (lastNode == deleteNode) { lastNode = preNode; }
+}
+private void addNewNodeToHead(ListNode node) {
+  	hashMap.put(node.key,node);
+    if (headNode==null||lastNode==null) {
+        headNode = node;
+        lastNode = node;
+        return;
     }
+    headNode.pre = node;
+    node.next = headNode;
+    headNode = node;
 }
 ```
 
@@ -3037,7 +3024,7 @@ public class Test003 {
 
 例如我们要将10100转换为中文，总体流程就是先拿10100/1个亿，发现结果为0，说明不会包含亿这个数量级，然后10100/1万，得到结果result为1，余数remain为100，说明包含万这个数量级，我们的结果肯定是等于 "result的中文表示"+单位"万"+"余数的中文表示"，所以就对问题进行了分解，f(n) = f(n/数量级)+数量级单位+f(n%数量级)
 
-```
+```java
     static String[] nameArray1 = {"","一","二","三","四","五","六","七","八","九"};
     static String[] nameArray2 = {"","十","百","千","万","亿"};
     static int[] intArray = {1,10,100,1000,10000,100000000};
