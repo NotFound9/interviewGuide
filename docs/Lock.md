@@ -132,7 +132,8 @@ JVM的开发者发现在很多情况下，在Java程序运行时，同步块中�
 
 ### AbstractQueuedSynchronizer(缩写为AQS)是什么？
 
-AQS就是AbstractQueuedSynchronizer，队列同步器，内部实现了一个同步队列（一个双向链表，存放没有获取到锁的线程），一个条件等待队列，负责存放等待被唤醒的线程，唤醒后会进入到同步队列。
+AQS就是AbstractQueuedSynchronizer，抽象队列同步器，是一个可以用于实现基于先进先出等待队列的锁和同步器的框架。实现锁
+ReentrantLock，Semaphore，ReentrantReadWriteLock，SynchronousQueue，FutureTask等等皆是基于AQS的。
 
 ReentrantLock其实就是有一个变量sync，Sync父类是AbstractQueuedSynchronizer
 
@@ -148,4 +149,4 @@ ReentrantLock的非公平锁与公平锁的区别在于非公平锁在CAS更新s
 
 参考资料：
 
-[深入理解ReentrantLock的实现原理]https://mp.weixin.qq.com/s?src=11&timestamp=1595675057&ver=2482&signature=tM4jJR1bsGMBZxest2FY-VBXE8UDCEbqXwezlhRbJy5Ylsp0cWxx-DYrCMMzN2Z1E3rMrOndXCJXdThYx1xc*VBbpYfL4De3WtFgqndniaDTsgGrpBTVhVVx*ASCgZbX&new=1
+深入理解ReentrantLock的实现原理

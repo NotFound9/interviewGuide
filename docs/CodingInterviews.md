@@ -3018,7 +3018,73 @@ private void addNewNodeToHead(ListNode node) {
 }
 ```
 
+##### 使用LinkedHashMap实现的算法
 
+使用LinkedHashMap实现LRU算法，
+
+* LinkedHashMap默认的accessOrder为false，也就是会按照插入顺序排序，
+  所以在插入新的键值对时，总是添加在队列尾部，
+   如果是访问已存在的键值对，或者是put操作的键值对已存在，那么需要将键值对先移除再添加。
+* 如果是将accessOrder设置为true，get已有键值对时就不需要删除key了，会自动调整顺序，put方法需要在添加或者更新键值对后调用LinkedHashMap#get()访问key，调整顺序。
+
+```java
+//accessOrder为false,按照插入顺序排序的写法
+public static class LRUCache {
+    int capacity;
+    Map<Integer, Integer> map;
+    public  LRUCache(int capacity) {
+        this.capacity = capacity;
+        map = new LinkedHashMap<>();
+    }
+    public int get(int key) {
+        if (!map.containsKey(key)) {
+            return -1;
+        }
+        //先删除旧的位置，再放入新位置
+        Integer value = map.remove(key);
+        map.put(key, value);
+        return value;
+    }
+    
+    public void put(int key, int value) {
+        if (map.containsKey(key)) {
+            map.remove(key);
+            map.put(key, value);
+            return;
+        }
+        map.put(key, value);
+        //超出capacity，删除最久没用的,利用迭代器，删除第一个
+        if (map.size() > capacity) {
+            map.remove(map.keySet().iterator().next());
+        }
+    }
+}
+```
+accessOrder为true,按照访问顺序排序的实现方法
+```java
+
+public static class LRUCache2 {
+    int capacity;
+    LinkedHashMap<Integer, Integer> linkedHashMap;
+    LRUCache2(int capacity) {
+        this.capacity = capacity;
+      //如果要修改accessOrder只能使用这种构造器方法来创建LinkedHashMap
+        linkedHashMap = new LinkedHashMap<Integer, Integer>(16,0.75f,true);
+    }
+    public int get(int key) {
+        Integer value = linkedHashMap.get(key);
+        return value == null ? -1 : value;
+    }
+    public void put(int key, int val) {
+        linkedHashMap.put(key, val);
+        if (linkedHashMap.size() > capacity) {
+        linkedHashMap.remove(linkedHashMap.keySet().iterator().next());
+        }
+    }
+    //通过调用get()方法访问key来调整顺序
+    linkedHashMap.get(key);
+}
+```
 
 ### 【面试算法题】阿拉伯数字转化为中文读法
 
