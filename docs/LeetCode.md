@@ -229,3 +229,346 @@ public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
 }
 ```
 
+### [20. 有效的括号](https://leetcode-cn.com/problems/valid-parentheses/)
+
+#### 题目描述
+
+给定一个只包括 '('，')'，'{'，'}'，'['，']' 的字符串，判断字符串是否有效。
+
+有效字符串需满足：
+
+左括号必须用相同类型的右括号闭合。
+左括号必须以正确的顺序闭合。
+注意空字符串可被认为是有效字符串。
+
+```java
+示例 1:
+
+输入: "()"
+输出: true
+示例 2:
+
+输入: "()[]{}"
+输出: true
+示例 3:
+
+输入: "(]"
+输出: false
+示例 4:
+
+输入: "([)]"
+输出: false
+示例 5:
+
+输入: "{[]}"
+输出: true
+```
+
+#### 解题思路
+
+就是遍历字符串，字符属于左括号就添加到栈中，属于右括号就判断是否属于与栈顶元素对应，是的话可以将栈顶出栈，不是的话就说明不匹配，返回 false。遍历完成需要判断栈的长度是否为0，不为0代表还存在没有匹配上的左括号，不满足要求。 
+
+```java
+class Solution {
+    public boolean isValid(String s) {
+        char[] array = s.toCharArray();
+        HashMap<Character,Character> map = new HashMap<Character,Character>();
+        map.put('(',')');
+        map.put('[',']');
+        map.put('{','}');
+        Stack<Character> stack = new Stack<Character>();
+        for(int i = 0 ; i < array.length ; i++) {
+            char c = array[i];
+            if(map.containsKey(c)) {
+                stack.push(map.get(c));
+            } else {
+                if (stack.size() > 0 && c == stack.peek()) {
+                    stack.pop();
+                } else {
+                    return false;
+                }
+            }
+        }
+        return stack.size() == 0 ? true : false;
+    }
+}
+```
+
+
+
+### [5. 最长回文子串](https://leetcode-cn.com/problems/longest-palindromic-substring/)
+
+#### 题目详情
+
+给定一个字符串 `s`，找到 `s` 中最长的回文子串。你可以假设 `s` 的最大长度为 1000。
+
+**示例 1：**
+
+```
+输入: "babad"
+输出: "bab"
+注意: "aba" 也是一个有效答案。
+```
+
+**示例 2：**
+
+```
+输入: "cbbd"
+输出: "bb"
+```
+
+#### 解题思路
+
+就是遍历字符串，
+
+1.判断每个字符i，是否与上一个字符i-1回文，是的话从i-1向左，i向右，双指针判断，找出最长回文字符串。
+
+2.判断每个字符i，它的前一个字符i-1与后一个字符i+1是否回文，是的话，i-1向左，i+1向右，双指针判断，找出最长回文字符串。
+
+时间复杂度是O(N^2)，空间复杂度是O(1)
+
+```java
+class Solution {
+    public String longestPalindrome(String s) {
+        if(s ==null || s.length()<=1) {
+            return s;
+        }
+        char[] array = s.toCharArray();
+        String maxString = String.valueOf(array[0]);
+        for(int i = 1;i<array.length;i++) {
+            if(array[i] == array[i-1]) {//i跟i-1对称
+                String value = findMax(s, i-1,i);
+                maxString = maxString.length() < value.length() ? value : maxString;
+            } 
+          	//这里必须是if，而不是else if，因为存在当前字符i与上一个字符i-1回文，同时月存在下一个字符i-1与上一个字符i+1回文，例如ccc
+            if (i+1 <= array.length -1 && array[i-1] == array[i+1]) {//i+1跟i-1对称
+                String value = findMax(s, i-1,i+1);
+                maxString = maxString.length() < value.length() ? value : maxString;
+            }
+        }
+        return maxString;
+    }
+
+    String findMax(String string,int left, int right) {
+        char[] array = string.toCharArray();
+        while(left >=0 && right <= array.length-1 && array[left] == array[right]) {
+                    left--;
+                    right++;
+                }
+        //subString是一个左闭右开区间，也就是会包含左边界的值，但是不包含右边界的值，而我们应该要取的值是left+1到right-1。
+        return string.substring(left+1,right);
+    }
+}
+```
+
+### [121. 买卖股票的最佳时机](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock/)
+
+#### 题目介绍
+
+给定一个数组，它的第 *i* 个元素是一支给定股票第 *i* 天的价格。
+
+如果你最多只允许完成一笔交易（即买入和卖出一支股票一次），设计一个算法来计算你所能获取的最大利润。
+
+注意：你不能在买入股票前卖出股票。
+
+**示例 1:**
+
+```
+输入: [7,1,5,3,6,4]
+输出: 5
+解释: 在第 2 天（股票价格 = 1）的时候买入，在第 5 天（股票价格 = 6）的时候卖出，最大利润 = 6-1 = 5 。
+     注意利润不能是 7-1 = 6, 因为卖出价格需要大于买入价格；同时，你不能在买入前卖出股票。
+```
+
+**示例 2:**
+
+```
+输入: [7,6,4,3,1]
+输出: 0
+解释: 在这种情况下, 没有交易完成, 所以最大利润为 0。
+```
+
+#### 解题思路
+
+这个题就是使用min变量记录之前出现的值，使用maxValue保存之前的最大差值，对数组遍历，将当前股票价格prices[i]-min得到利润，如果比maxValue大那么就进行替换，并且如果prices[i]比min变量小，那么也替换出现过的最小值。
+
+```java
+class Solution {
+    public int maxProfit(int[] prices) {
+        if(prices==null||prices.length<=1){
+            return 0;
+        }
+        int min = prices[0];//之前出现的最小值
+        int maxValue = 0;//之前计算得到的最大差值
+        for(int i = 1; i < prices.length; i++) {
+            maxValue = prices[i] - min > maxValue ? prices[i] - min : maxValue;
+            min = prices[i] < min ? prices[i] : min; 
+        }
+        return maxValue;
+    }
+}
+```
+
+### [70. 爬楼梯](https://leetcode-cn.com/problems/climbing-stairs/)
+
+#### 题目介绍
+
+假设你正在爬楼梯。需要 *n* 阶你才能到达楼顶。
+
+每次你可以爬 1 或 2 个台阶。你有多少种不同的方法可以爬到楼顶呢？
+
+**注意：**给定 *n* 是一个正整数。
+
+**示例 1：**
+
+```
+输入： 2
+输出： 2
+解释： 有两种方法可以爬到楼顶。
+1.  1 阶 + 1 阶
+2.  2 阶
+```
+
+**示例 2：**
+
+```
+输入： 3
+输出： 3
+解释： 有三种方法可以爬到楼顶。
+1.  1 阶 + 1 阶 + 1 阶
+2.  1 阶 + 2 阶
+3.  2 阶 + 1 阶
+```
+
+#### 解题思路
+
+这个就是斐波拉契数列，就是f(n) = f(n-1)+f(n-2),需要注意的是，如果使用递归来实现，会有重复计算重叠子问题的问题。比如f(5)=f(4)+f(3)=(f(3)+f(2))+(f(2)+f(1))  其实是计算了两遍f(3)，所以可以使用hashMap来缓存f(3)的结果，这样避免重复递归计算。 
+
+```java
+class Solution {
+    HashMap<Integer,Integer> map = new HashMap<Integer,Integer>();
+    public int climbStairs(int n) {
+        if(n <= 0) {return 0;}
+        else if(n == 1 || n == 2) {
+            return n;
+        } else if (map.containsKey(n)) {
+            return map.get(n);
+        } else {
+            int value = climbStairs(n-1) + climbStairs(n-2);
+            map.put(n,value);
+            return value;
+        }
+    }
+}
+```
+
+### [53. 最大子序和](https://leetcode-cn.com/problems/maximum-subarray/)
+
+#### 题目介绍
+
+给定一个整数数组 `nums` ，找到一个具有最大和的连续子数组（子数组最少包含一个元素），返回其最大和。
+
+**示例:**
+
+```
+输入: [-2,1,-3,4,-1,2,1,-5,4]
+输出: 6
+解释: 连续子数组 [4,-1,2,1] 的和最大，为 6。
+```
+#### 解题思路
+
+就是遍历一遍，判断包含从0到当前遍历值i的最大子序列和，
+
+如果sum<0，那么就丢掉之前的子序列，直接让sum=nums[i]，
+
+如果sum>0否则sum=sum+nums[i]
+
+计算后的sum如果大于maxSum，那么就进行替换。
+
+
+```java 
+class Solution {
+    public int maxSubArray(int[] nums) {
+        if(nums==null||nums.length==0) {
+            return 0;
+        }
+        if(nums.length==1) {
+            return nums[0];
+        }
+        int maxSum = nums[0];
+        int sum = nums[0];
+        for(int i = 1; i < nums.length; i++) {
+            sum = sum < 0 ? nums[i] : sum + nums[i]; 
+            maxSum = sum > maxSum ? sum : maxSum;
+        }
+        return maxSum;
+    }
+    
+}
+```
+
+
+
+### [19. 删除链表的倒数第N个节点](https://leetcode-cn.com/problems/remove-nth-node-from-end-of-list/)
+
+#### 题目介绍
+
+给定一个链表，删除链表的倒数第 *n* 个节点，并且返回链表的头结点。
+
+**示例：**
+
+```
+给定一个链表: 1->2->3->4->5, 和 n = 2.
+
+当删除了倒数第二个节点后，链表变为 1->2->3->5.
+```
+
+**说明：**
+
+给定的 *n* 保证是有效的。
+
+#### 解题思路
+
+就是用快慢指针，快指针quickNode先走n步，然后慢指针slowNode从链表头部出发，每次quickNode和slowNode都只走一步，直到快指针quickNode走到最后一步，此时slowNode与quickNode之间相差n步，其实是此时slowNode是倒数第n+1个节点，也就是要删除的节点的前一个节点，直接将slowNode.next = slowNode.next.next;，就可以将节点删除。
+
+但是需要考虑到如果删除的是头结点，此时会比较麻烦，严格意义上，m个节点，头结点与最后一个节点之间只存在m-1个节点的间隔，也就是只能走m-1步，所以解决方案就是先建一个临时节点加在头结点前面，这样就可以走出m步了，也就是可以删除倒数第m个节点，也就是头结点了。
+
+```java
+class Solution {
+    public ListNode removeNthFromEnd(ListNode head, int n) {
+        //因为head有可能是要被删除的节点，所以需要建一个preHead方便操作
+        ListNode preHead = new ListNode();
+        preHead.next = head;
+        ListNode quickNode = preHead;
+        while(n>0) {
+            quickNode = quickNode.next;
+            n--;
+        }
+        ListNode slowNode = preHead;//preDeleteNode就是要删除的节点的前一个节点
+        while(quickNode.next!=null) {//这个循环遍历完可以保证quickNode是最后一个节点
+            quickNode = quickNode.next;
+            slowNode = slowNode.next;
+        }
+        slowNode.next = slowNode.next.next;
+        return preHead.next;
+    }
+}
+```
+
+
+
+### [21. 合并两个有序链表](https://leetcode-cn.com/problems/merge-two-sorted-lists/)
+
+#### 题目介绍
+
+将两个升序链表合并为一个新的 **升序** 链表并返回。新链表是通过拼接给定的两个链表的所有节点组成的。  
+
+**示例：**
+
+```
+输入：1->2->4, 1->3->4
+输出：1->1->2->3->4->4
+```
+
+#### 解题思路
+

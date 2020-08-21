@@ -505,6 +505,7 @@ int findNotDuplicateStringMaxLength(String string) {
 * 话说1 2 5轻，由于一会在重组的，一会在轻组的肯定是真币，根据这个原则，可以排除1，2，它们是真币。只有3和5存在可能，**第三次称**找出假币。
 
 ### 编辑距离
+
 递归解法
 ```java
 // 假设是要将a变成b的样子
@@ -514,11 +515,11 @@ static int findMinValue(char[] a, int aLength, char[] b, int bLength) {
     if (a[aLength - 1] == b[bLength - 1]) {//相等就前移
         return findMinValue(a, aLength - 1, b, bLength - 1);
     } else {
-        //a进行插入，相当于是b可以进行前移
+        //对字符串a的末尾插入当前b末尾的字符，相当于是b可以进行前移
         int first = findMinValue(a, aLength, b, bLength - 1) + 1;
-        //a进行删除，相当于a可以进行前移
+        //对字符串a的末尾字符进行删除，相当于a可以进行前移
         int second = findMinValue(a, aLength - 1, b, bLength) + 1;
-        //a进行替换，相当于a，b都前移
+        //对字符串a的最后一个字符进行替换，相当于a，b都前移
         int three = findMinValue(a, aLength - 1, b, bLength - 1) + 1;
         int min = first < second ? first : second;
         return min < three ? min : three;
