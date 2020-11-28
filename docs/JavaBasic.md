@@ -269,7 +269,7 @@ String是一个不可变类，任何对String改变都是会产生一个新的St
 
 当频繁对字符串进行修改时，使用String会生成一些临时对象，多一些附加操作，执行效率降低。
 
-```
+```java
 stringA = StringA + "2";
 //实际上等价于
 {
@@ -341,7 +341,7 @@ public static Class<?> forName(String className)
 }
 ```
 可以自己尝试运行一下这段代码
-```
+```java
   Class class2 = null;
   try {
   	class2 = Class.forName("com.test.Son");//如果实际不存在com.test.Son这个类，那么会抛出ClassNotFoundException异常
@@ -355,6 +355,7 @@ public static Class<?> forName(String className)
 class2 is class com.test.Son
 ```
 ##### 类名+.class
+
 还有一种方式是使用**类名+.class**来获取类关联的Class对象，与上面两种方法不同之处在于，它返回的是编译时类型，也就是在编译时，类加载器将类加载到JVM中，然后初始化一个Class对象返回。
 ```
   Class class3 = Son.class;
@@ -401,7 +402,7 @@ PS:无论是使用哪种方式来获取类关联的Class对象，类都是只会
 
   在往HashMap中添加一个键值对时，计算得到数组下标后，会遍历数组下标下存储的链表中，拿key的hashCode与每个节点的hashCode进行比较，相等时，才调用equal()方法进行继续调用，节约时间。（在一些类的equal()方法的自定义实现中也会对hashCode进行判断）。
 
-##### 假如只重写hashCode()方法（结果：HashMap无法保证去重）
+##### 假如只重写hashCode()方法（结果：HashMap可以存在两个内存地址不相同，但是相等的对象，无法保证去重）
 
 此时equal()方法的实现是默认实现，也就是当两个对象的内存地址相等时，equal()方法才返回true，假设两个键值对，它们的key类型都是TestObject，的值都是test，但是由于是使用new String()创建而成的字符串对象，key1和key2的内存地址不相等，所以key1==key2的结果会是false，TestObject的equals()方法默认实现是判断两个对象的内存地址，所以 key1.equals(key2)也会是false， 所以两个键值对可以重复地添加到hashMap中去。
 
@@ -443,7 +444,7 @@ HashMap是
 com.test.TestObject@1=value2}
 ```
 
-##### 假如只重写equals()方法（结果：HashMap无法保证去重）
+##### 假如只重写equals()方法（结果：相同的对象hashCode不同，从而映射到不同下标下，HashMap无法保证去重）
 
 假设只equals()方法，hashCode方法会是默认实现，具体的计算方法取决于JVM，可能会导致两个相等的对象，它们的hashCode却不相同，从而计算得到的数组下标不相同，存储到hashMap中不同数组下标下的链表中，也会导致HashMap中存在重复元素。
 

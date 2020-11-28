@@ -1342,3 +1342,57 @@ public ScheduledThreadPoolExecutor(int corePoolSize,
 参考链接：
 
 https://mp.weixin.qq.com/s?src=11&timestamp=1595941110&ver=2487&signature=i8CGBfTlDi4SaG5SSOWYJo-Sgb*bauWAv8MEMYqWQMy4lFBQwjTY4*99R2-8PhC4WtBc4uBy-m3IveQ9a0RlQn53unVD6Xalfl2r30*IbwAdK7CPlbW6-8icKhG4OjKE&new=1
+
+### ThreadLocal是什么？怎么避免内存泄露？
+从字面意思上，ThreadLocal会被理解为线程本地存储，就是对于代码中的一个变量，每个线程拥有这个变量的一个副本，访问和修改它时都是对副本进行操作。
+##### 使用场景：
+ThreadLocal 适用于每个线程需要自己独立的实例且该实例需要在多个方法中被使用，也即变量在线程间隔离而在方法或类间共享的场景。例如方法直接调用时传递的变量过多，为了代码简洁性，可以使用ThreadLocal，在前一个方法中，将变量进行存储，后一个方法中取，进行使用。
+```java
+public class ThreadLocalUtil {
+    // 每个线程本地副本初始化
+    private static ThreadLocal <UserData> userLocal = new ThreadLocal <>(). withInitial (() -> new UserData ());
+    public static void setUser (UserLogin user){
+        if (user == null )
+            return ;
+        UserData userData = userLocal. get ();
+        userData. setUserLogin (user);
+    }
+    public static UserLogin getUser (){
+        return userLocal. get (). getUserLogin ();
+    }
+}
+```
+
+##### 实现原理
+
+就是每个Thread有一个ThreadLocalMap，类似于HashMap，当调用ThreadLocal#set()进行存值时，实际上是先获取到当前的线程，然后获取线程的map，是一个ThreadLocalMap类型，然后会在这个map中添加一个新的键值对，key就是我们ThreadLocal实例，value就是我们存的值。ThreadLocalMap与HashMap不同的时，解决HashMap使用的是**开放定址法**，也就是当发现hashCode计算得到数组下标已经存储了元素后，会继续往后找，直到找到一个空的数组下标，存储键值对。
+
+```java
+public void set(T value) {
+    Thread t = Thread.currentThread();
+    ThreadLocalMap map = getMap(t);
+    if (map != null)
+      map.set(this, value);
+    else
+      createMap(t, value);
+}
+ThreadLocalMap getMap(Thread t) {
+    return t.threadLocals;
+}
+```
+
+##### ThreadLocal中的Entry的key使用了弱引用，为什么使用弱引用？
+
+1.如果使用强引用，那么Thread引用了ThreadLocalMap，ThreadLocalMap引用了每个key和value，key和value都无法回收，又因为key是ThreadLocal变量，从而引用了ThreadLocal的实例对象无法被回收，造成内存泄露。
+
+2.如果使用弱引用，不会影响key的回收，也就是不会影响引用了ThreadLocal的实例对象的回收，但是value依然不会被回收，会造成内存泄露。
+
+value回收的时机有两个：
+
+1.我们在用完ThreadLocal后，手动调用ThreadLocal#remove()对键值对value释放。
+
+2.此线程在其他对象中使用ThreadLocal对线程ThreadLocalMap进行set()和get()时,由于需要进行开放定址法进行探测，会对沿途过期的键值对(就是key为null的键值对)进行清除。以及set()方法触发的cleanSomeSlots()方法对过期键值对进行清除。
+
+![thread](../static/thread.png)
+
+[《一篇文章，从源码深入详解ThreadLocal内存泄漏问题》](https://www.jianshu.com/p/dde92ec37bd1)
