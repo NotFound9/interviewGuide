@@ -150,27 +150,27 @@ final V putVal(int hash, K key, V value, boolean onlyIfAbsent,
 根据key计算hash值(计算结果跟HashMap是一致的，写法不同)。
 #### 3.进入for循环，插入或更新元素
 
-* ##### 3.1  tab==null || tab.length==0，
+* ##### 3.1  如果 tab==null || tab.length==0，说明数组未初始化
 
-  说明当前tab还没有初始化。
+  说明当前数组tab还没有初始化。
 
-  那么调用initTable()方法初始化tab。（在initTable方法中，为了控制只有一个线程对table进行初始化，当前线程会通过CAS操作对SIZECTL变量赋值为-1，如果赋值成功，线程才能初始化table，否则会调用Thread.yield()方法让出时间片）。
+  那么调用initTable()方法初始化tab。（在initTable方法中，为了控制只有一个线程对table进行初始化，当前线程会通过**CAS操作对SIZECTL变量赋值为-1**，如果赋值成功，线程才能初始化table，否则会调用Thread.yield()方法让出时间片）。
 
-* ##### 3.2  f ==null
+* ##### 3.2  如果f ==null，说明当前下标没有哈希冲突的键值对
 
-  （Node<K,V> f根据hash值计算得到数组下标，下标存储的元素，f可能是null，链表头节点，红黑树根节点或迁移标志节点ForwardNode）
+  说明当前数组下标还没有哈希冲突的键值对。
 
-  说明当前位置还没有哈希冲突的键值对。
+  Node<K,V> f是根据key的hash值计算得到数组下标，下标存储的元素，f可能是null，也有可能是链表头节点，红黑树根节点或迁移标志节点ForwardNode）
 
-  那么根据key和value创建一个Node，使用CAS操作设置在当前数组下标下，并且break出for循环。
+  那么根据key和value创建一个Node，使用**CAS操作设置在当前数组下标下**，并且break出for循环。
 
-* ##### 3.3  f != null && f.hash = -1
+* ##### 3.3  如果f != null && f.hash = -1，说明存储的是标志节点，表示在扩容
 
   说明ConcurrentHashMap正在在扩容，当前的节点f是一个标志节点，当前下标存储的hash冲突的元素已经迁移了。
 
   那么当前线程会调用helpTransfer()方法来辅助扩容，扩容完成后会将tab指向新的table，然后继续执行for循环。
 
-* ##### 3.4  除上面三种以外情况
+* ##### 3.4  除上面三种以外情况，说明是下标存储链表或者是红黑树
 
   说明f节点是一个链表的头结点或者是红黑树的根节点，那么对f加sychronize同步锁，然后进行以下判断：
   
@@ -212,31 +212,32 @@ treeifyBin方法的源码： MIN_TREEIFY_CAPACITY是64
 
 调用addCount()对当前数组长度加1，在addCount()方法中，会判断当前元素个数是否超过sizeCtl(扩容阈值，总长度*0.75)，如果是，那么会进行扩容，如果正处于扩容过程中，当前线程会辅助扩容。
 
+**ConcurrentHashMap源码：**
 
-ConcurrentHashMap源码：
 ```java
 final V putVal(K key, V value, boolean onlyIfAbsent) {
+  //ConcurrentHashMap不允许key和value为null，否则抛出异常
     if (key == null || value == null) throw new NullPointerException();
-    int hash = spread(key.hashCode());
+    int hash = spread(key.hashCode());//计算hash值
     int binCount = 0;
-    for (Node<K,V>[] tab = table;;) {
+    for (Node<K,V>[] tab = table;;) {//进入循环
         Node<K,V> f; int n, i, fh;
-        if (tab == null || (n = tab.length) == 0)
-            tab = initTable();
+        if (tab == null || (n = tab.length) == 0)//数组如果为空
+            tab = initTable();//初始化数组
         else if ((f = tabAt(tab, i = (n - 1) & hash)) == null) {
             if (casTabAt(tab, i, null,
-                         new Node<K,V>(hash, key, value, null)))
-                break;                   // no lock when adding to empty bin
+                         new Node<K,V>(hash, key, value, null)))//如果发现此数组下标下没有哈希冲突的元素，就直接使用CAS操作将Node设置到此下标下
+                break;                   
         }
-        else if ((fh = f.hash) == MOVED)
-            tab = helpTransfer(tab, f);
-        else {
+        else if ((fh = f.hash) == MOVED)//代表当前下标的头结点是标识节点，代表数组在扩容
+            tab = helpTransfer(tab, f);//协助扩容
+        else {//这种是普遍情况，存的是链表或者红黑树，进行插入
             V oldVal = null;
-            synchronized (f) {
+            synchronized (f) {//加同步锁，避免多线程进行插入
                 if (tabAt(tab, i) == f) {
-                    if (fh >= 0) {
+                    if (fh >= 0) {//头结点hash值大于0，此数组下标下代表存的是一个链表
                         binCount = 1;
-                        for (Node<K,V> e = f;; ++binCount) {
+                        for (Node<K,V> e = f;; ++binCount) {//遍历链表
                             K ek;
                             if (e.hash == hash &&
                                 ((ek = e.key) == key ||
@@ -247,14 +248,14 @@ final V putVal(K key, V value, boolean onlyIfAbsent) {
                                 break;
                             }
                             Node<K,V> pred = e;
-                            if ((e = e.next) == null) {
+                            if ((e = e.next) == null) {//键值对是新添加的，在链表尾部插入新节点
                                 pred.next = new Node<K,V>(hash, key,
                                                           value, null);
                                 break;
                             }
                         }
                     }
-                    else if (f instanceof TreeBin) {
+                    else if (f instanceof TreeBin) {//下标下存的是红黑树
                         Node<K,V> p;
                         binCount = 2;
                         if ((p = ((TreeBin<K,V>)f).putTreeVal(hash, key,
@@ -267,7 +268,7 @@ final V putVal(K key, V value, boolean onlyIfAbsent) {
                 }
             }
             if (binCount != 0) {
-                if (binCount >= TREEIFY_THRESHOLD)
+                if (binCount >= TREEIFY_THRESHOLD)//链表长度>=8，转换为红黑树
                     treeifyBin(tab, i);
                 if (oldVal != null)
                     return oldVal;
@@ -287,22 +288,22 @@ final V putVal(K key, V value, boolean onlyIfAbsent) {
 #### 1.底层数据结构
 
 ```java
-    transient Node<K,V>[] table; //HashMap
-    
-    transient volatile Node<K,V>[] table;//ConcurrentHashMap
-    
-    private transient Entry<？,？>[] table;//HashTable
+transient Node<K,V>[] table; //HashMap
+
+transient volatile Node<K,V>[] table;//ConcurrentHashMap
+
+private transient Entry<？,？>[] table;//HashTable
 ```
 
 #### HashMap=数组+链表+红黑树
 HashMap的底层数据结构是一个数组+链表+红黑树，数组的每个元素存储是一个链表的头结点，链表中存储了一组哈希值冲突的键值对，通过链地址法来解决哈希冲突的。为了避免链表长度过长，影响查找元素的效率，当链表的长度>8时，会将链表转换为红黑树，链表的长度<6时，将红黑树转换为链表(但是红黑树转换为链表的时机不是在删除链表时，而是在扩容时，发现红黑树分解后的两个链表<6，就按链表处理，否则就建立两个小的红黑树，设置到扩容后的位置)。之所以临界点为8是因为红黑树的查找时间复杂度为logN，链表的平均时间查找复杂度为N/2，当N为8时，logN为3，是小于N/2的，正好可以通过转换为红黑树减少查找的时间复杂度。
 
-#### Hashtable=数组+链表
-Hashtable底层数据结构跟HashMap一致，底层数据结构是一个数组+链表，也是通过链地址法来解决冲突，只是链表过长时，不会转换为红黑树来减少查找时的时间复杂度。Hashtable属于历史遗留类，实际开发中很少使用。
-
 #### ConcurrentHashMap=数组+链表+红黑树
 
 ConcurrentHashMap底层数据结构跟HashMap一致，底层数据结构是一个数组+链表+红黑树。只不过使用了volatile来进行修饰它的属性，来保证内存可见性(一个线程修改了这些属性后，会使得其他线程中对于该属性的缓存失效，以便下次读取时取最新的值)。
+
+#### Hashtable=数组+链表
+Hashtable底层数据结构跟HashMap一致，底层数据结构是一个数组+链表，也是通过链地址法来解决冲突，只是链表过长时，不会转换为红黑树来减少查找时的时间复杂度。Hashtable属于历史遗留类，实际开发中很少使用。
 
 #### 2.线程安全
 
@@ -342,9 +343,9 @@ static final <K,V> boolean casTabAt(Node<K,V>[] tab, int i,
 Node<K,V> f = tabAt(tab, i = (n - 1) & hash));
 synchronized (f) {//f就是数组下标存储的元素
     if (tabAt(tab, i) == f) {
-        if (fh >= 0) {
+        if (fh >= 0) {//当前下标存的是链表
             binCount = 1;
-            for (Node<K,V> e = f;; ++binCount) {
+            for (Node<K,V> e = f;; ++binCount) {//遍历链表
                 K ek;
                 if (e.hash == hash &&
                     ((ek = e.key) == key ||
@@ -362,7 +363,7 @@ synchronized (f) {//f就是数组下标存储的元素
                 }
             }
         }
-        else if (f instanceof TreeBin) {
+        else if (f instanceof TreeBin) {//当前下标存的是红黑树
             Node<K,V> p;
             binCount = 2;
             if ((p = ((TreeBin<K,V>)f).putTreeVal(hash, key,
@@ -379,13 +380,13 @@ synchronized (f) {//f就是数组下标存储的元素
 
 #### 3.执行效率
 
-因为HashMap是非线程安全的，执行效率会高一些，其次是ConcurrentHashMap，因为HashTable在进行修改和访问时是对整个HashTable加synchronized锁，所以效率最低。
+因为HashMap是非线程安全的，执行效率会高一些，其次是ConcurrentHashMap，因为HashTable在进行修改和访问时是对整个HashTable加synchronized锁，多线程访问时，同一时间点，只有一个线程可以访问或者添加键值对，所以效率最低。
 
 #### 4.是否允许null值出现
 
 HashMap的key和null都可以为null，如果key为null，那么计算的hash值会是0，最终计算得到的数组下标也会是0，所以key为null的键值对会存储在数组中的首元素的链表中。value为null的键值对也能正常插入，跟普通键值对插入过程一致。
 
-```
+```java
 static final int hash(Object key) {
 	int h;
 	return (key == null) ？ 0 : (h = key.hashCode()) ^ (h >>> 16);
@@ -402,7 +403,7 @@ public synchronized V put(K key, V value) {
         }
         Entry<？,？> tab[] = table;
         int hash = key.hashCode();
-        ...其他代码
+        //...其他代码
 }
 ```
 
@@ -423,11 +424,11 @@ final V putVal(K key, V value, boolean onlyIfAbsent) {
 ##### 不指定初始容量
 如果制定了初始容量，HashMap和ConcurrentHashMap的容量会是比初始容量稍微大一些的2的幂次方大小，HashTable会使用初始容量，
 ##### 扩容
-扩容时，HashMap和ConcurrentHashMap扩容时会是原来长度的两倍，HashTable则是2倍加上1.
+扩容时，如果远长度是N，HashMap和ConcurrentHashMap扩容时会是2N，HashTable则是2N+1。
 
 #### 6.hash值计算
 
-HashTable会扩容为2n+1，HashTable之所以容量取11，及扩容时是是2n+1，是为了保证 HashTable的长度是一个素数，因为数组的下标是用key的hashCode与数组的长度取模进行计算得到的，而当数组的长度是素数时，可以保证计算得到的数组下标分布得更加均匀，可以看看这篇文章http://zhaox.github.io/algorithm/2015/06/29/hash
+HashTable会扩容为2N+1，HashTable之所以容量取11，及扩容时是是2N+1，是为了保证 HashTable的长度是一个素数，因为数组的下标是用key的hashCode与数组的长度取模进行计算得到的，而当数组的长度是素数时，可以保证计算得到的数组下标分布得更加均匀，可以看看这篇文章http://zhaox.github.io/algorithm/2015/06/29/hash
 
 ```java
 public synchronized V put(K key, V value) {
@@ -440,7 +441,7 @@ public synchronized V put(K key, V value) {
 }
 ```
 
-HashMap和ConcurrentHashMap的hash值都是通过将key的hashCode()高16位与低16位进行异或运算(这样可以保留高位的特征，避免一些key的hashCode高位不同，低位相同，造成hash冲突)，得到hash值，然后将hash&(n-1)计算得到数组下标。（n为数组的长度，因为当n为2的整数次幂时，hash mod n的结果在数学上等于hash&(n-1)，而且计算机进行&运算更快，所以这也是HashMap的长度总是设置为2的整数次幂的原因）
+HashMap和ConcurrentHashMap的hash值都是通过将key的hashCode()高16位与低16位进行异或运算(这样可以保留高位的特征，避免一些key的hashCode高位不同，低位相同，造成hash冲突)，得到hash值，然后将hash&(n-1)计算得到数组下标。（n为数组的长度，因为当n为2的整数次幂时，hash mod n的结果在数学上等于hash&(n-1)，而计算机进行&运算更快，所以这也是HashMap的长度总是设置为2的整数次幂的原因）
 
 ```java
 //HashMap计算hash值的方法
@@ -452,10 +453,7 @@ static int hash(Object key) {
 static  int spread(int h) {//h是对象的hashCode
     return (h ^ (h >>> 16)) & HASH_BITS;// HASH_BITS = 0x7fffffff;
 }
-  
 ```
-
-
 
 ### HashMap扩容后是否需要rehash？
 
@@ -492,7 +490,7 @@ table = newTab;
 
 这一步就很有意思，也是HashMap是非线程安全的表现之一，因为此时newTab还是一个空数组，如果有其他线程访问HashMap，根据key去newTab中找键值对，会返回null。实际上可能key是有对应的键值对的，只不过键值对都保存在旧table中，还没有迁移过来。
 
-（与之相反，HashTable在解决扩容时其他线程访问的问题，是通过对大部分方法使用sychronized关键字修饰，也就是某个线程在执行扩容方法时，会对HashTable对象加锁，其他线程无法访问HashTable。ConcurrentHashMap在解决扩容时其他线程访问的问题，是通过设置ForwardingNode标识节点来解决的，扩容时，某个线程对数组中某个下标下所有Hash冲突的元素进行迁移时，那么会将数组下标的数组元素设置为一个标识节点ForwardingNode，之后其他线程在访问时，如果发现key的hash值映射的数组下标对应是一个标识节点ForwardingNode（ForwardingNode继承于普通Node，区别字啊呀这个节点的hash值会设置为-1，并且会多一个指向扩容过程中新tab的指针nextTable），那么会根据ForwardingNode中的nextTable变量，去新的tab中查找元素。（如果是添加新的键值对时发现是ForwardingNode，当前线程会进行辅助扩容或阻塞等待，扩容完成后去新数组中更新或插入元素）
+（与之相反，HashTable在解决扩容时其他线程访问的问题，是通过对大部分方法使用sychronized关键字修饰，也就是某个线程在执行扩容方法时，会对HashTable对象加锁，其他线程无法访问HashTable。ConcurrentHashMap在解决扩容时其他线程访问的问题，是通过设置**ForwardingNode标识节点**来解决的，扩容时，某个线程对数组中某个下标下所有Hash冲突的元素进行迁移时，那么会将数组下标的数组元素设置为一个**标识节点ForwardingNode**，之后其他线程在访问时，如果发现key的hash值映射的数组下标对应是一个**标识节点ForwardingNode**（ForwardingNode继承于普通Node，区别字啊呀这个节点的hash值会设置为-1，并且会多一个指向扩容过程中新tab的指针nextTable），那么会根据ForwardingNode中的nextTable变量，去新的tab中查找元素。（如果是添加新的键值对时发现是ForwardingNode，当前线程会进行辅助扩容或阻塞等待，扩容完成后去新数组中更新或插入元素）
 
 #### 迁移元素
 
@@ -583,8 +581,7 @@ static final class CounterCell {
 
 因为HashMap是非线程安全的，默认单线程环境中使用，如果get(key)为null，可以通过containsKey(key)
 方法来判断这个key的value为null，还是不存在这个key，而ConcurrentHashMap，HashTable是线程安全的，
-在多线程操作时，因为get(key)和containsKey(key)两个操作和在一起不是一个原子性操作，
-可能在执行中间，有其他线程修改了数据，所以无法区分value为null还是不存在key。
+在多线程操作时，因为get(key)和containsKey(key)两个操作和在一起不是一个原子性操作，可能在containsKey(key)时发现存在这个键值对，但是get(key)时，有其他线程删除了键值对，导致get(key)返回的Node是null，然后执行方法时抛出异常。所以无法区分value为null还是不存在key。
 至于ConcurrentHashMap，HashTable的key不能为null，主要是设计者的设计意图。
 
 ### HashSet和HashMap的区别？
@@ -799,8 +796,9 @@ abstract class HashIterator {
 
 ### 谈一谈你对LinkedHashMap的理解？
 
-LinkedHashMap是HashMap的子类，与HashMap的实现基本一致，只是说所有的节点都有一个before和after指针，根据插入顺序形成一个双向链表。所以可以根据插入顺序进行遍历，默认accessOrder是false，也就是按照插入顺序来排序的，map.keySet().iterator().next()第一个元素是最早插入的元素的key。LinkedHashMap可以用来实现LRU算法。(accessOrder为true，会按照访问顺序来排序。)
-LRU算法实现：
+LinkedHashMap是HashMap的子类，与HashMap的实现基本一致，只是说在HashMap的基础上做了一些扩展，所有的节点都有一个before指针和after指针，根据插入顺序形成一个**双向链表**。所以可以根据插入顺序进行遍历，默认accessOrder是false，也就是按照插入顺序来排序的，map.keySet().iterator().next()第一个元素是最早插入的元素的key。LinkedHashMap可以用来实现LRU算法。(accessOrder为true，会按照访问顺序来排序。)
+
+![img](../static/249993-20161215143120620-1544337380-20201130113344624.png)LRU算法实现：
 
 ```java
 //使用LinkedHashMap实现LRU算法(accessOrder为false的实现方式)
@@ -827,13 +825,17 @@ public class LRUCache{
             map.put(key, value);
             return;
         }
-        map.put(key, value);
         //超出capacity，删除最久没用的,利用迭代器，删除第一个
         if (map.size() > capacity) {
   	map.remove(map.keySet().iterator().next());
         }
+        map.put(key, value);
     }
 }
+```
+**下面是另外一种实现方法：**
+
+```java
 //使用LinkedHashMap实现LRU算法(accessOrder为true的实现方式)
 //如果是将accessOrder设置为true，get和put已有键值对时就不需要删除key了
 public static class LRUCache2 {

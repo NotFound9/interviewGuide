@@ -26,7 +26,7 @@
 
 因为ArrayList的插入元素的方法就是裸奔的，直接将原数组index及后面的元素拷贝到index+1及后面的位置上，然后将index位置设置为插入的值，并发修改时保证不了数据安全性，所以也不允许并发修改，一旦检测到并发修改，会抛出ConcurrentModificationException异常。
 
-```
+```java
 //ArrayList的插入元素的方法
 public void add(int index, E element) {
         rangeCheckForAdd(index);
@@ -70,7 +70,7 @@ SynchronizedList是一个线程安全的包装类。继承于SynchronizedCollect
 
 使用方法如下
 
-```
+```java
 LinkedList<Integer>    linkedList    = new LinkedList<Integer>();
 //调用Collections的synchronizedList方法，传入一个linkedList，会返回一个SynchronizedList实例对象
 List<Integer> synchronizedList =  Collections.synchronizedList(linkedList);
@@ -133,6 +133,8 @@ CopyOnWriteArrayList跟ArrayList类似，都是实现了List接口，只不过�
 可以看到区别主要在于CopyOnWriteArrayList的Object是使用volatile来修饰的，volatile可以使变量具备内存可见性，一个线程在工作内存中对变量进行修改后，会立即更新到物理内存，并且使得其他线程中的这个变量缓存失效，其他线程在读取会去物理内存中读取最新的值。（volatile修饰的是指向数组的引用变量，所以对数组添加元素，删除元素不会改变引用，所以为了保证内存可见性，CopyOnWriteArrayList.add()方法在添加元素时，都是复制出一个新数组，进行修改操作后，再设置到就数组上）
 
 注意事项:Object数组都使用transient修饰是因为transient修饰的属性不会参与序列化，ArrayList通过实现writeObject()和readObject()方法来自定义了序列化方法(基于反序列化时节约空间考虑，如果用默认的序列方法，源elementData数组长度为100，实际只有10个元素，反序列化时也会分配长度为100的数组，造成内存浪费。)
+
+**下面是CopyOnWriteArrayList的add()方法:**
 
 ```java
 public boolean add(E e) {
@@ -371,7 +373,7 @@ public void tranverse() {
 
 **Iterator的源代码**
 
-```
+```java
 private class Itr implements Iterator<E> {
         int cursor;       // 游标
         int lastRet = -1; // index of last element returned; -1 if no such
