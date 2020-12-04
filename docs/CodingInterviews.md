@@ -74,10 +74,11 @@
 #### [题065机器人的运动范围](#题065)
 #### [题066剪绳子](#题066)
 
-
 ### 题003 二维数组中的查找
 
 ##### 题目内容：
+
+![image-20201202111714727](../static/image-20201202111714727.png)
 
 在一个二维[数组](https://cuijiahua.com/blog/tag/数组/)中，每一行都按照从左到右递增的顺序排序，每一列都按照从上到下递增的顺序排序。请完成一个函数，输入这样的一个二维[数组](https://cuijiahua.com/blog/tag/数组/)和一个整数，判断数组中是否含有该整数。
 
@@ -830,7 +831,7 @@ public ArrayList<Integer> PrintFromTopToBottom(TreeNode root) {
 
 也可以使用递归实现，深度遍历递归实现
 
-```
+```java
 ArrayList<TreeNode> list = new ArrayList<TreeNode>();
 void deepTranverse(TreeNode node) {
 			if(node!=null) {
@@ -1974,7 +1975,7 @@ public int Add(int num1,int num2) {
 
 -2的31次方    2的31次方-1
 
-```
+```java
 public static int StrToInt(String str) {
     if (str==null || str.length()==0) {
         return 0;
@@ -2041,7 +2042,7 @@ public boolean duplicate(int numbers[],int length,int [] duplication) {
 
 ## 题050 构建乘积数组
 
-```
+```java
 就是B[i] = A[0]A[1]...A[i-1]  A[i+1]...*A[n-1]，通过拆分成两部分，
 C[i] = A[0]A[1]...A[i-1]
 D[i] = A[i+1]...*A[n-1]
@@ -2074,7 +2075,7 @@ public int[] multiply(int[] A) {
 
 就是使用一个数组来记录字符出现的次数。
 
-```
+```java
 StringBuffer str = new StringBuffer();
     int[] table = new int[256];//记录出现次数，0代表0次，1代表1次，2代表2次及2次以上
     public void Insert(char ch)
@@ -2260,7 +2261,7 @@ public ListNode deleteDuplication(ListNode pHead)
 
 ​				父节点是右子树，一直向上遍历，直到找到一个父节点，他是祖先节点是左节点的，找到就返回祖先节点，找不到就返回空。	
 
-```
+```java
 public TreeLinkNode GetNext(TreeLinkNode pNode)
 {
     //这个节点有右子树
@@ -2307,7 +2308,7 @@ public TreeLinkNode GetNext(TreeLinkNode pNode)
 
 假设有另外一种遍历是根节点，右子树，左子树，如果二叉树是对称，那么这两种遍历的结果是一样的，所以使用递归来进行两种遍历，然后在过程中判断两种遍历结果是否一样。 
 
-```
+```java
 boolean isSymmetrical(TreeNode pRoot)
 {
     return isSymmetrical(pRoot,pRoot);
@@ -2426,7 +2427,7 @@ public ArrayList<ArrayList<Integer>> Print(TreeNode pRoot) {
 
 就是使用一个队列queue，一开始将根节点加入queue，并且加入一个null元素到队列中作为标志元素，用来分割每一层，标志这一层的节点都在标志元素的前面。然后对queue中元素出列，每个进行打印，直到出列的元素是null，表示这一层已经结束了，如果queue中还有元素，那么在后面加入null标志元素分割，并且进行换行，打印下一行，如果queue中没有元素就结束循环
 
-```
+```java
 ArrayList<ArrayList<Integer>> Print(TreeNode pRoot) {
     ArrayList<ArrayList<Integer>> arrayLists= new ArrayList<ArrayList<Integer>>();
     if (pRoot == null) return arrayLists;
@@ -2457,7 +2458,7 @@ ArrayList<ArrayList<Integer>> Print(TreeNode pRoot) {
 
 这种方法也可以用来进行二叉树深度遍历，遍历完之后将嵌套数组拆分成单层的数组。
 
-```
+```java
 ArrayList<ArrayList<Integer>> Print2(TreeNode pRoot) {
     ArrayList<ArrayList<Integer>> arrayLists = new ArrayList<ArrayList<Integer>>();
     if (pRoot==null)return arrayLists;
@@ -2494,7 +2495,7 @@ void find(TreeNode pRoot, int depth, ArrayList<ArrayList<Integer>> arrayLists) {
 
 4.重复步骤3，直到队列元素个数为空。
 
-```
+```java
 String Serialize(TreeNode root) {
         StringBuffer stringBuffer = new StringBuffer();
         if (root == null) {return stringBuffer.toString();}
@@ -2567,7 +2568,7 @@ Integer convert(String str) {
 
 由于前序遍历是先左子树，根节点，右子树的顺序，所以前序遍历的结果，就是二叉搜索树中元素按递增顺序排列的结果，所以按照前序遍历到第K个元素就是第K小的节点。
 
-```
+```java
 Integer index = 0;
 TreeNode kNode = null;
 
@@ -2599,7 +2600,7 @@ void find(TreeNode node, Integer k) {
 
 
 
-```
+```java
   ArrayList<Integer> arrayList = new ArrayList<Integer>();
 
     public void Insert(Integer num) {
@@ -2633,7 +2634,7 @@ void find(TreeNode node, Integer k) {
 
 解法一就是维护一个排序好的数组，数组就是当前滑动窗口排序好的结果，每次滑动时将值插入排序好的队列，并且将过期的值删除，
 
-```
+```java
 public ArrayList<Integer> maxInWindows1(int[] num, int size) {
     ArrayList<Integer> arrayList = new ArrayList<Integer>();
     ArrayList<Integer> sortList  = new ArrayList<Integer>(size);
@@ -2688,7 +2689,7 @@ ArrayList<Integer> removeValueIntoSorted(ArrayList<Integer> sortList, int curren
 因为这些元素的index比A都小，而且值也比A小，不可能再成为最大值了，
 然后判断队列头结点的最大值是否过期，过期的话也删除
 
-```
+```java
 
 public ArrayList<Integer> maxInWindows(int[] num, int size) {
     ArrayList<Integer>  arrayList = new ArrayList<Integer>();
@@ -2727,7 +2728,7 @@ public ArrayList<Integer> maxInWindows(int[] num, int size) {
 
 就是递归去判断就行了。
 
-```
+```java
 public boolean hasPath(char[] matrix, int rows, int cols, char[] str)
 {
     boolean[] flag = new boolean[matrix.length];
@@ -2782,7 +2783,7 @@ boolean judge(char[] matrix, int rows, int cols, int i, int j, char[] str, int c
 
 就是递归去求解，判断每个节点的上，下，左，右节点是否满足需求。
 
-```
+```java
 public int movingCount(int threshold, int rows, int cols)
 {
     if (rows<0||cols<0||threshold<0) {return 0;}
@@ -2872,7 +2873,7 @@ public int cutRope(int target) {
 
 普通的二分查找
 
-```
+```java
 public int findByHalf(int[] array, int target) {
     if (array==null||array.length==0) {
         return -1;
@@ -2895,7 +2896,7 @@ public int findByHalf(int[] array, int target) {
 
 二分查找-左边界版本，只要改等于时的判断以及后面的越界判断
 
-```
+```java
  public static void main(String[] args) {
         Test002 test002 = new Test002();
         int[] array = new int[]{1,2,2,2,2,4,5,6,7};
@@ -2923,195 +2924,3 @@ public int findByHalf(int[] array, int target) {
         //如果有左边界就返回左边界，没有时，此时的left应该是最接近左边界，并且大于左边界的数的位置
 ```
 
-
-
-## LRU算法
-
-LRU其实就是Last Recent Used，就是最近使用淘汰策略，所以当空间满了时，就根据最近使用时间来删除。一般是使用一个双向链表来实现，同时为了快速访问节点，会使用一个HashMap来存储键值映射关系。(需要注意的是，为了在内存满时删除最后一个节点时，可以以O(1)时间复杂度从HashMap中删掉这个键值对，每个节点除了存储value以外，还需要存储key)。
-
-#### 添加新元素的过程：
-
-首先我们增加两个方法，remove()方法用于删除一个节点，addNewNodeToHead()代表添加一个节点到头部。
-
-1.判断节点是否已经存在于链表中，是的话，找出节点，
-
-1.1更新value，
-
-1.2调用remove()方法删除节点，
-
-1.3调用addNewNodeToHead()将节点添加到链表头部。
-
-2.节点不存在于链表中，那么判断链表长度是否超出限制，
-
-2.1是的话remove(lastNode.key)
-
-2.2创建一个新节点，调用addNewNodeToHead()将节点添加到链表头部。
-
-
-
-remove()方法的细节，主要是更新node的前后节点的next或pre指针，以及更新后需要判断删除的节点是否是headNode或者lastNode，是的话同时需要更新headNode或者lastNode。
-
-addNewNodeToHead()方法细节，主要是要先判断head是否为null，是的话说明链表为空，需要将headNode和lastNode都设置为node，不为null就执行添加操作，将headNode.pre设置为node,node的next设置为headNode，headNode=node；
-
-
-
-```java
-//双向链表
-public static class ListNode {
-    String key;
-    Integer value;
-    ListNode pre = null;
-    ListNode next = null;
-    ListNode(String key, Integer value) {
-        this.key = key;
-        this.value = value;
-    }
-}
-ListNode headNode;
-ListNode lastNode;
-int limit=4;
-HashMap<String, ListNode> hashMap = new HashMap<String, ListNode>();
-public void put(String key, Integer val) {
-    ListNode existNode = hashMap.get(key);
-    if (existNode!=null) {//有老的节点，只是更新值，先从链表移除，然后从头部添加
-        existNode.value=val;
-        remove(key);
-        addNewNodeToHead(existNode);
-    } else {
-        //达到限制，先删除尾节点
-        if (hashMap.size() == limit) { remove(lastNode.key); }
-        ListNode newNode = new ListNode(key,val);
-        addNewNodeToHead(newNode);
-    }
-}
-public ListNode get(String key) {
-  
-    ListNode node = hashMap.get(key);
-    if(node == null) {
-        return null;
-    }
-    remove(node.key);
-    addNewNodeToHead(node);
-    return node;
-}
-public void remove(String key) {
-    ListNode deleteNode = hashMap.get(key);
-    hashMap.remove(key);
-    ListNode preNode = deleteNode.pre;
-    ListNode nextNode = deleteNode.next;
-    //删除操作需要更新pre节点的next指针和next节点的pre指针，以及更新head和last
-    if (preNode!=null) { preNode.next = nextNode; }
-    if (nextNode!=null) { nextNode.pre = preNode; }
-    if (headNode == deleteNode) { headNode = nextNode; }
-    if (lastNode == deleteNode) { lastNode = preNode; }
-}
-private void addNewNodeToHead(ListNode node) {
-  	hashMap.put(node.key,node);
-    if (headNode==null||lastNode==null) {
-        headNode = node;
-        lastNode = node;
-        return;
-    }
-    headNode.pre = node;
-    node.next = headNode;
-    headNode = node;
-}
-```
-
-##### 使用LinkedHashMap实现的算法
-
-使用LinkedHashMap实现LRU算法，
-
-* LinkedHashMap默认的accessOrder为false，也就是会按照插入顺序排序，
-  所以在插入新的键值对时，总是添加在队列尾部，
-   如果是访问已存在的键值对，或者是put操作的键值对已存在，那么需要将键值对先移除再添加。
-* 如果是将accessOrder设置为true，get已有键值对时就不需要删除key了，会自动调整顺序，put方法需要在添加或者更新键值对后调用LinkedHashMap#get()访问key，调整顺序。
-
-```java
-//accessOrder为false,按照插入顺序排序的写法
-public static class LRUCache {
-    int capacity;
-    Map<Integer, Integer> map;
-    public  LRUCache(int capacity) {
-        this.capacity = capacity;
-        map = new LinkedHashMap<>();
-    }
-    public int get(int key) {
-        if (!map.containsKey(key)) {
-            return -1;
-        }
-        //先删除旧的位置，再放入新位置
-        Integer value = map.remove(key);
-        map.put(key, value);
-        return value;
-    }
-    
-    public void put(int key, int value) {
-        if (map.containsKey(key)) {
-            map.remove(key);
-            map.put(key, value);
-            return;
-        }
-        map.put(key, value);
-        //超出capacity，删除最久没用的,利用迭代器，删除第一个
-        if (map.size() > capacity) {
-            map.remove(map.keySet().iterator().next());
-        }
-    }
-}
-```
-accessOrder为true,按照访问顺序排序的实现方法
-```java
-
-public static class LRUCache2 {
-    int capacity;
-    LinkedHashMap<Integer, Integer> linkedHashMap;
-    LRUCache2(int capacity) {
-        this.capacity = capacity;
-      //如果要修改accessOrder只能使用这种构造器方法来创建LinkedHashMap
-        linkedHashMap = new LinkedHashMap<Integer, Integer>(16,0.75f,true);
-    }
-    public int get(int key) {
-        Integer value = linkedHashMap.get(key);
-        return value == null ? -1 : value;
-    }
-    public void put(int key, int val) {
-        linkedHashMap.put(key, val);
-        if (linkedHashMap.size() > capacity) {
-        linkedHashMap.remove(linkedHashMap.keySet().iterator().next());
-        }
-    }
-    //通过调用get()方法访问key来调整顺序
-    linkedHashMap.get(key);
-}
-```
-
-### 【面试算法题】阿拉伯数字转化为中文读法
-
-例如我们要将10100转换为中文，总体流程就是先拿10100/1个亿，发现结果为0，说明不会包含亿这个数量级，然后10100/1万，得到结果result为1，余数remain为100，说明包含万这个数量级，我们的结果肯定是等于 "result的中文表示"+单位"万"+"余数的中文表示"，所以就对问题进行了分解，f(n) = f(n/数量级)+数量级单位+f(n%数量级)
-
-```java
-    static String[] nameArray1 = {"","一","二","三","四","五","六","七","八","九"};
-    static String[] nameArray2 = {"","十","百","千","万","亿"};
-    static int[] intArray = {1,10,100,1000,10000,100000000};
-
-    public static String numToChinese(int num) {
-        for (int i = intArray.length-1; i >= 0; i--) {
-            int part1 = num/intArray[i];
-            int part2 = num%intArray[i];
-            if (i==0) {//到个位了
-                return nameArray1[part1];
-            }
-            if (part1>0) {
-                //整除部分，例如10100，整除部分就是十
-                String left = numToChinese(part1);
-                //整除部分的单位，例如10100，整除部分的单位就是万
-                String unitString = nameArray2[i];
-                //余数部分，例如10100，余数部分就是一百
-                String right = numToChinese(part2);
-                return left + unitString + right;
-            }
-        }
-        return "";
-    }
-```

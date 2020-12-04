@@ -3,6 +3,8 @@
 #### [1.sychronize的实现原理是怎么样的？](#sychronize的实现原理是怎么样的？)
 #### [2.AbstractQueuedSynchronizer(缩写为AQS)是什么？](#AbstractQueuedSynchronizer(缩写为AQS)是什么？)
 
+#### [3.悲观锁和乐观锁是什么？](#悲观锁和乐观锁是什么？)
+
 ### sychronize的实现原理是怎么样的？
 
 ```java
@@ -217,3 +219,98 @@ ReentrantLock的非公平锁与公平锁的区别在于非公平锁在CAS更新s
 参考资料：
 
 深入理解ReentrantLock的实现原理
+
+
+
+### 悲观锁和乐观锁是什么？
+
+##### 悲观锁
+
+就是假定在每次取数据的时候会修改这个数据，所以在取数据的时候就会进行加锁，这样其他调用者就不能取数据，阻塞等待，一直到获取到锁。Java中的同步锁sychronized和ReentrantLock就是悲观锁思想的实现。
+
+##### 乐观锁
+
+就是假定在每次取数据时不会修改这个数据，所以在取数据的时候不会加锁，只有在真正修改数据时才加锁。Java中的atomic原子变量类就是乐观锁的实现。
+
+##### 区别:
+
+悲观锁适合多写的场景
+
+乐观锁适合多读的场景，这样只有读写冲突会发生的比较少，减少加锁的性能开销。但是如果是多写的场景，这样会导致上层应用一直重试，增加性能开销。
+
+#### 乐观锁的实现
+
+##### 版本号机制
+
+使用版本号来实现，对数据加上一个版本号，代表修改次数，每次修改后+1，修改数据时判断数据的版本号跟之前取的是否一致，一致才修改，不一致就重试，直到更新成功。
+
+##### CAS操作
+
+就是在更新数据时会传入之前取的值，在内存中判断当前内存中的值跟之前的值是否一致，一致再更新，（比较和更新都是在一个原子操作中）。
+
+##### ABA问题
+
+但是没法解决ABA的问题，就是其他调用方对数据修改成其他值后又改回原来的值。AtomicStampedReference的compareAndSet会先判断对象的引用是否相同，相同才进行CAS更新。实现原理主要是AtomicStampedReference会保存之前对象的的引用，及一个修改版本号，只有当引用和版本号都相等的情况下，才会进行CAS更新操作。
+
+##### 循环时间长开销大
+
+自旋CAS操作如果不成功就一直循环执行直到成功，如果长时间不成功，会给CPU带来非常大的执行开销
+
+##### CAS 只对单个共享变量有效
+
+多个变量放在一个对象里来进行 CAS 操作.所以我们可以使用锁或者利用`AtomicReference类`把多个共享变量合并成一个共享变量来操作
+
+#### Java的原子类
+
+原子类一共有以下四种
+
+- 1.基本类型: AtomicInteger, AtomicLong, AtomicBoolean ;
+- 2.数组类型: AtomicIntegerArray, AtomicLongArray, AtomicReferenceArray ;
+- 3.引用类型: AtomicReference, AtomicStampedRerence, AtomicMarkableReference ;
+- 4.对象的属性修改类型: AtomicIntegerFieldUpdater, AtomicLongFieldUpdater, AtomicReferenceFieldUpdater 。
+
+##### AtomicInteger
+
+主要是对Integer的封装，提供了一些原子性的操作，因为如果是使用Integer来完成i=i+1;操作，在内存中是三个步骤，先将从内存中取出i，放到寄存器中，然后将寄存器中的值与1相加，然后将结果写入内存，一共是三个步骤，所以不是原子性的，并发时会造成数据不一致的问题。
+
+主要实现原理是AtomicInteger类有一个unsafe属性，可以通过unsafe来调用Unsafe类的一些原子性的方法Unsafe.compareAndSwapInt来实现原子性的加减运算。
+
+其次是使用volatile来修饰value属性，保证一个内存可见性
+
+```java
+//compareAndSwapInt有四个参数，第一个是待运算的对象，第二个是对象中用于运算的属性的偏移量，第三个是期望值，第四个是更新的值。
+unsafe.compareAndSwapInt(this, valueOffset, expect, update)
+```
+
+```java
+public class AtomicInteger extends Number implements java.io.Serializable {
+    private static final long serialVersionUID = 6214790243416807050L;
+
+    // setup to use Unsafe.compareAndSwapInt for updates
+    private static final Unsafe unsafe = Unsafe.getUnsafe();
+    private static final long valueOffset;
+
+    static {
+        try {
+            valueOffset = unsafe.objectFieldOffset
+                (AtomicInteger.class.getDeclaredField("value"));
+        } catch (Exception ex) { throw new Error(ex); }
+    }
+
+    private volatile int value;//使用volatiole来保证value的内存可见性
+}
+
+```
+
+在Unsafe类中，compareAndSwapInt和getAndAddInt的区别在于，getAndAddInt会一直重试直到成功，compareAndSwapInt如果更新失败，只会返回false
+
+```java
+public final int getAndAddInt(Object var1, long var2, int var4) {
+    int var5;
+    do {
+        var5 = this.getIntVolatile(var1, var2);
+    } while(!this.compareAndSwapInt(var1, var2, var5, var5 + var4));
+
+    return var5;
+}
+```

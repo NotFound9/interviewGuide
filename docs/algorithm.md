@@ -7,8 +7,15 @@
 #### [5.查找第K大的数](#查找第K大的数)
 #### [6.有一个1G大小的一个文件，里面每一行是一个词，词的大小不超过16字节，内存限制大小是1M，返回频数最高的100个词](#有一个1G大小的一个文件，里面每一行是一个词，词的大小不超过16字节，内存限制大小是1M，返回频数最高的100个词)
 #### [7.9个硬币中有一个劣币，用天平秤，最坏几次？](#9个硬币中有一个劣币，用天平秤，最坏几次？)
+
 #### [8.编辑距离](#编辑距离)
+
 #### [9.打印杨辉三角](#打印杨辉三角)
+
+#### [10.LRU算法](#LRU算法)
+#### [11.###【面试算法题】阿拉伯数字转化为中文读法](#【面试算法题】阿拉伯数字转化为中文读法)
+
+
 
 ### 常见的排序算法
 
@@ -103,7 +110,6 @@ int[] sorted4(int[] array, int start,int end) {
         merge(array, start,end);
         return array;
     }
-
 void merge(int[] array, int start,int end) {
        int length = end-start+1;
        int[] temp = new int[length];
@@ -118,11 +124,9 @@ void merge(int[] array, int start,int end) {
        while (left <= tempMiddle && right <= tempEnd) {
            array[i++] = temp[left] < temp[right] ? temp[left++]:temp[right++];
        }
-
        while (left <= tempMiddle) {
            array[i++] = temp[left++];
        }
-
        while (right <= tempEnd) {
            array[i++] = temp[right++];
        }
@@ -133,7 +137,7 @@ void merge(int[] array, int start,int end) {
 
 先取第一个元素作为中间值，小于中间值的元素放一组，大于中间值的元素放一组，然后继续对每一组进行递归排序，最终让数组有序。
 
-```
+```java
 int[] quickSorted(int [] array, int start,int end) {
 //如果start和end相等就直接结束循环
 	if(start>=end) {return array;}
@@ -165,16 +169,28 @@ int[] quickSorted(int [] array, int start,int end) {
 }
 ```
 
-- 由于分区点很重要（为什么重要见算法分析），因此可以想方法寻找一个好的分区点来使得被分区点分开的两个分区中，数据的数量差不多。下面介绍两种比较常见的算法：
+- 由于分区点很重要，因此可以想方法寻找一个好的分区点来使得被分区点分开的两个分区中，数据的数量差不多。下面介绍两种比较常见的算法：
 - - **三数取中法。就是从区间的首、尾、中间分别取出一个数，然后对比大小，取这 3 个数的中间值作为分区点。**但是，如果排序的数组比较大，那“三数取中”可能不够了，可能就要“五数取中”或者“十数取中”，也就是间隔某个固定的长度，取数据进行比较，然后选择中间值最为分区点。
   - 随机法。随机法就是从排序的区间中，随机选择一个元素作为分区点。随机法不能保证每次分区点都是比较好的，但是从概率的角度来看，也不太可能出现每次分区点都很差的情况。所以平均情况下，随机法取分区点还是比较好的。
 - 递归可能会栈溢出，最好的方式是使用非递归的方式；
 
 ### 堆排序
 
-堆排序相当于先建一个大顶堆，建堆方式主要通过从最后一个非叶子节点开始调整位置（调整时主要是通过将节点A与它的最大子节点进行交换，一直交换下去，知道都大于左右子节点），然后每次将堆顶的元素与最后一个元素交换，相当于取出最大元素，放到最后面，然后对堆进行调整，重新成为大顶堆，一直到最后。
+大顶堆的定义是，根节点的值大于所有节点的值。
 
-```
+堆排序步骤：
+
+1.先建一个大顶堆，建堆方式主要通过从最后一个非叶子节点开始调整位置（调整时主要是通过将节点A与它的最大子节点进行交换，一直交换下去，知道都大于左右子节点）
+
+2.每次将堆顶的元素与最后一个元素交换，相当于取出最大元素，放到最后面，然后对堆进行调整，重新成为大顶堆，一直到最后。
+
+![img](../static/1024555-20161217182750011-675658660.png)
+
+![img](../static/1024555-20161217182857323-2092264199.png)
+
+假设某节点下标为i，它的左子节点下标回收2i，2i+1，所以最后一个非叶子节点的下标应该是array.length/2-1
+
+```java
 public static void sort(int []arr){
     //1.构建大顶堆
     for(int i=arr.length/2-1;i>=0;i--){
@@ -228,7 +244,7 @@ public static void swap(int []arr,int a ,int b){
 
 ### 二分查找
 
-```
+```java
 int findByHalf(int[] array, int target) {
 		if (array == null || array.length==0) {
 			return -1;//代表没有合适的元素
@@ -251,7 +267,7 @@ int findByHalf(int[] array, int target) {
 
 ### 查找链表倒数第K个节点
 
-```
+```java
 public ListNode findKNode(ListNode node，int k) {
 		if (head==null || k <= 0) {//空链表，或者k小于等于0
         return null;
@@ -275,7 +291,7 @@ public ListNode findKNode(ListNode node，int k) {
 
 ### 链表反转
 
-```
+```java
 public ListNode reverseNode(ListNode node) {
 		if(node==null ||node.next ==null) {
 				return node;
@@ -582,7 +598,7 @@ static void printYanghui(int rows) {
 
 根据一个数学规律来计算，就是每一层一开始是数都是1，假设前一个数是a，后面的数b，满足b = a*(上一层的层数-a的下标)/(a的下标+1)
 
-```
+```java
 static void test2(int rows) {
     for (int i = 0; i < rows; i++) {
         int index = 1;
@@ -593,4 +609,195 @@ static void test2(int rows) {
         System.out.println(" ");
     }
 }
+```
+
+## LRU算法
+
+LRU其实就是Last Recent Used，就是最近使用淘汰策略，所以当空间满了时，就根据最近使用时间来删除。一般是使用一个双向链表来实现，同时为了快速访问节点，会使用一个HashMap来存储键值映射关系。(需要注意的是，为了在内存满时删除最后一个节点时，可以以O(1)时间复杂度从HashMap中删掉这个键值对，每个节点除了存储value以外，还需要存储key)。
+
+#### 添加新元素的过程：
+
+首先我们增加两个方法，remove()方法用于删除一个节点，addNewNodeToHead()代表添加一个节点到头部。
+
+1.判断节点是否已经存在于链表中，是的话，找出节点，
+
+1.1更新value，
+
+1.2调用remove()方法删除节点，
+
+1.3调用addNewNodeToHead()将节点添加到链表头部。
+
+2.节点不存在于链表中，那么判断链表长度是否超出限制，
+
+2.1是的话remove(lastNode.key)
+
+2.2创建一个新节点，调用addNewNodeToHead()将节点添加到链表头部。
+
+
+
+remove()方法的细节，主要是更新node的前后节点的next或pre指针，以及更新后需要判断删除的节点是否是headNode或者lastNode，是的话同时需要更新headNode或者lastNode。
+
+addNewNodeToHead()方法细节，主要是要先判断head是否为null，是的话说明链表为空，需要将headNode和lastNode都设置为node，不为null就执行添加操作，将headNode.pre设置为node,node的next设置为headNode，headNode=node；
+
+
+
+```java
+//双向链表
+public static class ListNode {
+    String key;
+    Integer value;
+    ListNode pre = null;
+    ListNode next = null;
+    ListNode(String key, Integer value) {
+        this.key = key;
+        this.value = value;
+    }
+}
+ListNode headNode;
+ListNode lastNode;
+int limit=4;
+HashMap<String, ListNode> hashMap = new HashMap<String, ListNode>();
+public void put(String key, Integer val) {
+    ListNode existNode = hashMap.get(key);
+    if (existNode!=null) {//有老的节点，只是更新值，先从链表移除，然后从头部添加
+        existNode.value=val;
+        remove(key);
+        addNewNodeToHead(existNode);
+    } else {
+        //达到限制，先删除尾节点
+        if (hashMap.size() == limit) { remove(lastNode.key); }
+        ListNode newNode = new ListNode(key,val);
+        addNewNodeToHead(newNode);
+    }
+}
+public ListNode get(String key) {
+  
+    ListNode node = hashMap.get(key);
+    if(node == null) {
+        return null;
+    }
+    remove(node.key);
+    addNewNodeToHead(node);
+    return node;
+}
+public void remove(String key) {
+    ListNode deleteNode = hashMap.get(key);
+    hashMap.remove(key);
+    ListNode preNode = deleteNode.pre;
+    ListNode nextNode = deleteNode.next;
+    //删除操作需要更新pre节点的next指针和next节点的pre指针，以及更新head和last
+    if (preNode!=null) { preNode.next = nextNode; }
+    if (nextNode!=null) { nextNode.pre = preNode; }
+    if (headNode == deleteNode) { headNode = nextNode; }
+    if (lastNode == deleteNode) { lastNode = preNode; }
+}
+private void addNewNodeToHead(ListNode node) {
+  	hashMap.put(node.key,node);
+    if (headNode==null||lastNode==null) {
+        headNode = node;
+        lastNode = node;
+        return;
+    }
+    headNode.pre = node;
+    node.next = headNode;
+    headNode = node;
+}
+```
+
+##### 使用LinkedHashMap实现的算法
+
+使用LinkedHashMap实现LRU算法，
+
+* LinkedHashMap默认的accessOrder为false，也就是会按照插入顺序排序，
+  所以在插入新的键值对时，总是添加在队列尾部，
+   如果是访问已存在的键值对，或者是put操作的键值对已存在，那么需要将键值对先移除再添加。
+* 如果是将accessOrder设置为true，get已有键值对时就不需要删除key了，会自动调整顺序，put方法需要在添加或者更新键值对后调用LinkedHashMap#get()访问key，调整顺序。
+
+```java
+//accessOrder为false,按照插入顺序排序的写法
+public static class LRUCache {
+    int capacity;
+    Map<Integer, Integer> map;
+    public  LRUCache(int capacity) {
+        this.capacity = capacity;
+        map = new LinkedHashMap<>();
+    }
+    public int get(int key) {
+        if (!map.containsKey(key)) {
+            return -1;
+        }
+        //先删除旧的位置，再放入新位置
+        Integer value = map.remove(key);
+        map.put(key, value);
+        return value;
+    }
+    
+    public void put(int key, int value) {
+        if (map.containsKey(key)) {
+            map.remove(key);
+            map.put(key, value);
+            return;
+        }
+        map.put(key, value);
+        //超出capacity，删除最久没用的,利用迭代器，删除第一个
+        if (map.size() > capacity) {
+            map.remove(map.keySet().iterator().next());
+        }
+    }
+}
+```
+accessOrder为true,按照访问顺序排序的实现方法
+```java
+
+public static class LRUCache2 {
+    int capacity;
+    LinkedHashMap<Integer, Integer> linkedHashMap;
+    LRUCache2(int capacity) {
+        this.capacity = capacity;
+      //如果要修改accessOrder只能使用这种构造器方法来创建LinkedHashMap
+        linkedHashMap = new LinkedHashMap<Integer, Integer>(16,0.75f,true);
+    }
+    public int get(int key) {
+        Integer value = linkedHashMap.get(key);
+        return value == null ? -1 : value;
+    }
+    public void put(int key, int val) {
+        linkedHashMap.put(key, val);
+        if (linkedHashMap.size() > capacity) {
+        linkedHashMap.remove(linkedHashMap.keySet().iterator().next());
+        }
+    }
+    //通过调用get()方法访问key来调整顺序
+    linkedHashMap.get(key);
+}
+```
+
+### 【面试算法题】阿拉伯数字转化为中文读法
+
+例如我们要将10100转换为中文，总体流程就是先拿10100/1个亿，发现结果为0，说明不会包含亿这个数量级，然后10100/1万，得到结果result为1，余数remain为100，说明包含万这个数量级，我们的结果肯定是等于 "result的中文表示"+单位"万"+"余数的中文表示"，所以就对问题进行了分解，f(n) = f(n/数量级)+数量级单位+f(n%数量级)
+
+```java
+    static String[] nameArray1 = {"","一","二","三","四","五","六","七","八","九"};
+    static String[] nameArray2 = {"","十","百","千","万","亿"};
+    static int[] intArray = {1,10,100,1000,10000,100000000};
+
+    public static String numToChinese(int num) {
+        for (int i = intArray.length-1; i >= 0; i--) {
+            int part1 = num/intArray[i];
+            int part2 = num%intArray[i];
+            if (i==0) {//到个位了
+                return nameArray1[part1];
+            }
+            if (part1>0) {
+                //整除部分，例如10100，整除部分就是十
+                String left = numToChinese(part1);
+                //整除部分的单位，例如10100，整除部分的单位就是万
+                String unitString = nameArray2[i];
+                //余数部分，例如10100，余数部分就是一百
+                String right = numToChinese(part2);
+                return left + unitString + right;
+            }
+        }
+        return "";
+    }
 ```

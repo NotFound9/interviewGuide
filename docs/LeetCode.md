@@ -1,9 +1,22 @@
 ## LeetCode 热门100题题解
 
 #### [1.两数之和](#两数之和)
+#### [206. 反转链表](#206.反转链表)
+#### [3.无重复字符的最长子串](#3.无重复字符的最长子串)
+#### [2. 两数相加](#2.两数相加)
+#### [20.有效的括号](#20.有效的括号)
+#### [5.最长回文子串](#5.最长回文子串)
+#### [121.买卖股票的最佳时机](#121.买卖股票的最佳时机)
+#### [70.爬楼梯](#70.爬楼梯)
+#### [53.最大子序和](#53.最大子序和)
+#### [19.删除链表的倒数第N个节点](#19.删除链表的倒数第N个节点)
+#### [21.合并两个有序链表](#21.合并两个有序链表)
+#### [283.移动零](#283.移动零)
 
+
+### 两数之和
 #### 题目描述
-
+题目详情：https://leetcode-cn.com/problems/two-sum/
 给定一个整数数组 nums 和一个目标值 target，请你在该数组中找出和为目标值的那 两个 整数，并返回他们的数组下标。
 
 你可以假设每种输入只会对应一个答案。但是，数组中同一个元素不能使用两遍。
@@ -40,7 +53,8 @@ class Solution {
  }
 ```
 
-### [206. 反转链表](https://leetcode-cn.com/problems/reverse-linked-list/)
+### 206.反转链表
+题目详情：https://leetcode-cn.com/problems/reverse-linked-list/
 
 #### 题目描述：
 
@@ -104,8 +118,8 @@ public static ListNode reverseList(ListNode node) {
     return newHead;
 }
 ```
-
-### [3.无重复字符的最长子串](https://leetcode-cn.com/problems/longest-substring-without-repeating-characters/)
+### 3.无重复字符的最长子串
+题目详情：https://leetcode-cn.com/problems/longest-substring-without-repeating-characters/
 
 #### 题目描述：
 
@@ -160,8 +174,8 @@ public int lengthOfLongestSubstring(String s) {
     return max;
 }
 ```
-
-### [2. 两数相加](https://leetcode-cn.com/problems/add-two-numbers/)
+### 2.两数相加
+题目详情：https://leetcode-cn.com/problems/add-two-numbers/
 
 #### 题目详情：
 
@@ -229,7 +243,8 @@ public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
 }
 ```
 
-### [20. 有效的括号](https://leetcode-cn.com/problems/valid-parentheses/)
+### 20.有效的括号
+题目详情：https://leetcode-cn.com/problems/valid-parentheses/
 
 #### 题目描述
 
@@ -295,8 +310,8 @@ class Solution {
 ```
 
 
-
-### [5. 最长回文子串](https://leetcode-cn.com/problems/longest-palindromic-substring/)
+### 5.最长回文子串
+题目详情：https://leetcode-cn.com/problems/longest-palindromic-substring/
 
 #### 题目详情
 
@@ -360,8 +375,8 @@ class Solution {
     }
 }
 ```
-
-### [121. 买卖股票的最佳时机](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock/)
+### 121.买卖股票的最佳时机
+题目详情：https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock/
 
 #### 题目介绍
 
@@ -408,8 +423,8 @@ class Solution {
     }
 }
 ```
-
-### [70. 爬楼梯](https://leetcode-cn.com/problems/climbing-stairs/)
+### 70.爬楼梯
+题目详情：https://leetcode-cn.com/problems/climbing-stairs/
 
 #### 题目介绍
 
@@ -461,8 +476,8 @@ class Solution {
     }
 }
 ```
-
-### [53. 最大子序和](https://leetcode-cn.com/problems/maximum-subarray/)
+### 53.最大子序和
+题目详情：https://leetcode-cn.com/problems/maximum-subarray/
 
 #### 题目介绍
 
@@ -508,8 +523,8 @@ class Solution {
 ```
 
 
-
-### [19. 删除链表的倒数第N个节点](https://leetcode-cn.com/problems/remove-nth-node-from-end-of-list/)
+### 19.删除链表的倒数第N个节点
+题目详情：https://leetcode-cn.com/problems/remove-nth-node-from-end-of-list/
 
 #### 题目介绍
 
@@ -556,8 +571,8 @@ class Solution {
 ```
 
 
-
-### [21. 合并两个有序链表](https://leetcode-cn.com/problems/merge-two-sorted-lists/)
+### 21.合并两个有序链表
+题目详情：https://leetcode-cn.com/problems/merge-two-sorted-lists/
 
 #### 题目介绍
 
@@ -571,4 +586,74 @@ class Solution {
 ```
 
 #### 解题思路
+
+就是创建一个preNode，作为头结点前面的节点，再创建一个currentNode作为实际遍历时的节点，每次从链表l1和l2各取出节点，进行比较，val较小的节点赋值给currentNode的next指针，然后再将currentNode后移，链表中的节点进行后移。直到某个链表遍历完毕了，然后将另外一个链表后续的节点接到currentNode的next指针上。
+
+```java
+public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
+    if(l1==null) {return l2;}
+    if(l2==null) {return l1;}
+    ListNode preHead = new ListNode();
+    ListNode currentNode = preHead;
+    while(l1!=null && l2!=null) {
+        if(l1.val < l2.val) {
+            currentNode.next = l1;
+            currentNode = currentNode.next;
+            l1 =l1.next;
+        } else {
+            currentNode.next = l2;
+            currentNode = currentNode.next;
+            l2 =l2.next;
+        }
+    }
+    if(l1!=null) {currentNode.next = l1;}
+    if(l2!=null) {currentNode.next = l2;}
+    return preHead.next;
+}
+```
+
+### 283.移动零
+
+题目详情：https://leetcode-cn.com/problems/move-zeroes/
+解题思路：
+
+对数组进行遍历，就是找到一个为0的数，然后继续往后找，找到一个不为0的数，与它进行交换，这样就可以把0全部移动到后面去了。
+
+```java
+public void moveZeroes(int[] nums) {
+      if(nums==null || nums.length<=1) { return;}
+      int slow = 0,quick = 0;
+      while (slow<nums.length && quick<nums.length) {
+        //找到第一个为0的数nums[slow]
+        while (slow < nums.length && nums[slow] != 0) { slow++;}
+        quick = slow;
+        //从这个为0的数往后找到第一个不为0的数nums[quick]
+        while (quick < nums.length && nums[quick] == 0 ) { quick++;}
+        //将nums[slow]与nums[quick]进行交换
+        if (slow < nums.length && quick < nums.length) {
+          nums[slow] = nums[quick];
+          nums[quick] = 0;
+        }
+      }
+}
+```
+
+一种更简洁的写法：可以认为是用一个指针记录一下前面的空位置，然后从数组后面元素找到一个不为0的数字，填充到这个空位置上去。
+
+```java
+public void moveZeroes(int* nums, int numsSize) {
+    int i = 0,j = 0;
+    for(i = 0 ; i < numsSize; i++)
+    {
+        if(nums[i] != 0)
+        {
+            nums[j++] = nums[i];
+        }
+    }
+    while(j < numsSize)
+    {
+        nums[j++] = 0;
+    }
+}
+```
 
