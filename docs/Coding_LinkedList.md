@@ -9,8 +9,10 @@
 #### [题013链表的倒数第K个结点](#题013)
 #### [题014反转链表](#题014)
 #### [题015 合并链表](#题015)
+
 #### [题024 复杂链表的复制](#题024)
 #### [题035 两个的链表的第一个公共节点](#题035)
+
 #### [题054 链表中环的入口节点](#题054)
 #### [题055 删除链表中重复的节点](#题055)
 
@@ -299,44 +301,42 @@ public RandomListNode copy(RandomListNode head) {
 解法三，分别遍历两个链表，得到两个链表的长度，用两个指针分别指向头结点，指向长度更大的链表的指针向后移动N步，使得链表的剩余节点长度相等，然后每次两个指针向后移动一步，直到指针指向的节点相等。
 
 ```java
-public ListNode FindFirstCommonNode(ListNode pHead1, ListNode pHead2) {
-    if (pHead1==null|| pHead2 == null) {
+ListNode FindTheCommonNode(ListNode head1, ListNode head2) {
+        if (head1==null|| head2 == null) {
+            return null;
+        }
+  //统计长度
+        int length1=0,length2=0;
+        ListNode node1 = head1,node2=head2;
+        while (node1!=null) {
+            length1++;
+            node1=node1.next;
+        }
+        while (node2!=null) {
+            length2++;
+            node2 = node2.next;
+        }
+        node1 = head1;
+        node2 = head2;
+  //长的链表先走
+        while (length1!=length2) {
+            if (length1>length2) {
+                length1--;
+                node1=node1.next;
+            } else {
+                length2--;
+                node2=node2.next;
+            }
+        }
+        while (node1!=node2) {
+            node1 = node1.next;
+            node2 = node2.next;
+        }
+        if (node1==node2) {
+            return node1;
+        }
         return null;
     }
-    //统计长度
-    int length1 = 0;
-    ListNode currentNode1 = pHead1;
-    while (currentNode1!=null) {
-        length1++;
-        currentNode1 = currentNode1.next;
-    }
-    int length2 = 0;
-    ListNode currentNode2 = pHead2;
-    while (currentNode2!=null) {
-        length2++;
-        currentNode2 = currentNode2.next;
-    }
-    currentNode1 = pHead1;
-    currentNode2 = pHead2;
-    while (length1!=length2) {
-        if (length1>length2) {
-            length1--;
-            currentNode1 = currentNode1.next;
-        } else {
-            length2--;
-            currentNode2 = currentNode2.next;
-        }
-    }
-    while (currentNode1!=null&&currentNode2!=null) {
-        if (currentNode1==currentNode2){
-            return currentNode1;
-        } else {
-            currentNode1 = currentNode1.next;
-            currentNode2 = currentNode2.next;
-        }
-    }
-    return null;
-}
 ```
 
 ## 题054 链表中环的入口节点

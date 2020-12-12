@@ -1,11 +1,17 @@
 高频算法面试题集合
 
 #### [1.常见的排序算法](#常见的排序算法)
+
 #### [2.二分查找](#二分查找)
+
 #### [3.查找链表倒数第K个节点](#查找链表倒数第K个节点)
+
 #### [4.链表反转](#链表反转)
+
 #### [5.查找第K大的数](#查找第K大的数)
+
 #### [6.有一个1G大小的一个文件，里面每一行是一个词，词的大小不超过16字节，内存限制大小是1M，返回频数最高的100个词](#有一个1G大小的一个文件，里面每一行是一个词，词的大小不超过16字节，内存限制大小是1M，返回频数最高的100个词)
+
 #### [7.9个硬币中有一个劣币，用天平秤，最坏几次？](#9个硬币中有一个劣币，用天平秤，最坏几次？)
 
 #### [8.编辑距离](#编辑距离)
@@ -13,9 +19,8 @@
 #### [9.打印杨辉三角](#打印杨辉三角)
 
 #### [10.LRU算法](#LRU算法)
+
 #### [11.###【面试算法题】阿拉伯数字转化为中文读法](#【面试算法题】阿拉伯数字转化为中文读法)
-
-
 
 ### 常见的排序算法
 
@@ -24,7 +29,7 @@
 
 ## 冒泡排序
 
-就是进行n次遍历，每次比较两个元素，判断大小，进行交换，将大的元素换到右边，最终可以遍历可以将最大的元素交换到末尾，最终让整个序列有序。
+对从[0,length-1]范围内的元素进行比较和交换，将大的元素交换到后面去，一次遍历后就可以将最大的元素交换至末尾，然后下次遍历范围将减1，在[0,length-2]范围内进行，一直到最后。
 
 #### 优化
 
@@ -33,11 +38,10 @@
 ```java
 int[] sorted(int[] array) {
   if (array == null || array.length ==0 || array.length ==1) {return array;}
-  
-  for(int i = array.length-1;i>=1;i--) {//i代表遍历的最大范围
+  for(int i = array.length;i>0;i--) {//i代表遍历的最大范围
     int sortedFlag = 0;
-    for(int j = 1;j<=i;j++) {
-      if(array[j]<array[j-1]) {//进行交换
+    for(int j = 1;j<i;j++) {//每次在1到i范围内交换,
+      if(array[j-1]>array[j]) {//进行比较，将大的元素交换到后面去
         int temp = array[j];
         array[j] = array[j-1];
         array[j-1]=temp;
@@ -61,11 +65,13 @@ int[] sorted(int[] array) {
 int[] sorted2(int[] array) {
   if(array == null || array.length==0 || array.length==1) {return array;}
   for(int i=1;i<array.length;i++) {
-    	for(int j = i;j>0;j--) {
-        if(array[j]<array[j-1]) {
+        for(int j = i;j>0;j--) {
+        if(array[j]<array[j-1]) {//小于就交换
           int temp = array[j];
           array[j] = array[j-1];
           array[j-1] = temp;
+        } else {//如果是大于说明是已经处于排序好的序列中合适的位置了
+          break;
         }
       }
   }
@@ -82,6 +88,7 @@ int[] sorted3(int[] array) {
       if(array == null || array.length==0 || array.length==1) {return array;}
       for(int i= 0;i<array.length-1;i++) {
         int min = i;
+        //每次遍历选出最小值，并且放在数组下标为i的位置
         for(int j = i+1;j<array.length;j++) {
           if(array[j]<array[min]){
             min = j;
@@ -97,40 +104,43 @@ int[] sorted3(int[] array) {
 
 ## 归并排序
 
-就是递归地先将数组进行分组，一直分，一直分，一直到组只剩下1个元素，然后进行合并
+思路就是先递归对数组进行分组，一直到每个组只有一个元素，然后每个组按大小进行合并，形成一个新的组。每次合并的时间复杂度是N，大概需要合并log(N)次，所以总时间复杂度是 Nlog(N)，空间复杂度为N的一种写法,只使用一个临时数组temp来进行过度，
 
 ```java
-int[] sorted4(int[] array, int start,int end) {
-        if(start>=end) {
-            return array;
-        }
-        int middle = start + (end-start)/2;
-        sorted44(array,start, middle);
-        sorted44(array,middle + 1, end);
-        merge(array, start,end);
-        return array;
+void sort(int[] array) {
+    //临时数组主要用于归并过程中的临时存放排序数组
+    int[] tempArray = new int[array.length];
+    mergeSort(array,0,array.length-1,tempArray);
+}
+void mergeSort(int[] array, int start, int end,int[] tempArray) {
+    if (array==null||array.length==0) { return; }
+    if (start>=end) { return; }
+    //进行分组，一直分到只有两个元素，在小组内进行归并
+    int middle = start + (end - start)/2;
+    mergeSort(array,start,middle,tempArray);
+    mergeSort(array,middle+1,end,tempArray);
+
+    //进行合并
+    int i = start;
+    int j = middle+1;
+    int currentIndex = start;
+    //进行合并，每次取最小值
+    while (i <= middle && j<= end) {
+      	tempArray[currentIndex++] = array[i] < array[j] ? array[i++] : array[j++];
     }
-void merge(int[] array, int start,int end) {
-       int length = end-start+1;
-       int[] temp = new int[length];
-       for (int k = 0; k < length; k++) {
-           temp[k] = array[start+k];
-       }
-       int left  = 0;
-       int tempMiddle = (0 + length-1)/2;
-       int right = tempMiddle+1;
-       int tempEnd =length-1;
-       int i     = start;
-       while (left <= tempMiddle && right <= tempEnd) {
-           array[i++] = temp[left] < temp[right] ? temp[left++]:temp[right++];
-       }
-       while (left <= tempMiddle) {
-           array[i++] = temp[left++];
-       }
-       while (right <= tempEnd) {
-           array[i++] = temp[right++];
-       }
-   }
+    //对剩余元素进行归并
+    while (i <= middle) {
+      	tempArray[currentIndex++] = array[i++];
+    }
+    //对剩余元素进行归并
+    while (j <= end) {
+      	tempArray[currentIndex++] = array[j++];
+    }
+    //将排序好的数组拷贝回原数组
+    for (int k = start; k <= end; k++) {
+      	array[k] = tempArray[k];
+    }
+}
 ```
 
 ### 快速排序
@@ -140,28 +150,28 @@ void merge(int[] array, int start,int end) {
 ```java
 int[] quickSorted(int [] array, int start,int end) {
 //如果start和end相等就直接结束循环
-	if(start>=end) {return array;}
+    if(start>=end) {return array;}
 //取第一个元素作为基准值
-	int base = array[start];
-	int i = start;//左边从第一个元素开始，如果取得基准值正好是最小值，然后遍历从第二个开始，会导致第二个位置的值与基准值交换，而第二个位置的值是>基准值的
-	int j = end;//右边从最后一个元素开始
-	//只要i<j就一直循环
-	while(i<j) {
-			//从右边找出一个元素小于基准值的元素
-			while(array[j] > base && i<j) {j--;}
-			//从左边找出一个大于基准值的元素
-			while(array[i]<=base&&i<j) {i++;}
-			//进行交换
-			if(i<j) {
+    int base = array[start];
+    int i = start;//左边从第一个元素开始，如果取得基准值正好是最小值，然后遍历从第二个开始，会导致第二个位置的值与基准值交换，而第二个位置的值是>基准值的
+    int j = end;//右边从最后一个元素开始
+    //只要i<j就一直循环
+    while(i<j) {
+            //从右边找出一个元素小于基准值的元素
+            while(array[j] > base && i<j) {j--;}
+            //从左边找出一个大于基准值的元素
+            while(array[i]<=base&&i<j) {i++;}
+            //进行交换
+            if(i<j) {
           int temp =array[j];
           array[j] = array[i];
           array[i] = temp;
-			}
-	}
-	//将中间值换成基准元素
-	array[start] = array[i];
-	array[i] = base;
-	//左边的组继续进行快排
+            }
+    }
+    //将中间值换成基准元素
+    array[start] = array[i];
+    array[i] = base;
+    //左边的组继续进行快排
   quickSorted(array,start,i-1);
     //右边的组继续进行快排
   quickSorted(array,i+1,end);
@@ -176,7 +186,7 @@ int[] quickSorted(int [] array, int start,int end) {
 
 ### 堆排序
 
-大顶堆的定义是，根节点的值大于所有节点的值。
+大顶堆的定义是，每个节点的值大于左右子节点的值。
 
 堆排序步骤：
 
@@ -188,44 +198,71 @@ int[] quickSorted(int [] array, int start,int end) {
 
 ![img](../static/1024555-20161217182857323-2092264199.png)
 
-假设某节点下标为i，它的左子节点下标回收2i，2i+1，所以最后一个非叶子节点的下标应该是array.length/2-1
+因为大顶堆都是完全二叉树，
+
+某节点下标为i，
+
+左子节点下标=2i+1，
+
+右节点=2i+2，   
+
+因为最后一个数组下标是length-1，而它的父节点至少会拥有左节点，不一定会拥有左节点，所以假设父节点的下标为i，满足公式length-1=2*i +1，i就等于length/2 - 1。（假设最后一个元素是右节点，这个公式也是成立的，因为length会是奇数，相当于length/2的时候舍去了一个1）
 
 ```java
-public static void sort(int []arr){
-    //1.构建大顶堆
-    for(int i=arr.length/2-1;i>=0;i--){
-        //从第一个非叶子结点从下至上，从右至左调整结构
-        adjustHeap(arr,i,arr.length);
-    }
-    //2.调整堆结构+交换堆顶元素与末尾元素
-    for(int j=arr.length-1;j>0;j--){
-        swap(arr,0,j);//将堆顶元素与末尾元素进行交换
-        adjustHeap(arr,0,j);//重新对堆进行调整
-    }
-}
-// 调整的过程其实是将从节点i的左右节点中找出最大值，然后作为当前i的节点，并且会对交换后的节点继续调整
-public static void adjustHeap(int []arr,int i,int length){
-    int temp = arr[i];//先取出当前元素i
-    for(int k=i*2+1;k<length;k=k*2+1){//从i结点的左子结点开始，也就是2i+1处开始
-        if(k<length-1 && arr[k]<arr[k+1]){//如果右子节点存在，左子结点小于右子结点，k指向右子结点
-            k++;
+    //堆排，每次调整的时间复杂度是log(N),然后需要调整N次，所以总时间复杂度是N*log(N)
+    int[] heapSort(int[] array) {
+        if (array==null||array.length==0) {
+            return array;
         }
-        if(arr[k] >temp){//如果子节点大于父节点，将子节点值赋给父节点（不用进行交换）
-            arr[i] = arr[k];
-            i = k;
-        }else{ break; }
+        //1.对所有非叶子节点进行调整,建立大顶堆
+        for (int i = array.length/2 - 1; i >= 0 ; i--) {
+            adjustHeap(array,i,array.length);
+        }
+        //2.大顶堆建立完毕后，堆顶就是最大值，交换到数组末尾
+        for (int i = array.length-1; i > 0 ; i--) {
+            //每次调整完毕后堆顶都是最大值
+            swap(array,0,i);
+            adjustHeap(array,0,i);
+        }
+        return array;
     }
-    arr[i] = temp;//将temp值放到最终的位置
-}
-//交换元素
-public static void swap(int []arr,int a ,int b){
-    int temp=arr[a];
-    arr[a] = arr[b];
-    arr[b] = temp;
-}
+    //调整大顶堆，需要调整节点i，
+    //使节点i与它的子节点都满足大顶堆的性质(就是父节点>左节点和右节点)
+    void adjustHeap(int[] array,int i,int length) {
+        //循环结束的条数是节点i存在左节点
+        while (2*i+1<length) {
+            int left = 2*i+1;//左节点下标
+            int right = 2*i+2;//右节点下标，可能会越界，所以下面会判断
+            if (right<length) {//节点i存在右节点
+                //父节点，左节点，右节点三者中最大值的数组下标
+                int maxIndex = array[right] > array[left] ? right : left;
+                maxIndex = array[i] > array[maxIndex] ? i : maxIndex;
+                if (maxIndex == i) {//三者最大值就是父节点
+                    break;
+                } else if (maxIndex == left) {//三者最大值就是左节点
+                    swap(array,i,left);
+                    i = left;
+                } else if (maxIndex == right) {//最大的节点是右节点
+                    swap(array,i,right);
+                    i = right;
+                }
+            } else {//节点i只有左节点
+                if (array[left] > array[i]) {//左节点比父节点大
+                    swap(array,i,left);
+                    i = left;
+                } else {
+                    break;
+                }
+            }
+        }
+    }
+    //交换元素
+    void swap(int[] array,int a,int b){
+        int temp = array[a];
+        array[a] = array[b];
+        array[b] = temp;
+    }
 ```
-
-
 
 ### 桶排序
 
@@ -240,79 +277,105 @@ public static void swap(int []arr,int a ,int b){
 
 理想情况下，如果订单数据是均匀分布的话。但是，订单数据不一定是均匀分布的。划分之后可能还会存在比较大的文件，那就继续划分。比如订单金额在 1~1000 元之间的比较多，那就将这个区间继续划分为 10 个小区间，1~100、101~200 等等。如果划分之后还是很大，那么继续划分，直到所有的文件都能读入内存。
 
-
-
 ### 二分查找
+
+查找数组中是否存在某元素的算法
 
 ```java
 int findByHalf(int[] array, int target) {
-		if (array == null || array.length==0) {
-			return -1;//代表没有合适的元素
-		}
-		int left = 0;
-		int right = array.length-1;
-		while(left<=right) {//需要注意是小于等于right，否则查找范围会是[left,right),会漏掉对最后一个元素的比较
-				int middle = left + (right - left)/2;
-				if(array[middle]<target) {
-							left = middle+1;//跳过middle
-				} else if (array[middle]>target) {
-					right = middle-1;
-				} else {
-					return middle;
-				}
-		}
-		return -1;//代表没有合适的元素
+        if (array == null || array.length==0) {
+            return -1;//代表没有合适的元素
+        }
+        int left = 0;
+        int right = array.length-1;
+        while(left<=right) {//需要注意是小于等于right，否则查找范围会是[left,right),会漏掉对最后一个元素的比较
+                int middle = left + (right - left)/2;
+                if(array[middle]<target) {
+                    left = middle+1;//跳过middle
+                } else if (array[middle]>target) {
+                    right = middle-1;
+                } else {
+                    return middle;
+                }
+        }
+        return -1;//代表没有合适的元素
 }
 ```
+
+二分查找左边界算法
+
+左边界的定义是第一个>=目标值的下标，如果所有元素都<目标值，那么返回的会是最后一个元素的下标+1
+```java
+//1,2,3,4,5,6,7,8,9
+int find_left_bound(int[] array,double target) {
+		if(array == null|| array.length==0) {return -1;}
+		int left = 0;
+		int right = array.length-1;
+		while(left<=right) {
+			int middle = left+(right-left)/2;
+			if(array[middle]==target) {
+					right = middle-1;
+			} else if (array[middle] > target) {
+					right = middle-1;
+			} else if (array[middle] < target) {
+					left = middle + 1;
+			}
+		}
+	 if (left >= nums.length)//如果所有元素都比target小，left会等于nums.length，此时是越界的
+        {return -1;}
+   return left;
+}
+```
+
+
 
 ### 查找链表倒数第K个节点
 
 ```java
 public ListNode findKNode(ListNode node，int k) {
-		if (head==null || k <= 0) {//空链表，或者k小于等于0
+        if (head==null || k <= 0) {//空链表，或者k小于等于0
         return null;
     }
-		ListNode quickNode = node;
-		for(int i=0;i<k;i++) {
-				if(quickNode == null) {
-						return null;
-				} else {
-					quickNode = quickNode.next;
-				}
-		}
-		ListNode slowNode = node;
-		while(quickNode != null) {
-					slowNode = slowNode.next;
-					quickNode = quickNode.next;
-		}
-		return slowNode;
-	}
+        ListNode quickNode = node;
+        for(int i=0;i<k;i++) {
+                if(quickNode == null) {
+                        return null;
+                } else {
+                    quickNode = quickNode.next;
+                }
+        }
+        ListNode slowNode = node;
+        while(quickNode != null) {
+                    slowNode = slowNode.next;
+                    quickNode = quickNode.next;
+        }
+        return slowNode;
+    }
 ```
 
 ### 链表反转
 
 ```java
 public ListNode reverseNode(ListNode node) {
-		if(node==null ||node.next ==null) {
-				return node;
-		}
-		//至少有两个节点
-		ListNode first = node;
-		ListNode second = node.next;
-		ListNode three = second.next;
-		first.next = null;
-		while(second!=null) {
-				second.next = first;
-				first = second;
-				second = three;
-				if (three == null){break};
-				else {
-					three = three.next;
-				}
-		}
-		return first;
+        if(node==null ||node.next ==null) {
+                return node;
+        }
+        //至少有两个节点
+        ListNode first = node;
+        ListNode second = node.next;
+        ListNode three = second.next;
+        first.next = null;
+        while(second!=null) {
+                second.next = first;
+                first = second;
+                second = three;
+                if (three == null){break};
+                else {
+                    three = three.next;
+                }
+        }
+        return first;
 }
-
 ```
 
 ### 查找第K大的数
@@ -321,7 +384,7 @@ public ListNode reverseNode(ListNode node) {
 
 就是选左边的下标作为基准版，从首尾进行遍历，对元素交换，将大的元素交换到前面来，让序列变成递减的序列。然后根据当前的基准元素的下标i+1得到基准元素在序列中是第index大的元素，然后判断index与K的大小，相等就返回基准元素，index>K，说明第K大的数在左边，继续从左边的子序列中找，index<K，说明在右边，去右边的子序列中找。
 
-平均时间复杂度O(2N)，最坏时间复杂度O(N的平方)
+平均时间复杂度O(2N)，最坏时间复杂度O(N^2)
 
 ```java
  public static Integer findK(int[] array,int start,int end,int K) {
@@ -360,7 +423,7 @@ PriorityQueue是一个优先级队列，可以认为是一个小顶堆，每次p
 
 ```java
 private static Integer findKWayTwo(int array[], int K) {
-				PriorityQueue<Integer> queue = new PriorityQueue<Integer>();
+                PriorityQueue<Integer> queue = new PriorityQueue<Integer>();
         for (int i = 0; i < array.length; i++) {
             queue.add(array[i]);
             if (queue.size()>K) {
@@ -403,23 +466,27 @@ public static Integer findKByPickSort(int[] input, int k) {
         return arrayList.get(k-1);
     }
 ```
+
 ### 有一个1G大小的一个文件，里面每一行是一个词，词的大小不超过16字节，内存限制大小是1M，返回频数最高的100个词
-首先这个问题的难点在于内存太小，1M/16 byte =64，也就是在极端情况下，单词都是16字节时，内存中可能最多存储64个。
+
+首先这个问题的难点在于内存太小，1M/16 byte =2的16次方，也就是在极端情况下，单词都是16字节时，内存中可能最多存储2的16次方个。
 
 执行流程如下：
 先hash分片->每个小文件堆排取前100->对每个小文件的前100做归并排序。
 
 1.由于内存限制是1M，所以如果每个小文件小于1M以下才能全部加载到内存中，所以可以设置模为5000，遍历每个单词，对单词取hash值%5000，得到index，写入到index名的小文件下，理论上这样的是可以达到每个小文件都是小于1M的，如果大于1M，需要对文件继续进行hash运算，切分成小文件。
 
-2.遍历每个小文件，使用堆排的方法对小文件进行排序，记录每个单词的出现次数，写入一个新的记录次数的小文件。
+2.遍历每个小文件，每个小文件理论上都是小于1M的，可以直接加载到内存中，使用堆排的方法对小文件进行排序，记录每个单词的单词名和出现次数，写入一个新的记录次数的小文件。
 
-3.然后进行归并排序取一个记录次数的文件，建了一个包含100个单词的小顶堆，遍历一次所有记录次数文件，每次遍历时取小文件的前100，与堆顶进行比较，如果比堆顶大就替换堆顶，并且对小顶堆进行调整，将最小的元素调整到堆顶。（由于内存中是存不了100个单词的，所以我们内存中只存堆顶元素，小顶堆是存在磁盘中，每次需要调整堆的时候再去磁盘中读取一部分元素然后进行调整，得到新的堆顶元素。）
+3.然后进行归并排序取一个记录次数的文件，建了一个包含100个单词的小顶堆，遍历一次所有记录次数文件，每次遍历时取小文件的前100，与堆顶进行比较，如果比堆顶大就替换堆顶，并且对小顶堆进行调整，将最小的元素调整到堆顶。
 
 对于多次hash后的文件还是大于内存限制应该怎么办呢？
 这个时候就只能先对文件按照顺序进行切分，切分成小文件，然后加载每个小文件，通过map来记录每个单词及出现次数，然后根据map按照key的顺序生成一个记录了单词和出现次数的map文件。对这些map文件进行合并，每次取两个map合并后生成一个map，最终得到一个map文件，使用堆排遍历map中的key，得到前100个词，作为这部分hash文件的前100。
 
 ### 全排序问题
+
 就是给定一个字符串，返回所有可能的排序结果。例如aba的排序结果有aba,aab,baa。可以认为每一个字符串的排序结果是等于每个非重复字母出现在第一个index+后面子序列每个的组合。
+
 ```java
 //用于收集每种序列
 ArrayList<String> list = new ArrayList<String>();
@@ -439,7 +506,7 @@ public void PermutationHelper(char[] charArray,int start) {
             char temp = charArray[i];
             charArray[i] = charArray[start];
             charArray[start] = temp;
-          
+
             PermutationHelper(charArray,start+1);
             //交换
             charArray[start] = charArray[i];
@@ -450,7 +517,9 @@ public void PermutationHelper(char[] charArray,int start) {
 ```
 
 ### 字符串的最长不重复子串的长度
+
 就是使用滑动窗口来实现，一开始窗口左右节点都等于0，窗口右节点的元素在Set不存在，就添加，然后右节点右移动，然后计算当前窗口大小，如果大于之前存的最大窗口值就替换。如果在Set中存在，那么就Set移除左节点中的值，左节点+1。
+
 ```java
 int findNotDuplicateStringMaxLength(String string) {
     if (string == null || string.length() == 0) {
@@ -482,15 +551,15 @@ int findNotDuplicateStringMaxLength(String string) {
 **第一次称**，123 VS 456，
 
 * 如果平衡，那么说明剩下的789里面有劣币，
-然后**第二次称**7VS8，平衡，9就是劣币，否则7和8中有一个是劣币，那么**第三次称**拿真币1和7来称，如果平衡则8是假币，不相等则7是假币。
+  然后**第二次称**7VS8，平衡，9就是劣币，否则7和8中有一个是劣币，那么**第三次称**拿真币1和7来称，如果平衡则8是假币，不相等则7是假币。
 * 如果不平衡，说明现在的123，456个币中有一个是劣质币
-假设
-重的那一组是1 2 3
-轻的那一组 4 5 6
-由于**假币的所在的组要么会一直重(如果假币比真币重)，要么会一直轻(如果假币比真币轻)，所以如果一会在重组一会在轻组出现的肯定是真币**。
-所以我们先去掉3和6，并且将2和5进行调换，也就是**第二次称**对15和42进行称。
-1 5
-4 2
+  假设
+  重的那一组是1 2 3
+  轻的那一组 4 5 6
+  由于**假币的所在的组要么会一直重(如果假币比真币重)，要么会一直轻(如果假币比真币轻)，所以如果一会在重组一会在轻组出现的肯定是真币**。
+  所以我们先去掉3和6，并且将2和5进行调换，也就是**第二次称**对15和42进行称。
+  1 5
+  4 2
 * 假设天平平了，说明15和42都是真币，3和5才假币，**第三次称**拿一个其他的币与3称，相同则5是假币，不相等则3是假币。
 * 假设天平没有平，并且1 5是重的那一方，由于不平衡，所以排除3和6，由于在之前4 5 6是轻的一方，现在1 5又是重的一方，所以排除5，5不会是假币，同理也排除2，所以只有1和4有可能是假币，**第三次称**拿一个其他的币与1称，平衡则4是假币，不相等则1是假币。
 * 假设天平没有平，并且1 5是轻的那一方，由于不平衡，所以排除3和6，同理根据上面的原理，可以排除一会在重组一会在轻组的1，4，所以2和5有可能是假币。同理**第三次称**可以得出2和5谁是假币
@@ -500,6 +569,7 @@ int findNotDuplicateStringMaxLength(String string) {
 分成四组，**第一次称**1234 VS 5678
 
 1.平衡说明假币在9 10 11 12中，**第二次称**9 10 VS 真币1 真币2，
+
 * 平衡代表11，12中存在假币，**第三次称**11 VS 真币1，平衡代表12是假币，否则11是假币。
 * 同理不平衡，说明9 10存在假币，对9和10实时上面的称法。
 
@@ -512,6 +582,7 @@ int findNotDuplicateStringMaxLength(String string) {
 第一组 1 2 5(两个重组元素+一个轻组元素)
 第二组 3 6 X(一个轻组元素+一个重组元素+一个真币)
 **第二次称**1 2 5 VS  3 6 X 
+
 * 假设平衡，说明4，7，8中存在假币，称一下7和8，平衡，那么4是假币，不平衡，由于一会在重组的，一会在轻组的肯定是真币，而7，8之前都在轻组，所以7和8对称时，轻的是假币。
 * 假设1 2 5 重，由于一会在重组的，一会在轻组的肯定是真币，根据这个原则，5，3肯定是真币，所以只有1，2，6存在可能。同理，根据上面的方法**第三次称**找出假币
 * 话说1 2 5轻，由于一会在重组的，一会在轻组的肯定是真币，根据这个原则，可以排除1，2，它们是真币。只有3和5存在可能，**第三次称**找出假币。
@@ -519,6 +590,7 @@ int findNotDuplicateStringMaxLength(String string) {
 ### 编辑距离
 
 递归解法
+
 ```java
 // 假设是要将a变成b的样子
 static int findMinValue(char[] a, int aLength, char[] b, int bLength) {
@@ -538,7 +610,9 @@ static int findMinValue(char[] a, int aLength, char[] b, int bLength) {
     }
 }
 ```
+
 动态规划解法
+
 ```java
 static int findMinValueInNewWay(char[] a, int aLength, char[] b, int bLength) {
     int [][] dp = new int[aLength][bLength];
@@ -546,7 +620,7 @@ static int findMinValueInNewWay(char[] a, int aLength, char[] b, int bLength) {
     for (int i = 0; i < aLength; i++) { dp[i][0] = i+1;  }
    //同理，这里是假设a字符串为空
     for (int j = 0; j < aLength; j++) {   dp[0][j] = j+1;}
-		//计算a，b每个子串的之间的编辑距离
+        //计算a，b每个子串的之间的编辑距离
     for (int i = 1; i < aLength; i++) {
         for (int j = 1; j < bLength; j++) {
             if (a[i] == b[j]) {
@@ -568,6 +642,7 @@ static int findMinValueInNewWay(char[] a, int aLength, char[] b, int bLength) {
 ```
 
 ### 打印杨辉三角
+
 思路其实是使用一个数组来存储上一层节点的值，然后根据每个节点index去数组中可以取值，父左节点的下标等于index-1，父右节点的下标等于index。
 
 ```java
@@ -633,13 +708,9 @@ LRU其实就是Last Recent Used，就是最近使用淘汰策略，所以当空�
 
 2.2创建一个新节点，调用addNewNodeToHead()将节点添加到链表头部。
 
-
-
 remove()方法的细节，主要是更新node的前后节点的next或pre指针，以及更新后需要判断删除的节点是否是headNode或者lastNode，是的话同时需要更新headNode或者lastNode。
 
 addNewNodeToHead()方法细节，主要是要先判断head是否为null，是的话说明链表为空，需要将headNode和lastNode都设置为node，不为null就执行添加操作，将headNode.pre设置为node,node的next设置为headNode，headNode=node；
-
-
 
 ```java
 //双向链表
@@ -671,7 +742,7 @@ public void put(String key, Integer val) {
     }
 }
 public ListNode get(String key) {
-  
+
     ListNode node = hashMap.get(key);
     if(node == null) {
         return null;
@@ -692,7 +763,7 @@ public void remove(String key) {
     if (lastNode == deleteNode) { lastNode = preNode; }
 }
 private void addNewNodeToHead(ListNode node) {
-  	hashMap.put(node.key,node);
+      hashMap.put(node.key,node);
     if (headNode==null||lastNode==null) {
         headNode = node;
         lastNode = node;
@@ -731,7 +802,7 @@ public static class LRUCache {
         map.put(key, value);
         return value;
     }
-    
+
     public void put(int key, int value) {
         if (map.containsKey(key)) {
             map.remove(key);
@@ -746,9 +817,10 @@ public static class LRUCache {
     }
 }
 ```
-accessOrder为true,按照访问顺序排序的实现方法
-```java
 
+accessOrder为true,按照访问顺序排序的实现方法
+
+```java
 public static class LRUCache2 {
     int capacity;
     LinkedHashMap<Integer, Integer> linkedHashMap;
