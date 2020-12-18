@@ -657,3 +657,226 @@ public void moveZeroes(int* nums, int numsSize) {
 }
 ```
 
+
+
+#### 322. 零钱兑换
+题目详情：(https://leetcode-cn.com/problems/coin-change/)
+给定不同面额的硬币 coins 和一个总金额 amount。编写一个函数来计算可以凑成总金额所需的最少的硬币个数。如果没有任何一种硬币组合能组成总金额，返回 -1。
+
+你可以认为每种硬币的数量是无限的。
+
+示例 1：
+
+输入：coins = [1, 2, 5], amount = 11
+输出：3 
+解释：11 = 5 + 5 + 1
+
+#####递归解法
+
+```java
+    Integer[] array;
+    public int coinChange(int[] coins, int amount) {
+        if (array == null) {//初始化缓存数组
+            array = new Integer[amount+1];
+        }
+        if (amount == 0) {
+            return 0;
+        } else if (amount < 0) {
+            return -1;
+        } else if(array[amount]!=null) {//缓存数组中有值，直接返回
+            return array[amount];
+        }
+        Integer minNum = null;
+        for (int i = 0; i < coins.length; i++) {//遍历计算最大值
+            int remainNum = coinChange(coins, amount - coins[i]);
+            if (remainNum == -1) {
+                continue;
+            } else if(minNum==null || remainNum + 1 < minNum ) {
+                minNum = remainNum + 1;
+            }
+        }
+        array[amount] = minNum;
+        return minNum == null ? -1 : minNum;
+    }
+```
+
+##### 动态规划解法
+
+1.找到Base Case
+
+金额为0时，需要返回的硬币数是0。f(0)=0
+
+2.确定状态
+
+也就是原问题和子问题中会变化的变量。这个问题中的变量就是金额会变化，硬币面额是确定的，数量是无限。
+
+3.确定选择
+
+也就是导致「状态」产生变化的行为，这个题里面的选择就是在凑金额的时候，硬币面额的选择，
+
+4.确定对应的`dp`函数/数组
+
+这里会有一个递归的 `dp` 函数，一般来说函数的参数就是状态转移中会变化的量，也就是上面说到的「状态」；函数的返回值就是题目要求我们计算的量。就这个题来说，状态只有一个，即「目标金额」，题目要求我们计算凑出目标金额所需的最少硬币数量，每个目标金额的最少硬币数量=min(目标金额-硬币面额后的金额所需最少硬币数)，所以我们可以这样定义 `dp` 函数：
+
+![coin](../static/coin.png)
+
+搞清楚上面这几个关键点，解法的伪码就可以写出来了：
+
+```python
+# 伪码框架
+def coinChange(coins: List[int], amount: int):
+    # 定义：要凑出金额 n，至少要 dp(n) 个硬币
+    def dp(n):
+        # 做选择，选择需要硬币最少的那个结果
+        for coin in coins:
+            res = min(res, 1 + dp(n - coin))
+        return res
+    # 题目要求的最终结果是 dp(amount)
+    return dp(amount)
+```
+
+```java
+//动态规划解法
+public int coinChange1(int[] coins, int amount) {
+    int[] array = new int[amount+1];
+    for (int i = 1; i <= amount; i++) {
+        Integer minNum=null;
+        for (int j = 0; j < coins.length; j++) {
+            int remain = i - coins[j];
+            if (remain < 0 || array[remain]==-1) {
+                continue;
+            }
+            //此时肯定有值
+            if (minNum==null || array[remain]+1 < minNum ) {
+                minNum = array[remain]+1;
+            }
+        }
+        array[i] = minNum == null ? -1 : minNum;
+    }
+    return array[amount];
+}
+```
+
+## 34. 在排序数组中查找元素的第一个和最后一个位置
+
+给定一个按照升序排列的整数数组 nums，和一个目标值 target。找出给定目标值在数组中的开始位置和结束位置。
+
+如果数组中不存在目标值 target，返回 [-1, -1]。
+
+##### 思路：
+其实可以用普通的二分查找，查到这个target值，然后向两边遍历，获得起始和结束位置，复杂度是log(N)+right-left,但是如果目标值的的开始位置left接近于0，结束位置right接近于length-1，right-left就会接近于N，此时复杂度为O(N)。
+这里的解题思路是O(LogN)的一种解法，就是通过先找出一种查找左边界的二分查找算法（可以理解为可以从数组中查找出第一个>=输入值的元素下标)，所以本题可以通过找出target-0.5查找左边界，得到target的最左边的值，同时通过找出target+0.5查找出第一个大于目标值的元素下标，然后-1得到taget最右边的值。（当然也需要考虑taget不存在的情况）
+
+```java
+public int[] searchRange(int[] nums, int target) {
+    int[] array = new int[2];
+    array[0]=-1;
+    array[1]=-1;
+    if (nums==null||nums.length==0) {
+        return array;
+    }
+    int left = findLeftBound(nums,target-0.5);
+    int right = findLeftBound(nums,target+0.5);
+    if (left==-1) {//nums不存在这个target值
+        return array;
+    }
+    if (right==-1) {//taget值可能是数组最后一个元素
+        right = nums.length-1;
+    } else {//right是第一个大于target的值，减一得到target的右边界
+        right = right -1;
+    }
+    //如果相等，那么返回下标
+    if (nums[left] == target && nums[right] == target) {
+        array[0] = left;
+        array[1] = right;
+        return array;
+    }
+    return array;
+}
+//查找target值的左边界（也就是第一个>=target的元素下标）
+int findLeftBound(int[] nums,double target) {
+    int left = 0;
+    int right = nums.length-1;
+    while (left<=right) {
+        int mid = left+(right-left)/2;
+        if (nums[mid] == target) {
+            right=mid-1;
+        } else if (nums[mid]>target) {
+            right = mid-1;
+        } else if (nums[mid]<target) {
+            left = mid+1;
+        }
+    }
+    if (left>=nums.length) {
+        return -1;
+    } else {
+        return left;
+    }
+}
+```
+
+
+
+## 17. 电话号码的字母组合
+
+给定一个仅包含数字 2-9 的字符串，返回所有它能表示的字母组合。
+
+给出数字到字母的映射如下（与电话按键相同）。注意 1 不对应任何字母。
+
+示例:
+
+输入："23"
+输出：["ad", "ae", "af", "bd", "be", "bf", "cd", "ce", "cf"].
+
+##### 解题思路：
+                         ""
+           "a"           "b"            "c"      
+      "d" "e" "f"    "d" "e" "f"    "d" "e" "f"
+    "ad" "ae" "af" "bd" "be" "bf"  "cd" "ce" "cf"
+其实可以认为这是一个多叉树，根节点到叶子节点的路径就是每一种字符的组合，然后我们可以通过宽度遍历的方式来得到根节点到叶子节点路径。
+
+
+```java
+public List<String> letterCombinations(String digits) {
+        List<String> list = new ArrayList<String>();
+        if (digits==null || digits.length() ==0) {
+            return list;
+        }
+        LinkedList<String> queue = new LinkedList<>();
+        // 空字符串是作为多叉树的根节点
+        queue.add("");
+        //下面是多叉树的宽度遍历的过程
+        for (int i = 0; i < digits.length(); i++) {
+            String[] array = convert(digits.charAt(i));
+            //当queue.getFirst().length() == i+1是说明是本次循环添加的值，那么不应该加进来
+            while (queue.size()>0&&queue.getFirst().length()<=i) {
+                String firstValue = queue.removeFirst();
+                //拼接后添加到最后面j
+                for (int j = 0; j < array.length; j++) {
+                    String temp = firstValue+array[j];
+                    queue.add(temp);
+                }
+            }
+        }
+        return queue;
+    }
+    String[] convert(Character character) {
+        String[] list = new String[4];
+        if (character == '2') { list = new String[]{"a","b","c"}; }
+        if (character == '3') { list = new String[]{"d","e","f"}; }
+        if (character == '4') { list = new String[]{"g","h","i"}; }
+        if (character == '5') { list = new String[]{"j","k","l"}; }
+        if (character == '6') { list = new String[]{"m","n","o"}; }
+        if (character == '7') { list = new String[]{"p","q","r","s"}; }
+        if (character == '8') { list = new String[]{"t","u","v"}; }
+        if (character == '9') { list = new String[]{"w","x","y","z"}; }
+        return list;
+    }
+```
+
+
+
+
+
+
+

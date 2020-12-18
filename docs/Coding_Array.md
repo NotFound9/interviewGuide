@@ -850,36 +850,46 @@ public int InversePairs(int [] array) {
 因为A异或A的结果是0，所以对数组遍历异或后的结果result，出现两次的数字异或结果为0， 所以result其实是两个只出现一次的数字B和C的异或结果，并且因为B，C不相等，所以result肯定也不等于0，result肯定有一位是1，在这一位上，肯定B，C中一个为1，一个为0，所以可以根据这一位将数组分成两个子数组，这样每个子数组只会包含一些出现过两次的数字和B，C中的一个，所以对两个子数组异或只会的结果就可以得到B和C。
 
 ```java
-public void FindNumsAppearOnce(int [] array,int num1[] , int num2[]) {
-    int result = 0;
-    for (int i = 0; i < array.length; i++) {
-        result = result ^ array[i];
-    }
-    //发现result第一个为1的位数
-    int bit = 1;
-    int tempResult = result & bit;
-    while (tempResult==0) {
-        bit = bit*2;
-        tempResult = result & bit;
-    }
-    int number1 = 0;
-    int number2 = 0;
-    for (int i = 0; i < array.length; i++) {
-        int temp = array[i]&bit;
-        if (temp == 0) {
-            number1 = number1 ^ array[i];
-        } else {
-            number2 = number2 ^ array[i];
+
+    public void FindNumsAppearOnce2(int [] array,int num1[] , int num2[]) {
+        if (array == null || array.length<=1) {
+            return;
         }
+        int result = 0;
+        for (int i = 0; i < array.length; i++) {
+            //由于相同的数异或后会变成0，result其实是只出现一次的元素a和元素b的异或结果a^b
+            result = result ^ array[i];
+        }
+        //bit通过跟a，b的异或结果result进行&元素，得到a,b不相同的第一个位置bit位
+        int bit = 1;
+        while (bit<=result) {
+            if ((result&bit) > 0) {
+                break;
+            } else{
+                bit = bit<<1;
+            }
+        }
+        int a=0;
+        int b=0;
+      //在bit位进行分组，bit位为1的为一组，一起异或，bit位为0的为一组，一起异或，其中a，b肯定是在不同组
+        for (int i = 0; i < array.length; i++) {
+            if ((array[i]&bit)==0) {
+                a = a^array[i];
+            } else {
+                b = b^array[i];
+            }
+        }
+        num1[0] = a;
+        num2[0] = b;
     }
-    num1[0] = number1;
-    num2[0] = number2;
-}
+
 ```
 
 ## 题040 和为S的连续正数序列
 
-输出所有和为S的连续正数序列。序列内按照从小至大的顺序，序列间按照开始数字从小到大的顺序
+输出所有和为S的连续正数序列。序列内按照从小至大的顺序，序列间按照开始数字从小到大的顺序。
+
+##### 滑动窗口解法
 
 就是使用滑动窗口来实现，当两个下标相差1时，计算的和还比sum大，这个时候会进行low++，会使得low==high，跳出循环，例如sum是100，那么在low=high=51时跳出循环
 
@@ -906,11 +916,38 @@ public ArrayList<ArrayList<Integer>> FindContinuousSequence(int sum) {
 }
 ```
 
+##### 数学规律解法
+
+就是连续整数序列和sum=(i+k)(k-i+1)/2，代表整数i到整数k的连续整数序列。假设x为i到k的长度，x = k-i+1，n=i+k，那么sum = x*m，
+
+1.m在什么时候取最大值呢？
+
+当序列是从1开始累加时，也就是i是1时，长度x可以取到最大值，此时由于i为1，sum = (1+k)(k-1+1)/2=k(k+1)/2,  长度x为k+1，sum = (x-1)x/2，m的数量级其实是小于根号sum的
+
+2.连续正整数和sum为奇数和sum为偶数时的区别？
+
+- 对于sum为奇数的情况, 设其长度为 x, 序列中间值为 m, 那么 N 一定为 m*x, 例如 15=1+2+3+4+5=3*5，此时也就是sum可以整除掉x
+
+- 对于sum为偶数的情况, 设其长度为 x, 两个中间值为 m 和 m+1, 那么 N 一定为(m+0.5)*x, 例如 10=1+2+3+4=2.5*4，此时sum不能整除掉x，余数应该是0.5。
+
+具体步骤如下:
+1.按照长度 x 从 1 开始遍历, 最大长度要小于 sqrt(2*N)
+
+2.因为假设长度为 x, 从 1 开始的连续整数之和为 x*(x+1)/2, 这是最小的和了, 它要<=N, 那么 x 就要小于 sqrt(2N), 那 x<=int(sqrt(2N))
+
+
+
 ## 题041 和为S的两个数字
 
 输入一个递增排序的数组和一个数字S，在数组中查找两个数，使得他们的和正好是S，如果有多对数字的和等于S，输出两个数的乘积最小的。
 
+[1,2,4,7,11,15]  15
+
+##### 解题思路：
+
 还是滑动窗口，将两个指针指向数组的首尾两端，一直循环，如果currentSum偏小，左边指针向右移动，如果currentSum偏大，右边指针向左移动，如果currentSum满足要求，直接结束循环。
+
+如果是寻找和为S的连续正数序列，那么也是滑动窗口，不过是滑动窗口的两端都是从数组起始位置开始。
 
 ```java
   public ArrayList<Integer> FindNumbersWithSum(int [] array, int sum) {
@@ -939,6 +976,8 @@ public ArrayList<ArrayList<Integer>> FindContinuousSequence(int sum) {
 ## 题044 扑克牌顺子
 
 LL今天心情特别好,因为他去买了一副扑克牌,发现里面居然有 2 个大王, 2 个小王(一副牌原本是 54 张)…他随机从中抽出了 5 张牌,想测测自己的手气,看看能不能抽到顺子,如果抽到的话,他决定去买体育彩票,嘿嘿！！“红心A,黑桃3,小王,大王,方片5”,“Oh My God!”不是顺子…..LL不高兴了,他想了想,决定大\小 王可以看成任何数字,并且A看作1,J为11,Q为12,K为13。上面的5张牌就可以变成“1,2,3,4,5”(大小王分别看作2和4),“So Lucky!”。LL决定去买体育彩票啦。 现在,要求你使用这幅牌模拟上面的过程,然后告诉我们 LL 的运气如何， 如果牌能组成顺子就输出 true，否则就输出 false。为了方便起见,你可以认为大小王是0。
+
+解题思路：
 
 就是判断抓的牌是不是顺子，就先用快排对数组排序，然后对数组遍历，记录大小王的个数（也就是元素为0），记录当前元素减去上一个元素的差值，差值为0，不能构成顺子，差值为1说明是连续的，差值不为1，是不连续的，记录差值，最后看总差值和大小王的个数来进行比较。
 
@@ -1022,12 +1061,17 @@ public boolean duplicate(int numbers[],int length,int [] duplication) {
 
 ## 题050 构建乘积数组
 
-```java
-就是B[i] = A[0]A[1]...A[i-1]  A[i+1]...*A[n-1]，通过拆分成两部分，
-C[i] = A[0]A[1]...A[i-1]
-D[i] = A[i+1]...*A[n-1]
-B[i]=C[n]*D[n]来解决。
+##### 题目描述
 
+给定一个数组A[0,1,...,n-1],请构建一个数组B[0,1,...,n-1],其中B中的元素B[i]=A[0]*A[1]*...*A[i-1]*A[i+1]*...*A[n-1]。不能使用除法。（注意：规定B[0] = A[1] * A[2] * ... * A[n-1]，B[n-1] = A[0] * A[1] * ... * A[n-2];）
+
+对于A长度为1的情况，B无意义，故而无法构建，因此该情况不会存在。
+
+```java
+//就是B[i] = A[0]A[1]...A[i-1]  A[i+1]...*A[n-1]，通过拆分成两部分，
+//C[i] = A[0]A[1]...A[i-1]
+//D[i] = A[i+1]...*A[n-1]
+//B[i]=C[n]*D[n]来解决。
 public int[] multiply(int[] A) {
     int[] b = new int[A.length];
     int[] c = new int[A.length];
@@ -1088,89 +1132,58 @@ public int[] multiply(int[] A) {
 
 给定一个数组和滑动窗口的大小，找出所有滑动窗口里数值的最大值。例如，如果输入数组`{2,3,4,2,6,2,5,1}`及滑动窗口的大小3，那么一共存在6个滑动窗口，他们的最大值分别为`{4,4,6,6,6,5}`； 针对数组{2,3,4,2,6,2,5,1}的滑动窗口有以下6个： `{[2,3,4],2,6,2,5,1}， {2,[3,4,2],6,2,5,1}， {2,3,[4,2,6],2,5,1}， {2,3,4,[2,6,2],5,1}， {2,3,4,2,[6,2,5],1}， {2,3,4,2,6,[2,5,1]}`。
 
-解法一就是维护一个排序好的数组，数组就是当前滑动窗口排序好的结果，每次滑动时将值插入排序好的队列，并且将过期的值删除，
+解题思路
+
+思想主要是插入排序的思想，就是遍历数组，每次往双端队列后面插入元素，并且可以把比队尾比当前元素小的数都移除掉。插入到特定位置，队列是按顺序排序的，如果队头元素的下标超出了滑动窗口，就可以把它移除，一直到队头元素没有过期，这样就是这个此时的最大元素了。
+
+其实插入排序的复杂度是O(N^2)，因为需要对N个元素插入到排序好的序列，而每次插入的复杂度都是N，本题由于从队列尾部进行插入会将那些比较小的数移除掉，所以每次插入的时间复杂度是一个常数，总时间复杂度是O(N)，
+
+具体步骤：
+
+##### 添加初始元素
+
+1.遍历数组中的每个元素，如果队列为空，直接添加元素(考虑到有时候窗口大小是1和数组长度也是1，所以此时不能调用continue结束本次循环)
+
+##### 移除队尾比当前值小的元素
+
+2.将当前元素num[i]从队列尾部进行插入，将那些比num[i]小的元素移除掉，因为num[i]的下标比它们大，值也比它们大，它们不可能成为最大值了
+
+##### 添加当前值到队列尾部
+
+3.比当前值小的数都从队尾移除完之后，再将当前值添加到队列尾部
+
+##### 移除队首过期元素，添加当前窗口最大值到数组
+
+4.计算滑动窗口左下标windowLeft，对队列头部元素下标进行判断，如果小于窗口左下标，说明过期了，需要移除，判断windowLeft是否>=0，满足说明才到计算滑动窗口最大值的时机，才会添加当前队列最大值到数组。
 
 ```java
-public ArrayList<Integer> maxInWindows1(int[] num, int size) {
-    ArrayList<Integer> arrayList = new ArrayList<Integer>();
-    ArrayList<Integer> sortList  = new ArrayList<Integer>(size);
-
-    if (num == null || num.length == 0 || size <= 0 || size > num.length) {
-        return arrayList;
-    }
-    int i = 0;
-    for (; i < size; i++) {//初始化一开始的滑动窗口的值
-        sortList = insertValueIntoSorted(sortList, num[i]);
-    }
-    arrayList.add(sortList.get(size - 1));//添加第一个滑动窗口的最大值
-    for (; i < num.length; i++) {
-        sortList = removeValueIntoSorted(sortList, num[i - size]);//将离开滑动窗口的值从排序数组移除
-        sortList = insertValueIntoSorted(sortList, num[i]);
-        arrayList.add(sortList.get(size - 1));
-    }
-    return arrayList;
-}
-
-ArrayList<Integer> insertValueIntoSorted(ArrayList<Integer> sortList, int currentValue) {
-    if (sortList.size() == 0) {
-        sortList.add(currentValue);
-    } else {
-        for (int j = sortList.size() - 1; j >= 0; j--) {
-            if (currentValue > sortList.get(j)) {
-                sortList.add(j + 1, currentValue);
-                break;
-            } else if (j == 0) {
-                sortList.add(0, currentValue);
+public ArrayList<Integer> maxInWindows2(int[] num, int size) {
+        ArrayList<Integer> arrayList = new ArrayList<>();
+        if (num==null||num.length==0||num.length<size || size <=0) {
+            return arrayList;
+        }
+        LinkedList<Integer> queue = new LinkedList<Integer>();
+        for (int i = 0; i < num.length; i++) {
+            int currentValue = num[i];
+            if (queue.size()==0) {//1.添加第一个元素
+                queue.add(i);
+            }
+            //2.当前元素比队尾元素大，移除队尾元素
+            while (queue.size() > 0 &&currentValue >= num[queue.getLast()]) {
+                queue.removeLast();
+            }
+            queue.add(i);
+            int windowLeft = i - size + 1;//滑动窗口最左边的下标
+            //3.顶部移除过期队列头部元素
+            if (windowLeft>queue.getFirst()) {
+                queue.removeFirst();
+            }
+            if (windowLeft>=0) {//进入第一个滑动窗口
+                arrayList.add(num[queue.getFirst()]);
             }
         }
-    }
-    return sortList;
-}
-
-ArrayList<Integer> removeValueIntoSorted(ArrayList<Integer> sortList, int currentValue) {
-    int index = 0;
-    for (int i = 0; i < sortList.size(); i++) {
-        if (sortList.get(i) == currentValue) {
-            index = i;
-            break;
-        }
-    }
-    sortList.remove(index);
-    return sortList;
-}
-```
-
-解法二使用双端队列来实现，队列是按大小顺序排列的，头结点的值最大
-每次往队列中添加元素A时，先将比当前元素A小的所有元素都丢掉，
-因为这些元素的index比A都小，而且值也比A小，不可能再成为最大值了，
-然后判断队列头结点的最大值是否过期，过期的话也删除
-
-```java
-public ArrayList<Integer> maxInWindows(int[] num, int size) {
-    ArrayList<Integer>  arrayList = new ArrayList<Integer>();
-    if (num == null || num.length == 0 || size <= 0 || size > num.length) {
         return arrayList;
     }
-    LinkedList<Integer> maxQueue  = new LinkedList<>();//存储最大值的下标
-    for (int i = 0; i < num.length; i++) {
-        int begin = i - size + 1;//滑动窗口最左边的下标
-
-        if (maxQueue.size() == 0) {
-            maxQueue.add(i);
-        }
-        if (maxQueue.peekFirst() < begin) {//说明已经过期
-            maxQueue.pollFirst();//将它移除队列
-        }
-        while (maxQueue.size() > 0 && num[maxQueue.peekLast()] <= num[i]) {//队列末尾的值都小于当前值，将他们都出列
-            maxQueue.pollLast();//出列
-        }
-        maxQueue.add(i);
-        if (begin >= 0) {//滑动接口全部处于在数组中时才能添加值
-            arrayList.add(num[maxQueue.peekFirst()]);
-        }
-    }
-    return arrayList;
-}
 ```
 
 ## 题064 矩阵中的路径

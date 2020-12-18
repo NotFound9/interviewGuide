@@ -809,11 +809,11 @@ public static class LRUCache {
             map.put(key, value);
             return;
         }
-        map.put(key, value);
-        //超出capacity，删除最久没用的,利用迭代器，删除第一个
-        if (map.size() > capacity) {
+       //超出capacity，删除最久没用的,利用迭代器，删除第一个
+        if (map.size() >= capacity) {
             map.remove(map.keySet().iterator().next());
         }
+        map.put(key, value);
     }
 }
 ```

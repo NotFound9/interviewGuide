@@ -9,47 +9,70 @@
 #### [题006重建二叉树](#题006)
 #### [题007两个栈实现队列](#题007)
 #### [题008旋转数组](#题008)
+
 #### [题009斐波那契数列](#题009)
+
 #### [题010求某个数的二进制格式下1的个数](#题010)
+
 #### [题011数值的整数次方](#题011)
 #### [题012调整数组顺序使奇数排在前面](#题012)
 #### [题013链表的倒数第K个结点](#题013)
 #### [题014反转链表](#题014)
+
 #### [题015 合并链表](#题015)
 #### [题016判断一个二叉树是否是另一个二叉树的子结构](#题016)
+
 #### [题017二叉树的镜像](#题017)
 #### [题018顺时针打印矩形](#题018)
+
 #### [题019包含min函数的栈](#题019)
 #### [题020 栈的压入、弹出序列](#题020)
+
 #### [题021 从上往下打印二叉树](#题021)
+
 #### [题022 判断是否是二叉搜索树的后序遍历](#题022)
+
 #### [题023 二叉树中和为某一值的路径](#题023)
+
 #### [题024 复杂链表的复制](#题024)
 #### [题025 二叉搜索树与双向链表](#题025)
 #### [题026字符串的排列](#题026)
+
 #### [题027数组中出现的次数超过一半的数字](#题027)
 #### [题028最小的k个数](#题028)
 #### [题029连续子数组的最大和](#题029)
 #### [题030从1到n中出现的整数中1出现的次数](#题030)
+
 #### [题031把数组排成最小的数](#题031)
+
 #### [题032返回第N个丑数](#题032)
+
 #### [题033 第一个只出现一次的字符](#题033)
+
 #### [题034 数组中的逆序对](#题034)
+
 #### [题035 两个的链表的第一个公共节点](#题035)
+
 #### [题036 数字在排序数组中出现的次数](#题036)
+
 #### [题037 二叉树的深度](#题037)
+
 #### [题038 判断是否是平衡二叉树](#题038)
 #### [题039 数组中只出现一次的数组](#题039)
+
 #### [题040 和为S的连续正数序列](#题040)
 #### [题041 和为S的两个数字](#题041)
+
 #### [题042左旋转字符串](#题042)
 #### [题043 翻转单词的序列](#题043)
 #### [题044 扑克牌顺子](#题044)
 #### [题045 圆圈中最后剩下的数字](#题045)
 #### [题046 求1+2+…+n](#题046)
 #### [题047 不用加减乘除做加法](#题047)
+
 #### [题048 将字符串转换为整数](#题048)
 #### [题049 数组中重复的数字](#题049)
+
 #### [题050 构建乘积数组](#题050)
 #### [题053 字符流中第一个不重复的字符](#题053)
 #### [题054 链表中环的入口节点](#题054)
@@ -59,11 +82,14 @@
 #### [题058 按之字形顺序打印二叉树](#题058)
 #### [题059 把二叉树打印成多行](#题059)
 #### [题060序列化二叉树](#题060)
+
 #### [题061 二叉搜索树的第K小的节点](#题061)
 #### [题062 数据流的中位数](#题062)
+
 #### [题063 滑动窗口的最大值](#题063)
 #### [题064 矩阵中的路径](#题064)
 #### [题065机器人的运动范围](#题065)
+
 #### [题066剪绳子](#题066)
 
 ### 题003 二维数组中的查找
@@ -305,7 +331,7 @@ int minNumberInRotateArray(int[] array) {
 
 大家都知道斐波那契数列，现在要求输入一个整数n，请你输出斐波那契数列的第n项（从0开始，第0项为0）。n<=39
 
-
+##### 递归解法
 
 f(n) =f(n-1)+f(n-2) 
 
@@ -323,6 +349,7 @@ int Fibonacci(int n) {
     return Fibonacci(n-1) + Fibonacci(n-2);
 }
 ```
+
 
 ## 题010求某个数的二进制格式下1的个数
 
@@ -351,13 +378,13 @@ int Fibonacci(int n) {
 ```java
 public int NumberOf1(int n) {
 		int count = 0;
-		int flag = 1;
+		int bit = 1;
 		int times =0;
 		while(times<32) {
-        int value = flag&n;
-				if(value != 0) {count++;}
+      //不为0说明这一个二进制位为1，
+				if((bit&n) != 0) {count++;}
 				times++;
-				flag = flag<<1;
+				bit = bit<<1;
 		}
     return count;
 }
@@ -753,36 +780,30 @@ public int min() {
 循环结束后，继续对B继续向后遍历，并且与tempStack的栈顶元素进行判断，是的话就出栈，知道tempStack的元素与B中遍历到的元素不相等，那么说明B与A对应不上。
 
 ```java
- public  boolean IsPopOrder(int [] pushA,int [] popA) {
-        Stack<Integer> tempStack = new Stack<Integer>();
-        if (popA.length != pushA.length|| pushA == null || popA == null){
+public static boolean IsPopOrder1(int [] pushA,int [] popA) {
+        if (pushA==null||popA==null) {
             return false;
         }
+        Stack<Integer> stack = new Stack<>();
         int j = 0;
+ 				//先根据入栈序列，往栈中压入数据
         for (int i = 0; i < pushA.length; i++) {
-            if (pushA[i] == popA[j]) {
-                tempStack.push(pushA[i]);
-
-                for (; j < popA.length; j++) {
-                    if (popA[j] == tempStack.peek()) {
-                        tempStack.pop();
-                    } else {
-                        break;
-                    }
-                }
-            } else {
-                tempStack.push(pushA[i]);
+            //如果当前栈顶元素跟出栈序列当前遍历的元素一样，那么进行出栈处理
+            while (stack.size()>0 && j<popA.length && popA[j] == stack.peek()) {
+                j++;
+                stack.pop();
             }
+          //将后面的元素压栈
+            stack.push(pushA[i]);
         }
-        for (; j < popA.length; j++) {
-            if (popA[j] == tempStack.peek()) {
-                tempStack.pop();
-            } else {
-                return false;
-            }
+        //对剩余元素出栈
+        while (stack.size()>0 && j<popA.length && popA[j] == stack.peek()) {
+            j++;
+            stack.pop();
         }
-        return true;
-}
+        // stack.size()==0代表所有元素都出栈了，弹出序列是与弹入序列是一一对应的
+        return stack.size()==0;
+    }
 ```
 
 ## 题021 从上往下打印二叉树
@@ -1024,81 +1045,48 @@ public RandomListNode Clone(RandomListNode pHead)
 
 输入描述:输入一个字符串,长度不超过9(可能有字符重复),字符只包括大小写字母。
 
+##### 回溯算法
+
 对于一个字符串的序列，可以看成第一个字符+剩下字符的排列，每次从后面序列中取一个不重复的字符，与第一个字符交换，然后递归地对后面的字符调用函数进行排列。
 
+1.遍历字符串，每次取一个不同的字符作为首字符，然后对后面剩余的字符串递归调用方法，对后面的字符串进行排列。
+
+2.在递归的尽头，也就是当前子字符串只有1个元素，会将所有元素添加到数组。
+
 ```java
-public ArrayList<String> Permutation(String str) {
-    ArrayList<String> arrayList = new ArrayList<>();
-    Permutation(arrayList, str,0,str.length()-1);
-    return arrayList;
-}
-
-public void Permutation(ArrayList arrayList,  String str, int start,int end) {
-
-    if (str == null || str.length() == 0|| start>end) {
-        return;
-    }
-    if (end == start) {//当前只有一个元素
-        arrayList.add(str);
-        return;
-    }
-    HashSet<Character> set = new HashSet<Character>();
-    StringBuffer stringBuffer = new StringBuffer(str);
-    for (int i = start ;i <= end; i++) {
-        Character currentChar = stringBuffer.charAt(i);
-        if (set.contains(currentChar)==false) {
-            set.add(currentChar);
-            //元素交换
-            Character temp = currentChar;
-            stringBuffer.setCharAt(i,stringBuffer.charAt(start));
-            stringBuffer.setCharAt(start,temp);
-          
-          //这种写法调用完毕后不用交换，因为传过去的string不会改变当前的stringBuffer
-            Permutation(arrayList, stringBuffer.toString(), start +1, end);
-          
-        }
-    }
-}
-```
-
-
-
-```
- public ArrayList<String> Permutation(String string) {
-        char[] charArray = string.toCharArray();
+		public ArrayList<String> Permutation1(String str) {
         ArrayList<String> list = new ArrayList<String>();
-        PermutationHelper(charArray,0,list);
-        Collections.sort(list);
-
+        if (str==null||str.length()==0) {
+            return list;
+        }
+        Permutation(list,str,0,str.length()-1);
         return list;
     }
-
-    public void PermutationHelper(char[] charArray,int start,ArrayList<String> list) {
-        if (charArray == null || charArray.length == 0) {
+    public void Permutation(ArrayList<String> list,String str,int start,int end) {
+        StringBuffer stringBuffer = new StringBuffer(str);
+        HashSet<Character> set = new HashSet<>();
+      //递归到最后一层，此时只有一个字符了，肯定是排在第一个，将当前字符串添加到list
+        if (start == end) {
+            list.add(str);
             return;
         }
-        if(start == charArray.length-1) {//最后一个元素
-            list.add(String.valueOf(charArray));
-            return;
-        }
-        HashSet<Character> set = new HashSet<Character>();
-        for(int i = start;i<charArray.length;i++) {
-            if(set.contains(charArray[i]) == false) {
-                set.add(charArray[i]);
-                //交换
-                char temp = charArray[i];
-                charArray[i] = charArray[start];
-                charArray[start] = temp;
-
-                PermutationHelper(charArray,start+1,list);
-
-                //交换
-                charArray[start] = charArray[i];
-                charArray[i] = temp;
+        for (int i = start; i <= end; i++) {
+            Character c = str.charAt(i);
+            if (set.contains(c) == false) {
+                //添加当前字符到set，代表已经做了首元素了  
+                set.add(c);
+                //将当前字符与首字符交换
+                Character startChar = stringBuffer.charAt(start);
+                stringBuffer.setCharAt(start,c);
+                stringBuffer.setCharAt(i,startChar);
+              //继续递归
+                Permutation(list, stringBuffer.toString(),start+1,end);
             }
         }
-    }    
+    }
 ```
+
+
 
 ## 题027数组中出现的次数超过一半的数字
 
@@ -1756,8 +1744,15 @@ public ArrayList<ArrayList<Integer>> FindContinuousSequence(int sum) {
 
 汇编语言中有一种移位指令叫做循环左移（ROL），现在有个简单的任务，就是用字符串模拟这个指令的运算结果。对于一个给定的字符序列S，请你把其循环左移K位后的序列输出。例如，字符序列S=”abcXYZdef”,要求输出循环左移3位后的结果，即“XYZdefabc”。是不是很简单？OK，搞定它！
 
+输入字符串S=”abcXYZdef”,要输出“XYZdefabc”，其实就是将前n个字符移动到字符串末尾，直接移动的话很容易实现，不管是直接使用添加字符串的方法，还是直接使用字符串截取的方法，这里是一种新方法，就是将整个字符串翻转，再将length-n的字符翻转，再将后n个字符翻转，这样得到的也是前n个字符移动到末尾的结果。
 
-输入字符串S=”abcXYZdef”,要输出“XYZdefabc”，其实就是将前n个字符移动到字符串末尾，直接移动的话很容易实现，不管是直接使用添加字符串的方法，还是直接使用字符串截取的方法，这里是一种新方法，就是将前n个字符翻转，再将前n以后的字符翻转，然后对整个字符串翻转，这样得到的也是前n个字符移动到末尾的结果。
+原字符串：                                 abcXYZdef
+
+整个字符翻转：                         fedZYXcba
+
+前length-n个字符翻转：           XYZdefcba
+
+后n个字符翻转得到最终结果：XYZdefabc
 
 ```java
 public String LeftRotateString(String str,int n) {
@@ -1887,11 +1882,21 @@ public static void qsort(int[] array, int start ,int end) {
 
 就是约瑟夫环问题
 
-n为1时，f(n,m)为0
+假设一开始有n个数，每个人的编号为0到n-1，让数到m的人出局，假设出局的人的编号为k，那么k=(m-1)%n;
+在n个人中间报数时，每个人的编号是
+0 1 2 ... k k+1 k+2 ... n-1
+当k出局以后，在n-1个人中报数时，每个人的编号是重新从k+1开始计数
+n-k+1 ...   0  1   ... n-1 -(k+1)
+所以假设从n-1报数时的编号到n个人报数时的编号存在一个映射关系
+假设f(n)代表n个人报数编号
+f(n) = (f(n-1)+k+1)%n = (f(n-1)+ (m-1)%n + 1)%n = 
+(f(n-1) +m)%n
 
-n>1时，
+n为1时，只有一个数，也就是最后剩下的数，所以f(1)为0
 
-f(n,m)=(f(n-1,m)+m)%n
+n>1时，f(n)=(f(n-1)+m)%n
+
+所以就是按照这个公式从2计算到n，得到f(n)
 
 ```
 public int LastRemaining_Solution(int n, int m) {
@@ -1910,7 +1915,9 @@ public int LastRemaining_Solution(int n, int m) {
 
 求1+2+3+…+n，要求不能使用乘除法、for、while、if、else、switch、case等关键字及条件判断语句（A?B:C）。
 
+解题思路：
 
+因为不能使用for循环，肯定是需要使用递归来进行累加，但是由于不能使用if和三元判断语句，所以结束递归不是特别方便，所以这里是利用了&&语句，当n>0时，后面的语句才会执行，同时利用了赋值语句的值可以用于判断的特性，sum+=Sum_Solution(n-1))>0
 
 ```
 public int Sum_Solution(int n) {
@@ -1924,13 +1931,15 @@ public int Sum_Solution(int n) {
 
 写一个函数，求两个整数之和，要求在函数体内不得使用+、-、*、/四则运算符号。
 
-就是A^B，A异或B的结果其实就是A，B二进制位中不相同的结果，也就是A+B，但是不进位的相加结果，A+B进位的结果等于(A&B)<<1,所以在循环中一直用A^B+A&B,一直到A&B等于0。
+就是A^B，A异或B的结果其实就是A，B二进制位中不相同的结果，也就是A+B，但是不进位的相加结果，A+B进位的那一部分结果等于(A&B)<<1,所以在循环中一直用A^B+A&B,一直到A&B等于0。
 
 
 
 A+B = A^B + A&B<<1 
 
-如果A&B为0的话也就不需要进行进位了，此时就等于A+B = A^B
+如果A&B为0的话也就不需要进行进位了，此时就等于A+B = A^B，否则就继续递归调用方法，对A^B + A&B<<1 进行相加
+
+递归写法
 
 ```java
 public int Add(int num1,int num2) {
@@ -1941,7 +1950,7 @@ public int Add(int num1,int num2) {
 }
 ```
 
-
+for循环写法
 
 ```java
 public int Add(int num1,int num2) {
@@ -2103,7 +2112,7 @@ public char FirstAppearingOnce()
 
 两个指针从头出发，第一个指针先走count步，然后两个指针每次都只走一步，相遇的地方就是环的入口，
 
-```
+```java
 public ListNode EntryNodeOfLoop(ListNode pHead)
 {
     if (pHead == null || pHead.next==null) {
@@ -2153,7 +2162,7 @@ public ListNode EntryNodeOfLoop(ListNode pHead)
 
 使用hashSet的解法
 
-```
+```java
 public ListNode EntryNodeOfLoop1(ListNode pHead)
 {
     if (pHead==null) {
