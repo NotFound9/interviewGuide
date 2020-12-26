@@ -872,47 +872,45 @@ public static class LRUCache2 {
         return "";
     }
 ```
-## 236. 二叉树的最近公共祖先给定一个二叉树, 找到该树中两个指定节点的最近公共祖先。
+## 122.买卖股票的最佳时机 II
+给定一个数组，它的第 i 个元素是一支给定股票第 i 天的价格。
 
-百度百科中最近公共祖先的定义为：“对于有根树 T 的两个结点 p、q，最近公共祖先表示为一个结点 x，满足 x 是 p、q 的祖先且 x 的深度尽可能大（一个节点也可以是它自己的祖先）。”
+设计一个算法来计算你所能获取的最大利润。你可以尽可能地完成更多的交易（多次买卖一支股票）。
 
-例如，给定如下二叉树:  root = [3,5,1,6,2,0,8,null,null,7,4]
+注意：你不能同时参与多笔交易（你必须在再次购买前出售掉之前的股票）。
 
-示例 1:
-
-输入: root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 1
-输出: 3
-解释: 节点 5 和节点 1 的最近公共祖先是节点 3。
-示例 2:
-
-输入: root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 4
-输出: 5
-解释: 节点 5 和节点 4 的最近公共祖先是节点 5。因为根据定义最近公共祖先节点可以为节点本身。
+示例 1: 
+```java
+输入: [7,1,5,3,6,4]
+输出: 7
+解释: 在第 2 天（股票价格 = 1）的时候买入，在第 3 天（股票价格 = 5）的时候卖出, 这笔交易所能获得利润 = 5-1 = 4 。
+     随后，在第 4 天（股票价格 = 3）的时候买入，在第 5 天（股票价格 = 6）的时候卖出, 这笔交易所能获得利润 = 6-3 = 3 。
+```
 
 ##### 解题思路
-其实所有的节点分为以下几种：
-1.就是要寻找的节点1，或节点2
-2.此节点子树中中包含节点1，节点2其中的一个
-3.节点1，节点2全部位于此节点的左子树，或者是右子树
-4.此节点左子树包含节点1，右子树包含节点2
-所以第4种就是我们要寻找的节点，并且在二叉树中只有一个，所以我们对二叉树进行遍历，判断某个节点左子树，右子树都包含节点，那么就返回该节点。
+
+按照状态来分，每天只有持有股票和不持有股票两种状态，我们使用
+一个二维数组dp[i][isHoldStock]来保存当天利润最大值，
+i代日期，isHoldStock代表当天是否持有股票, 1代表当天持有了股票
+
+如果第i天持有股票，那么要么是之前买的，要么是今天买的
+dp[i][1] = Math.max(dp[i-1][1],dp[i-1][0]-prices[i])
+如果第i天未持有股票，那么要么是前一天也没有持有股票，要么是今天把股票卖了
+dp[i][0] = Math.max(dp[i-1][0],dp[i-1][1]+prices[i])
+
+初始状态第一天已持有股票 dp[0][1] = -prices[0]
+初始状态第一天未持有股票 dp[0][0] = 0
+
 ```java
-TreeNode lowestCommonAncestor(TreeNode root, TreeNode node1, TreeNode node2) {
-        if (root==null) {
-            return null;
+ public int maxProfit(int[] prices) {
+         if(prices==null||prices.length<=1) {return 0;}
+        int [][] dp = new int[prices.length][2];
+        dp[0][0] = 0;
+        dp[0][1] = 0 - prices[0];
+        for (int i = 1; i < prices.length; i++) {
+            dp[i][1] = dp[i-1][1] > dp[i-1][0]-prices[i] ? dp[i-1][1] : dp[i-1][0]-prices[i];
+            dp[i][0] = dp[i-1][0] > dp[i-1][1]+prices[i] ? dp[i-1][0] : dp[i-1][1]+prices[i];
         }
-  			if (root==node1 || root==node2) {//当前节点就是要找的节点之一
-            return root;
-        }
-        TreeNode leftNode = lowestCommonAncestor(root.left,node1,node2);//判断左子树中是否有节点
-        TreeNode rightNode = lowestCommonAncestor(root.right,node1,node2);//判断右子树中是否有节点
-        if (leftNode!=null&&rightNode!=null) {//就是我们要找的节点
-            return root;
-        } else if (leftNode!=null && rightNode==null) {//左子树中有节点，右子树没有节点，继续向上遍历
-            return leftNode;
-        } else if (leftNode==null && rightNode!=null) {//继续向上遍历
-            return rightNode;
-        }
-        return null;
+        return dp[prices.length-1][0];
     }
 ```

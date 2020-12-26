@@ -40,7 +40,6 @@
 #### [226. 翻转二叉树](#226. 翻转二叉树)
 #### [31. 下一个排列](#31. 下一个排列)
 #### [322. 零钱兑换](#322. 零钱兑换)
-#### [300. 最长递增子序列](#300. 最长递增子序列)
 #### [236.二叉树的最近公共祖先](#236.二叉树的最近公共祖先)
 #### [114. 二叉树展开为链表](#114. 二叉树展开为链表)
 #### [76. 最小覆盖子串](#76. 最小覆盖子串)
@@ -152,63 +151,9 @@ public static ListNode reverseList(ListNode node) {
     return newHead;
 }
 ```
-### 3.无重复字符的最长子串
-题目详情：https://leetcode-cn.com/problems/longest-substring-without-repeating-characters/
 
-#### 题目描述：
-
-给定一个字符串，请你找出其中不含有重复字符的 最长子串 的长度。
-
-示例 1:
-
-输入: "abcabcbb"
-输出: 3 
-解释: 因为无重复字符的最长子串是 "abc"，所以其长度为 3。
-示例 2:
-
-输入: "bbbbb"
-输出: 1
-解释: 因为无重复字符的最长子串是 "b"，所以其长度为 1。
-示例 3:
-
-输入: "pwwkew"
-输出: 3
-解释: 因为无重复字符的最长子串是 "wke"，所以其长度为 3。
-     请注意，你的答案必须是 子串 的长度，"pwke" 是一个子序列，不是子串。
-
-#### 解题思路
-
-就是用滑动窗口，初始left指针指向第一个元素，right指针指向第二个元素，然后在while循环中判断，set中是否包含right指针当前的字符（set会包含left到right之间所有的字符）
-
-1.包含，说明之前窗口已经出现了right指针当前的字符，那么从set中移除left指针对应的字符，然后left指针右移。
-
-2.不包含，说明之前窗口没有出现right指针当前的字符，那么更新最大窗口值max，并且right指针右移。
-
-```java
-public int lengthOfLongestSubstring(String s) {
-    if(s==null||s.length()==0) {
-        return 0;
-    }
-    HashSet<Character> set = new HashSet<Character>();
-    int left = 0;
-    int right = 1;
-    int max=1;
-    char[] array = s.toCharArray();
-    set.add(array[0]);
-    while(right<array.length) {
-        if(set.contains(array[right])) {
-            set.remove(array[left]);
-            left++;
-        } else {
-            set.add(array[right]);
-            max = right - left + 1 > max ? right - left + 1:max;
-            right++;
-        }
-    }
-    return max;
-}
-```
 ### 2.两数相加
+
 题目详情：https://leetcode-cn.com/problems/add-two-numbers/
 
 #### 题目详情：
@@ -274,6 +219,66 @@ public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
         l2=l2.next;
     }
     return head.next;
+}
+```
+
+
+
+### 3.无重复字符的最长子串
+
+题目详情：https://leetcode-cn.com/problems/longest-substring-without-repeating-characters/
+
+#### 题目描述：
+
+给定一个字符串，请你找出其中不含有重复字符的 最长子串 的长度。
+
+示例 1:
+
+输入: "abcabcbb"
+输出: 3 
+解释: 因为无重复字符的最长子串是 "abc"，所以其长度为 3。
+示例 2:
+
+输入: "bbbbb"
+输出: 1
+解释: 因为无重复字符的最长子串是 "b"，所以其长度为 1。
+示例 3:
+
+输入: "pwwkew"
+输出: 3
+解释: 因为无重复字符的最长子串是 "wke"，所以其长度为 3。
+     请注意，你的答案必须是 子串 的长度，"pwke" 是一个子序列，不是子串。
+
+#### 解题思路
+
+就是用滑动窗口，初始left指针指向第一个元素，right指针指向第二个元素，然后在while循环中判断，set中是否包含right指针当前的字符（set会包含left到right之间所有的字符）
+
+1.包含，说明之前窗口已经出现了right指针当前的字符，那么从set中移除left指针对应的字符，然后left指针右移。
+
+2.不包含，说明之前窗口没有出现right指针当前的字符，那么更新最大窗口值max，并且right指针右移。
+
+```java
+public int lengthOfLongestSubstring(String s) {
+    if(s==null||s.length()==0) {
+        return 0;
+    }
+    HashSet<Character> set = new HashSet<Character>();
+    int left = 0;
+    int right = 1;
+    int max=1;
+    char[] array = s.toCharArray();
+    set.add(array[0]);
+    while(right<array.length) {
+        if(set.contains(array[right])) {
+            set.remove(array[left]);
+            left++;
+        } else {
+            set.add(array[right]);
+            max = right - left + 1 > max ? right - left + 1:max;
+            right++;
+        }
+    }
+    return max;
 }
 ```
 
@@ -409,6 +414,56 @@ class Solution {
     }
 }
 ```
+
+### 19.删除链表的倒数第N个节点
+题目详情：https://leetcode-cn.com/problems/remove-nth-node-from-end-of-list/
+
+#### 题目介绍
+
+给定一个链表，删除链表的倒数第 *n* 个节点，并且返回链表的头结点。
+
+**示例：**
+
+```
+给定一个链表: 1->2->3->4->5, 和 n = 2.
+
+当删除了倒数第二个节点后，链表变为 1->2->3->5.
+```
+
+**说明：**
+
+给定的 *n* 保证是有效的。
+
+#### 解题思路
+
+就是用快慢指针，快指针quickNode先走n步，然后慢指针slowNode从链表头部出发，每次quickNode和slowNode都只走一步，直到快指针quickNode走到最后一步，此时slowNode与quickNode之间相差n步，其实是此时slowNode是倒数第n+1个节点，也就是要删除的节点的前一个节点，直接将slowNode.next = slowNode.next.next;，就可以将节点删除。
+
+但是需要考虑到如果删除的是头结点，此时会比较麻烦，严格意义上，m个节点，头结点与最后一个节点之间只存在m-1个节点的间隔，也就是只能走m-1步，所以解决方案就是先建一个临时节点加在头结点前面，这样就可以走出m步了，也就是可以删除倒数第m个节点，也就是头结点了。
+
+```java
+class Solution {
+    public ListNode removeNthFromEnd(ListNode head, int n) {
+        //因为head有可能是要被删除的节点，所以需要建一个preHead方便操作
+        ListNode preHead = new ListNode();
+        preHead.next = head;
+        ListNode quickNode = preHead;
+        while(n>0) {
+            quickNode = quickNode.next;
+            n--;
+        }
+        ListNode slowNode = preHead;//preDeleteNode就是要删除的节点的前一个节点
+        while(quickNode.next!=null) {//这个循环遍历完可以保证quickNode是最后一个节点
+            quickNode = quickNode.next;
+            slowNode = slowNode.next;
+        }
+        slowNode.next = slowNode.next.next;
+        return preHead.next;
+    }
+}
+```
+
+
+
 ### 121.买卖股票的最佳时机
 题目详情：https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock/
 
@@ -557,54 +612,6 @@ class Solution {
 ```
 
 
-### 19.删除链表的倒数第N个节点
-题目详情：https://leetcode-cn.com/problems/remove-nth-node-from-end-of-list/
-
-#### 题目介绍
-
-给定一个链表，删除链表的倒数第 *n* 个节点，并且返回链表的头结点。
-
-**示例：**
-
-```
-给定一个链表: 1->2->3->4->5, 和 n = 2.
-
-当删除了倒数第二个节点后，链表变为 1->2->3->5.
-```
-
-**说明：**
-
-给定的 *n* 保证是有效的。
-
-#### 解题思路
-
-就是用快慢指针，快指针quickNode先走n步，然后慢指针slowNode从链表头部出发，每次quickNode和slowNode都只走一步，直到快指针quickNode走到最后一步，此时slowNode与quickNode之间相差n步，其实是此时slowNode是倒数第n+1个节点，也就是要删除的节点的前一个节点，直接将slowNode.next = slowNode.next.next;，就可以将节点删除。
-
-但是需要考虑到如果删除的是头结点，此时会比较麻烦，严格意义上，m个节点，头结点与最后一个节点之间只存在m-1个节点的间隔，也就是只能走m-1步，所以解决方案就是先建一个临时节点加在头结点前面，这样就可以走出m步了，也就是可以删除倒数第m个节点，也就是头结点了。
-
-```java
-class Solution {
-    public ListNode removeNthFromEnd(ListNode head, int n) {
-        //因为head有可能是要被删除的节点，所以需要建一个preHead方便操作
-        ListNode preHead = new ListNode();
-        preHead.next = head;
-        ListNode quickNode = preHead;
-        while(n>0) {
-            quickNode = quickNode.next;
-            n--;
-        }
-        ListNode slowNode = preHead;//preDeleteNode就是要删除的节点的前一个节点
-        while(quickNode.next!=null) {//这个循环遍历完可以保证quickNode是最后一个节点
-            quickNode = quickNode.next;
-            slowNode = slowNode.next;
-        }
-        slowNode.next = slowNode.next.next;
-        return preHead.next;
-    }
-}
-```
-
-
 ### 21.合并两个有序链表
 题目详情：https://leetcode-cn.com/problems/merge-two-sorted-lists/
 
@@ -690,6 +697,8 @@ public void moveZeroes(int* nums, int numsSize) {
     }
 }
 ```
+
+
 
 ## 34. 在排序数组中查找元素的第一个和最后一个位置
 
@@ -1458,9 +1467,9 @@ public int majorityElement(int[] nums) {
         }
     }
 ```
-## 101. 对称二叉树
+## 101. 对称二叉树给定一个二叉树，检查它是否是镜像对称的。
 
-给定一个二叉树，检查它是否是镜像对称的。 
+ 
 
 例如，二叉树 [1,2,2,3,4,4,3] 是对称的。
 
@@ -1520,66 +1529,6 @@ public int singleNumber(int[] nums) {
 }
 ```
 
-## 94. 二叉树的中序遍历
-
-给定一个二叉树的根节点 `root` ，返回它的 **中序** 遍历。
-
- 
-
-**示例 1：**
-
-![img](../static/inorder_1.jpg)
-
-```
-输入：root = [1,null,2,3]
-输出：[1,3,2]
-```
-
-##### 解题思路
-
-递归解法
-
-```java
-List<Integer> list = new ArrayList<Integer>();
-public List<Integer> inorderTraversal(TreeNode root) {
-    if(root==null){return list;}
-    inorderTraversal(root.left);
-    list.add(root.val);
-    inorderTraversal(root.right);
-    return list;
-}
-```
-
-栈解法
-
-```java
-public List<Integer> inorderTraversal1(TreeNode root) {
-    List<Integer> list = new ArrayList<Integer>();
-    if (root==null){return list;}
-    Stack<TreeNode> stack = new Stack<>();
-    stack.add(root);
-    while (stack.size()>0) {
-        TreeNode node = stack.pop();
-        if (node.left == null && node.right==null) {
-            list.add(node.val);
-            continue;
-        }
-        if (node.right!=null) {
-            stack.push(node.right);
-            //这里将right置为null主要防止父节点多次遍历，也可以使用一个HashSet来记录那些已经添加子节点的父节点。
-            node.right =null;
-        }
-        stack.push(node);
-        if (node.left!=null) {
-            stack.push(node.left);
-          //这里将left置为null主要防止父节点多次遍历，也可以使用一个HashSet来记录那些已经添加子节点的父节点。
-            node.left=null;
-        }
-    }
-    return list;
-}
-```
-
 ## 64.最小路径和
 
 给定一个包含非负整数的 m x n 网格 grid ，请找出一条从左上角到右下角的路径，使得路径上的数字总和为最小。
@@ -1633,7 +1582,65 @@ public int minPathSum(int[][] grid, int row,int col) {
 }
 ```
 
+## 94. 二叉树的中序遍历
 
+给定一个二叉树的根节点 `root` ，返回它的 **中序** 遍历。
+
+ 
+
+**示例 1：**
+
+![img](../static/inorder_1.jpg)
+
+```
+输入：root = [1,null,2,3]
+输出：[1,3,2]
+```
+
+##### 解题思路
+
+递归解法
+
+```java
+List<Integer> list = new ArrayList<Integer>();
+public List<Integer> inorderTraversal(TreeNode root) {
+    if(root==null){return list;}
+    inorderTraversal(root.left);
+    list.add(root.val);
+    inorderTraversal(root.right);
+    return list;
+}
+```
+
+栈解法
+
+```java
+public List<Integer> inorderTraversal1(TreeNode root) {
+    List<Integer> list = new ArrayList<Integer>();
+    if (root==null){return list;}
+    Stack<TreeNode> stack = new Stack<>();
+    stack.add(root);
+    while (stack.size()>0) {
+        TreeNode node = stack.pop();
+        if (node.left == null && node.right==null) {
+            list.add(node.val);
+            continue;
+        }
+        if (node.right!=null) {
+            stack.push(node.right);
+          	//这里将right置为null主要防止父节点多次遍历，也可以使用一个HashSet来记录那些已经添加子节点的父节点。
+            node.right =null;
+        }
+        stack.push(node);
+        if (node.left!=null) {
+            stack.push(node.left);
+          //这里将left置为null主要防止父节点多次遍历，也可以使用一个HashSet来记录那些已经添加子节点的父节点。
+            node.left=null;
+        }
+    }
+    return list;
+}
+```
 
 ## 234. 回文链表
 请判断一个链表是否为回文链表。
@@ -1689,7 +1696,6 @@ public int minPathSum(int[][] grid, int row,int col) {
         return true;
     }
 ```
-
 ## 215. 数组中的第K个最大元素
 在未排序的数组中找到第 k 个最大的元素。请注意，你需要找的是数组排序后的第 k 个最大的元素，而不是第 k 个不同的元素。
 
@@ -1740,7 +1746,26 @@ public int findKthLargest(int[] nums, int k) {
     }
 ```
 
-## 98.验证二叉搜索树
+## 200. 岛屿数量
+
+给你一个由 '1'（陆地）和 '0'（水）组成的的二维网格，请你计算网格中岛屿的数量。
+
+岛屿总是被水包围，并且每座岛屿只能由水平方向和/或竖直方向上相邻的陆地连接形成。
+
+此外，你可以假设该网格的四条边均被水包围。
+
+
+示例 1：
+
+输入：grid = [
+  ["1","1","1","1","0"],
+  ["1","1","0","1","0"],
+  ["1","1","0","0","0"],
+  ["0","0","0","0","0"]
+]
+输出：1
+
+##98.验证二叉搜索树
 
 给定一个二叉树，判断其是否是一个有效的二叉搜索树。
 
@@ -1821,7 +1846,6 @@ public List<List<Integer>> subsets(int[] nums) {
         return totalList;
     }
 ```
-
 ## 75. 颜色分类
 
 给定一个包含红色、白色和蓝色，一共 n 个元素的数组，原地对它们进行排序，使得相同颜色的元素相邻，并按照红色、白色、蓝色顺序排列。
@@ -1872,7 +1896,6 @@ public List<List<Integer>> subsets(int[] nums) {
         }
     }
 ```
-
 ## 39. 组合总和
 
 给定一个无重复元素的数组 candidates 和一个目标数 target ，找出 candidates 中所有可以使数字和为 target 的组合。
@@ -1976,7 +1999,6 @@ public TreeNode invertTree(TreeNode root) {
     return root;
 }
 ```
-
 ## 31. 下一个排列
 
 实现获取 下一个排列 的函数，算法需要将给定数字序列重新排列成字典序中下一个更大的排列。
@@ -1994,7 +2016,6 @@ public TreeNode invertTree(TreeNode root) {
 
 ##### 解题思路
 本题其实就是提升数字的字典序,并且要提升的幅度最小。就是从后面往前找到第一个nums[i-1]<nums[i],这是需要调整使得数字字典序更大的地方，然后从i到length-1之间找到一个大于nums[i-1]但是又最小的数，然后与nums[i-1]替换。
-
 ```java
 public void nextPermutation(int[] nums) {
         int flag=0;
@@ -2022,8 +2043,61 @@ public void nextPermutation(int[] nums) {
     }
 ```
 
+## 114. 二叉树展开为链表
 
-## 322. 零钱兑换
+给定一个二叉树，原地将它展开为一个单链表。
+
+ 
+
+例如，给定二叉树
+
+    1
+   / \
+  2   5
+ / \   \
+3   4   6
+将其展开为：
+
+1
+ \
+  2
+   \
+    3
+     \
+      4
+       \
+        5
+         \
+          6
+
+##### 解题思路
+
+其实就是先序遍历，需要注意的是，需要先将节点的左右节点保存，然后再进行修改操作。其次是需要将所有节点的left指针置为null.
+
+```java
+		TreeNode lastNode=null;
+    public void flatten(TreeNode root) {
+        if(root == null) {return;}
+        TreeNode left = root.left;
+        TreeNode right = root.right;
+        if(lastNode==null) {
+            lastNode = root;
+            lastNode.left=null;
+        } else {
+            lastNode.left=null;
+            lastNode.right = root;
+            lastNode=root;
+        }
+        flatten(left);
+        flatten(right);
+    }
+```
+
+
+
+
+
+#### 322. 零钱兑换
 
 题目详情：(https://leetcode-cn.com/problems/coin-change/)
 给定不同面额的硬币 coins 和一个总金额 amount。编写一个函数来计算可以凑成总金额所需的最少的硬币个数。如果没有任何一种硬币组合能组成总金额，返回 -1。
@@ -2036,7 +2110,7 @@ public void nextPermutation(int[] nums) {
 输出：3 
 解释：11 = 5 + 5 + 1
 
-##### 递归解法
+#####递归解法
 
 ```java
     Integer[] array;
@@ -2122,149 +2196,6 @@ public int coinChange1(int[] coins, int amount) {
 }
 ```
 
-## 300. 最长递增子序列
-
-给你一个整数数组 nums ，找到其中最长严格递增子序列的长度。
-
-子序列是由数组派生而来的序列，删除（或不删除）数组中的元素而不改变其余元素的顺序。例如，[3,6,2,7] 是数组 [0,3,1,6,2,2,7] 的子序列。
-
- 
-示例 1：
-
-输入：nums = [10,9,2,5,3,7,101,18]
-输出：4
-解释：最长递增子序列是 [2,3,7,101]，因此长度为 4 。
-
-##### 解题思路
-使用一个数组dp[i]来记录包含元素i时，最大递增子序列长度，所以状态转移方程为
-dp[i] = max(1,dp[k]+1); k<i,并且nums[k]<nums[i]
-
-```java
-  public int lengthOfLIS(int[] nums) {
-        if (nums==null||nums.length==0) {
-            return 0;
-        }
-        //包含元素nums[i]时的最大长度
-        int[] dp = new int[nums.length];
-        dp[0] = 1;
-        int totalMax = 1;
-        for (int i = 1; i < nums.length; i++) {
-            int max = 1;
-            for (int j = i-1; j >=0; j--) {
-                if (nums[j] < nums[i] && dp[j] + 1 > max) {
-                    max = dp[j] + 1;
-                }
-            }
-            dp[i] = max;
-            totalMax = max > totalMax ? max : totalMax;
-        }
-        return totalMax;
-    }
-
-```
-## 236.二叉树的最近公共祖先
-
-给定一个二叉树, 找到该树中两个指定节点的最近公共祖先。
-
-百度百科中最近公共祖先的定义为：“对于有根树 T 的两个结点 p、q，最近公共祖先表示为一个结点 x，满足 x 是 p、q 的祖先且 x 的深度尽可能大（一个节点也可以是它自己的祖先）。”
-
-例如，给定如下二叉树:  root = [3,5,1,6,2,0,8,null,null,7,4]
-
-示例 1:
-
-输入: root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 1
-输出: 3
-解释: 节点 5 和节点 1 的最近公共祖先是节点 3。
-示例 2:
-
-输入: root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 4
-输出: 5
-解释: 节点 5 和节点 4 的最近公共祖先是节点 5。因为根据定义最近公共祖先节点可以为节点本身。
-
-##### 解题思路
-其实所有的节点分为以下几种：
-1.就是要寻找的节点1，或节点2
-2.此节点子树中中包含节点1，节点2其中的一个
-3.节点1，节点2全部位于此节点的左子树，或者是右子树
-4.此节点左子树包含节点1，右子树包含节点2
-所以第4种就是我们要寻找的节点，并且在二叉树中只有一个，所以我们对二叉树进行遍历，判断某个节点左子树，右子树都包含节点，那么就返回该节点。
-```java
-TreeNode lowestCommonAncestor(TreeNode root, TreeNode node1, TreeNode node2) {
-        if (root==null) {
-            return null;
-        }
-            if (root==node1 || root==node2) {//当前节点就是要找的节点之一
-            return root;
-        }
-        TreeNode leftNode = lowestCommonAncestor(root.left,node1,node2);//判断左子树中是否有节点
-        TreeNode rightNode = lowestCommonAncestor(root.right,node1,node2);//判断右子树中是否有节点
-        if (leftNode!=null&&rightNode!=null) {//就是我们要找的节点
-            return root;
-        } else if (leftNode!=null && rightNode==null) {//左子树中有节点，右子树没有节点，继续向上遍历
-            return leftNode;
-        } else if (leftNode==null && rightNode!=null) {//继续向上遍历
-            return rightNode;
-        }
-        return null;
-    }
-```
-
-
-## 114. 二叉树展开为链表
-
-给定一个二叉树，原地将它展开为一个单链表。
-
- 
-
-例如，给定二叉树
-
-    1
-   / \
-  2   5
- / \   \
-3   4   6
-将其展开为：
-
-1
- \
-  2
-   \
-    3
-     \
-      4
-       \
-        5
-         \
-          6
-
-##### 解题思路
-
-其实就是先序遍历，需要注意的是，需要先将节点的左右节点保存，然后再进行修改操作。其次是需要将所有节点的left指针置为null.
-
-
-```java
-		TreeNode lastNode=null;
-    public void flatten(TreeNode root) {
-        if(root == null) {return;}
-        TreeNode left = root.left;
-        TreeNode right = root.right;
-        if(lastNode==null) {
-            lastNode = root;
-            lastNode.left=null;
-        } else {
-            lastNode.left=null;
-            lastNode.right = root;
-            lastNode=root;
-        }
-        flatten(left);
-        flatten(right);
-    }
-```
-
-
-
-
-
 ## 76. 最小覆盖子串
 
 给你一个字符串 s 、一个字符串 t 。返回 s 中涵盖 t 所有字符的最小子串。如果 s 中不存在涵盖 t 所有字符的子串，则返回空字符串 "" 。
@@ -2342,6 +2273,48 @@ public String minWindow(String s, String t) {
 
 ```
 
+## 122.买卖股票的最佳时机 II
+给定一个数组，它的第 i 个元素是一支给定股票第 i 天的价格。
+
+设计一个算法来计算你所能获取的最大利润。你可以尽可能地完成更多的交易（多次买卖一支股票）。
+
+注意：你不能同时参与多笔交易（你必须在再次购买前出售掉之前的股票）。
+
+示例 1: 
+```java
+输入: [7,1,5,3,6,4]
+输出: 7
+解释: 在第 2 天（股票价格 = 1）的时候买入，在第 3 天（股票价格 = 5）的时候卖出, 这笔交易所能获得利润 = 5-1 = 4 。
+     随后，在第 4 天（股票价格 = 3）的时候买入，在第 5 天（股票价格 = 6）的时候卖出, 这笔交易所能获得利润 = 6-3 = 3 。
+```
+
+##### 解题思路
+
+按照状态来分，每天只有持有股票和不持有股票两种状态，我们使用
+一个二维数组dp[i][isHoldStock]来保存当天利润最大值，
+i代日期，isHoldStock代表当天是否持有股票, 1代表当天持有了股票
+
+如果第i天持有股票，那么要么是之前买的，要么是今天买的
+dp[i][1] = Math.max(dp[i-1][1],dp[i-1][0]-prices[i])
+如果第i天未持有股票，那么要么是前一天也没有持有股票，要么是今天把股票卖了
+dp[i][0] = Math.max(dp[i-1][0],dp[i-1][1]+prices[i])
+
+初始状态第一天已持有股票 dp[0][1] = -prices[0]
+初始状态第一天未持有股票 dp[0][0] = 0
+
+```java
+ public int maxProfit(int[] prices) {
+         if(prices==null||prices.length<=1) {return 0;}
+        int [][] dp = new int[prices.length][2];
+        dp[0][0] = 0;
+        dp[0][1] = 0 - prices[0];
+        for (int i = 1; i < prices.length; i++) {
+            dp[i][1] = dp[i-1][1] > dp[i-1][0]-prices[i] ? dp[i-1][1] : dp[i-1][0]-prices[i];
+            dp[i][0] = dp[i-1][0] > dp[i-1][1]+prices[i] ? dp[i-1][0] : dp[i-1][1]+prices[i];
+        }
+        return dp[prices.length-1][0];
+    }
+```
 
 ## 309. 最佳买卖股票时机含冷冻期
 给定一个整数数组，其中第 i 个元素代表了第 i 天的股票价格 。​
