@@ -162,11 +162,9 @@ int[] quickSorted(int [] array, int start,int end) {
             //从左边找出一个大于基准值的元素
             while(array[i]<=base&&i<j) {i++;}
             //进行交换
-            if(i<j) {
-          int temp =array[j];
-          array[j] = array[i];
-          array[i] = temp;
-            }
+            int temp =array[j];
+            array[j] = array[i];
+            array[i] = temp;
     }
     //将中间值换成基准元素
     array[start] = array[i];
@@ -222,6 +220,7 @@ int[] quickSorted(int [] array, int start,int end) {
         for (int i = array.length-1; i > 0 ; i--) {
             //每次调整完毕后堆顶都是最大值
             swap(array,0,i);
+            //对0到i-1范围内的元素看成一个堆，进行大顶堆调整
             adjustHeap(array,0,i);
         }
         return array;
@@ -871,5 +870,49 @@ public static class LRUCache2 {
             }
         }
         return "";
+    }
+```
+## 236. 二叉树的最近公共祖先给定一个二叉树, 找到该树中两个指定节点的最近公共祖先。
+
+百度百科中最近公共祖先的定义为：“对于有根树 T 的两个结点 p、q，最近公共祖先表示为一个结点 x，满足 x 是 p、q 的祖先且 x 的深度尽可能大（一个节点也可以是它自己的祖先）。”
+
+例如，给定如下二叉树:  root = [3,5,1,6,2,0,8,null,null,7,4]
+
+示例 1:
+
+输入: root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 1
+输出: 3
+解释: 节点 5 和节点 1 的最近公共祖先是节点 3。
+示例 2:
+
+输入: root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 4
+输出: 5
+解释: 节点 5 和节点 4 的最近公共祖先是节点 5。因为根据定义最近公共祖先节点可以为节点本身。
+
+##### 解题思路
+其实所有的节点分为以下几种：
+1.就是要寻找的节点1，或节点2
+2.此节点子树中中包含节点1，节点2其中的一个
+3.节点1，节点2全部位于此节点的左子树，或者是右子树
+4.此节点左子树包含节点1，右子树包含节点2
+所以第4种就是我们要寻找的节点，并且在二叉树中只有一个，所以我们对二叉树进行遍历，判断某个节点左子树，右子树都包含节点，那么就返回该节点。
+```java
+TreeNode lowestCommonAncestor(TreeNode root, TreeNode node1, TreeNode node2) {
+        if (root==null) {
+            return null;
+        }
+  			if (root==node1 || root==node2) {//当前节点就是要找的节点之一
+            return root;
+        }
+        TreeNode leftNode = lowestCommonAncestor(root.left,node1,node2);//判断左子树中是否有节点
+        TreeNode rightNode = lowestCommonAncestor(root.right,node1,node2);//判断右子树中是否有节点
+        if (leftNode!=null&&rightNode!=null) {//就是我们要找的节点
+            return root;
+        } else if (leftNode!=null && rightNode==null) {//左子树中有节点，右子树没有节点，继续向上遍历
+            return leftNode;
+        } else if (leftNode==null && rightNode!=null) {//继续向上遍历
+            return rightNode;
+        }
+        return null;
     }
 ```

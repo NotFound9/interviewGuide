@@ -874,6 +874,1455 @@ public List<String> letterCombinations(String digits) {
     }
 ```
 
+下面是另外一种解法，主要是多叉树的深度遍历的解法：
+
+```java
+public List<String> letterCombinations(String digits) {
+    List<String> arrayList = new ArrayList<>();
+    if (digits==null||digits.length()==0) {
+        return arrayList;
+    }
+    tranverse(digits,"",0,arrayList);
+    return arrayList;
+}
+//递归进行深度遍历
+public void tranverse(String digits,String currentString,int start,List<String> arrayList) {
+ 		//下一层已经没有节点时，直接添加字符串
+    if (start>=digits.length()) {
+        arrayList.add(currentString);
+        return;
+    }
+  	//convert方法就不重复列出来了，在上面的解法中有相关的实现
+    String[] array = convert(digits.charAt(start));
+  //对每一个子节点进行继续递归遍历
+    for (int i = 0; i < array.length; i++) {
+        String temp = currentString + array[i];
+        tranverse(digits,temp,start+1,arrayList);
+    }
+}
+```
+
+## 15.三数之和
+
+#### [15. 三数之和](https://leetcode-cn.com/problems/3sum/)
+
+难度中等2836
+
+给你一个包含 *n* 个整数的数组 `nums`，判断 `nums` 中是否存在三个元素 *a，b，c ，*使得 *a + b + c =* 0 ？请你找出所有满足条件且不重复的三元组。
+
+**注意：**答案中不可以包含重复的三元组。
+
+ 
+
+**示例：**
+
+```java
+给定数组 nums = [-1, 0, 1, 2, -1, -4]，
+
+满足要求的三元组集合为：
+[
+  [-1, 0, 1],
+  [-1, -1, 2]
+]
+```
+
+##### 解题思路
+两数之和的是通过两个指针从首尾两端向中间移动来解决的，三数之和相当于是基于两数之和来解答的，相当于对数组进行遍历，对于每个数调用两数之和的函数获得结果，大致思路如下：
+```java
+for(int i=0;i<nums.length;i++) {
+		twoSum(nums,i+1,target - nums[i]);//target即为三数之和i+1到nums.length-1是计算三数之和的取值范围
+}
+```
+主要难点其实是在于如何避免提交重复的三元组到数组中去，本题是通过只对不同的元素调用twoSum方法，并且调用范围为i+1到nums.length-1。
+```java
+List<List<Integer>> totalList = new ArrayList<>();
+    public List<List<Integer>> threeSum(int[] nums) {
+        Arrays.sort(nums);
+        for (int i = 0; i < nums.length; i++) {
+            //说明上次循环已经添加了
+            if(i>=1 && nums[i] == nums[i-1]) {
+                continue;
+            }
+            int target = 0 - nums[i];
+            //这里不是从0开始遍历，防止重复
+            twoSum(nums,i+1,target);
+        }
+        return totalList;
+    }
+
+    public void twoSum(int[] nums,int start, int target) {
+        int i = start,j=nums.length-1;
+        while (i<j) {
+            int sum = nums[i]+nums[j];
+            //有可能是存在一个数组是 1，1，1，1，2，2，3，3，3 要求sum为4，
+            // 这样会存在多组一样的，在添加时需要判断是否重复,
+            // 所以非第一次循环，并且跟上次循环的数一样，那么就跳过
+            if (i>start && nums[i] == nums[i-1]){
+                i++;
+                continue;
+            } else if (sum == target) {
+                List<Integer> list = new ArrayList<>();
+                list.add(0-target);
+                list.add(nums[i]);
+                list.add(nums[j]);
+                totalList.add(list);
+                i++;
+                j--;
+            } else if (sum > target) {
+                j--;
+            } else if(sum<target){
+                i++;
+            }
+        }
+    }
+```
+
+
+
+## 141.环形链表
+
+给定一个链表，判断链表中是否有环。
+
+![img](../static/circularlinkedlist.png)
+
+##### 解题思路
+
+就是使用快慢指针来解决这个问题，如果相遇，代表有环，不相遇代表没有环。
+
+```java
+public boolean hasCycle(ListNode head) {
+        ListNode slow = head;
+        ListNode quick = head;
+        while(quick!=null) {
+            if(quick.next == null){return false;}
+            quick = quick.next.next;
+            slow = slow.next;
+            if(quick==slow) {return true;}
+        }
+        return false;
+    }
+```
+
+## 104.二叉树的最大深度
+给定一个二叉树，找出其最大深度。
+二叉树的深度为根节点到最远叶子节点的最长路径上的节点数。
+```java
+public int maxDepth(TreeNode root) {
+        if(root==null) {return 0;}
+        int leftDepth = maxDepth(root.left);
+        int rightDepth = maxDepth(root.right);
+        return leftDepth > rightDepth ? leftDepth+ 1: rightDepth+1;
+    }
+```
+
+## 22.括号生成
+数字 n 代表生成括号的对数，请你设计一个函数，用于能够生成所有可能的并且 有效的 括号组合。
+
+示例：
+
+输入：n = 3
+输出：[
+       "((()))",
+       "(()())",
+       "(())()",
+       "()(())",
+       "()()()"
+     ]
+
+##### 解题思路
+
+其实这一题也是一个回朔的解法，就是可以把每个"("和")"看成是一个二叉树的节点，从根节点到叶子节点的路径组成了每种括号组合。例如n=3时，二叉树如下：
+
+二叉树第1层                                                         ""
+
+第2层								(   							  							            )
+
+​	                  （                                ）							  		（ 					   ）
+
+（    							  ）   （					  ）	  	（			  		）  （                   ）
+
+每次就使用回朔的方法进行深度遍历，每当发现当前的路径不符合要求时，进行剪枝，回退到上一层，遍历其他路径。(本题中剪枝的要求是左括号数量>n,右括号数量>n,右括号数量>左括号)
+
+```java
+public List<String> generateParenthesis(int n) {
+        List<String> totalList = new ArrayList<String>();
+        if(n<=0) {
+            return totalList;
+        }
+        LinkedList<Character> stack = new LinkedList<Character>();
+      //使用回朔算法进行遍历
+        generateParenthesis(n,0,0,stack,totalList);
+        return totalList;
+    }
+		
+    public void generateParenthesis(int n,int left,int right,LinkedList<Character> stack,List<String> totalList) {
+      //不满足要求，进行剪枝，回退去遍历其他节点
+        if(left>n || right>n || right>left) {return;}  
+      if(left==n&&right==n) {//正好匹配上了，将栈中所有值转换为
+            StringBuffer str = new StringBuffer();
+            for(int i =0;i<stack.size();i++) {
+                str.append(stack.get(i));
+            }
+            totalList.add(str.toString());
+        }
+        //往左边遍历
+        stack.add('(');
+        generateParenthesis(n,left+1,right,stack,totalList);
+        //回朔
+        stack.removeLast();
+        //往右边遍历
+        stack.add(')');
+        generateParenthesis(n,left,right+1,stack,totalList);
+        //回朔
+        stack.removeLast();
+    }
+```
+
+PS:回朔算法的框架
+
+```
+List result = new ArrayList<>();
+void backtrack(路径, 选择列表stack):
+    if 满足结束条件:
+        result.add(路径)
+        return
+
+    for 选择 in 选择列表:
+        做选择 stack.add(当前元素);
+        backtrack(路径, 选择列表)
+        撤销选择 stack.remove(当前元素);
+
+```
+
+## 102.二叉树的层序遍历
+
+给你一个二叉树，请你返回其按 **层序遍历** 得到的节点值。 （即逐层地，从左到右访问所有节点）。
+
+示例：
+
+```
+二叉树：[3,9,20,null,null,15,7],
+
+    3
+   / \
+  9  20
+    /  \
+   15   7
+返回其层次遍历结果：
+
+[
+  [3],
+  [9,20],
+  [15,7]
+]
+```
+
+##### 解题思路
+
+其实就是二叉树的宽度优先遍历
+
+```java
+public List<List<Integer>> levelOrder(TreeNode root) {
+        List totalList = new ArrayList<>();
+        if(root==null){
+            return totalList;
+        }
+        LinkedList<TreeNode> currentQueue = new LinkedList<TreeNode>();
+        LinkedList<TreeNode> nextQueue = new LinkedList<TreeNode>();
+        currentQueue.add(root);
+        while(currentQueue.size()>0) {
+            List<Integer> list = new ArrayList<Integer>();
+            while(currentQueue.size()>0) {
+                TreeNode node = currentQueue.removeFirst();
+                if(node != null) {
+                    list.add(node.val);
+                    if(node.left!=null) {
+                        nextQueue.add(node.left);
+                    }
+                    if(node.right!=null) {
+                        nextQueue.add(node.right);
+                    }
+                }
+            }
+            totalList.add(list);
+            currentQueue = nextQueue;
+            nextQueue = new LinkedList<TreeNode>();
+        }
+        return totalList;
+    }
+```
+
+
+
+## 198.打家劫舍
+你是一个专业的小偷，计划偷窃沿街的房屋。每间房内都藏有一定的现金，影响你偷窃的唯一制约因素就是相邻的房屋装有相互连通的防盗系统，如果两间相邻的房屋在同一晚上被小偷闯入，系统会自动报警。
+
+给定一个代表每个房屋存放金额的非负整数数组，计算你 不触动警报装置的情况下 ，一夜之内能够偷窃到的最高金额。
+
+示例 1：
+
+输入：[1,2,3,1]
+输出：4
+解释：偷窃 1 号房屋 (金额 = 1) ，然后偷窃 3 号房屋 (金额 = 3)。
+     偷窃到的最高金额 = 1 + 3 = 4 。
+
+##### 解题思路：
+
+其实跟斐波拉契数列很像，这道题中其实如果要计算nums数组的前n个元素的最高金额的话，使用f(n)来代替。
+
+f(0)=nums[0];
+
+f(1)=nums[1]>nums[0]?nums[1]:nums[0];//也就是num[0]和nums[1]之间的最大值。
+
+f(n) = f(n-1) > f(n-2)+nums[n] ? f(n-1) :f(n-2)+nums[n]
+
+```java
+Integer[] saveTable;
+    public int rob(int[] nums) {
+        if(nums==null|| nums.length == 0) {
+            return 0;
+        }
+        if(nums.length==1) {
+            return nums[0];
+        }
+        saveTable = new Integer[nums.length];
+        int value1 = maxRob(nums,nums.length-1);
+        int value2 = maxRob(nums,nums.length-2);
+        return value1 > value2 ? value1 : value2;
+    }
+
+    public int maxRob(int[] nums,int n) {
+        if(saveTable[n]!=null)
+        {
+            return saveTable[n];
+        }
+        int max = 0;
+        if(n==0) {
+            max = nums[0];
+        } else if(n==1) {
+            max = nums[1]>nums[0]?nums[1]:nums[0];
+        } else if(n-2>=0) {
+            int value1 = maxRob(nums,n-1);
+            int value2 = maxRob(nums,n-2)+nums[n];
+            max = value1 > value2 ? value1 : value2;
+        } 
+        saveTable[n] = max;
+        return max;
+    }
+```
+
+## 46.全排列
+
+给定一个 **没有重复** 数字的序列，返回其所有可能的全排列。
+**示例:**
+
+```
+输入: [1,2,3]
+输出:
+[
+  [1,2,3],
+  [1,3,2],
+  [2,1,3],
+  [2,3,1],
+  [3,1,2],
+  [3,2,1]
+]
+```
+
+##### 递归解法
+
+假设你需要计算[1,2,3]的全排列结果，其实等于
+
+1为首元素，[2,3]的全排列结果，
+
+2为首元素，[1,3]的全排列结果，
+
+3首元素，[1,2]的全排列结果
+
+```java
+		public List<List<Integer>> permute(int[] nums) {
+        List<List<Integer>> totalList = new ArrayList<List<Integer>>();
+        if (nums == null|| nums.length==0){
+            return totalList;
+        }
+        tranverse(nums,0,totalList);
+        return totalList;
+    }
+		//遍历
+    public void tranverse(int[] nums,int start,List<List<Integer>> totalList) {
+        if (start>=nums.length) {//说明递归到最后了，将所有元素添加到list
+            List<Integer> list = new ArrayList<Integer>();
+            for (int i = 0; i < nums.length; i++) {
+                list.add(nums[i]);
+            }
+            totalList.add(list);
+            return;
+        }
+        //遍历将后面的元素取出，与首元素交换，然后对子串递归，因为对于[1,2,3]而言，所有排序结果是等于1为首元素，后面子数组的结果+2为首元素，后面子数组的结果+3为首元素，后面子数组的结果
+        for (int i = start; i < nums.length; i++) {
+            swap(nums,start,i);
+            tranverse(nums,start+1,totalList);
+            swap(nums,i,start);
+        }
+    }
+    void swap(int[] nums,int a,int b) {
+        int temp = nums[a];
+        nums[a] = nums[b];
+        nums[b] = temp;
+    }
+```
+
+##### 回朔解法
+
+回溯算法实际上一个类似枚举的搜索尝试过程，主要是在搜索尝试过程中寻找问题的解，当发现已不满足求解条件时，就“回溯”返回，尝试别的路径。回溯法是一种选优[搜索](https://baike.baidu.com/item/搜索/2791632)法，按选优条件向前搜索，以达到目标。但当探索到某一步时，发现原先选择并不优或达不到目标，就退回一步重新选择，这种走不通就退回再走的技术为回溯法，而满足回溯条件的某个状态的点称为“回溯点”。这道题中其实就是用回朔方法对多叉树进行一次遍历，每次到叶子节点后，发现没有元素了就退回。
+
+![6111](../static/6111.jpeg)
+
+```java
+List<List<Integer>> totalList = new ArrayList<List<Integer>>();
+LinkedList stack = new LinkedList<Integer>();
+HashSet<Integer> set = new HashSet<Integer>();
+public List<List<Integer>> permute1(int[] nums) {
+    if (nums==null||nums.length==0) {
+        return totalList;
+    }
+    permute1(nums);
+    return totalList;
+}
+public void permute1(int[] nums) {
+    if (stack.size()==nums.length) {//排列完毕了
+        LinkedList<Integer> newList = new LinkedList<>(stack);
+        totalList.add(newList);
+        return;
+    }
+    for (int i = 0; i < nums.length; i++) {
+        if (set.contains(nums[i])) {//包含说明此元素在前面出现过了
+            continue;
+        }
+        //在剩余元素中找到一个stack中未出现的，然后添加到stack
+        stack.add(nums[i]);
+        set.add(nums[i]);
+        permute1(nums,stack,totalList);
+        //回撤
+        stack.removeLast();
+        set.remove(nums[i]);
+    }
+}
+```
+
+## 55.跳跃游戏
+
+给定一个非负整数数组，你最初位于数组的第一个位置。
+
+数组中的每个元素代表你在该位置可以跳跃的最大长度。
+
+判断你是否能够到达最后一个位置。
+
+示例 1:
+
+输入: [2,3,1,1,4]
+输出: true
+解释: 我们可以先跳 1 步，从位置 0 到达 位置 1, 然后再从位置 1 跳 3 步到达最后一个位置。
+
+##### 解题思路
+
+这个其实也是通过回朔法去判断每个下标能否到达最后一步
+
+```java
+    //这个数组主要用于记录那些不能到达最后一个元素的数组下标，减少冗余计算
+    Boolean[] recordArray;
+    public boolean canJump(int[] nums) {
+        if(nums==null||nums.length==0) {return false;}
+        recordArray = new Boolean[nums.length];
+        return canJump(nums,0);
+    }
+
+    public boolean canJump(int[] nums,int start) {
+      //当前start已经处于最后一步了，或者是当前数组下标加上数字超过最后一个元素了
+        if(start >= nums.length-1 || start+nums[start] >= nums.length-1) 				{
+            return true;
+        }
+      	//已经对于改已经有记录结果，不用重复计算
+        if(recordArray[start]!=null) {
+            return recordArray[start];
+        }
+        int end = start+nums[start]; 
+      	//计算[start+1,end]之间的元素，是否有可以到达最后一步的
+        for(int i = start+1;i<=end;i++) {
+            if(canJump(nums,i)) {
+                return true;
+            }
+        }
+        recordArray[start] = false;
+        return false;
+    }
+```
+
+##### 贪心解法
+
+```java
+public boolean canJump(int[] nums) {
+        if(nums==null||nums.length==0) {return false;}
+  			//maxDepth代表可以抵达的最远距离
+  			int maxDepth = nums[0];
+        for(int i=1;i<=maxDepth && i< nums.length;i++){
+            //当前元素的可抵达距离超过maxDepth，进行更新
+          	if(nums[i]+i>maxDepth){
+                maxDepth = nums[i]+i;
+            }
+        }
+        return maxDepth>= nums.length-1;
+    }
+```
+
+## 62.不同路径
+
+一个机器人位于一个 m x n 网格的左上角 （起始点在下图中标记为 “Start” ）。
+
+机器人每次只能向下或者向右移动一步。机器人试图达到网格的右下角（在下图中标记为 “Finish” ）。
+
+问总共有多少条不同的路径？
+
+![img](../static/robot_maze.png)
+
+输入：m = 3, n = 2
+输出：3
+解释：
+从左上角开始，总共有 3 条路径可以到达右下角。
+1. 向右 -> 向右 -> 向下
+2. 向右 -> 向下 -> 向右
+3. 向下 -> 向右 -> 向右
+
+
+
+##### 解题思路
+
+其实就是C(m-1,m-1+n-1)，其实总共要走m-1+n-1步，其中有m-1步是向右的，n-1步是向下的，所以其实是一个组合问题，相当于在m-1+n-1步中找出m-1步的组合数。
+
+```java
+public int uniquePaths(int m, int n) {
+        int rightStep = m-1;
+        int downStep = n-1;
+        int min = rightStep<downStep ? rightStep:downStep;
+        int sum = rightStep+downStep;
+        long allTimes=1;
+        long innerTimes=1;
+        while(min>0) {
+            allTimes = allTimes*sum;
+            innerTimes = innerTimes *min;
+            min--;
+            sum--;
+        }
+        return (int) (allTimes/innerTimes);
+    }
+```
+## 56. 合并区间
+
+给出一个区间的集合，请合并所有重叠的区间。
+
+示例 1:
+```
+输入: intervals = [[1,3],[2,6],[8,10],[15,18]]
+输出: [[1,6],[8,10],[15,18]]
+解释: 区间 [1,3] 和 [2,6] 重叠, 将它们合并为 [1,6].
+```
+
+##### 解题思路
+就是先根据左边界进行排序，排序完之后进行进行区间合并，合并的判断规则就是当前区间的左边界是否在上一个区间内。
+
+```java
+public int[][] merge(int[][] intervals) {
+        if (intervals==null||intervals.length<=1) {
+            return intervals;
+        }
+        quickSort(intervals,0,intervals.length-1);
+        int lastIndex = 0;
+        for (int i = 1; i < intervals.length; i++) {
+            if (intervals[i][0] >= intervals[lastIndex][0]
+                    && intervals[i][0] <= intervals[lastIndex][1]) {
+                //如果当前区间的左边界处于上一个区间中间，说明可以被合并
+                intervals[lastIndex][1] = intervals[lastIndex][1] > intervals[i][1]
+                        ? intervals[lastIndex][1] : intervals[i][1];
+            } else {//不能被合并
+                lastIndex++;
+                intervals[lastIndex][0] = intervals[i][0];
+                intervals[lastIndex][1] = intervals[i][1];
+            }
+        }
+        //对数组进拷贝
+        int[][] result = new int[lastIndex+1][2];
+        for (int i = 0; i <= lastIndex ; i++) {
+            result[i][0] = intervals[i][0];
+            result[i][1] = intervals[i][1];
+        }
+        return result;
+    }
+		//快排
+    void quickSort(int[][] array,int start,int end) {
+        if (start>=end){return;}
+        int i = start;
+        int j = end;
+        int base = array[start][0];
+        while (i<j) {
+            while (array[j][0] > base && j>i) {j--;}
+            while (array[i][0]<=base&&j>i) {i++;}
+            swap(array,i,j);
+        }
+        swap(array,start, i); ;
+        quickSort(array,start,i-1);
+        quickSort(array,i+1,end);
+    }
+		//交换元素
+    void swap(int[][] array, int i,int j) {
+        int temp_0 = array[j][0];
+        int temp_1 = array[j][1];
+        array[j][0] = array[i][0];
+        array[j][1] = array[i][1];
+        array[i][0] = temp_0;
+        array[i][1] = temp_1;
+    }
+```
+## 169. 多数元素
+给定一个大小为 n 的数组，找到其中的多数元素。多数元素是指在数组中出现次数大于 ⌊ n/2 ⌋ 的元素。
+
+你可以假设数组是非空的，并且给定的数组总是存在多数元素。
+
+示例 1:
+```
+输入: [3,2,3]
+输出: 3
+```
+##### 解题思路
+这个多数元素一定是数组的中位数，所以可以转换为寻找数组的中位数，也就是寻找第nums.length/2小的元素，也就转换为Top K问题了，所以使用快排解决。
+```java
+public int majorityElement(int[] nums) {
+        if (nums==null||nums.length==0) { return 0; }
+        return quickSort(nums,nums.length/2,0,nums.length-1);
+    }
+    int quickSort(int[] nums,int k,int start,int end) {
+        if (start>=end) {
+            return nums[start];
+        }
+        int base = nums[start];
+        int i = start;
+        int j = end;
+        while (i<j) {
+            while (nums[j]>base&&i<j) {j--;}
+            while (nums[i]<=base&&i<j) {i++;}
+            int temp = nums[i];
+            nums[i] = nums[j];
+            nums[j] = temp;
+        }
+        nums[start] = nums[i];
+        nums[i] = base;
+        if (i == k) {
+            return nums[i];
+        } else if (i>k) {
+           return quickSort(nums,k,start,i-1);
+        } else {
+           return quickSort(nums,k,i+1,end);
+        }
+    }
+```
+## 101. 对称二叉树给定一个二叉树，检查它是否是镜像对称的。
+
+ 
+
+例如，二叉树 [1,2,2,3,4,4,3] 是对称的。
+
+        1
+       / \
+      2   2
+     / \ / \
+    3  4 4  3
+##### 解题思路
+
+```java
+public boolean isSymmetric(TreeNode root) {
+    if (root == null) {
+        return true;
+    }
+    return isSymmetric(root.left, root.right);
+}
+public boolean isSymmetric(TreeNode left, TreeNode right) {
+    if (left == null && right == null) {//都为null
+        return true;
+    }
+    if ((left == null && right != null) || (left != null && right == null)) {//其中一个为null
+        return false;
+    }
+    if (left.val != right.val) {//都不为null但是值不相等
+        return false;
+    }
+  //判断子节点是否相等
+    return isSymmetric(left.left, right.right) && isSymmetric(left.right, right.left);
+}
+```
+
+
+
+## 136.只出现一次的数字
+
+给定一个非空整数数组，除了某个元素只出现一次以外，其余每个元素均出现两次。找出那个只出现了一次的元素。
+
+说明：
+
+你的算法应该具有线性时间复杂度。 你可以不使用额外空间来实现吗？
+
+示例 1:
+
+输入: [2,2,1]
+输出: 1
+
+##### 解题思路 
+
+```java
+public int singleNumber(int[] nums) {
+        int value =0;
+        for(int i = 0;i<nums.length;i++) {
+            value=value^nums[i];
+        }
+        return value;
+}
+```
+
+## 64.最小路径和
+
+给定一个包含非负整数的 m x n 网格 grid ，请找出一条从左上角到右下角的路径，使得路径上的数字总和为最小。
+
+说明：每次只能向下或者向右移动一步。
+
+示例 1：
+
+![img](../static/minpath.jpg)
+
+```
+输入：grid = [[1,3,1],[1,5,1],[4,2,1]]
+输出：7
+解释：因为路径 1→3→1→1→1 的总和最小。
+```
+
+##### 解题思路
+
+其实跟斐波拉契数列的题很相似
+
+```java
+int[][] cache;
+public int minPathSum(int[][] grid) {
+    if (grid==null||grid[0]==null) {return 0;}
+    cache = new int[grid.length][grid[0].length];
+    return minPathSum(grid,0,0);
+}
+
+public int minPathSum(int[][] grid, int row,int col) {
+    //缓存中已有这一步到右下角的数据，直接从缓存中取值
+    if (cache[row][col]!=0) {
+        return cache[row][col];
+    }
+    int max_row = grid.length-1;
+    int max_col = grid[0].length-1;
+    int path = 0;
+    if (row == max_row && col == max_col) {//已经处于右下角
+        path =  grid[row][col];
+    } else if (row == max_row) {//当前处于最下面的一行，只能往右边走
+        path = grid[row][col] + minPathSum(grid,row,col+1);
+    } else if (col == max_col) {//当前处于最右边的一行，只能往下边走
+        path = grid[row][col] + minPathSum(grid,row+1,col);
+    } else {
+        //往下走
+        int down  = grid[row][col] + minPathSum(grid, row, col + 1);
+        int right = grid[row][col] + minPathSum(grid, row + 1, col);
+        path = down < right ? down : right;
+    }
+    cache[row][col] = path;
+    return path;
+}
+```
+
+## 94. 二叉树的中序遍历
+
+给定一个二叉树的根节点 `root` ，返回它的 **中序** 遍历。
+
+ 
+
+**示例 1：**
+
+![img](../static/inorder_1.jpg)
+
+```
+输入：root = [1,null,2,3]
+输出：[1,3,2]
+```
+
+##### 解题思路
+
+递归解法
+
+```java
+List<Integer> list = new ArrayList<Integer>();
+public List<Integer> inorderTraversal(TreeNode root) {
+    if(root==null){return list;}
+    inorderTraversal(root.left);
+    list.add(root.val);
+    inorderTraversal(root.right);
+    return list;
+}
+```
+
+栈解法
+
+```java
+public List<Integer> inorderTraversal1(TreeNode root) {
+    List<Integer> list = new ArrayList<Integer>();
+    if (root==null){return list;}
+    Stack<TreeNode> stack = new Stack<>();
+    stack.add(root);
+    while (stack.size()>0) {
+        TreeNode node = stack.pop();
+        if (node.left == null && node.right==null) {
+            list.add(node.val);
+            continue;
+        }
+        if (node.right!=null) {
+            stack.push(node.right);
+          	//这里将right置为null主要防止父节点多次遍历，也可以使用一个HashSet来记录那些已经添加子节点的父节点。
+            node.right =null;
+        }
+        stack.push(node);
+        if (node.left!=null) {
+            stack.push(node.left);
+          //这里将left置为null主要防止父节点多次遍历，也可以使用一个HashSet来记录那些已经添加子节点的父节点。
+            node.left=null;
+        }
+    }
+    return list;
+}
+```
+
+## 234. 回文链表
+请判断一个链表是否为回文链表。
+
+示例 1:
+
+输入: 1->2
+输出: false
+示例 2:
+
+输入: 1->2->2->1
+输出: true
+##### 解题思路
+就是用一个快慢指针，找到链表的中位数节点，然后对后半部分链表进行反转，然后分别从原链表头部和尾部开始遍历判断。
+```java
+ public boolean isPalindrome(ListNode head) {
+        ListNode slow = head;
+        ListNode quick = head;
+        while (quick != null) {
+            quick = quick.next;
+            if (quick == null) {
+                break;
+            }
+            quick = quick.next;
+            slow = slow.next;
+        }
+        //此时的slow要么是中位数节点，
+        // 中位数有两个时，就是靠前的那个中位数节点
+        //总结点数为奇数  1->2->3->2->1  slow为3
+        //总结点数为偶数数 1->2->2->1     slow为第一个2
+        //对后面的节点进行翻转
+        ListNode preNode = slow;
+        ListNode currentNode = slow.next;
+        while (currentNode!=null) {
+            ListNode tempNode = currentNode.next;
+            currentNode.next = preNode;
+            preNode = currentNode;
+            currentNode = tempNode;
+        }
+        slow.next = null;
+        ListNode otherHead = preNode;
+        while (head!=null && otherHead!=null) {
+            if ((head==null&&otherHead!=null)
+                    || (head!=null&&otherHead==null)) {
+                return false;
+            }
+            if (head.val!=otherHead.val) {
+                return false;
+            }
+            head=head.next;
+            otherHead = otherHead.next;
+        }
+        return true;
+    }
+```
+## 215. 数组中的第K个最大元素
+在未排序的数组中找到第 k 个最大的元素。请注意，你需要找的是数组排序后的第 k 个最大的元素，而不是第 k 个不同的元素。
+
+示例 1:
+
+输入: [3,2,1,5,6,4] 和 k = 2
+输出: 5
+
+##### 解题思路
+就是Top K问题，这里可以使用堆排进行排序，需要注意的是，大顶堆建堆结束后，每次将堆顶元素移动到数组末尾，然后继续对剩下的0到i-1范围内的元素进行调整,所以是adjustHeap(nums,0,i);
+```java
+public int findKthLargest(int[] nums, int k) {
+        for (int i = nums.length/2-1; i >=0 ; i--) {
+            //对整个数组看成一个对，进行大顶堆调整
+            adjustHeap(nums,i,nums.length);
+        }
+        for (int i = nums.length-1; i > 0; i--) {
+            swap(nums,0,i);
+            //对0到i-1范围内的元素看成一个堆，进行大顶堆调整
+            if (i==nums.length-k) {
+                break;
+            }
+            adjustHeap(nums,0,i);
+        }
+        return nums[nums.length - k];
+    }
+    void adjustHeap(int[] nums, int i,int currentLength) {
+        //左子节点存在
+        while (2*i+1<currentLength) {
+            int left = 2*i+1;
+            int right = 2*i+2;
+            if (right<currentLength && nums[right] > nums[left]) {//右节点也存在,并且大于左节点
+                if (nums[right] > nums[i]) {//右节点大
+                    swap(nums,i,right);
+                    i = right;
+                } else {//根节点最大
+                    break;
+                }
+            } else {//右节点不存在，或者右节点比左节点小
+                if (nums[left] > nums[i]) {
+                    swap(nums,i,left);
+                    i = left;
+                } else {
+                    break;
+                }
+            }
+        }
+    }
+```
+
+## 200. 岛屿数量
+
+给你一个由 '1'（陆地）和 '0'（水）组成的的二维网格，请你计算网格中岛屿的数量。
+
+岛屿总是被水包围，并且每座岛屿只能由水平方向和/或竖直方向上相邻的陆地连接形成。
+
+此外，你可以假设该网格的四条边均被水包围。
+
+
+示例 1：
+
+输入：grid = [
+  ["1","1","1","1","0"],
+  ["1","1","0","1","0"],
+  ["1","1","0","0","0"],
+  ["0","0","0","0","0"]
+]
+输出：1
+
+##98.验证二叉搜索树
+
+给定一个二叉树，判断其是否是一个有效的二叉搜索树。
+
+假设一个二叉搜索树具有如下特征：
+
+节点的左子树只包含小于当前节点的数。
+节点的右子树只包含大于当前节点的数。
+所有左子树和右子树自身必须也是二叉搜索树。
+示例 1:
+
+输入:
+    2
+   / \
+  1   3
+输出: true
+
+##### 解题思路
+
+二叉搜索树的中序遍历结果就是一个排序好的序列，所以我们可以对二叉树进行中序遍历
+
+，判断当前的遍历节点值是否大于上一个节点值。
+
+```java
+Integer lastValue = null;
+public boolean isValidBST(TreeNode root) {
+      if (root==null) {return true;}
+      Boolean leftResult = isValidBST(root.left);
+      if (leftResult==false){return false;}
+      if (lastValue==null){
+        		lastValue=root.val;
+      } else if (lastValue>=root.val) {
+        		return false;
+      } else if (lastValue<root.val) {
+       		  lastValue = root.val;
+      }
+      return isValidBST(root.right);
+}
+```
+
+
+
+## 78.子集
+给定一组不含重复元素的整数数组 nums，返回该数组所有可能的子集（幂集）。
+
+说明：解集不能包含重复的子集。
+
+示例:
+
+输入: nums = [1,2,3]
+输出:
+[
+  [3],
+  [1],
+  [2],
+  [1,2,3],
+  [1,3],
+  [2,3],
+  [1,2],
+  []
+]
+
+##### 解题思路
+由于原数组是没有重复元素的，所以其实一共有2的nums.length次组合，也就是这么多组子集。
+```java
+public List<List<Integer>> subsets(int[] nums) {
+        List<List<Integer>> totalList = new ArrayList<List<Integer>>();
+        int size = (int)Math.pow(2,nums.length);
+        for (int i = 0; i < size; i++) {
+            List<Integer> list = new ArrayList<>();
+            for (int j = 0; j < nums.length; j++) {
+                int result = i & (1<<j);
+                if (result!=0) {
+                    list.add(nums[j]);
+                }
+            }
+            totalList.add(list);
+        }
+        return totalList;
+    }
+```
+## 75. 颜色分类
+
+给定一个包含红色、白色和蓝色，一共 n 个元素的数组，原地对它们进行排序，使得相同颜色的元素相邻，并按照红色、白色、蓝色顺序排列。
+
+此题中，我们使用整数 0、 1 和 2 分别表示红色、白色和蓝色。
+
+
+进阶：
+
+你可以不使用代码库中的排序函数来解决这道题吗？
+你能想出一个仅使用常数空间的一趟扫描算法吗？
+
+
+示例 1：
+
+输入：nums = [2,0,2,1,1,0]
+输出：[0,0,1,1,2,2]
+
+##### 解题思路
+三路快排思路，就是遇到0添加到数组前面，遇到2就添加到数组后面的元素交换，遇到1就继续遍历，这样可以保证0在最前面，2在最后面，1在中间。
+```java
+ public void sortColors(int[] nums) {
+        if (nums==null||nums.length==0) {
+            return;
+        }
+        int red = 0;
+        int blue = nums.length-1;
+        for (int i = 0; i <= blue; i++) {
+            if (nums[i] == 0) {
+                if (i==0) {
+                    red++;
+                    continue;
+                } else {
+                    int temp = nums[red];
+                    nums[red] = 0;
+                    nums[i] = temp;
+                    red++;
+                }
+            } else if(nums[i]==1) {
+                continue;
+            } else if(nums[i]==2) {
+                int temp = nums[blue];
+                nums[blue] = 2;
+                nums[i] = temp;
+                blue--;
+                i--;
+            }
+        }
+    }
+```
+## 39. 组合总和
+
+给定一个无重复元素的数组 candidates 和一个目标数 target ，找出 candidates 中所有可以使数字和为 target 的组合。
+
+candidates 中的数字可以无限制重复被选取。
+
+说明：
+
+所有数字（包括 target）都是正整数。
+解集不能包含重复的组合。 
+示例 1：
+
+输入：candidates = [2,3,6,7], target = 7,
+所求解集为：
+[
+  [7],
+  [2,2,3]
+]
+
+##### 解题思路
+
+就是使用回朔法进行解决，组合问题，排列问题，一般都是使用回朔法进行解决。对于每个元素，只会有0到target/candidates[i]种结果。回朔法解题框架
+
+```java
+List resultList;
+void tranverse(int[] array, Stack stack) {
+	if (满足某种条件) {
+			resultList.add(stack);
+  }
+ 	for(int i=0;i<array.length;i++) {//遍历各种结果
+ 			//做选择
+ 			stack.add(array[i]);
+ 			tranverse(array,stack);
+ 			//撤销选择
+ 			stack.removeLast();
+ 	}
+}
+```
+
+代码
+
+```java
+List<List<Integer>> totalList = new ArrayList<List<Integer>>();
+    public List<List<Integer>> combinationSum(int[] candidates, int target) {
+        combinationSum(candidates,target,candidates.length-1,new LinkedList<Integer>());
+        return totalList;
+    }
+
+    public void combinationSum(int[] candidates,
+                                              int target, int end,
+                                              LinkedList<Integer> stack) {
+        if (target==0) {
+            List<Integer> copyList = new ArrayList<>(stack);
+            totalList.add(copyList);
+            return;
+        } else if (target<0||end<0) {
+            return;
+        }
+
+        for (int i = 0; i*candidates[end] <= target ; i++) {
+            for (int j = 0; j < i; j++) {//添加n个当前元素
+                stack.add(candidates[end]);
+            }
+            combinationSum(candidates,target-i*candidates[end],end-1,stack);
+            for (int j = 0; j < i; j++) {//移除n个当前元素
+                stack.removeLast();
+            }
+        }
+    }
+```
+
+## 226. 翻转二叉树
+
+翻转一棵二叉树。
+
+示例：
+
+    输入：
+     			4
+        /   \
+      2     7
+     / \   / \
+    1   3 6   9
+    输出：
+        4
+      /   \
+      7     2
+     / \   / \
+    9   6 3   1
+
+##### 解题思路
+
+```java
+public TreeNode invertTree(TreeNode root) {
+    if (root==null) {return null;}
+    TreeNode temp = root.left;
+    root.left = root.right;
+    root.right = temp;
+    invertTree(root.left);
+    invertTree(root.right);
+    return root;
+}
+```
+## 31. 下一个排列
+
+实现获取 下一个排列 的函数，算法需要将给定数字序列重新排列成字典序中下一个更大的排列。
+
+如果不存在下一个更大的排列，则将数字重新排列成最小的排列（即升序排列）。
+
+必须 原地 修改，只允许使用额外常数空间。
+
+ 
+
+示例 1：
+
+输入：nums = [1,2,3]
+输出：[1,3,2]
+
+##### 解题思路
+本题其实就是提升数字的字典序,并且要提升的幅度最小。就是从后面往前找到第一个nums[i-1]<nums[i],这是需要调整使得数字字典序更大的地方，然后从i到length-1之间找到一个大于nums[i-1]但是又最小的数，然后与nums[i-1]替换。
+```java
+public void nextPermutation(int[] nums) {
+        int flag=0;
+        for (int i = nums.length-1; i >0 ; i--) {
+
+            if (nums[i-1]<nums[i])  {
+                
+                int min = i;
+                for (int j = i; j <nums.length ; j++) {
+                    if (nums[j] < nums[min] && nums[j] > nums[i-1]) {
+                        min = j;
+                    }
+                }
+                int temp = nums[i-1];
+                nums[i-1] = nums[min];
+                nums[min] = temp;
+                flag=1;
+                Arrays.sort(nums,i,nums.length);
+                break;
+            }
+        }
+        if (flag==0) {
+            Arrays.sort(nums);
+        }
+    }
+```
+
+## 114. 二叉树展开为链表
+
+给定一个二叉树，原地将它展开为一个单链表。
+
+ 
+
+例如，给定二叉树
+
+    1
+   / \
+  2   5
+ / \   \
+3   4   6
+将其展开为：
+
+1
+ \
+  2
+   \
+    3
+     \
+      4
+       \
+        5
+         \
+          6
+
+##### 解题思路
+
+其实就是先序遍历，需要注意的是，需要先将节点的左右节点保存，然后再进行修改操作。其次是需要将所有节点的left指针置为null.
+
+```java
+		TreeNode lastNode=null;
+    public void flatten(TreeNode root) {
+        if(root == null) {return;}
+        TreeNode left = root.left;
+        TreeNode right = root.right;
+        if(lastNode==null) {
+            lastNode = root;
+            lastNode.left=null;
+        } else {
+            lastNode.left=null;
+            lastNode.right = root;
+            lastNode=root;
+        }
+        flatten(left);
+        flatten(right);
+    }
+```
+
+
+
+
+
+## 76. 最小覆盖子串
+
+给你一个字符串 s 、一个字符串 t 。返回 s 中涵盖 t 所有字符的最小子串。如果 s 中不存在涵盖 t 所有字符的子串，则返回空字符串 "" 。
+
+注意：如果 s 中存在这样的子串，我们保证它是唯一的答案。
+
+示例 1：
+
+输入：s = "ADOBECODEBANC", t = "ABC"
+输出："BANC"
+
+##### 解题思路
+
+首先本题的最小子串是不需要保证子串的顺序的，也就是子串是ABC，我们的最小覆盖子串是BANC也可以，不一定非需要保证ABC的顺序。其实就是滑动窗口，我们用一个needMap来记录，key是需要查找的子串的字符，value是字符从次数。然后就用两个指针作为滑动窗口来遍历字符串，滑动窗口中字符及出现的次数用windowMap来存储，
+
+1.然后每次右指针移动，获取新进入窗口的字符，更新windowMap，如果当前字符是needMap中存在的，且windowMap该字符出现次数已达标，那么就更新needSize(子串中的字符在窗口中出现的次数)。
+
+2.左指针进行移动，判断当前字符是否能移除窗口，(如果是子串需要的，且在窗口出现的次数<=子串需要的次数，就不能移除)
+
+3.判断当前needSize是否达标，达标说明当前窗口就是一个覆盖子串，如果比之前最小的覆盖子串小，那么就进行替换。
+
+```java
+public String minWindow(String s, String t) {
+        //needMap的key就是字符串t中出现的每个字符，value就是这个字符出现的次数
+        HashMap<Character,Integer> needMap = new HashMap<>();
+        //windowMap就是滑动窗口中当前字符及字符出现次数
+        HashMap<Character,Integer> windowMap = new HashMap<>();
+        for(int i = 0;i<t.length();i++) {
+            Character key = t.charAt(i);
+            Integer times = needMap.get(key);
+            //times记录的是字符出现次数，不存在就赋初值1，已存在就+1，
+            times = times == null ? 1 : times+1;
+            needMap.put(key, times);
+        }
+        int left = 0;
+        int right =0 ;
+        //子串中的字符在窗口中出现的次数
+        int needSize=0;
+        String minStr = "";
+        while(right<s.length()) {
+            Character rightChar = s.charAt(right);
+            Integer needTimes = needMap.get(rightChar);
+            Integer windowTimes = windowMap.get(rightChar);
+            //字符在窗口第一次出现，次数就是1，否则就+1
+            windowTimes = windowTimes == null? 1 : windowTimes+1;
+            windowMap.put(rightChar,windowTimes);
+            if(needTimes==null){//说明该字符不在最小子串里面
+                right++;
+                continue;
+            } else if(needTimes!=null && needTimes.equals(windowTimes)) {//说明该字符在最小子串里面,并且窗口中包含次字符已达标
+                needSize+=windowTimes;
+            }
+            //缩小窗口
+            while(left<=right) {
+                Character currentLeftChar = s.charAt(left);
+                Integer leftNeedTimes = needMap.get(currentLeftChar);
+                Integer leftWindowTimes =  windowMap.get(currentLeftChar);
+                if(leftNeedTimes == null) {//说明不需要这个字府
+                    left++;
+                } else if (leftWindowTimes > leftNeedTimes) {//需要这个字符，且所包含该字符个数大于需要的，可以左移
+                    windowMap.put(currentLeftChar,leftWindowTimes-1);
+                    left++;
+                } else if(leftWindowTimes <= leftNeedTimes){//需要该字符，并且窗口不能左移
+                    break;
+                }
+            }
+            //判断当前窗口是否满足需求
+            if(needSize >= t.length() && (minStr.equals("") || right-left+1 < minStr.length())) {
+                minStr = s.substring(left,right+1);
+            }
+            right++;
+        }
+        return minStr;
+    }
+
+```
+
+## 122.买卖股票的最佳时机 II
+给定一个数组，它的第 i 个元素是一支给定股票第 i 天的价格。
+
+设计一个算法来计算你所能获取的最大利润。你可以尽可能地完成更多的交易（多次买卖一支股票）。
+
+注意：你不能同时参与多笔交易（你必须在再次购买前出售掉之前的股票）。
+
+示例 1: 
+```java
+输入: [7,1,5,3,6,4]
+输出: 7
+解释: 在第 2 天（股票价格 = 1）的时候买入，在第 3 天（股票价格 = 5）的时候卖出, 这笔交易所能获得利润 = 5-1 = 4 。
+     随后，在第 4 天（股票价格 = 3）的时候买入，在第 5 天（股票价格 = 6）的时候卖出, 这笔交易所能获得利润 = 6-3 = 3 。
+```
+
+##### 解题思路
+
+按照状态来分，每天只有持有股票和不持有股票两种状态，我们使用
+一个二维数组dp[i][isHoldStock]来保存当天利润最大值，
+i代日期，isHoldStock代表当天是否持有股票, 1代表当天持有了股票
+
+如果第i天持有股票，那么要么是之前买的，要么是今天买的
+dp[i][1] = Math.max(dp[i-1][1],dp[i-1][0]-prices[i])
+如果第i天未持有股票，那么要么是前一天也没有持有股票，要么是今天把股票卖了
+dp[i][0] = Math.max(dp[i-1][0],dp[i-1][1]+prices[i])
+
+初始状态第一天已持有股票 dp[0][1] = -prices[0]
+初始状态第一天未持有股票 dp[0][0] = 0
+
+```java
+ public int maxProfit(int[] prices) {
+         if(prices==null||prices.length<=1) {return 0;}
+        int [][] dp = new int[prices.length][2];
+        dp[0][0] = 0;
+        dp[0][1] = 0 - prices[0];
+        for (int i = 1; i < prices.length; i++) {
+            dp[i][1] = dp[i-1][1] > dp[i-1][0]-prices[i] ? dp[i-1][1] : dp[i-1][0]-prices[i];
+            dp[i][0] = dp[i-1][0] > dp[i-1][1]+prices[i] ? dp[i-1][0] : dp[i-1][1]+prices[i];
+        }
+        return dp[prices.length-1][0];
+    }
+```
+
+## 309. 最佳买卖股票时机含冷冻期
+给定一个整数数组，其中第 i 个元素代表了第 i 天的股票价格 。​
+
+设计一个算法计算出最大利润。在满足以下约束条件下，你可以尽可能地完成更多的交易（多次买卖一支股票）:
+
+你不能同时参与多笔交易（你必须在再次购买前出售掉之前的股票）。
+卖出股票后，你无法在第二天买入股票 (即冷冻期为 1 天)。
+示例:
+
+输入: [1,2,3,0,2]
+输出: 3 
+解释: 对应的交易状态为: [买入, 卖出, 冷冻期, 买入, 卖出]
+
+##### 解题思路
+这个跟上一题的区别就是有冷冻期，就是当你第i天要持有股票时，要么是第i-1天已持有股票，要么是第i-1天没有买卖股票才能在第天买股票。
+卖出股票后，你无法在第二天买入股票 (即冷冻期为 1 天)。
+第i天不持有股票 dp[i][0] = max(dp[i-1][1]+prices[i], dp[i-1][0])
+第i天持有股票 dp[i][1] = max(dp[i-2][0]-prices[i],dp[i-1][1])
+```java
+    public int maxProfit(int[] prices) {
+        if(prices==null||prices.length<=1) {return 0;}
+        int[][] dp = new int[prices.length][2];
+        dp[0][0] = 0;
+        dp[0][1] = 0 - prices[0];
+        dp[1][0] = prices[1]-prices[0] < 0 ? 0 : prices[1]-prices[0];
+        dp[1][1] = 0-prices[1] > 0- prices[0]? 0-prices[1] : 0-prices[0];
+        for (int i = 2; i < prices.length; i++) {
+            dp[i][0] = Math.max(dp[i-1][1]+prices[i], dp[i-1][0]);
+            dp[i][1] = Math.max(dp[i-2][0]-prices[i],dp[i-1][1]);
+        }
+        return dp[prices.length-1][0];
+    }
+```
+这一题的时间复杂度为O(N)，空间复杂度也为O(N),有一个可以优化的点就是d[i]只依赖于dp[i-1]和dp[i-2],所以理论上我们只需要一个几个常数变量就可以了，空间复杂度为O(1);
+```java
+public int maxProfit1(int[] prices) {
+        if(prices==null||prices.length<=1) {return 0;}
+        int last_last_0 = 0;
+        int last_0 = prices[1]-prices[0] < 0 ? 0 : prices[1]-prices[0];
+        int last_1 = 0-prices[1] > 0- prices[0]? 0-prices[1] : 0-prices[0];
+        for (int i = 2; i < prices.length; i++) {
+            int temp_0 = last_0;
+            last_0 = Math.max(last_1+prices[i], last_0);
+            last_1 = Math.max(last_last_0-prices[i],last_1);
+            last_last_0 = temp_0;
+        }
+        return last_0;
+    }
+```
 
 
 
