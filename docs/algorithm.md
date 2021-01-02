@@ -20,7 +20,7 @@
 
 #### [10.LRU算法](#LRU算法)
 
-#### [11.###【面试算法题】阿拉伯数字转化为中文读法](#【面试算法题】阿拉伯数字转化为中文读法)
+#### [11.【面试算法题】阿拉伯数字转化为中文读法](#[面试算法题]阿拉伯数字转化为中文读法)
 
 ### 常见的排序算法
 
@@ -108,12 +108,12 @@ int[] sorted3(int[] array) {
 
 ```java
 void sort(int[] array) {
+      if (array==null||array.length==0) { return; }
     //临时数组主要用于归并过程中的临时存放排序数组
     int[] tempArray = new int[array.length];
     mergeSort(array,0,array.length-1,tempArray);
 }
 void mergeSort(int[] array, int start, int end,int[] tempArray) {
-    if (array==null||array.length==0) { return; }
     if (start>=end) { return; }
     //进行分组，一直分到只有两个元素，在小组内进行归并
     int middle = start + (end - start)/2;
@@ -228,30 +228,20 @@ int[] quickSorted(int [] array, int start,int end) {
     //调整大顶堆，需要调整节点i，
     //使节点i与它的子节点都满足大顶堆的性质(就是父节点>左节点和右节点)
     void adjustHeap(int[] array,int i,int length) {
-        //循环结束的条数是节点i存在左节点
-        while (2*i+1<length) {
-            int left = 2*i+1;//左节点下标
-            int right = 2*i+2;//右节点下标，可能会越界，所以下面会判断
-            if (right<length) {//节点i存在右节点
-                //父节点，左节点，右节点三者中最大值的数组下标
-                int maxIndex = array[right] > array[left] ? right : left;
-                maxIndex = array[i] > array[maxIndex] ? i : maxIndex;
-                if (maxIndex == i) {//三者最大值就是父节点
-                    break;
-                } else if (maxIndex == left) {//三者最大值就是左节点
-                    swap(array,i,left);
-                    i = left;
-                } else if (maxIndex == right) {//最大的节点是右节点
-                    swap(array,i,right);
-                    i = right;
-                }
-            } else {//节点i只有左节点
-                if (array[left] > array[i]) {//左节点比父节点大
-                    swap(array,i,left);
-                    i = left;
-                } else {
-                    break;
-                }
+         //循环结束的条数是节点i存在左节点
+        while (2*i+1<length) {//左节点存在
+            int left = 2*i+1;
+            int right = 2*i+2;
+            //max就是i left right 三个节点中的最大值的下标
+            int max = array[i] > array[left] ? i : left;
+            if (right<length && array[right] > array[max]) {//右节点存在，并且还比最大值大
+                max = right;
+            }
+            if (max == i) {//当前已经是最大值
+                break;
+            } else {//左节点或者右节点是最大值，那么就将当前节点与最大的节点交换
+                swap(array,i,max);
+                i = max;
             }
         }
     }
