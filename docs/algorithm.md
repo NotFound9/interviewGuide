@@ -456,6 +456,61 @@ public static Integer findKByPickSort(int[] input, int k) {
     }
 ```
 
+### 01背包问题
+就是有很多个物品，每个物品有一个价值属性，一个重量属性，假设背包总容量为capcity，选择哪些物品，可以使得最终装的物品价值最大。
+有两种节点：
+##### 分治法
+就是假设当前有i个物品，我们对于第i个物品进行选择，只有两种可能
+要么选择物品i，那么背包的容量就变为capcity-weight[i]，然后继续对剩下的i-1的这些物品进行选择。
+总价值f(i,capacity) = value[i] +f(i-1,capcity-weight[i])
+要么不选择物品i，容量还是capcity，继续对剩下的i-1的物品进行选择
+总价值f(i,capacity) = f(i-1,capcity-weight[i])
+```java
+  int testKnapsack1(int[] value,int[] weight, int i, int capacity) {
+        int result = 0;
+        if (i < 0 || capacity == 0){
+            // 已经选择到最后了
+            result = 0;
+        } else if(weight[i] > capacity) {
+            // 装不下该珠宝
+            result = testKnapsack1(value,weight,i-1, capacity);
+        } else if (weight[i] <= capacity) {//可以选择当前物品的
+            // 可以装下
+            int choose = testKnapsack1(value,weight,i-1, capacity-weight[i]) + value[i];
+            int notChoose = testKnapsack1(value,weight,i-1, capacity);
+            result = choose > notChoose ? choose : notChoose;
+        }
+        return result;
+    }
+```
+##### 动态规划解法
+```java
+ //动态规划解法
+    public int testKnapsack2(int[] value,int[] weight, int capacity) {
+        int[][] dp = new int[weight.length][capacity+1];
+        //对前i个物品进行选择
+        for (int i = 0; i < weight.length; i++) {
+            //每次背包总重量为j
+            for (int j = 1; j <= capacity; j++) {
+                if (i==0) {//当前只有一个物品
+                    dp[i][j] = weight[i] > capacity ? 0 : value[i];
+                } else if (j < weight[i]) {//背包装不下,那就不装这个物品
+                    dp[i][j] = dp[i-1][j];
+                } else {//当前背包装得下
+                    //不装此物品
+                    int notChoose = dp[i-1][j];
+                    //装此物品
+                    int choose = dp[i-1][j-weight[i]] + value[i];
+                    dp[i][j] = notChoose > choose ? notChoose : choose;
+                }
+            }
+        }
+        return dp[weight.length-1][capacity];
+    }
+```
+
+
+
 ### 有一个1G大小的一个文件，里面每一行是一个词，词的大小不超过16字节，内存限制大小是1M，返回频数最高的100个词
 
 首先这个问题的难点在于内存太小，1M/16 byte =2的16次方，也就是在极端情况下，单词都是16字节时，内存中可能最多存储2的16次方个。

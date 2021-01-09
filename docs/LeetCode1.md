@@ -1141,4 +1141,700 @@ public int hammingDistance(int x, int y) {
         return num;
     }
 ```
+### 128. 最长连续序列
+给定一个未排序的整数数组 nums ，找出数字连续的最长序列（不要求序列元素在原数组中连续）的长度。
+进阶：你可以设计并实现时间复杂度为 O(n) 的解决方案吗？
+示例 1：
+输入：nums = [100,4,200,1,3,2]
+输出：4
+解释：最长数字连续序列是 [1, 2, 3, 4]。它的长度为 4。
+示例 2：
+输入：nums = [0,3,7,2,5,8,4,6,0,1]
+输出：9
+
+##### 解题思路
+就是先使用HashMap存储各个值，然后遍历键值对，判断每个键值对周围的数字是否存在。这里做的优化点就是HashMap的key存的就是数组中出现的元素，value存的是一个区间，代表的是连续数组的左右边界。
+```java
+public int longestConsecutive(int[] nums) {
+        HashMap<Integer, List<Integer>> map = new HashMap<>();
+        //遍历数组，key就是数组中的元素，value记录的是连续子数组的左右边界
+        //value初始区间只包含一个元素，就是[key,key]
+        for (int i = 0; i < nums.length; i++) {
+            List<Integer> list = new ArrayList<>();
+            list.add(nums[i]);
+            list.add(nums[i]);
+            map.put(nums[i],list);
+        }
+        Integer max = 0;
+        //根据每个key去判断左右元素是否存在，计算最大区间
+        for (Integer key: map.keySet()) {
+            List <Integer> list = map.get(key);
+            int left = list.get(0)-1;
+            int right = list.get(1)+1;
+            //向左扩展
+            while (map.containsKey(left)) {
+                List<Integer> currentList = map.get(left);
+                list.set(0,currentList.get(0));
+                left = currentList.get(0) - 1;
+            }
+            //向右扩展
+            while (map.containsKey(right)) {
+                List<Integer> currentList = map.get(right);
+                list.set(1,currentList.get(1));
+                right = currentList.get(1) + 1;
+            }
+            int currentValue = list.get(1) - list.get(0) + 1;
+            max = max > currentValue ? max : currentValue;
+        }
+        return max;
+    }
+```
+
+
+
+### 238. 除自身以外数组的乘积
+
+给你一个长度为 n 的整数数组 nums，其中 n > 1，返回输出数组 output ，其中 output[i] 等于 nums 中除 nums[i] 之外其余各元素的乘积。
+
+示例:
+
+输入: [1,2,3,4]
+输出: [24,12,8,6]
+
+##### 解题思路
+
+就是对于位置i，本题要求去求nums[0]*nums[1]...nums[i-1]nums[i+1]...nums[length-1],不能用除法，认识要求的这个乘积可以分成两部分，一部分是i以前的部分，nums[0]*nums[1]...nums[i-1]，一部分是nums[i+1]...nums[length-1]，所以可以先分别计算出left数组，对于每个元素存在0到i的乘积，计算right数组，对于每个元素，计算i到length-1的乘积。
+
+```java
+		public int[] productExceptSelf(int[] nums) {
+        int[] left = new int[nums.length];
+        int[] right = new int[nums.length];
+        int[] result = new int[nums.length];
+        int temp =1;
+      	//left[i]存储的是nums[0]到nums[i]的乘积
+        for (int i = 0; i < nums.length; i++) {
+            temp = temp*nums[i];
+            left[i] = temp;
+        }
+        temp = 1;
+        //right[i]存储的是nums[i]到nums[length-1]的乘积
+        for (int i = nums.length-1; i >=0 ; i--) {
+            temp = temp * nums[i];
+            right[i] = temp;
+        }
+        for (int i = 0; i < nums.length; i++) {
+            int leftValue = i-1 >= 0 ? left[i-1] : 1;
+            int rightValue = i+1 < nums.length ? right[i+1] : 1;
+            result[i] = leftValue * rightValue;
+        }
+        return result;
+    }
+```
+
+### 207. 课程表
+你这个学期必须选修 numCourse 门课程，记为 0 到 numCourse-1 。
+
+在选修某些课程之前需要一些先修课程。 例如，想要学习课程 0 ，你需要先完成课程 1 ，我们用一个匹配来表示他们：[0,1]
+
+给定课程总量以及它们的先决条件，请你判断是否可能完成所有课程的学习？
+
+示例 1:
+
+输入: 2, [[1,0]] 
+输出: true
+解释: 总共有 2 门课程。学习课程 1 之前，你需要完成课程 0。所以这是可能的。
+示例 2:
+
+输入: 2, [[1,0],[0,1]]
+输出: false
+解释: 总共有 2 门课程。学习课程 1 之前，你需要先完成课程 0；并且学习课程 0 之前，你还应先完成课程 1。这是不可能的。
+
+##### 解题思路
+其实就是判断有向图是否存在环，有两种解法
+##### 深度优先遍历
+就是先根据二维数组构建一个邻接表，这里我们使用一个map来作为领接表，然后递归遍历map中的节点，对于图中每个节点有三种状态：
+1.未被访问过（在statusMap中值为null）
+2.已被访问过，并且它的子节点没有遍历访问完成（在statusMap中值为1）
+3.已被访问过，并且子节点也遍历访问完成(在statusMap中值为2)
+在递归遍历过程中，遇到上面第2种节点，说明就存在环。
+```java
+public boolean canFinish(int numCourses, int[][] prerequisites) {
+        HashMap<Integer, List<Integer>> map = new HashMap<>();
+        //构建邻接表
+        for (int i = 0; i < prerequisites.length; i++) {
+            Integer key = prerequisites[i][0];
+            List<Integer> valueList = map.get(key);
+            if (valueList == null) {
+                valueList = new ArrayList<>();
+            }
+            valueList.add(prerequisites[i][1]);
+            map.put(key,valueList);
+        }
+        HashMap<Integer,Integer> statusMap = new HashMap<>();
+        for (Integer key : map.keySet()) {
+             if (judgeIfHasCircle(map,statusMap,key)) {//有环
+                 return false;
+             }
+        }
+        return true;
+    }
+        //判断每个节点是否存在环
+    boolean judgeIfHasCircle(HashMap<Integer, List<Integer>> map, HashMap<Integer,Integer> statusMap,Integer key) {
+        Integer status = statusMap.get(key);
+        if (status== null) {
+            statusMap.put(key,1);
+        } else if (status==1) {
+            return true;
+        } else if (status == 2) {
+            return false;
+        }
+
+        List<Integer> valueList = map.get(key);
+        if (valueList!=null) {
+        //遍历子节点
+            for (Integer everyKey : valueList) {
+                if (judgeIfHasCircle(map, statusMap, everyKey)) {
+                    return true;
+                }
+            }
+        }
+        //代表子节点遍历完毕
+        statusMap.put(key,2);
+        return false;
+    }
+```
+##### 拓扑排序
+这种解法有点像是宽度优先遍历，就是先建立邻接表，并且计算每个节点的入度，然后找到入度为0的节点(也就是没有被其他节点指向的节点)，将它们入队列，然后对队列元素进行出队操作，取出队首元素，将它的子节点的入度都-1，然后子节点入度减到0时，就将这个子节点添加到队列中，在过程中会统计入过队列的节点数。原理就是如果没有环的，最终队列出队完成后，进入过队列的节点数是等于总节点数的。就是假设图的结构是1->2，2->3，3->4，4->2，也就是2，3，4形成一个环，最开始1是入度为0的节点，1会入队列，然后对节点2的入度-1，节点2的入度还剩下1，此时2不会入队列，所以最终进过队列的元素只有节点1，所以最终统计的数量是<总节点数的。
+
+### 337. 打家劫舍 III
+在上次打劫完一条街道之后和一圈房屋后，小偷又发现了一个新的可行窃的地区。这个地区只有一个入口，我们称之为“根”。 除了“根”之外，每栋房子有且只有一个“父“房子与之相连。一番侦察之后，聪明的小偷意识到“这个地方的所有房屋的排列类似于一棵二叉树”。 如果两个直接相连的房子在同一天晚上被打劫，房屋将自动报警。
+
+计算在不触动警报的情况下，小偷一晚能够盗取的最高金额。
+
+示例 1:
+
+输入: [3,2,3,null,3,null,1]
+
+     3
+    / \
+   2   3
+    \   \ 
+     3   1
+
+输出: 7 
+解释: 小偷一晚能够盗取的最高金额 = 3 + 3 + 1 = 7.
+##### 解题思路
+就是递归遍历，对于每个根节点而言，遍历时有两种选择：
+1.如果它的父节点没有被选择，它可以被选择，那么有两种情况：
+1.1 选择当前节点，那么子节点不能被选择
+1.2没有选择当前节点，子节点也可以被选择
+
+2.如果它的父节点被选了，
+那么当前节点不能被选择，只能是它的左右子节点可以被选择
+```
+		public int rob(TreeNode root) {
+        return rob(root,true);
+    }
+    public int rob(TreeNode root,Boolean rootCanChoose) {
+        if (root ==null) {return 0;}
+        int max = 0;
+        if (rootCanChoose) {//当前根节点可以被选择
+            //选择了根节点
+            int value1 = root.val+rob(root.left,false) + rob(root.right,false);
+            //没有选择根节点
+            int value2 = rob(root.left,true) + rob(root.right,true);
+            max = value1 > value2 ? value1 : value2;
+        } else {//当前根节点不能被选择
+            max = rob(root.left,true) + rob(root.right,true);
+        }
+        return max;
+    }
+```
+
+### 647. 回文子串
+给定一个字符串，你的任务是计算这个字符串中有多少个回文子串。
+具有不同开始位置或结束位置的子串，即使是由相同的字符组成，也会被视作不同的子串。
+
+示例 1：
+输入："abc"
+输出：3
+解释：三个回文子串: "a", "b", "c"
+
+示例 2：
+输入："aaa"
+输出：6
+解释：6个回文子串: "a", "a", "a", "aa", "aa", "aaa"
+##### 解题思路
+这个题本身没有什么技巧，就是就是对每个字符，从中心往两边扩展，判断是否是回文串，一旦发现不是回文串，后面就不需要继续扩展了。需要注意的是，回文串分为奇数回文串，偶数回文串，所以中心可以是当前单个字符，也可以是当前字符+右边的字符。
+```java
+ int num=0;
+    public int countSubstrings(String s) {
+        char[] array = s.toCharArray();
+        for (int i = 0; i < array.length; i++) {
+            //奇数回文串
+            calculateNum(array,i,i);
+            //偶数回文串
+            calculateNum(array,i,i+1);
+        }
+        return num;
+    }
+
+    void calculateNum(char[] array,int start,int end) {
+        while (start>=0 && end<array.length && array[start] == array[end]) {
+            num++;
+            start--;
+            end++;
+        }
+    }
+```
+
+### 560. 和为K的子数组
+给定一个整数数组和一个整数 k，你需要找到该数组中和为 k 的连续的子数组的个数。
+示例 1 :
+输入:nums = [1,1,1], k = 2
+输出: 2 , [1,1] 与 [1,1] 为两种不同的情况。
+说明 :
+数组的长度为 [1, 20,000]。
+数组中元素的范围是 [-1000, 1000] ，且整数 k 的范围是 [-1e7, 1e7]。
+##### 解题思路
+假设一个数组nums的元素为[a1,a2,a3,a4]，假设我们使用f(a,b)代表从数组下标a到数组下标b的连续子数组和，f(a,b)=f(0,b)-f(0,a)，也就是说假设子数组的和[a2,a3]=[a1,a2,a3]-[a1]，所以k = [a1,a2,a3]-[a1]，我们判断和为k的数量，其实也就判断从0开始的子树组之间的差为k的数量，所以我们计算将从下标为0的数组的和，添加到HashMap中去，然后遍历时进行判断。
+```java
+ public int subarraySum(int[] nums, int k) {
+        if (nums==null||nums.length==0) { return 0; }
+        int matchTimes=0;
+        int sum=0;
+        HashMap<Integer,Integer> sumMap = new HashMap<>();
+        //这个主要是为了统计为从0到i的和为sum的子数组
+        sumMap.put(0,1);
+        for (int i = 0; i < nums.length; i++) {
+            sum+=nums[i];
+            int key =  sum - k;
+            if (sumMap.containsKey(key)) {
+                matchTimes+=sumMap.get(key);
+            }
+            //将当前sum和添加到map中去
+            Integer times = sumMap.get(sum);
+            if (times==null) {
+                times=0;
+            }
+            sumMap.put(sum,times+1);
+        }
+        return matchTimes;
+    }
+```
+
+### 437. 路径总和 III
+给定一个二叉树，它的每个结点都存放着一个整数值。
+
+找出路径和等于给定数值的路径总数。
+
+路径不需要从根节点开始，也不需要在叶子节点结束，但是路径方向必须是向下的（只能从父节点到子节点）。
+
+二叉树不超过1000个节点，且节点数值范围是 [-1000000,1000000] 的整数。
+
+示例：
+
+root = [10,5,-3,3,2,null,11,3,-2,null,1], sum = 8
+
+      10
+     /  \
+    5   -3
+   / \    \
+  3   2   11
+ / \   \
+3  -2   1
+
+返回 3。和等于 8 的路径有:
+
+1.  5 -> 3
+2.  5 -> 2 -> 1
+3.  -3 -> 11
+
+##### 解题思路
+其实就是对每个节点作为起始节点，开始向下遍历，计算路径和，每当路径和为sum时，就对数量+1。
+```
+int pathNum = 0;
+    //这个方法主要负责对二叉树遍历
+    public int pathSum(TreeNode root, int sum) {
+        if (root==null) { return 0; }
+        //必须包含根节点的
+        pathSumMustHasRoot(root,sum,0);
+        //不包含根节点的
+        pathSum(root.left,sum);
+        pathSum(root.right,sum);
+        return pathNum;
+    }
+    //对每个节点计算路径和，然后继续向下
+    void pathSumMustHasRoot(TreeNode root,int sum,int currentSum) {
+        if (root == null) {return ;}
+        currentSum+=root.val;
+        if (currentSum == sum) {
+            pathNum++;
+        }
+        pathSumMustHasRoot(root.left,sum,currentSum);
+        pathSumMustHasRoot(root.right,sum,currentSum);
+    }
+```
+
+### 416.分割等和子集
+给定一个只包含正整数的非空数组。是否可以将这个数组分割成两个子集，使得两个子集的元素和相等。
+
+注意:
+每个数组中的元素不会超过 100
+数组的大小不会超过 200
+示例 1:
+输入: [1, 5, 11, 5]
+输出: true
+解释: 数组可以分割成 [1, 5, 5] 和 [11].
+##### 解题思路
+本题就是可以转化为从数组中挑选i个元素，最终使和为数组和的一半，所以就转换为01背包问题了，只不过判断条件由选择让装的物品价值更大，变为装的物品的价值正好是总价值的一半。
+```java
+public boolean canPartition(int[] nums) {
+        if (nums==null||nums.length==0) {
+            return false;
+        }
+        int sum = 0;
+        for (int i = 0; i < nums.length; i++) {
+            sum+=nums[i];
+        }
+        if (sum%2==1) {
+            return false;
+        } else {
+            return canPartition(nums,nums.length-1,sum/2);
+        }
+    }
+
+    //使用HashMap缓存结果，避免重复计算
+    HashMap<String,Boolean> resultCacheMap = new HashMap<String,Boolean>();
+    //判断在0到i-1这些元素中进行能选择，看能否选择出的元素和为sum
+    public boolean canPartition(int[] nums,int i,int sum) {
+        if (sum<0) { return false; }
+        if (sum==0) { return true; }
+        if (i<0) { return false; }
+        if (i==0) {//只有一个元素了
+            return nums[0]==sum;
+        }
+        String key = i+"-"+sum;
+        if (resultCacheMap.containsKey(key)) {
+            return resultCacheMap.get(key);
+        }
+        //选择元素i,看剩下的元素能否凑出sum 和不选择元素i
+        boolean result = canPartition(nums,i-1,sum-nums[i]) || canPartition(nums,i-1,sum);
+        resultCacheMap.put(key,result);
+        return result;
+    }
+```
+
+### 448. 找到所有数组中消失的数字
+给定一个范围在  1 ≤ a[i] ≤ n ( n = 数组大小 ) 的 整型数组，数组中的元素一些出现了两次，另一些只出现一次。
+找到所有在 [1, n] 范围之间没有出现在数组中的数字。
+您能在不使用额外空间且时间复杂度为O(n)的情况下完成这个任务吗? 你可以假定返回的数组不算在额外空间内。
+示例:
+
+输入:
+[4,3,2,7,8,2,3,1]
+
+输出:
+[5,6]
+##### 解题思路
+这个题因为数字a的取值都是[1,nums.length]之间，所以a-1应该是在[0,nums.length-1]之间，正好跟数组的下标可以对应上，所以对数组遍历，将数字a放到下标a-1下，如果
+1.当前数字a如果为-1那么就不用调整位置了，因为这是我们设置的标志位，如果a正好等于下标i+1,也不用调整，因为是正确的位置
+2.如果下标a-1正好存的也是a，那么说明是出现两次的元素，那么将那个位置标志位-1，也不用调整了
+3.将当前元素a与下标a-1的元素交换，继续遍历。
+```java
+public List<Integer> findDisappearedNumbers(int[] nums) {
+        List<Integer> list = new ArrayList<>();
+        if (nums==null||nums.length==0) {
+            return list;
+        }
+        for (int i = 0; i < nums.length; i++) {
+            int index = nums[i] - 1;
+            if (nums[i] == -1 || nums[i] == i+1) {//说明是未出现过的数字，或者是已经调整到正确位置的数字，直接跳过
+                continue;
+            } else if (nums[index] == index+1) {//说明这个位置已经有这个元素了，是出现两次的元素
+                nums[i] = -1;
+            } else {//否则是出现一次的元素，进行交换
+                int temp = nums[index];
+                nums[index] = nums[i];
+                nums[i] = temp;
+                i--;
+            }
+        }
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] == -1) {
+                list.add(i+1);
+            }
+        }
+        return list;
+    }
+```
+
+### 406. 根据身高重建队列
+假设有打乱顺序的一群人站成一个队列，数组 people 表示队列中一些人的属性（不一定按顺序）。每个 people[i] = [hi, ki] 表示第 i 个人的身高为 hi ，前面 正好 有 ki 个身高大于或等于 hi 的人。
+
+请你重新构造并返回输入数组 people 所表示的队列。返回的队列应该格式化为数组 queue ，其中 queue[j] = [hj, kj] 是队列中第 j 个人的属性（queue[0] 是排在队列前面的人）。
+
+ 
+
+示例 1：
+
+输入：people = [[7,0],[4,4],[7,1],[5,0],[6,1],[5,2]]
+输出：[[5,0],[7,0],[5,2],[6,1],[4,4],[7,1]]
+解释：
+编号为 0 的人身高为 5 ，没有身高更高或者相同的人排在他前面。
+编号为 1 的人身高为 7 ，没有身高更高或者相同的人排在他前面。
+编号为 2 的人身高为 5 ，有 2 个身高更高或者相同的人排在他前面，即编号为 0 和 1 的人。
+编号为 3 的人身高为 6 ，有 1 个身高更高或者相同的人排在他前面，即编号为 1 的人。
+编号为 4 的人身高为 4 ，有 4 个身高更高或者相同的人排在他前面，即编号为 0、1、2、3 的人。
+编号为 5 的人身高为 7 ，有 1 个身高更高或者相同的人排在他前面，即编号为 1 的人。
+因此 [[5,0],[7,0],[5,2],[6,1],[4,4],[7,1]] 是重新构造后的队列。
+
+##### 解题思路
+```java
+ public int[][] reconstructQueue(int[][] people) {
+        if (people==null||people[0]==null) {
+            return null;
+        }
+        //按照身高从大到小排列，身高相同，k从小到大排列
+        //排序前：[[7,0],[4,4],[7,1],[5,0],[6,1],[5,2]]
+        //排序后：[[7,0],[7,1],[6,1],[5,2],[5,0],[4,4]]
+        Arrays.sort(people, new Comparator<int[]>() {
+            @Override
+            public int compare(int[] o1, int[] o2) {
+               // return o1[0] != o2[0] ? o1[0]-o2[0] : o2[1] - o1[1];
+                return o1[0] == o2[0] ? o1[1] - o2[1] : o2[0] - o1[0];
+            }
+        });
+        List<int[]> list = new ArrayList<>(people.length);
+        for (int[] i : people) {
+            list.add(i[1],i);
+        }
+        return list.toArray(new int[list.size()][2]);
+    }
+```
+
+### 538. 把二叉搜索树转换为累加树
+
+给出二叉 搜索 树的根节点，该树的节点值各不相同，请你将其转换为累加树（Greater Sum Tree），使每个节点 node 的新值等于原树中大于或等于 node.val 的值之和。
+
+提醒一下，二叉搜索树满足下列约束条件：
+
+节点的左子树仅包含键 小于 节点键的节点。
+节点的右子树仅包含键 大于 节点键的节点。
+左右子树也必须是二叉搜索树。
+注意：本题和 1038: https://leetcode-cn.com/problems/binary-search-tree-to-greater-sum-tree/ 相同
+
+![img](../static/tree.png)
+
+示例 1：
+
+输入：[4,1,6,0,2,5,7,null,null,null,3,null,null,null,8]
+输出：[30,36,21,36,35,26,15,null,null,null,33,null,null,null,8]
+
+##### 解题思路
+
+这个题其实就是对二叉树按照右子树-根节点+左子树的顺序进行遍历，并且记录之前遍历的节点的和，然后当前节点值=之前的节点和+当前值
+
+```java
+		int sum = 0;
+    public TreeNode convertBST(TreeNode root) {
+        if (root==null) return null;
+        convertBST(root.right);
+        sum +=root.val;
+        root.val = sum;
+        convertBST(root.left);
+        return root;
+    }
+```
+
+### 438. 找到字符串中所有字母异位词
+给定一个字符串 s 和一个非空字符串 p，找到 s 中所有是 p 的字母异位词的子串，返回这些子串的起始索引。
+
+字符串只包含小写英文字母，并且字符串 s 和 p 的长度都不超过 20100。
+
+说明：
+
+字母异位词指字母相同，但排列不同的字符串。
+不考虑答案输出的顺序。
+示例 1:
+
+输入:
+s: "cbaebabacd" p: "abc"
+
+输出:
+[0, 6]
+
+解释:
+起始索引等于 0 的子串是 "cba", 它是 "abc" 的字母异位词。
+起始索引等于 6 的子串是 "bac", 它是 "abc" 的字母异位词。
+##### 解题思路
+跟76题 最小覆盖子串那个题很像，其实也是通过滑动窗口来查找，只是说这里判断子串是否是目标串的异位词，会需要借助额外的辅助结构，就是试用一个needMap来记录目标串中出现的字符和次数。然后遍历字符串，进行窗口右移，在windowsMap中对这个字符的出现次数+1，判断右边的这个字符是否是需要的字符，是需要的就对valid_num+1,然后判断窗口大小如果<目标串长度就继续遍历。等于目标串大小时就判断当前valid_num是否等于目标串长度，等于就说明是异位词，然后窗口左边界移动。
+```java
+public List<Integer> findAnagrams(String s, String p) {
+        List<Integer> list = new ArrayList<>();
+        if (s==null||p==null) {
+            return list;
+        }
+        HashMap<Character,Integer> needMap = new HashMap<>();
+        for (int i = 0; i < p.length(); i++) {
+            Character c = p.charAt(i);
+            Integer times = needMap.get(c);
+            times = times == null ? 1 : times + 1;
+            needMap.put(c,times);
+        }
+        int left=0;
+        int right =0;
+        int valid_num = 0;
+        HashMap<Character,Integer> windowsMap = new HashMap<>();
+        while (left<=right && right<s.length()) {
+            Character c = s.charAt(right);
+            //需要才会添加
+            if (needMap.containsKey(c)) {
+                Integer times = windowsMap.get(c);
+                times = times == null ? 1:times+1;
+                windowsMap.put(c,times);
+                if (times<=needMap.get(c)) {//说明是现在需要的，并不是多余的
+                    valid_num++;
+                }
+            }
+            int currentWindowSize = right - left+1;
+            if (currentWindowSize < p.length()) {
+                right++;
+                continue;
+            } else if (currentWindowSize == p.length()) {
+                if (valid_num==p.length()) {//说明满足需求
+                    list.add(left);
+                }
+                //窗口左移
+                Character leftChar = s.charAt(left);
+                if (needMap.containsKey(leftChar)) {
+                    //移除左边界字符
+                    Integer times = windowsMap.get(leftChar);
+                    times--;
+                    windowsMap.put(leftChar,times);
+                    //如果移除后，字符不够了，就对valid_num-1
+                    if (times<needMap.get(leftChar)) {
+                        valid_num--;
+                    }
+                }
+                left++;
+                right++;
+            }
+        }
+        return list;
+    }
+````
+
+### 240. 搜索二维矩阵 II
+
+编写一个高效的算法来搜索 m x n 矩阵 matrix 中的一个目标值 target 。该矩阵具有以下特性：
+
+每行的元素从左到右升序排列。
+每列的元素从上到下升序排列。
+
+示例 1：
+
+![img](../static/searchgrid2.jpg)
+
+
+输入：matrix = [[1,4,7,11,15],[2,5,8,12,19],[3,6,9,16,22],[10,13,14,17,24],[18,21,23,26,30]], target = 5
+输出：true
+示例 2：
+
+
+输入：matrix = [[1,4,7,11,15],[2,5,8,12,19],[3,6,9,16,22],[10,13,14,17,24],[18,21,23,26,30]], target = 20
+输出：false
+
+##### 解题思路
+
+就是从二维矩阵右上角开始出发，拿当值与目标值比较：
+
+1.等于目标值，说明存在，直接返回
+
+2.当前值>目标值，需要排除更大的数，由于这一列都是比目标值大的，都需要排除掉。
+
+3.当前值<目标值，需要排除更小的数，由于这一行都是比目标值小的，都需要排除掉。
+
+```java
+public boolean searchMatrix(int[][] matrix, int target) {
+        if (matrix==null||matrix[0]==null) {
+            return false;
+        }
+        int rowength = matrix.length;
+        int colLength = matrix[0].length;
+        int i = 0,j = colLength-1;
+        while (i < rowength && j >=0) {
+            if (matrix[i][j] == target) {
+                return true;
+            } else if (matrix[i][j] > target) {//当前值>目标值，需要排除更大的数
+                j--;//排除这一列
+            } else if (matrix[i][j] < target) {//当前值<目标值，需要排除更小的数
+                i++;//排除这一行
+            }
+        }
+        return false;
+    }
+```
+
+### 494. 目标和
+给定一个非负整数数组，a1, a2, ..., an, 和一个目标数，S。现在你有两个符号 + 和 -。对于数组中的任意一个整数，你都可以从 + 或 -中选择一个符号添加在前面。
+
+返回可以使最终数组和为目标数 S 的所有添加符号的方法数。
+示例：
+
+输入：nums: [1, 1, 1, 1, 1], S: 3
+输出：5
+解释：
+
+-1+1+1+1+1 = 3
++1-1+1+1+1 = 3
++1+1-1+1+1 = 3
++1+1+1-1+1 = 3
++1+1+1+1-1 = 3
+
+一共有5种方法让最终目标和为3。
+##### 解题思路
+假设前面添加+的数组成的子数组为x，前面加-的数组成的子数组为y，
+那么
+```java
+x+y=sum //sum为数组之和
+x-y=S
+```
+所以x= (sum+S)/2,所以问题变成了从数组中选取一些数，它们的和的为(sum+S)/2，所以转换为01背包问题了，变成从n个物品中取x个物品，正好价值等于某个数。
+```java
+		int result =0;
+    public int findTargetSumWays(int[] nums, int S) {
+        if (nums==null||nums.length==0) {return 0;}
+        int sum=0;
+        for (int i = 0; i < nums.length; i++) {
+            sum+=nums[i];
+        }
+        if ((sum + S)%2==1) {//是奇数,不可能有结果
+            return 0;
+        }
+        findTargetSumWays(nums,(sum+S)/2,nums.length-1);
+        return result;
+    }
+    public void findTargetSumWays(int[] nums, int sum,int i) {
+        if (sum<0) {
+            return;
+        }
+        //到最后一个元素了,不能继续递归选择了
+        if (i==0) {
+            //如果等于sum，那么选择元素i，将result+1，
+            //如果sum为0，那么不选择元素i，将result+1
+            if (nums[i] == sum) {
+                result++;
+            }
+            if (sum==0) {
+                result++;
+            }
+            return;
+        }
+        //不选这个元素
+        findTargetSumWays(nums,sum,i-1);
+        //选这个元素
+        findTargetSumWays(nums,sum-nums[i],i-1);
+    }
+```
 
