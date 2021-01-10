@@ -1,7 +1,6 @@
-## LeetCode 热门100题-题解
+## LeetCode 热门100题-题解(上)
 
 ##### 主要是记录自己刷题的过程，也方便自己复习
-
 #### [第1题-两数之和](#第1题-两数之和)
 #### [第206题-反转链表](#第206题-反转链表)
 #### [第2题-两数相加](#第2题-两数相加)
@@ -15,6 +14,7 @@
 #### [第21题-合并两个有序链表](#第21题-合并两个有序链表)
 #### [第283题-移动零](#第283题-移动零)
 #### [第34题-在排序数组中查找元素的第一个和最后一个位置](#第34题-在排序数组中查找元素的第一个和最后一个位置)
+#### [第11题-盛最多水的容器](#第11题-盛最多水的容器)
 #### [第17题-电话号码的字母组合](#第17题-电话号码的字母组合)
 #### [第15题-三数之和](#第15题-三数之和)
 #### [第141题-环形链表](#第141题-环形链表)
@@ -41,11 +41,6 @@
 #### [第31题-下一个排列](#第31题-下一个排列)
 #### [第322题-零钱兑换](#第322题-零钱兑换)
 #### [第300题-最长递增子序列](#第300题-最长递增子序列)
-#### [第236题-二叉树的最近公共祖先](#第236题-二叉树的最近公共祖先)
-#### [第114题-二叉树展开为链表](#第114题-二叉树展开为链表)
-#### [第76题-最小覆盖子串](#第76题-最小覆盖子串)
-#### [第309题-最佳买卖股票时机含冷冻期](#第309题-最佳买卖股票时机含冷冻期)
-
 
 ### 第1题-两数之和
 
@@ -748,11 +743,43 @@ int findLeftBound(int[] nums,double target) {
     }
 }
 ```
+### 第11题-盛最多水的容器
 
+给你 n 个非负整数 a1，a2，...，an，每个数代表坐标中的一个点 (i, ai) 。在坐标内画 n 条垂直线，垂直线 i 的两个端点分别为 (i, ai) 和 (i, 0) 。找出其中的两条线，使得它们与 x 轴共同构成的容器可以容纳最多的水。
+
+说明：你不能倾斜容器。
+示例 1：
+
+![img](../static/question_11.jpg)输入：[1,8,6,2,5,4,8,3,7]
+输出：49 
+解释：图中垂直线代表输入数组 [1,8,6,2,5,4,8,3,7]。在此情况下，容器能够容纳水（表示为蓝色部分）的最大值为 49。
+
+##### 解题思路
+
+我们取两个指针从数组的两端往内遍历，i从数组头部出发，j从数组尾部出发，对于两个端点i和j来说，容纳水的面积是是等于(j-i)*min(height[i],height[j])，假设height[i]是两者之间较小的那一个，那么面积等于(j-i)*height[i],假设i不移动，j向左移动，这样宽度j-i会减少，而height[j]即便变大也不会使得面积变大，因为面积是由宽度乘以两者中较小的高度决定的，所以此时的面积对于i这个端点来说，已经是最大的面积，我们可以右移端点i。
+
+```java
+public int maxArea(int[] height) {
+        if (height==null||height.length==0) {return 0;}
+        int left =0;
+        int right = height.length-1;
+        int maxArea = 0;
+        while (left<right) {
+            if (height[left]<height[right]) {
+                int area = height[left] * (right-left);
+                maxArea = maxArea > area ? maxArea : area;
+                left++;
+            } else {
+                int area = height[right] * (right-left);
+                maxArea = maxArea > area ? maxArea : area;
+                right--;
+            }
+        }
+        return maxArea;
+    }
+```
 ### 第17题-电话号码的字母组合
-
 给定一个仅包含数字 2-9 的字符串，返回所有它能表示的字母组合。
-
 给出数字到字母的映射如下（与电话按键相同）。注意 1 不对应任何字母。
 
 示例:
@@ -1021,6 +1048,53 @@ void backtrack(路径, 选择列表stack):
         撤销选择 stack.remove(当前元素);
 
 ```
+### 第42题-接雨水
+
+给定 n 个非负整数表示每个宽度为 1 的柱子的高度图，计算按此排列的柱子，下雨之后能接多少雨水。
+
+示例 1：
+
+![img](../static/rainwatertrap.png)
+
+输入：height = [0,1,0,2,1,0,1,3,2,1,2,1]
+输出：6
+解释：上面是由数组 [0,1,0,2,1,0,1,3,2,1,2,1] 表示的高度图，在这种情况下，可以接 6 个单位的雨水（蓝色部分表示雨水）。
+
+##### 解题思路
+
+就是对于每个柱子来说，它这个位置顶上可以容纳的水，其实是等于柱子左边柱子的最大值leftMax，右边柱子的最大值rightMax，两者中的较小值min，水容量=min-height[i]。所以先统计出每个柱子左边的最大值和右边的最大值，然后就可以计算水容量了。
+
+```java
+public int trap(int[] height) {
+        if (height==null||height.length==0){return 0;}
+        int[][] dp = new int[height.length][2];
+        int leftMax = height[0];
+        for (int i = 1; i < height.length; i++) {
+            leftMax = leftMax > height[i] ? leftMax : height[i];
+            dp[i][0] = leftMax;
+        }
+        int rightMax = height[height.length-1];
+        for (int i = height.length-2; i >=0 ; i--) {
+            rightMax = rightMax > height[i] ? rightMax : height[i];
+            dp[i][1] = rightMax;
+        }
+        int area = 0;
+        for (int i = 1; i <= height.length-2; i++) {
+            int min = dp[i][0] < dp[i][1] ? dp[i][0] : dp[i][1];
+            area += min-height[i];
+        }
+        return area;
+    }
+```
+
+
+
+
+
+
+
+
+
 
 ### 第102题-二叉树的层序遍历
 
@@ -1486,9 +1560,41 @@ public boolean isSymmetric(TreeNode left, TreeNode right) {
     return isSymmetric(left.left, right.right) && isSymmetric(left.right, right.left);
 }
 ```
+### 第33题-搜索旋转排序数组
+升序排列的整数数组 nums 在预先未知的某个点上进行了旋转（例如， [0,1,2,4,5,6,7] 经旋转后可能变为 [4,5,6,7,0,1,2] ）。
 
+请你在数组中搜索 target ，如果数组中存在这个目标值，则返回它的索引，否则返回 -1 。
+示例 1：
 
-
+输入：nums = [4,5,6,7,0,1,2], target = 0
+输出：4
+##### 解题思路
+还是按照二分搜索来进行搜索，只是多一步判断，如果nums[mid]<nums[right]，说明右半部分是递增有序的，我们直接把这一半当成正常的二分搜索来进行，判断target是否在这一半里面。否则就对左半段进行判断。
+```java
+public int search(int[] nums, int target) {
+        int left =0;
+        int right = nums.length - 1;
+        while (left<=right) {
+            int mid = (left+right)/2;
+            if(nums[mid] == target) {//说明是正好是目标值
+                return mid;
+            } else if(nums[mid] < nums[right]) {//说明旋转点不在右边，这边是有序的
+                if(target>nums[mid] && target<=nums[right]) {
+                    left = mid+1;
+                } else {
+                    right = mid-1;
+                }
+            } else {//说明旋转点在右边，这是我们根据左边来判断
+                if(target>=nums[left] && target < nums[mid]) {
+                    right = mid-1;
+                } else {
+                    left = mid+1;
+                }
+            }
+        }
+        return -1;
+    }
+```
 ### 第136题-只出现一次的数字
 
 给定一个非空整数数组，除了某个元素只出现一次以外，其余每个元素均出现两次。找出那个只出现了一次的元素。
@@ -1517,8 +1623,6 @@ public int singleNumber(int[] nums) {
 ### 第94题-二叉树的中序遍历
 
 给定一个二叉树的根节点 `root` ，返回它的 **中序** 遍历。
-
- 
 
 **示例 1：**
 
@@ -2156,239 +2260,3 @@ dp[i] = max(1,dp[k]+1); k<i,并且nums[k]<nums[i]
     }
 
 ```
-### 第236题-二叉树的最近公共祖先
-
-给定一个二叉树, 找到该树中两个指定节点的最近公共祖先。
-
-百度百科中最近公共祖先的定义为：“对于有根树 T 的两个结点 p、q，最近公共祖先表示为一个结点 x，满足 x 是 p、q 的祖先且 x 的深度尽可能大（一个节点也可以是它自己的祖先）。”
-
-例如，给定如下二叉树:  root = [3,5,1,6,2,0,8,null,null,7,4]
-
-示例 1:
-
-输入: root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 1
-输出: 3
-解释: 节点 5 和节点 1 的最近公共祖先是节点 3。
-示例 2:
-
-输入: root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 4
-输出: 5
-解释: 节点 5 和节点 4 的最近公共祖先是节点 5。因为根据定义最近公共祖先节点可以为节点本身。
-
-##### 解题思路
-其实所有的节点分为以下几种：
-1.就是要寻找的节点1，或节点2
-2.此节点子树中中包含节点1，节点2其中的一个
-3.节点1，节点2全部位于此节点的左子树，或者是右子树
-4.此节点左子树包含节点1，右子树包含节点2
-所以第4种就是我们要寻找的节点，并且在二叉树中只有一个，所以我们对二叉树进行遍历，判断某个节点左子树，右子树都包含节点，那么就返回该节点。
-```java
-TreeNode lowestCommonAncestor(TreeNode root, TreeNode node1, TreeNode node2) {
-        if (root==null) {
-            return null;
-        }
-            if (root==node1 || root==node2) {//当前节点就是要找的节点之一
-            return root;
-        }
-        TreeNode leftNode = lowestCommonAncestor(root.left,node1,node2);//判断左子树中是否有节点
-        TreeNode rightNode = lowestCommonAncestor(root.right,node1,node2);//判断右子树中是否有节点
-        if (leftNode!=null&&rightNode!=null) {//就是我们要找的节点
-            return root;
-        } else if (leftNode!=null && rightNode==null) {//左子树中有节点，右子树没有节点，继续向上遍历
-            return leftNode;
-        } else if (leftNode==null && rightNode!=null) {//继续向上遍历
-            return rightNode;
-        }
-        return null;
-    }
-```
-
-
-### 第114题-二叉树展开为链表
-
-给定一个二叉树，原地将它展开为一个单链表。
-
- 
-
-例如，给定二叉树
-
-    1
-   / \
-  2   5
- / \   \
-3   4   6
-将其展开为：
-
-1
- \
-  2
-   \
-    3
-     \
-      4
-       \
-        5
-         \
-          6
-
-##### 解题思路
-
-其实就是先序遍历，需要注意的是，需要先将节点的左右节点保存，然后再进行修改操作。其次是需要将所有节点的left指针置为null.
-
-
-```java
-		TreeNode lastNode=null;
-    public void flatten(TreeNode root) {
-        if(root == null) {return;}
-        TreeNode left = root.left;
-        TreeNode right = root.right;
-        if(lastNode==null) {
-            lastNode = root;
-            lastNode.left=null;
-        } else {
-            lastNode.left=null;
-            lastNode.right = root;
-            lastNode=root;
-        }
-        flatten(left);
-        flatten(right);
-    }
-```
-
-
-
-
-
-### 第76题-最小覆盖子串
-
-给你一个字符串 s 、一个字符串 t 。返回 s 中涵盖 t 所有字符的最小子串。如果 s 中不存在涵盖 t 所有字符的子串，则返回空字符串 "" 。
-
-注意：如果 s 中存在这样的子串，我们保证它是唯一的答案。
-
-示例 1：
-
-输入：s = "ADOBECODEBANC", t = "ABC"
-输出："BANC"
-
-##### 解题思路
-
-首先本题的最小子串是不需要保证子串的顺序的，也就是子串是ABC，我们的最小覆盖子串是BANC也可以，不一定非需要保证ABC的顺序。其实就是滑动窗口，我们用一个needMap来记录，key是需要查找的子串的字符，value是字符从次数。然后就用两个指针作为滑动窗口来遍历字符串，滑动窗口中字符及出现的次数用windowMap来存储，
-
-1.然后每次右指针移动，获取新进入窗口的字符，更新windowMap，如果当前字符是needMap中存在的，且windowMap该字符出现次数已达标，那么就更新needSize(子串中的字符在窗口中出现的次数)。
-
-2.左指针进行移动，判断当前字符是否能移除窗口，(如果是子串需要的，且在窗口出现的次数<=子串需要的次数，就不能移除)
-
-3.判断当前needSize是否达标，达标说明当前窗口就是一个覆盖子串，如果比之前最小的覆盖子串小，那么就进行替换。
-
-```java
-public String minWindow(String s, String t) {
-        //needMap的key就是字符串t中出现的每个字符，value就是这个字符出现的次数
-        HashMap<Character,Integer> needMap = new HashMap<>();
-        //windowMap就是滑动窗口中当前字符及字符出现次数
-        HashMap<Character,Integer> windowMap = new HashMap<>();
-        for(int i = 0;i<t.length();i++) {
-            Character key = t.charAt(i);
-            Integer times = needMap.get(key);
-            //times记录的是字符出现次数，不存在就赋初值1，已存在就+1，
-            times = times == null ? 1 : times+1;
-            needMap.put(key, times);
-        }
-        int left = 0;
-        int right =0 ;
-        //子串中的字符在窗口中出现的次数
-        int needSize=0;
-        String minStr = "";
-        while(right<s.length()) {
-            Character rightChar = s.charAt(right);
-            Integer needTimes = needMap.get(rightChar);
-            Integer windowTimes = windowMap.get(rightChar);
-            //字符在窗口第一次出现，次数就是1，否则就+1
-            windowTimes = windowTimes == null? 1 : windowTimes+1;
-            windowMap.put(rightChar,windowTimes);
-            if(needTimes==null){//说明该字符不在最小子串里面
-                right++;
-                continue;
-            } else if(needTimes!=null && needTimes.equals(windowTimes)) {//说明该字符在最小子串里面,并且窗口中包含次字符已达标
-                needSize+=windowTimes;
-            }
-            //缩小窗口
-            while(left<=right) {
-                Character currentLeftChar = s.charAt(left);
-                Integer leftNeedTimes = needMap.get(currentLeftChar);
-                Integer leftWindowTimes =  windowMap.get(currentLeftChar);
-                if(leftNeedTimes == null) {//说明不需要这个字府
-                    left++;
-                } else if (leftWindowTimes > leftNeedTimes) {//需要这个字符，且所包含该字符个数大于需要的，可以左移
-                    windowMap.put(currentLeftChar,leftWindowTimes-1);
-                    left++;
-                } else if(leftWindowTimes <= leftNeedTimes){//需要该字符，并且窗口不能左移
-                    break;
-                }
-            }
-            //判断当前窗口是否满足需求
-            if(needSize >= t.length() && (minStr.equals("") || right-left+1 < minStr.length())) {
-                minStr = s.substring(left,right+1);
-            }
-            right++;
-        }
-        return minStr;
-    }
-
-```
-
-
-### 第309题-最佳买卖股票时机含冷冻期
-给定一个整数数组，其中第 i 个元素代表了第 i 天的股票价格 。​
-
-设计一个算法计算出最大利润。在满足以下约束条件下，你可以尽可能地完成更多的交易（多次买卖一支股票）:
-
-你不能同时参与多笔交易（你必须在再次购买前出售掉之前的股票）。
-卖出股票后，你无法在第二天买入股票 (即冷冻期为 1 天)。
-示例:
-
-输入: [1,2,3,0,2]
-输出: 3 
-解释: 对应的交易状态为: [买入, 卖出, 冷冻期, 买入, 卖出]
-
-##### 解题思路
-这个跟上一题的区别就是有冷冻期，就是当你第i天要持有股票时，要么是第i-1天已持有股票，要么是第i-1天没有买卖股票才能在第天买股票。
-卖出股票后，你无法在第二天买入股票 (即冷冻期为 1 天)。
-第i天不持有股票 dp[i][0] = max(dp[i-1][1]+prices[i], dp[i-1][0])
-第i天持有股票 dp[i][1] = max(dp[i-2][0]-prices[i],dp[i-1][1])
-```java
-    public int maxProfit(int[] prices) {
-        if(prices==null||prices.length<=1) {return 0;}
-        int[][] dp = new int[prices.length][2];
-        dp[0][0] = 0;
-        dp[0][1] = 0 - prices[0];
-        dp[1][0] = prices[1]-prices[0] < 0 ? 0 : prices[1]-prices[0];
-        dp[1][1] = 0-prices[1] > 0- prices[0]? 0-prices[1] : 0-prices[0];
-        for (int i = 2; i < prices.length; i++) {
-            dp[i][0] = Math.max(dp[i-1][1]+prices[i], dp[i-1][0]);
-            dp[i][1] = Math.max(dp[i-2][0]-prices[i],dp[i-1][1]);
-        }
-        return dp[prices.length-1][0];
-    }
-```
-这一题的时间复杂度为O(N)，空间复杂度也为O(N),有一个可以优化的点就是d[i]只依赖于dp[i-1]和dp[i-2],所以理论上我们只需要一个几个常数变量就可以了，空间复杂度为O(1);
-```java
-public int maxProfit1(int[] prices) {
-        if(prices==null||prices.length<=1) {return 0;}
-        int last_last_0 = 0;
-        int last_0 = prices[1]-prices[0] < 0 ? 0 : prices[1]-prices[0];
-        int last_1 = 0-prices[1] > 0- prices[0]? 0-prices[1] : 0-prices[0];
-        for (int i = 2; i < prices.length; i++) {
-            int temp_0 = last_0;
-            last_0 = Math.max(last_1+prices[i], last_0);
-            last_1 = Math.max(last_last_0-prices[i],last_1);
-            last_last_0 = temp_0;
-        }
-        return last_0;
-    }
-```
-
-
-
-
-
-

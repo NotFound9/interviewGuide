@@ -1,100 +1,51 @@
-## LeetCode 热门100题-题解
+## LeetCode 热门100题-题解(下)
 
 ##### 主要是记录自己刷题的过程，也方便自己复习
 
-#### [第72题-编辑距离](#第72题-编辑距离)
 #### [第155题-最小栈](#第155题-最小栈)
 #### [第160题-相交链表](#第160题-相交链表)
 #### [第142题-环形链表II](#第142题-环形链表II)
 #### [第739题-每日温度](#第739题-每日温度)
+#### [第347题-前K个高频元素](#第347题-前K个高频元素)
+#### [第49题-字母异位词分组](#第49题-字母异位词分组)
+#### [第32题-最长有效括号](#第32题-最长有效括号)
+#### [第543题-二叉树的直径](#第543题-二叉树的直径)
+#### [第79题-单词搜索](#第79题-单词搜索)
+#### [第96题-不同的二叉搜索树](#第96题-不同的二叉搜索树)
+#### [第239题-滑动窗口最大值](#第239题-滑动窗口最大值)
+#### [第146题-LRU缓存机制](#第146题-LRU缓存机制)
+#### [第236题-二叉树的最近公共祖先](#第236题-二叉树的最近公共祖先)
+#### [第114题-二叉树展开为链表](#第114题-二叉树展开为链表)
+#### [第84题-柱状图中最大的矩形](#第84题-柱状图中最大的矩形)
+#### [第148题-排序链表](#第148题-排序链表)
+#### [第617题-合并二叉树](#第617题-合并二叉树)
+#### [第287题-寻找重复数](#第287题-寻找重复数)
+#### [第152题-乘积最大子数组](#第152题-乘积最大子数组)
+#### [第72题-编辑距离](#第72题-编辑距离)
+#### [第139题-单词拆分](#第139题-单词拆分)
+#### [第76题-最小覆盖子串](#第76题-最小覆盖子串)
+#### [第124题-二叉树中的最大路径和](#第124题-二叉树中的最大路径和)
+#### [第461题-汉明距离](#第461题-汉明距离)
+#### [第128题-最长连续序列](#第128题-最长连续序列)
+#### [第647题-回文子串](#第647题-回文子串)
+#### [第337题-打家劫舍III](#第337题-打家劫舍III)
+#### [第238题-除自身以外数组的乘积](#第238题-除自身以外数组的乘积)
+#### [第207题-课程表](#第207题-课程表)
+#### [第309题-最佳买卖股票时机含冷冻期](#第309题-最佳买卖股票时机含冷冻期)
+#### [第416题-分割等和子集](#第416题-分割等和子集)
+#### [第560题-和为K的子数组](#第560题-和为K的子数组)
+#### [第448题-找到所有数组中消失的数字](#第448题-找到所有数组中消失的数字)
+#### [第437题-路径总和III](#第437题-路径总和III)
+#### [第338题-比特位计数](#第338题-比特位计数)
+#### [第406题-根据身高重建队列](#第406题-根据身高重建队列)
+#### [第538题-把二叉搜索树转换为累加树](#第538题-把二叉搜索树转换为累加树)
+#### [第297题-二叉树的序列化与反序列化](#第297题-二叉树的序列化与反序列化)
+#### [第438题-找到字符串中所有字母异位词](#第438题-找到字符串中所有字母异位词)
+#### [第240题-搜索二维矩阵II](#第240题-搜索二维矩阵II)
+#### [第494题-目标和](#第494题-目标和)
+#### [第621题-任务调度器](#第621题-任务调度器)
+#### [第581题-最短无序连续子数组](#第581题-最短无序连续子数组)
 
-#### [第题-](#第题-)
-
-
-
-
-### 第72.题-编辑距离
-
-给你两个单词 word1 和 word2，请你计算出将 word1 转换成 word2 所使用的最少操作数 。
-
-你可以对一个单词进行如下三种操作：
-
-插入一个字符
-删除一个字符
-替换一个字符
-
-
-示例 1：
-
-输入：word1 = "horse", word2 = "ros"
-输出：3
-解释：
-horse -> rorse (将 'h' 替换为 'r')
-rorse -> rose (删除 'r')
-rose -> ros (删除 'e')
-
-##### 解题思路
-就是我们要把word1转换为word2，从word2第一个字符开始遍历，对于每一个字符而言，i，j分别为word1和word2当前遍历的位置有四种选择：
-##### 1.直接跳过
-当words[i]与word[j]相同时，简单举例来说，就是假设要把"acc"转换为"abb"，由于第一个字符相同，那么编辑的步数其实是等于"cc"转换为"bb"的步数
-所以假设使用restLength[i][j]代表剩余子串需要的步数，
-```
-restLength[i][j] = restLength[i+1][j+1]
-```
-##### 2.将word1[i]删除
-假设我们要将"abcd"转换为"bc"，那么其实我们可以将a删除掉，相当于对于word1跳过了当前字符，继续遍历
-```
-restLength[i][j] = restLength[i+1][j]
-```
-##### 3.在word1[i]前增加新字符word2[j]
-假设我们要将"bbb"转换为"abbb",那么就可以对于word1增加一个word2当前的字符，然后继续遍历，相当于是对word2的字符跳过了
-```
-restLength[i][j] = restLength[i][j+1]
-```
-##### 4.对word1[i]替换成word2[j]
-
-假设我们要将"abbb"转换为"cbbb",那么直接将a替换成c就好了，相当于对word1和word2字符串都跳过了当前字符
-```
-restLength[i][j] = restLength[i+1][j+1]
-```
-代码
-```java
-    int[][] cacheLength;
-    public int minDistance(String word1, String word2) {
-        if (word1==null||word2==null) {
-            return 0;
-        }
-        cacheLength = new int[word1.length()+1][word2.length()+1];
-        return minDistance(word1,word2,0,0);
-    }
-
-    public int minDistance(String word1, String word2,int i,int j) {
-        //当有一个字符串已经走到末尾了，要变成另一个字符串只能是将另一个字符串剩余字符全部添加过来
-        if (cacheLength[i][j]!=0) {
-            return cacheLength[i][j];
-        }
-        if (i == word1.length()) {
-            return word2.length() - j;
-        }
-        if (j == word2.length()) {
-            return word1.length() - i;
-        }
-        if (word1.charAt(i) == word2.charAt(j)) {//相等就直接向后移动
-            return minDistance(word1,word2,i+1,j+1);
-        }
-        //这一步选择删除，那么就是将word1的当前字符删除
-        int deleteLength = minDistance(word1,word2,i+1,j) + 1;
-        //这一步选择插入，就是将word2的当前字符插入到word1
-        int insertLength = minDistance(word1,word2,i,j+1) + 1;
-        //这一步走替换，就是将word2的当前字符替换到word1
-        int replaceLength = minDistance(word1,word2,i+1,j+1) + 1;
-        //选择上面三种路线中最短的
-        int min = deleteLength < insertLength ? deleteLength : insertLength;
-        min = replaceLength < min ? replaceLength : min;
-        cacheLength[i][j] = min;
-        return min;
-    }
-```
 
 ### 第155题-最小栈
 设计一个支持 push ，pop ，top 操作，并能在常数时间内检索到最小元素的栈。
@@ -208,8 +159,6 @@ public ListNode getIntersectionNode(ListNode headA, ListNode headB) {
     }
 ```
 
- 
-
 ### 第142题-环形链表II
 
 给定一个链表，返回链表开始入环的第一个节点。 如果链表无环，则返回 null。
@@ -277,7 +226,9 @@ public ListNode detectCycle(ListNode head) {
         return quick;
     }
 ```
+
 ### 第739题-每日温度
+
 请根据每日 气温 列表，重新生成一个列表。对应位置的输出为：要想观测到更高的气温，至少需要等待的天数。如果气温在这之后都不会升高，请在该位置用 0 来代替。
 
 例如，给定一个列表 temperatures = [73, 74, 75, 71, 69, 72, 76, 73]，你的输出应该是 [1, 1, 4, 2, 1, 1, 0, 0]。
@@ -311,7 +262,7 @@ public ListNode detectCycle(ListNode head) {
     }
 ```
 
-### 347.前 K 个高频元素
+### 第347题-前K个高频元素
 
 给定一个非空的整数数组，返回其中出现频率前 k 高的元素。 
 
@@ -377,7 +328,8 @@ public int[] topKFrequent(int[] nums, int k) {
     }
 ```
 
-## 49. 字母异位词分组
+### 第49题-字母异位词分组
+
 给定一个字符串数组，将字母异位词组合在一起。字母异位词指字母相同，但排列不同的字符串。
 
 示例:
@@ -416,7 +368,7 @@ public int[] topKFrequent(int[] nums, int k) {
     }
 ```
 
-### 32.最长有效括号
+### 第32题-最长有效括号
 
 给定一个只包含 '(' 和 ')' 的字符串，找出最长的包含有效括号的子串的长度。
 
@@ -466,7 +418,7 @@ public int[] topKFrequent(int[] nums, int k) {
     }
 ```
 
-### 543. 二叉树的直径
+### 第543题-二叉树的直径
 
 给定一棵二叉树，你需要计算它的直径长度。一棵二叉树的直径长度是任意两个结点路径长度中的最大值。这条路径可能穿过也可能不穿过根结点。
 
@@ -504,7 +456,7 @@ public int[] topKFrequent(int[] nums, int k) {
     }
 ```
 
-### 79. 单词搜索
+### 第79题-单词搜索
 给定一个二维网格和一个单词，找出该单词是否存在于网格中。
 
 单词必须按照字母顺序，通过相邻的单元格内的字母构成，其中“相邻”单元格是那些水平相邻或垂直相邻的单元格。同一个单元格内的字母不允许被重复使用。
@@ -583,7 +535,7 @@ HashSet<String> set = new HashSet<>();
     }
 ```
 
-### 96.不同的二叉搜索树
+### 第96题-不同的二叉搜索树
 给定一个整数 n，求以 1 ... n 为节点组成的二叉搜索树有多少种？
 
 示例:
@@ -621,7 +573,50 @@ public int numTrees(int n) {
     }
 ```
 
-### 146.LRU 缓存机制
+### 第239题-滑动窗口最大值
+给你一个整数数组 nums，有一个大小为 k 的滑动窗口从数组的最左侧移动到数组的最右侧。你只可以看到在滑动窗口内的 k 个数字。滑动窗口每次只向右移动一位。
+返回滑动窗口中的最大值。
+示例 1：
+输入：nums = [1,3,-1,-3,5,3,6,7], k = 3
+输出：[3,3,5,5,6,7]
+解释：
+滑动窗口的位置                最大值
+---------------               -----
+[1  3  -1] -3  5  3  6  7       3
+ 1 [3  -1  -3] 5  3  6  7       3
+ 1  3 [-1  -3  5] 3  6  7       5
+ 1  3  -1 [-3  5  3] 6  7       5
+ 1  3  -1  -3 [5  3  6] 7       6
+ 1  3  -1  -3  5 [3  6  7]      7
+##### 解题思路
+其实是可以维护一个已排序好的队列，每次将刚进窗口的值，添加到排序好的队列中，像插入排序的原理一样，然后取最大值的时候就去队列头部取，然后如果是超出窗口左边界的，就丢掉，没有超过就使用。但是主要问题在于每次插入时的平均时间复杂度是k/2,总时间复杂度就是Nk/2，当k接近于n时，这个复杂度就是O(N^2)了，所以在往队列中插入时，要有排除机制，假设队列是[6,5,4,2]四个数，此时要插入的元素是3，那么在插入时可以把2直接丢掉，因为元素2是3之前的元素，下标更小，值也比3小，在后面的遍历过程中是不可能再成为最大值的，所以通过把2删除掉，这样就可以减少插入时，比次数，将时间复杂度降低为O(N).
+```java
+public int[] maxSlidingWindow(int[] nums, int k) {
+        int[] result = new int[nums.length-k+1];
+        LinkedList<Integer> maxQueue = new LinkedList<>();
+        for (int i = 0; i < nums.length; i++) {
+            //将队列中小于当前数的元素出队列
+            while (maxQueue.size()>0 && nums[i] > nums[maxQueue.getLast()]) {
+                maxQueue.removeLast();
+            }
+            maxQueue.add(i);
+            //窗口的左边界
+            int left = i - k+1;
+            //将队列中出边界的最大值移除
+            if (maxQueue.getFirst() <left) {
+                maxQueue.removeFirst();
+            }
+            //左边界全部到数组中时，才需要计算最大值
+            if (left>=0) {
+                result[left] = nums[maxQueue.getFirst()];
+            }
+        }
+        return result;
+    }
+
+```
+
+### 第146题-LRU缓存机制
 运用你所掌握的数据结构，设计和实现一个  LRU (最近最少使用) 缓存机制 。
 实现 LRUCache 类：
 
@@ -671,7 +666,103 @@ LinkedHashMap<Integer, Integer> map = new LinkedHashMap();
         }
 ```
 
-### 84. 柱状图中最大的矩形
+### 第236题-二叉树的最近公共祖先
+
+给定一个二叉树, 找到该树中两个指定节点的最近公共祖先。
+
+百度百科中最近公共祖先的定义为：“对于有根树 T 的两个结点 p、q，最近公共祖先表示为一个结点 x，满足 x 是 p、q 的祖先且 x 的深度尽可能大（一个节点也可以是它自己的祖先）。”
+
+例如，给定如下二叉树:  root = [3,5,1,6,2,0,8,null,null,7,4]
+
+示例 1:
+
+输入: root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 1
+输出: 3
+解释: 节点 5 和节点 1 的最近公共祖先是节点 3。
+示例 2:
+
+输入: root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 4
+输出: 5
+解释: 节点 5 和节点 4 的最近公共祖先是节点 5。因为根据定义最近公共祖先节点可以为节点本身。
+
+##### 解题思路
+其实所有的节点分为以下几种：
+1.就是要寻找的节点1，或节点2
+2.此节点子树中中包含节点1，节点2其中的一个
+3.节点1，节点2全部位于此节点的左子树，或者是右子树
+4.此节点左子树包含节点1，右子树包含节点2
+所以第4种就是我们要寻找的节点，并且在二叉树中只有一个，所以我们对二叉树进行遍历，判断某个节点左子树，右子树都包含节点，那么就返回该节点。
+```java
+TreeNode lowestCommonAncestor(TreeNode root, TreeNode node1, TreeNode node2) {
+        if (root==null) {
+            return null;
+        }
+            if (root==node1 || root==node2) {//当前节点就是要找的节点之一
+            return root;
+        }
+        TreeNode leftNode = lowestCommonAncestor(root.left,node1,node2);//判断左子树中是否有节点
+        TreeNode rightNode = lowestCommonAncestor(root.right,node1,node2);//判断右子树中是否有节点
+        if (leftNode!=null&&rightNode!=null) {//就是我们要找的节点
+            return root;
+        } else if (leftNode!=null && rightNode==null) {//左子树中有节点，右子树没有节点，继续向上遍历
+            return leftNode;
+        } else if (leftNode==null && rightNode!=null) {//继续向上遍历
+            return rightNode;
+        }
+        return null;
+    }
+```
+
+### 第114题-二叉树展开为链表
+
+给定一个二叉树，原地将它展开为一个单链表。
+
+例如，给定二叉树
+
+    1
+   / \
+  2   5
+ / \   \
+3   4   6
+将其展开为：
+
+1
+ \
+  2
+   \
+    3
+     \
+      4
+       \
+        5
+         \
+          6
+
+##### 解题思路
+
+其实就是先序遍历，需要注意的是，需要先将节点的左右节点保存，然后再进行修改操作。其次是需要将所有节点的left指针置为null.
+
+
+```java
+		TreeNode lastNode=null;
+    public void flatten(TreeNode root) {
+        if(root == null) {return;}
+        TreeNode left = root.left;
+        TreeNode right = root.right;
+        if(lastNode==null) {
+            lastNode = root;
+            lastNode.left=null;
+        } else {
+            lastNode.left=null;
+            lastNode.right = root;
+            lastNode=root;
+        }
+        flatten(left);
+        flatten(right);
+    }
+```
+
+### 第84题-柱状图中最大的矩形
 
 给定 n 个非负整数，用来表示柱状图中各个柱子的高度。每个柱子彼此相邻，且宽度为 1 。
 
@@ -747,7 +838,7 @@ public int largestRectangleArea(int[] heights) {
     }
 ```
 
-### 148. 排序链表
+### 第148题-排序链表
 
 给你链表的头结点 head ，请将其按 升序 排列并返回 排序后的链表 。
 
@@ -813,7 +904,7 @@ public int largestRectangleArea(int[] heights) {
     }
 ```
 
-### 617.合并二叉树
+### 第617题-合并二叉树
 给定两个二叉树，想象当你将它们中的一个覆盖到另一个上时，两个二叉树的一些节点便会重叠。
 
 你需要将他们合并为一个新的二叉树。合并的规则是如果两个节点重叠，那么将他们的值相加作为节点合并后的新值，否则不为 NULL 的节点将直接作为新二叉树的节点。
@@ -848,7 +939,7 @@ public int largestRectangleArea(int[] heights) {
     }
 ```
 
-### 287.寻找重复数
+### 第287题-寻找重复数
 给定一个包含 n + 1 个整数的数组 nums，其数字都在 1 到 n 之间（包括 1 和 n），可知至少存在一个重复的整数。假设只有一个重复的整数，找出这个重复的数。
 
 示例 1:
@@ -869,10 +960,9 @@ public int largestRectangleArea(int[] heights) {
 ##### 解题思路
 这个题主要是不能使用额外的辅助空间，不然可以使用一个数组或者HashMap记录遍历过程中出现的整数，然后判断当前数是否重复。本题只能使用数组本身来记录整数是否出现，所以可以将每个数nums[i]交换到以nums[i]作为下标的地方，如果此时以存在相同的数，说明重复，否则就对交换后的数继续遍历。
 
-### 152. 乘积最大子数组
-给你一个整数数组 nums ，请你找出数组中乘积最大的连续子数组（该子数组中至少包含一个数字），并返回该子数组所对应的乘积。
+### 第152题-乘积最大子数组
 
- 
+给你一个整数数组 nums ，请你找出数组中乘积最大的连续子数组（该子数组中至少包含一个数字），并返回该子数组所对应的乘积。
 
 示例 1:
 
@@ -961,7 +1051,90 @@ public int maxProduct(int[] nums) {
     }
 ```
 
-### 139. 单词拆分
+### 第72题-编辑距离
+
+给你两个单词 word1 和 word2，请你计算出将 word1 转换成 word2 所使用的最少操作数 。
+
+你可以对一个单词进行如下三种操作：
+
+插入一个字符
+删除一个字符
+替换一个字符
+
+
+示例 1：
+
+输入：word1 = "horse", word2 = "ros"
+输出：3
+解释：
+horse -> rorse (将 'h' 替换为 'r')
+rorse -> rose (删除 'r')
+rose -> ros (删除 'e')
+
+##### 解题思路
+就是我们要把word1转换为word2，从word2第一个字符开始遍历，对于每一个字符而言，i，j分别为word1和word2当前遍历的位置有四种选择：
+##### 1.直接跳过
+当words[i]与word[j]相同时，简单举例来说，就是假设要把"acc"转换为"abb"，由于第一个字符相同，那么编辑的步数其实是等于"cc"转换为"bb"的步数
+所以假设使用restLength[i][j]代表剩余子串需要的步数，
+```
+restLength[i][j] = restLength[i+1][j+1]
+```
+##### 2.将word1[i]删除
+假设我们要将"abcd"转换为"bc"，那么其实我们可以将a删除掉，相当于对于word1跳过了当前字符，继续遍历
+```
+restLength[i][j] = restLength[i+1][j]
+```
+##### 3.在word1[i]前增加新字符word2[j]
+假设我们要将"bbb"转换为"abbb",那么就可以对于word1增加一个word2当前的字符，然后继续遍历，相当于是对word2的字符跳过了
+```
+restLength[i][j] = restLength[i][j+1]
+```
+##### 4.对word1[i]替换成word2[j]
+
+假设我们要将"abbb"转换为"cbbb",那么直接将a替换成c就好了，相当于对word1和word2字符串都跳过了当前字符
+```
+restLength[i][j] = restLength[i+1][j+1]
+```
+代码
+```java
+    int[][] cacheLength;
+    public int minDistance(String word1, String word2) {
+        if (word1==null||word2==null) {
+            return 0;
+        }
+        cacheLength = new int[word1.length()+1][word2.length()+1];
+        return minDistance(word1,word2,0,0);
+    }
+
+    public int minDistance(String word1, String word2,int i,int j) {
+        //当有一个字符串已经走到末尾了，要变成另一个字符串只能是将另一个字符串剩余字符全部添加过来
+        if (cacheLength[i][j]!=0) {
+            return cacheLength[i][j];
+        }
+        if (i == word1.length()) {
+            return word2.length() - j;
+        }
+        if (j == word2.length()) {
+            return word1.length() - i;
+        }
+        if (word1.charAt(i) == word2.charAt(j)) {//相等就直接向后移动
+            return minDistance(word1,word2,i+1,j+1);
+        }
+        //这一步选择删除，那么就是将word1的当前字符删除
+        int deleteLength = minDistance(word1,word2,i+1,j) + 1;
+        //这一步选择插入，就是将word2的当前字符插入到word1
+        int insertLength = minDistance(word1,word2,i,j+1) + 1;
+        //这一步走替换，就是将word2的当前字符替换到word1
+        int replaceLength = minDistance(word1,word2,i+1,j+1) + 1;
+        //选择上面三种路线中最短的
+        int min = deleteLength < insertLength ? deleteLength : insertLength;
+        min = replaceLength < min ? replaceLength : min;
+        cacheLength[i][j] = min;
+        return min;
+    }
+```
+
+### 第139题-单词拆分
 给定一个非空字符串 s 和一个包含非空单词的列表 wordDict，判定 s 是否可以被空格拆分为一个或多个在字典中出现的单词。
 
 说明：
@@ -1006,52 +1179,84 @@ HashSet<String> falseSet = new HashSet<String>();
     }
 ```
 
-### 239. 滑动窗口最大值
-给你一个整数数组 nums，有一个大小为 k 的滑动窗口从数组的最左侧移动到数组的最右侧。你只可以看到在滑动窗口内的 k 个数字。滑动窗口每次只向右移动一位。
-返回滑动窗口中的最大值。
+### 第76题-最小覆盖子串
+
+给你一个字符串 s 、一个字符串 t 。返回 s 中涵盖 t 所有字符的最小子串。如果 s 中不存在涵盖 t 所有字符的子串，则返回空字符串 "" 。
+
+注意：如果 s 中存在这样的子串，我们保证它是唯一的答案。
+
 示例 1：
-输入：nums = [1,3,-1,-3,5,3,6,7], k = 3
-输出：[3,3,5,5,6,7]
-解释：
-滑动窗口的位置                最大值
----------------               -----
-[1  3  -1] -3  5  3  6  7       3
- 1 [3  -1  -3] 5  3  6  7       3
- 1  3 [-1  -3  5] 3  6  7       5
- 1  3  -1 [-3  5  3] 6  7       5
- 1  3  -1  -3 [5  3  6] 7       6
- 1  3  -1  -3  5 [3  6  7]      7
+
+输入：s = "ADOBECODEBANC", t = "ABC"
+输出："BANC"
+
 ##### 解题思路
-其实是可以维护一个已排序好的队列，每次将刚进窗口的值，添加到排序好的队列中，像插入排序的原理一样，然后取最大值的时候就去队列头部取，然后如果是超出窗口左边界的，就丢掉，没有超过就使用。但是主要问题在于每次插入时的平均时间复杂度是k/2,总时间复杂度就是Nk/2，当k接近于n时，这个复杂度就是O(N^2)了，所以在往队列中插入时，要有排除机制，假设队列是[6,5,4,2]四个数，此时要插入的元素是3，那么在插入时可以把2直接丢掉，因为元素2是3之前的元素，下标更小，值也比3小，在后面的遍历过程中是不可能再成为最大值的，所以通过把2删除掉，这样就可以减少插入时，比次数，将时间复杂度降低为O(N).
+
+首先本题的最小子串是不需要保证子串的顺序的，也就是子串是ABC，我们的最小覆盖子串是BANC也可以，不一定非需要保证ABC的顺序。其实就是滑动窗口，我们用一个needMap来记录，key是需要查找的子串的字符，value是字符从次数。然后就用两个指针作为滑动窗口来遍历字符串，滑动窗口中字符及出现的次数用windowMap来存储，
+
+1.然后每次右指针移动，获取新进入窗口的字符，更新windowMap，如果当前字符是needMap中存在的，且windowMap该字符出现次数已达标，那么就更新needSize(子串中的字符在窗口中出现的次数)。
+
+2.左指针进行移动，判断当前字符是否能移除窗口，(如果是子串需要的，且在窗口出现的次数<=子串需要的次数，就不能移除)
+
+3.判断当前needSize是否达标，达标说明当前窗口就是一个覆盖子串，如果比之前最小的覆盖子串小，那么就进行替换。
+
 ```java
-public int[] maxSlidingWindow(int[] nums, int k) {
-        int[] result = new int[nums.length-k+1];
-        LinkedList<Integer> maxQueue = new LinkedList<>();
-        for (int i = 0; i < nums.length; i++) {
-            //将队列中小于当前数的元素出队列
-            while (maxQueue.size()>0 && nums[i] > nums[maxQueue.getLast()]) {
-                maxQueue.removeLast();
-            }
-            maxQueue.add(i);
-            //窗口的左边界
-            int left = i - k+1;
-            //将队列中出边界的最大值移除
-            if (maxQueue.getFirst() <left) {
-                maxQueue.removeFirst();
-            }
-            //左边界全部到数组中时，才需要计算最大值
-            if (left>=0) {
-                result[left] = nums[maxQueue.getFirst()];
-            }
+public String minWindow(String s, String t) {
+        //needMap的key就是字符串t中出现的每个字符，value就是这个字符出现的次数
+        HashMap<Character,Integer> needMap = new HashMap<>();
+        //windowMap就是滑动窗口中当前字符及字符出现次数
+        HashMap<Character,Integer> windowMap = new HashMap<>();
+        for(int i = 0;i<t.length();i++) {
+            Character key = t.charAt(i);
+            Integer times = needMap.get(key);
+            //times记录的是字符出现次数，不存在就赋初值1，已存在就+1，
+            times = times == null ? 1 : times+1;
+            needMap.put(key, times);
         }
-        return result;
+        int left = 0;
+        int right =0 ;
+        //子串中的字符在窗口中出现的次数
+        int needSize=0;
+        String minStr = "";
+        while(right<s.length()) {
+            Character rightChar = s.charAt(right);
+            Integer needTimes = needMap.get(rightChar);
+            Integer windowTimes = windowMap.get(rightChar);
+            //字符在窗口第一次出现，次数就是1，否则就+1
+            windowTimes = windowTimes == null? 1 : windowTimes+1;
+            windowMap.put(rightChar,windowTimes);
+            if(needTimes==null){//说明该字符不在最小子串里面
+                right++;
+                continue;
+            } else if(needTimes!=null && needTimes.equals(windowTimes)) {//说明该字符在最小子串里面,并且窗口中包含次字符已达标
+                needSize+=windowTimes;
+            }
+            //缩小窗口
+            while(left<=right) {
+                Character currentLeftChar = s.charAt(left);
+                Integer leftNeedTimes = needMap.get(currentLeftChar);
+                Integer leftWindowTimes =  windowMap.get(currentLeftChar);
+                if(leftNeedTimes == null) {//说明不需要这个字府
+                    left++;
+                } else if (leftWindowTimes > leftNeedTimes) {//需要这个字符，且所包含该字符个数大于需要的，可以左移
+                    windowMap.put(currentLeftChar,leftWindowTimes-1);
+                    left++;
+                } else if(leftWindowTimes <= leftNeedTimes){//需要该字符，并且窗口不能左移
+                    break;
+                }
+            }
+            //判断当前窗口是否满足需求
+            if(needSize >= t.length() && (minStr.equals("") || right-left+1 < minStr.length())) {
+                minStr = s.substring(left,right+1);
+            }
+            right++;
+        }
+        return minStr;
     }
 
 ```
 
-
-
-### 124. 二叉树中的最大路径和
+### 第124题-二叉树中的最大路径和
 给定一个非空二叉树，返回其最大路径和。
 
 本题中，路径被定义为一条从树中任意节点出发，沿父节点-子节点连接，达到任意节点的序列。该路径至少包含一个节点，且不一定经过根节点。
@@ -1108,7 +1313,9 @@ public int[] maxSlidingWindow(int[] nums, int k) {
         return max;
     }
 ```
-### 461. 汉明距离
+
+### 第461题-汉明距离
+
 两个整数之间的汉明距离指的是这两个数字对应二进制位不同的位置的数目。
 给出两个整数 x 和 y，计算它们之间的汉明距离。
 注意：
@@ -1141,7 +1348,9 @@ public int hammingDistance(int x, int y) {
         return num;
     }
 ```
-### 128. 最长连续序列
+
+### 第128题-最长连续序列
+
 给定一个未排序的整数数组 nums ，找出数字连续的最长序列（不要求序列元素在原数组中连续）的长度。
 进阶：你可以设计并实现时间复杂度为 O(n) 的解决方案吗？
 示例 1：
@@ -1190,9 +1399,89 @@ public int longestConsecutive(int[] nums) {
     }
 ```
 
+### 第647题-回文子串
+给定一个字符串，你的任务是计算这个字符串中有多少个回文子串。
+具有不同开始位置或结束位置的子串，即使是由相同的字符组成，也会被视作不同的子串。
 
+示例 1：
+输入："abc"
+输出：3
+解释：三个回文子串: "a", "b", "c"
 
-### 238. 除自身以外数组的乘积
+示例 2：
+输入："aaa"
+输出：6
+解释：6个回文子串: "a", "a", "a", "aa", "aa", "aaa"
+##### 解题思路
+这个题本身没有什么技巧，就是就是对每个字符，从中心往两边扩展，判断是否是回文串，一旦发现不是回文串，后面就不需要继续扩展了。需要注意的是，回文串分为奇数回文串，偶数回文串，所以中心可以是当前单个字符，也可以是当前字符+右边的字符。
+```java
+ int num=0;
+    public int countSubstrings(String s) {
+        char[] array = s.toCharArray();
+        for (int i = 0; i < array.length; i++) {
+            //奇数回文串
+            calculateNum(array,i,i);
+            //偶数回文串
+            calculateNum(array,i,i+1);
+        }
+        return num;
+    }
+
+    void calculateNum(char[] array,int start,int end) {
+        while (start>=0 && end<array.length && array[start] == array[end]) {
+            num++;
+            start--;
+            end++;
+        }
+    }
+```
+
+### 第337题-打家劫舍III
+在上次打劫完一条街道之后和一圈房屋后，小偷又发现了一个新的可行窃的地区。这个地区只有一个入口，我们称之为“根”。 除了“根”之外，每栋房子有且只有一个“父“房子与之相连。一番侦察之后，聪明的小偷意识到“这个地方的所有房屋的排列类似于一棵二叉树”。 如果两个直接相连的房子在同一天晚上被打劫，房屋将自动报警。
+
+计算在不触动警报的情况下，小偷一晚能够盗取的最高金额。
+
+示例 1:
+
+输入: [3,2,3,null,3,null,1]
+
+     3
+    / \
+   2   3
+    \   \ 
+     3   1
+
+输出: 7 
+解释: 小偷一晚能够盗取的最高金额 = 3 + 3 + 1 = 7.
+##### 解题思路
+就是递归遍历，对于每个根节点而言，遍历时有两种选择：
+1.如果它的父节点没有被选择，它可以被选择，那么有两种情况：
+1.1 选择当前节点，那么子节点不能被选择
+1.2没有选择当前节点，子节点也可以被选择
+
+2.如果它的父节点被选了，
+那么当前节点不能被选择，只能是它的左右子节点可以被选择
+```
+		public int rob(TreeNode root) {
+        return rob(root,true);
+    }
+    public int rob(TreeNode root,Boolean rootCanChoose) {
+        if (root ==null) {return 0;}
+        int max = 0;
+        if (rootCanChoose) {//当前根节点可以被选择
+            //选择了根节点
+            int value1 = root.val+rob(root.left,false) + rob(root.right,false);
+            //没有选择根节点
+            int value2 = rob(root.left,true) + rob(root.right,true);
+            max = value1 > value2 ? value1 : value2;
+        } else {//当前根节点不能被选择
+            max = rob(root.left,true) + rob(root.right,true);
+        }
+        return max;
+    }
+```
+
+### 第238题-除自身以外数组的乘积
 
 给你一个长度为 n 的整数数组 nums，其中 n > 1，返回输出数组 output ，其中 output[i] 等于 nums 中除 nums[i] 之外其余各元素的乘积。
 
@@ -1231,7 +1520,8 @@ public int longestConsecutive(int[] nums) {
     }
 ```
 
-### 207. 课程表
+### 第207题-课程表
+
 你这个学期必须选修 numCourse 门课程，记为 0 到 numCourse-1 。
 
 在选修某些课程之前需要一些先修课程。 例如，想要学习课程 0 ，你需要先完成课程 1 ，我们用一个匹配来表示他们：[0,1]
@@ -1306,89 +1596,107 @@ public boolean canFinish(int numCourses, int[][] prerequisites) {
 ##### 拓扑排序
 这种解法有点像是宽度优先遍历，就是先建立邻接表，并且计算每个节点的入度，然后找到入度为0的节点(也就是没有被其他节点指向的节点)，将它们入队列，然后对队列元素进行出队操作，取出队首元素，将它的子节点的入度都-1，然后子节点入度减到0时，就将这个子节点添加到队列中，在过程中会统计入过队列的节点数。原理就是如果没有环的，最终队列出队完成后，进入过队列的节点数是等于总节点数的。就是假设图的结构是1->2，2->3，3->4，4->2，也就是2，3，4形成一个环，最开始1是入度为0的节点，1会入队列，然后对节点2的入度-1，节点2的入度还剩下1，此时2不会入队列，所以最终进过队列的元素只有节点1，所以最终统计的数量是<总节点数的。
 
-### 337. 打家劫舍 III
-在上次打劫完一条街道之后和一圈房屋后，小偷又发现了一个新的可行窃的地区。这个地区只有一个入口，我们称之为“根”。 除了“根”之外，每栋房子有且只有一个“父“房子与之相连。一番侦察之后，聪明的小偷意识到“这个地方的所有房屋的排列类似于一棵二叉树”。 如果两个直接相连的房子在同一天晚上被打劫，房屋将自动报警。
+### 第309题-最佳买卖股票时机含冷冻期
 
-计算在不触动警报的情况下，小偷一晚能够盗取的最高金额。
+给定一个整数数组，其中第 i 个元素代表了第 i 天的股票价格 。​
 
-示例 1:
+设计一个算法计算出最大利润。在满足以下约束条件下，你可以尽可能地完成更多的交易（多次买卖一支股票）:
 
-输入: [3,2,3,null,3,null,1]
+你不能同时参与多笔交易（你必须在再次购买前出售掉之前的股票）。
+卖出股票后，你无法在第二天买入股票 (即冷冻期为 1 天)。
+示例:
 
-     3
-    / \
-   2   3
-    \   \ 
-     3   1
+输入: [1,2,3,0,2]
+输出: 3 
+解释: 对应的交易状态为: [买入, 卖出, 冷冻期, 买入, 卖出]
 
-输出: 7 
-解释: 小偷一晚能够盗取的最高金额 = 3 + 3 + 1 = 7.
 ##### 解题思路
-就是递归遍历，对于每个根节点而言，遍历时有两种选择：
-1.如果它的父节点没有被选择，它可以被选择，那么有两种情况：
-1.1 选择当前节点，那么子节点不能被选择
-1.2没有选择当前节点，子节点也可以被选择
-
-2.如果它的父节点被选了，
-那么当前节点不能被选择，只能是它的左右子节点可以被选择
-```
-		public int rob(TreeNode root) {
-        return rob(root,true);
-    }
-    public int rob(TreeNode root,Boolean rootCanChoose) {
-        if (root ==null) {return 0;}
-        int max = 0;
-        if (rootCanChoose) {//当前根节点可以被选择
-            //选择了根节点
-            int value1 = root.val+rob(root.left,false) + rob(root.right,false);
-            //没有选择根节点
-            int value2 = rob(root.left,true) + rob(root.right,true);
-            max = value1 > value2 ? value1 : value2;
-        } else {//当前根节点不能被选择
-            max = rob(root.left,true) + rob(root.right,true);
-        }
-        return max;
-    }
-```
-
-### 647. 回文子串
-给定一个字符串，你的任务是计算这个字符串中有多少个回文子串。
-具有不同开始位置或结束位置的子串，即使是由相同的字符组成，也会被视作不同的子串。
-
-示例 1：
-输入："abc"
-输出：3
-解释：三个回文子串: "a", "b", "c"
-
-示例 2：
-输入："aaa"
-输出：6
-解释：6个回文子串: "a", "a", "a", "aa", "aa", "aaa"
-##### 解题思路
-这个题本身没有什么技巧，就是就是对每个字符，从中心往两边扩展，判断是否是回文串，一旦发现不是回文串，后面就不需要继续扩展了。需要注意的是，回文串分为奇数回文串，偶数回文串，所以中心可以是当前单个字符，也可以是当前字符+右边的字符。
+这个跟上一题的区别就是有冷冻期，就是当你第i天要持有股票时，要么是第i-1天已持有股票，要么是第i-1天没有买卖股票才能在第天买股票。
+卖出股票后，你无法在第二天买入股票 (即冷冻期为 1 天)。
+第i天不持有股票 dp[i][0] = max(dp[i-1][1]+prices[i], dp[i-1][0])
+第i天持有股票 dp[i][1] = max(dp[i-2][0]-prices[i],dp[i-1][1])
 ```java
- int num=0;
-    public int countSubstrings(String s) {
-        char[] array = s.toCharArray();
-        for (int i = 0; i < array.length; i++) {
-            //奇数回文串
-            calculateNum(array,i,i);
-            //偶数回文串
-            calculateNum(array,i,i+1);
+    public int maxProfit(int[] prices) {
+        if(prices==null||prices.length<=1) {return 0;}
+        int[][] dp = new int[prices.length][2];
+        dp[0][0] = 0;
+        dp[0][1] = 0 - prices[0];
+        dp[1][0] = prices[1]-prices[0] < 0 ? 0 : prices[1]-prices[0];
+        dp[1][1] = 0-prices[1] > 0- prices[0]? 0-prices[1] : 0-prices[0];
+        for (int i = 2; i < prices.length; i++) {
+            dp[i][0] = Math.max(dp[i-1][1]+prices[i], dp[i-1][0]);
+            dp[i][1] = Math.max(dp[i-2][0]-prices[i],dp[i-1][1]);
         }
-        return num;
+        return dp[prices.length-1][0];
     }
-
-    void calculateNum(char[] array,int start,int end) {
-        while (start>=0 && end<array.length && array[start] == array[end]) {
-            num++;
-            start--;
-            end++;
+```
+这一题的时间复杂度为O(N)，空间复杂度也为O(N),有一个可以优化的点就是d[i]只依赖于dp[i-1]和dp[i-2],所以理论上我们只需要一个几个常数变量就可以了，空间复杂度为O(1);
+```java
+public int maxProfit1(int[] prices) {
+        if(prices==null||prices.length<=1) {return 0;}
+        int last_last_0 = 0;
+        int last_0 = prices[1]-prices[0] < 0 ? 0 : prices[1]-prices[0];
+        int last_1 = 0-prices[1] > 0- prices[0]? 0-prices[1] : 0-prices[0];
+        for (int i = 2; i < prices.length; i++) {
+            int temp_0 = last_0;
+            last_0 = Math.max(last_1+prices[i], last_0);
+            last_1 = Math.max(last_last_0-prices[i],last_1);
+            last_last_0 = temp_0;
         }
+        return last_0;
     }
 ```
 
-### 560. 和为K的子数组
+### 第416题-分割等和子集
+给定一个只包含正整数的非空数组。是否可以将这个数组分割成两个子集，使得两个子集的元素和相等。
+
+注意:
+每个数组中的元素不会超过 100
+数组的大小不会超过 200
+示例 1:
+输入: [1, 5, 11, 5]
+输出: true
+解释: 数组可以分割成 [1, 5, 5] 和 [11].
+##### 解题思路
+本题就是可以转化为从数组中挑选i个元素，最终使和为数组和的一半，所以就转换为01背包问题了，只不过判断条件由选择让装的物品价值更大，变为装的物品的价值正好是总价值的一半。
+```java
+public boolean canPartition(int[] nums) {
+        if (nums==null||nums.length==0) {
+            return false;
+        }
+        int sum = 0;
+        for (int i = 0; i < nums.length; i++) {
+            sum+=nums[i];
+        }
+        if (sum%2==1) {
+            return false;
+        } else {
+            return canPartition(nums,nums.length-1,sum/2);
+        }
+    }
+
+    //使用HashMap缓存结果，避免重复计算
+    HashMap<String,Boolean> resultCacheMap = new HashMap<String,Boolean>();
+    //判断在0到i-1这些元素中进行能选择，看能否选择出的元素和为sum
+    public boolean canPartition(int[] nums,int i,int sum) {
+        if (sum<0) { return false; }
+        if (sum==0) { return true; }
+        if (i<0) { return false; }
+        if (i==0) {//只有一个元素了
+            return nums[0]==sum;
+        }
+        String key = i+"-"+sum;
+        if (resultCacheMap.containsKey(key)) {
+            return resultCacheMap.get(key);
+        }
+        //选择元素i,看剩下的元素能否凑出sum 和不选择元素i
+        boolean result = canPartition(nums,i-1,sum-nums[i]) || canPartition(nums,i-1,sum);
+        resultCacheMap.put(key,result);
+        return result;
+    }
+```
+
+### 第560题-和为K的子数组
 给定一个整数数组和一个整数 k，你需要找到该数组中和为 k 的连续的子数组的个数。
 示例 1 :
 输入:nums = [1,1,1], k = 2
@@ -1423,7 +1731,52 @@ public boolean canFinish(int numCourses, int[][] prerequisites) {
     }
 ```
 
-### 437. 路径总和 III
+### 第448题-找到所有数组中消失的数字
+给定一个范围在  1 ≤ a[i] ≤ n ( n = 数组大小 ) 的 整型数组，数组中的元素一些出现了两次，另一些只出现一次。
+找到所有在 [1, n] 范围之间没有出现在数组中的数字。
+您能在不使用额外空间且时间复杂度为O(n)的情况下完成这个任务吗? 你可以假定返回的数组不算在额外空间内。
+示例:
+
+输入:
+[4,3,2,7,8,2,3,1]
+
+输出:
+[5,6]
+##### 解题思路
+这个题因为数字a的取值都是[1,nums.length]之间，所以a-1应该是在[0,nums.length-1]之间，正好跟数组的下标可以对应上，所以对数组遍历，将数字a放到下标a-1下，如果
+1.当前数字a如果为-1那么就不用调整位置了，因为这是我们设置的标志位，如果a正好等于下标i+1,也不用调整，因为是正确的位置
+2.如果下标a-1正好存的也是a，那么说明是出现两次的元素，那么将那个位置标志位-1，也不用调整了
+3.将当前元素a与下标a-1的元素交换，继续遍历。
+```java
+public List<Integer> findDisappearedNumbers(int[] nums) {
+        List<Integer> list = new ArrayList<>();
+        if (nums==null||nums.length==0) {
+            return list;
+        }
+        for (int i = 0; i < nums.length; i++) {
+            int index = nums[i] - 1;
+            if (nums[i] == -1 || nums[i] == i+1) {//说明是未出现过的数字，或者是已经调整到正确位置的数字，直接跳过
+                continue;
+            } else if (nums[index] == index+1) {//说明这个位置已经有这个元素了，是出现两次的元素
+                nums[i] = -1;
+            } else {//否则是出现一次的元素，进行交换
+                int temp = nums[index];
+                nums[index] = nums[i];
+                nums[i] = temp;
+                i--;
+            }
+        }
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] == -1) {
+                list.add(i+1);
+            }
+        }
+        return list;
+    }
+```
+
+### 第437题-路径总和III
+
 给定一个二叉树，它的每个结点都存放着一个整数值。
 
 找出路径和等于给定数值的路径总数。
@@ -1476,105 +1829,36 @@ int pathNum = 0;
     }
 ```
 
-### 416.分割等和子集
-给定一个只包含正整数的非空数组。是否可以将这个数组分割成两个子集，使得两个子集的元素和相等。
+### 第338题-比特位计数
+给定一个非负整数 num。对于 0 ≤ i ≤ num 范围中的每个数字 i ，计算其二进制数中的 1 的数目并将它们作为数组返回。
 
-注意:
-每个数组中的元素不会超过 100
-数组的大小不会超过 200
 示例 1:
-输入: [1, 5, 11, 5]
-输出: true
-解释: 数组可以分割成 [1, 5, 5] 和 [11].
-##### 解题思路
-本题就是可以转化为从数组中挑选i个元素，最终使和为数组和的一半，所以就转换为01背包问题了，只不过判断条件由选择让装的物品价值更大，变为装的物品的价值正好是总价值的一半。
-```java
-public boolean canPartition(int[] nums) {
-        if (nums==null||nums.length==0) {
-            return false;
-        }
-        int sum = 0;
-        for (int i = 0; i < nums.length; i++) {
-            sum+=nums[i];
-        }
-        if (sum%2==1) {
-            return false;
-        } else {
-            return canPartition(nums,nums.length-1,sum/2);
-        }
-    }
 
-    //使用HashMap缓存结果，避免重复计算
-    HashMap<String,Boolean> resultCacheMap = new HashMap<String,Boolean>();
-    //判断在0到i-1这些元素中进行能选择，看能否选择出的元素和为sum
-    public boolean canPartition(int[] nums,int i,int sum) {
-        if (sum<0) { return false; }
-        if (sum==0) { return true; }
-        if (i<0) { return false; }
-        if (i==0) {//只有一个元素了
-            return nums[0]==sum;
+输入: 2
+输出: [0,1,1]
+示例 2:
+
+输入: 5
+输出: [0,1,1,2,1,2]
+##### 解题思路
+因为i&(i-1)的结果相当于是去掉了最右边的一个1，所以
+i中1的数量 = i&(i-1)中1的数量 + 1，所以可以使用一个数组保存以前的数的1的数量，这样就可以以O(1)的时间复杂度计算中1的数量。
+```java
+public int[] countBits(int num) {
+//i & (i-1)可以将最右边的0去掉
+        int[] bitCountArray = new int[num+1];
+        bitCountArray[0] = 0;
+        for (int i = 1; i <= num; i++) {
+            bitCountArray[i] = bitCountArray[i&(i-1)] +1;
         }
-        String key = i+"-"+sum;
-        if (resultCacheMap.containsKey(key)) {
-            return resultCacheMap.get(key);
-        }
-        //选择元素i,看剩下的元素能否凑出sum 和不选择元素i
-        boolean result = canPartition(nums,i-1,sum-nums[i]) || canPartition(nums,i-1,sum);
-        resultCacheMap.put(key,result);
-        return result;
+        return bitCountArray;
     }
 ```
 
-### 448. 找到所有数组中消失的数字
-给定一个范围在  1 ≤ a[i] ≤ n ( n = 数组大小 ) 的 整型数组，数组中的元素一些出现了两次，另一些只出现一次。
-找到所有在 [1, n] 范围之间没有出现在数组中的数字。
-您能在不使用额外空间且时间复杂度为O(n)的情况下完成这个任务吗? 你可以假定返回的数组不算在额外空间内。
-示例:
-
-输入:
-[4,3,2,7,8,2,3,1]
-
-输出:
-[5,6]
-##### 解题思路
-这个题因为数字a的取值都是[1,nums.length]之间，所以a-1应该是在[0,nums.length-1]之间，正好跟数组的下标可以对应上，所以对数组遍历，将数字a放到下标a-1下，如果
-1.当前数字a如果为-1那么就不用调整位置了，因为这是我们设置的标志位，如果a正好等于下标i+1,也不用调整，因为是正确的位置
-2.如果下标a-1正好存的也是a，那么说明是出现两次的元素，那么将那个位置标志位-1，也不用调整了
-3.将当前元素a与下标a-1的元素交换，继续遍历。
-```java
-public List<Integer> findDisappearedNumbers(int[] nums) {
-        List<Integer> list = new ArrayList<>();
-        if (nums==null||nums.length==0) {
-            return list;
-        }
-        for (int i = 0; i < nums.length; i++) {
-            int index = nums[i] - 1;
-            if (nums[i] == -1 || nums[i] == i+1) {//说明是未出现过的数字，或者是已经调整到正确位置的数字，直接跳过
-                continue;
-            } else if (nums[index] == index+1) {//说明这个位置已经有这个元素了，是出现两次的元素
-                nums[i] = -1;
-            } else {//否则是出现一次的元素，进行交换
-                int temp = nums[index];
-                nums[index] = nums[i];
-                nums[i] = temp;
-                i--;
-            }
-        }
-        for (int i = 0; i < nums.length; i++) {
-            if (nums[i] == -1) {
-                list.add(i+1);
-            }
-        }
-        return list;
-    }
-```
-
-### 406. 根据身高重建队列
+### 第406题-根据身高重建队列
 假设有打乱顺序的一群人站成一个队列，数组 people 表示队列中一些人的属性（不一定按顺序）。每个 people[i] = [hi, ki] 表示第 i 个人的身高为 hi ，前面 正好 有 ki 个身高大于或等于 hi 的人。
 
 请你重新构造并返回输入数组 people 所表示的队列。返回的队列应该格式化为数组 queue ，其中 queue[j] = [hj, kj] 是队列中第 j 个人的属性（queue[0] 是排在队列前面的人）。
-
- 
 
 示例 1：
 
@@ -1613,7 +1897,7 @@ public List<Integer> findDisappearedNumbers(int[] nums) {
     }
 ```
 
-### 538. 把二叉搜索树转换为累加树
+### 第538题-把二叉搜索树转换为累加树
 
 给出二叉 搜索 树的根节点，该树的节点值各不相同，请你将其转换为累加树（Greater Sum Tree），使每个节点 node 的新值等于原树中大于或等于 node.val 的值之和。
 
@@ -1647,7 +1931,92 @@ public List<Integer> findDisappearedNumbers(int[] nums) {
     }
 ```
 
-### 438. 找到字符串中所有字母异位词
+### 第297题-二叉树的序列化与反序列化
+
+序列化是将一个数据结构或者对象转换为连续的比特位的操作，进而可以将转换后的数据存储在一个文件或者内存中，同时也可以通过网络传输到另一个计算机环境，采取相反方式重构得到原数据。
+
+请设计一个算法来实现二叉树的序列化与反序列化。这里不限定你的序列 / 反序列化算法执行逻辑，你只需要保证一个二叉树可以被序列化为一个字符串并且将这个字符串反序列化为原始的树结构。
+
+示例: 
+
+你可以将以下二叉树：
+
+    1
+   / \
+  2   3
+     / \
+    4   5
+
+序列化为 "[1,2,3,null,null,4,5]"
+提示: 这与 LeetCode 目前使用的方式一致，详情请参阅 LeetCode 序列化二叉树的格式。你并非必须采取这种方式，你也可以采用其他的方法解决这个问题。
+
+说明: 不要使用类的成员 / 全局 / 静态变量来存储状态，你的序列化和反序列化算法应该是无状态的。
+
+##### 解题思路
+```java
+
+    String serialize(TreeNode root) {
+        StringBuffer stringBuffer = new StringBuffer();
+        if (root == null) {return stringBuffer.toString();}
+        ArrayList<TreeNode> queue = new ArrayList<TreeNode>();
+        queue.add(root);
+        while (queue.size()>0) {
+            TreeNode node = queue.remove(0);
+            if (node == null) {
+                stringBuffer.append("#!");
+            } else {
+                stringBuffer.append(node.val+"!");
+                queue.add(node.left);
+                queue.add(node.right);
+            }
+        }
+        return stringBuffer.toString();
+}
+
+TreeNode deserialize(String str) {
+        if (str == null || str.length() == 0) {return null;}
+        String[] array = str.split("!");
+
+        Integer rootValue = convert(array[0]);
+        if (rootValue == null) {return null;}
+
+        TreeNode rootNode = new TreeNode(rootValue);
+        ArrayList<TreeNode> queue = new ArrayList<TreeNode>();
+        queue.add(rootNode);
+        int currentIndex = 1;
+        while (queue.size()>0 && currentIndex<array.length) {
+            TreeNode node = queue.remove(0);
+            Integer leftValue,rightValue;
+            leftValue = convert(array[currentIndex]);
+            rightValue = convert(array[currentIndex+1]);
+            currentIndex = currentIndex + 2;
+            if (leftValue!=null) {
+                TreeNode leftNode = new TreeNode(leftValue);
+                node.left = leftNode;
+                queue.add(leftNode);
+            }
+            if (rightValue!=null) {
+                TreeNode rightNode = new TreeNode(rightValue);
+                node.right = rightNode;
+                queue.add(rightNode);
+            }
+        }
+
+        return rootNode;
+}
+
+    Integer convert(String str) {
+        Integer result;
+        try {
+            result = Integer.parseInt(str);
+        } catch (NumberFormatException e) {
+            return null;
+        }
+        return result;
+}
+
+```
+### 第438题-找到字符串中所有字母异位词
 给定一个字符串 s 和一个非空字符串 p，找到 s 中所有是 p 的字母异位词的子串，返回这些子串的起始索引。
 
 字符串只包含小写英文字母，并且字符串 s 和 p 的长度都不超过 20100。
@@ -1725,7 +2094,7 @@ public List<Integer> findAnagrams(String s, String p) {
     }
 ````
 
-### 240. 搜索二维矩阵 II
+### 第240题-搜索二维矩阵II
 
 编写一个高效的算法来搜索 m x n 矩阵 matrix 中的一个目标值 target 。该矩阵具有以下特性：
 
@@ -1776,7 +2145,8 @@ public boolean searchMatrix(int[][] matrix, int target) {
     }
 ```
 
-### 494. 目标和
+### 第494题-目标和
+
 给定一个非负整数数组，a1, a2, ..., an, 和一个目标数，S。现在你有两个符号 + 和 -。对于数组中的任意一个整数，你都可以从 + 或 -中选择一个符号添加在前面。
 
 返回可以使最终数组和为目标数 S 的所有添加符号的方法数。
@@ -1836,5 +2206,99 @@ x-y=S
         //选这个元素
         findTargetSumWays(nums,sum-nums[i],i-1);
     }
+```
+### 第621题-任务调度器
+给你一个用字符数组 tasks 表示的 CPU 需要执行的任务列表。其中每个字母表示一种不同种类的任务。任务可以以任意顺序执行，并且每个任务都可以在 1 个单位时间内执行完。在任何一个单位时间，CPU 可以完成一个任务，或者处于待命状态。
+
+然而，两个 相同种类 的任务之间必须有长度为整数 n 的冷却时间，因此至少有连续 n 个单位时间内 CPU 在执行不同的任务，或者在待命状态。
+
+你需要计算完成所有任务所需要的 最短时间 。
+示例 1：
+
+输入：tasks = ["A","A","A","B","B","B"], n = 2
+输出：8
+解释：A -> B -> (待命) -> A -> B -> (待命) -> A -> B
+     在本示例中，两个相同类型任务之间必须间隔长度为 n = 2 的冷却时间，而执行一个任务只需要一个单位时间，所以中间出现了（待命）状态。 
+
+##### 解题思路
+假设没有某个时间点需要待命，那么任务所需要的最短时间就是任务的总数量，就是tasks.length。如果有某个时间点需要待命，那么一定是出现次数最多的那种任务导致的，此时就根据次数最多的任务来计算最大值。
+当没有时间需要待命时，
+最短时间=tasks.length
+需要待命时，出现次数最多的那种任务只有1种时，
+最短时间=(maxCount-1)*(n+1)+1
+需要待命时，出现次数最多的那种任务有x种时，
+最短时间=(maxCount-1)*(n+1)+x
+```java
+public int leastInterval(char[] tasks, int n) {
+        int[] count = new int[26];
+        for (int i = 0; i < tasks.length; i++) {
+            int index = tasks[i] - 'A';
+            count[index]++;
+        }
+        //找出频率最大的字符
+        int maxCount=0;
+        //频率最大的字符有几个
+        int times=0;
+        for (int i = 0; i < count.length; i++) {
+            if (count[i] > maxCount) {
+                maxCount = count[i];
+                times=1;
+            } else if(count[i] == maxCount) {
+                times++;
+            }
+        }
+        int max = (maxCount-1)*(n+1) + 1 + times - 1;
+        max = max > tasks.length ? max : tasks.length;
+        return max;
+    }
+```
+
+### 第581题-最短无序连续子数组
+
+给定一个整数数组，你需要寻找一个连续的子数组，如果对这个子数组进行升序排序，那么整个数组都会变为升序排序。
+
+你找到的子数组应是最短的，请输出它的长度。
+
+示例 1:
+
+输入: [2, 6, 4, 8, 10, 9, 15]
+输出: 5
+解释: 你只需要对 [6, 4, 8, 10, 9] 进行升序排序，那么整个表都会变为升序排序。
+说明 :
+
+输入的数组长度范围在 [1, 10,000]。
+输入的数组可能包含重复元素 ，所以升序的意思是<=。
+##### 解题思路
+这个题就是寻找逆序对，找出需要最左边的需要调整的逆序对位置，然后再找出最右边的逆序对位置，两者之间的距离就是子数组的长度。
+```java
+public int findUnsortedSubarray(int[] nums) {
+        if (nums==null||nums.length==0) {
+            return 0;
+        }
+        //从左开始遍历，找到需要调整的最右边的位置的下标
+        Integer right = null;
+        int maxIndex = 0;
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] < nums[maxIndex]) {//说明是需要调整的
+                right=i;
+            }
+            maxIndex = nums[i] > nums[maxIndex] ? i : maxIndex;
+        }
+        //从右开始遍历，找到需要调整的最右边的位置的下标
+        Integer left = null;
+        int minIndex = nums.length-1;
+        for (int i = nums.length-1; i >=0; i--) {
+            if (nums[i] > nums[minIndex]) {//说明是需要调整的
+                left=i;
+            }
+            minIndex = nums[i] < nums[minIndex] ? i : minIndex;
+        }
+        if (left!=null&& right!=null) {
+            return right-left+1;
+        }
+        return 0;
+    }
+
+
 ```
 
