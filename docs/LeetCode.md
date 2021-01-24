@@ -30,10 +30,13 @@
 ##### [第169题-多数元素](#第169题-多数元素)
 ##### [第101题-对称二叉树](#第101题-对称二叉树)
 ##### [第136题-只出现一次的数字](#第136题-只出现一次的数字)
-##### [第94题- 二叉树的中序遍历](#第94题-二叉树的中序遍历)
+##### [第23题-合并K个升序链表](#第23题-合并K个升序链表)
+##### [第94题-二叉树的中序遍历](#第94题-二叉树的中序遍历)
 ##### [第64题-最小路径和](#第64题-最小路径和)
-##### [第234题- 回文链表](#第234题-回文链表)
 ##### [第215题- 数组中的第K个最大元素](#第215题-数组中的第K个最大元素)
+##### [第234题- 回文链表](#第234题-回文链表)
+##### [第200题-岛屿数量](#第200题-岛屿数量)
+##### [第48题-旋转图像](#第48题-旋转图像)
 ##### [第98题-验证二叉搜索树](#第98题-验证二叉搜索树)
 ##### [第78题-子集](#第78题-子集)
 ##### [第75题-颜色分类](#第75题-颜色分类)
@@ -1621,6 +1624,86 @@ public int singleNumber(int[] nums) {
 }
 ```
 
+### 第23题-合并K个升序链表
+给你一个链表数组，每个链表都已经按升序排列。
+请你将所有链表合并到一个升序链表中，返回合并后的链表。
+
+示例 1：
+
+输入：lists = [[1,4,5],[1,3,4],[2,6]]
+输出：[1,1,2,3,4,4,5,6]
+解释：链表数组如下：
+[
+  1->4->5,
+  1->3->4,
+  2->6
+]
+将它们合并到一个有序链表中得到。
+1->1->2->3->4->4->5->6
+
+##### 解题思路
+就是对K个链表的头结点建立一个小顶堆，每次取堆顶元素出来，放到新链表的末尾。然后对堆进行调整，每次调整复杂度为logK，总时间复杂度是N*LogK.
+```java
+public ListNode mergeKLists(ListNode[] lists) {
+        if(lists==null||lists.length==0) {return null;}
+        ListNode preHead = new ListNode(-1);
+        ListNode currentNode = preHead;
+        ArrayList<ListNode> arrayList = new ArrayList<>();
+        //过滤lists中为null的元素，然后将不为null的元素添加到arrayList中去
+        // （测试用例中有很多为null的用例)
+        for (int i = 0; i < lists.length; i++) {
+            if (lists[i] != null) {
+                arrayList.add(lists[i]);
+            }
+        }
+        if (arrayList.size()==0) {
+            return null;
+        }
+        //建立小顶堆
+        for (int i = arrayList.size()/2-1; i >= 0; i--) {
+            adjustHeap(arrayList,i,arrayList.size());
+        }
+        while (arrayList.size()>0) {
+            if (arrayList.get(0) == null) {//到最后一个节点了
+
+                swap(arrayList,0,arrayList.size()-1);
+                arrayList.remove(arrayList.size()-1);
+                continue;
+            }
+            adjustHeap(arrayList,0,arrayList.size());
+
+            ListNode node = arrayList.get(0);
+            currentNode.next =  node;
+            currentNode =  currentNode.next;
+            arrayList.set(0,node.next);
+        }
+        return preHead.next;
+    }
+
+    void adjustHeap(ArrayList<ListNode> lists, int i, int length) {
+        while (2*i+1<length) {
+            int left = 2*i+1;
+            int right = 2*i+2;
+            int min = lists.get(i).val < lists.get(left).val ? i:left;
+            if (right<length) {
+                min = lists.get(min).val < lists.get(right).val ? min:right;
+            }
+            if (min == i) {
+                break;
+            } else {
+                swap(lists,min,i);
+                i = min;
+            }
+        }
+    }
+
+    void swap(ArrayList<ListNode>  lists,int a, int b) {
+        ListNode temp = lists.get(a);
+        lists.set(a,lists.get(b));
+        lists.set(b,temp);
+    }
+```
+
 ### 第94题-二叉树的中序遍历
 
 给定一个二叉树的根节点 `root` ，返回它的 **中序** 遍历。
@@ -1731,8 +1814,56 @@ public int minPathSum(int[][] grid, int row,int col) {
     return path;
 }
 ```
+### 第215题-数组中的第K个最大元素
 
+在未排序的数组中找到第 k 个最大的元素。请注意，你需要找的是数组排序后的第 k 个最大的元素，而不是第 k 个不同的元素。
 
+示例 1:
+
+输入: [3,2,1,5,6,4] 和 k = 2
+输出: 5
+
+##### 解题思路
+就是Top K问题，这里可以使用堆排进行排序，需要注意的是，大顶堆建堆结束后，每次将堆顶元素移动到数组末尾，然后继续对剩下的0到i-1范围内的元素进行调整,所以是adjustHeap(nums,0,i);
+```java
+public int findKthLargest(int[] nums, int k) {
+        for (int i = nums.length/2-1; i >=0 ; i--) {
+            //对整个数组看成一个对，进行大顶堆调整
+            adjustHeap(nums,i,nums.length);
+        }
+        for (int i = nums.length-1; i > 0; i--) {
+            swap(nums,0,i);
+            //对0到i-1范围内的元素看成一个堆，进行大顶堆调整
+            if (i==nums.length-k) {
+                break;
+            }
+            adjustHeap(nums,0,i);
+        }
+        return nums[nums.length - k];
+    }
+    void adjustHeap(int[] nums, int i,int currentLength) {
+        //左子节点存在
+        while (2*i+1<currentLength) {
+            int left = 2*i+1;
+            int right = 2*i+2;
+            if (right<currentLength && nums[right] > nums[left]) {//右节点也存在,并且大于左节点
+                if (nums[right] > nums[i]) {//右节点大
+                    swap(nums,i,right);
+                    i = right;
+                } else {//根节点最大
+                    break;
+                }
+            } else {//右节点不存在，或者右节点比左节点小
+                if (nums[left] > nums[i]) {
+                    swap(nums,i,left);
+                    i = left;
+                } else {
+                    break;
+                }
+            }
+        }
+    }
+```
 
 ### 第234题-回文链表
 请判断一个链表是否为回文链表。
@@ -1789,53 +1920,114 @@ public int minPathSum(int[][] grid, int row,int col) {
     }
 ```
 
-### 第215题-数组中的第K个最大元素
-在未排序的数组中找到第 k 个最大的元素。请注意，你需要找的是数组排序后的第 k 个最大的元素，而不是第 k 个不同的元素。
+### 第200题-岛屿数量
+给你一个由 '1'（陆地）和 '0'（水）组成的的二维网格，请你计算网格中岛屿的数量。
 
-示例 1:
+岛屿总是被水包围，并且每座岛屿只能由水平方向和/或竖直方向上相邻的陆地连接形成。
+此外，你可以假设该网格的四条边均被水包围。
+示例 1：
 
-输入: [3,2,1,5,6,4] 和 k = 2
-输出: 5
+输入：grid = [
+  ["1","1","1","1","0"],
+  ["1","1","0","1","0"],
+  ["1","1","0","0","0"],
+  ["0","0","0","0","0"]
+]
+输出：1
 
-##### 解题思路
-就是Top K问题，这里可以使用堆排进行排序，需要注意的是，大顶堆建堆结束后，每次将堆顶元素移动到数组末尾，然后继续对剩下的0到i-1范围内的元素进行调整,所以是adjustHeap(nums,0,i);
+#### 解题思路
+因为每个岛屿中所有的1之间是可以相互抵达的，只要你找到岛屿中的一个1，然后向四周进行遍历，判断是1继续向四周扩散，可以抵达这个岛屿所有的节点，所以通过infect函数对每个未被遍历的岛屿点进行扩散，判断这个点是1就将它设置为2，代表已遍历，然后继续扩散。这样就可以统计出岛屿数量。
 ```java
-public int findKthLargest(int[] nums, int k) {
-        for (int i = nums.length/2-1; i >=0 ; i--) {
-            //对整个数组看成一个对，进行大顶堆调整
-            adjustHeap(nums,i,nums.length);
-        }
-        for (int i = nums.length-1; i > 0; i--) {
-            swap(nums,0,i);
-            //对0到i-1范围内的元素看成一个堆，进行大顶堆调整
-            if (i==nums.length-k) {
-                break;
+public int numIslands(char[][] grid) {
+        if (grid==null||grid[0]==null){return 0;}
+        int num =0;
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[i].length; j++) {
+                char c = grid[i][j];
+                if (c == '1') {//如果是未感染的陆地，那么使用infect函数向四周扩散
+                    infect(grid,i,j);
+                    num++;
+                }
             }
-            adjustHeap(nums,0,i);
         }
-        return nums[nums.length - k];
+        return num;
     }
-    void adjustHeap(int[] nums, int i,int currentLength) {
-        //左子节点存在
-        while (2*i+1<currentLength) {
-            int left = 2*i+1;
-            int right = 2*i+2;
-            if (right<currentLength && nums[right] > nums[left]) {//右节点也存在,并且大于左节点
-                if (nums[right] > nums[i]) {//右节点大
-                    swap(nums,i,right);
-                    i = right;
-                } else {//根节点最大
-                    break;
-                }
-            } else {//右节点不存在，或者右节点比左节点小
-                if (nums[left] > nums[i]) {
-                    swap(nums,i,left);
-                    i = left;
-                } else {
-                    break;
-                }
-            }
+    //向四周未被遍历的陆地进行扩散
+    void infect(char[][] grid,int i,int j) {
+        if (i < 0 || i >= grid.length || j < 0 || j >= grid[i].length) {
+            return;
         }
+        if (grid[i][j] == '1') {
+            grid[i][j]= '2';
+            infect(grid,i-1,j);
+            infect(grid,i+1,j);
+            infect(grid,i,j-1);
+            infect(grid,i,j+1);
+        }
+    }
+```
+### 第48题-旋转图像
+
+给定一个 n × n 的二维矩阵表示一个图像。
+将图像顺时针旋转 90 度。
+说明：
+你必须在原地旋转图像，这意味着你需要直接修改输入的二维矩阵。请不要使用另一个矩阵来旋转图像。
+示例 1:
+给定 matrix = 
+[
+  [1,2,3],
+  [4,5,6],
+  [7,8,9]
+],
+
+原地旋转输入矩阵，使其变为:
+[
+  [7,4,1],
+  [8,5,2],
+  [9,6,3]
+]
+##### 解题思路
+这个题就是你可以每次只旋转外圈元素，然后旋转完毕后把内圈元素看成一个新的矩阵，继续对矩阵进行旋转。在对外圈元素进行旋转时，我们只需要先将最上方一条边的元素与右方元素交换，再与下方元交换，在于左方元素交换，这样最好就旋转成功了。
+
+例如：
+	[1,2,3],
+  [4,5,6],
+  [7,8,9]
+  对于这个矩阵来说，我们只旋转外圈元素，也就是1，2，3，6，9，8，7，4，1。然后把里面的元素，也就是5看成一个新的矩阵，继续对外圈元素进行旋转，直到最后矩阵只剩下一个元素。
+
+如何对外圈元素进行旋转呢？
+我们对最上面的一条边进行遍历，也就是[1,3)进行遍历，例如一开始的元素是1，将左上角的元素1与右上角的元素3交换，此时左上角元素为3，再将左上角的3与右下角的9交换，此时左上角为9，再将左上角的9与左下角的7进行交换，这样对于四个角的元素来说，就完成了旋转，然后继续遍历，对2，6，8，4四个元素按照相同的方法进行旋转。
+```java
+public void rotate(int[][] matrix) {
+        if (matrix == null || matrix[0] == null) {
+            return;
+        }
+        rotate(matrix,0,matrix.length-1,0,matrix[0].length-1);
+    }
+    //对矩阵进行旋转
+    public void rotate(int[][] matrix,int rowStart,int rowEnd,int colStart,int colEnd) {
+        if (rowStart>=rowEnd || colStart>= colEnd) {
+            return;
+        }
+        //进行交换
+        for (int j = colStart; j < colEnd; j++) {
+            //当前j从原点走了几步
+            int race = j-colStart;
+            //左上角与右上角元素交换
+            swap(matrix,rowStart,j,rowStart+race,colEnd);
+            //左上角与右下角元素交换
+            swap(matrix,rowStart,j,rowEnd,colEnd-race);
+            //左上角与左下角元素交换
+            swap(matrix,rowStart,j,rowEnd-race,colStart);
+        }
+        //然后对内圈元素进行旋转
+        rotate(matrix,rowStart+1,rowEnd-1,colStart+1,colEnd-1);
+    }
+
+    void swap(int[][] matrix,int i,int j,int other_i,int other_j) {
+        int temp = matrix[i][j];
+        matrix[i][j] = matrix[other_i][other_j];
+        matrix[other_i][other_j] = temp;
     }
 ```
 

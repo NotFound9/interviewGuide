@@ -49,7 +49,19 @@ Linux系统会给每个进程分配4G的虚拟地址空间(0到3G是User地址�
 
 #### 动态性
 
-程序是一个静态的指令集合，而进程是正在操作系统中运行的指令集合，进程有自己的生命周期和各种不同的状态。（五态模型一般指的是新建态（创建一个进程），就绪态（已经获取到资源，准备好了，进入运行队列，一旦获得时间片可以立即执行），阻塞态（运行过程中等待获取其他资源，I/O请求等），终止态（进程被杀死了））。
+程序是一个静态的指令集合，而进程是正在操作系统中运行的指令集合，进程有自己的生命周期和各种不同的状态。
+
+五态模型一般指的是:
+
+新建态（创建一个进程）
+
+就绪态（已经获取到资源，准备好了，进入运行队列，一旦获得时间片可以立即执行）
+
+运行态（获取到了时间片，执行程序）
+
+阻塞态（运行过程中等待获取其他资源，I/O请求等）
+
+终止态（进程被杀死了)
 
 #### 并发性
 
@@ -175,7 +187,7 @@ public synchronized void start() {
 
 ##### 注意事项：
 
-start()方法中判断threadStatus是否为0，是判断当前线程是否新建态，0是代表新建态(上图中的源码注释里面有提到)，而不是就绪态，因为Java中，就绪态和运行态是合并在一起的，（Thread的state为RUNNABLE时(也就是threadStatus为4时)，代表线程为就绪态或运行态）。执行start()方法的线程还不是JVM新建的线程，所以不是就绪态。有一些技术文章把这里弄错了，例如这一篇[《深入浅出线程Thread类的start()方法和run()方法》](https://juejin.im/post/5b09274af265da0de25759d5)
+start()方法中判断threadStatus是否为0，是判断当前线程是否新建态，0是代表新建态(上图中的源码注释里面有提到)，而不是就绪态，因为Java的Thread类中，Thread的Runnable状态包括了线程的就绪态和运行态，（Thread的state为RUNNABLE时(也就是threadStatus为4时)，代表线程为就绪态或运行态）。执行start()方法的线程还不是JVM新建的线程，所以不是就绪态。有一些技术文章把这里弄错了，例如这一篇[《深入浅出线程Thread类的start()方法和run()方法》](https://juejin.im/post/5b09274af265da0de25759d5)
 
 ![image-20200105144031591](../static/image-20200105144031591.png)
 
@@ -185,7 +197,7 @@ start()方法中判断threadStatus是否为0，是判断当前线程是否新建
 
 #### 第二种 实现Runnable接口
 
-这种方式就是创建一个类Target，实现Runnable接口的Run方法，然后将Target类的实例对象作为Thread的构造器入参target，实际的线程对象还是Thread实例，只不过线程Thread与线程执行体（Target类的run方法）分离了，耦合度更低一些。
+这种方式就是创建一个类(例如下面代码中的Target类)，实现Runnable接口的Run方法，然后将Target类的实例对象作为Thread的构造器入参target，实际的线程对象还是Thread实例，只不过线程Thread与线程执行体（Target类的run方法）分离了，耦合度更低一些。
 
 ```java
 class ThreadTarget implements Runnable {
@@ -306,11 +318,11 @@ public interface RunnableFuture<V> extends Runnable, Future<V> {
 
 正确并且可以做到延迟加载的写法其实就是三种：
 
-使用volatile修饰变量并且双重校验的写法。
+1.使用volatile修饰变量并且双重校验的写法来实现。
 
-使用静态内部类来实现（类A有一个静态内部类B，类B有一个静态变量instance，类A的getInstance()方法会返回类B的静态变量instance，因为只有调用getInstance()方法时才会加载静态内部类B，这种写法缺点是不能传参。）
+2.使用静态内部类来实现（类A有一个静态内部类B，类B有一个静态变量instance，类A的getInstance()方法会返回类B的静态变量instance，因为只有调用getInstance()方法时才会加载静态内部类B，这种写法缺点是不能传参。）
 
-使用枚举来实现（）
+3.使用枚举来实现
 
 #### 第1种 不加锁（裸奔写法）
 
@@ -383,7 +395,7 @@ instance = new Singleton();
 
 3.将分配好的内存地址设置给instance引用。
 
-但是编译器会对指令进行重排序，只能保证单线程执行时结果不会变化，也就是可能第3步会在第2步之前执行，某个线程A刚好执行完第3步，正在执行第2步时，此时如果有其他线程B进入if (instance == null)判断，会发现instance不为null，然后将instance返回，但是实际上instance还没有完成初始化，线程B会访问到一个未初始化完成的instance对象。
+但是编译器会对指令进行重排序，只能保证单线程执行时结果不会变化，也就是可能第3步会在第2步之前执行，某个线程A刚好执行完第3步，正在执行第2步时，此时如果有其他线程B进入if (instance == null)判断，会发现instance不为null，然后将instance返回，但是实际上instance还没有完成初始化，线程B会访问到一个未初始化完成的instance对象。所以需要像第5种解法一样使用volatile来修饰变量，防止重排序。
 
 #### 第5种 基于 volatile 的双重检查锁定的解决方案
 
@@ -419,8 +431,9 @@ volatile修饰的变量在编译后，会多出一个lock前缀指令，lock前�
 ```java
 class Test {    
     public static Signleton getInstance() {
-        return Signleton.instance ;  // 这里将导致 Signleton 类被初始化 
+        return Signleton.instance ;  // 只有调用getInstance()方法时，才会引用到静态内部类Signleton，从而会触发Signleton类的instance变量的初始化，以此实现懒加载的目的。
     }
+
      private static class Signleton {
         private static Signleton instance = new Signleton();
     }
@@ -472,14 +485,28 @@ instance = new Singleton(); // instance是volatile变量
 
 3.确保指令重排序时，内存屏障前的指令不会排到后面去，内存屏障后的指令不会排到前面去。
 
-可见性可以理解为一个线程的写操作可以立即被其他线程得知。为了提高CPU处理速度，CPU一般不直接与内存进行通信，而是将系统内存的数据读到内部缓存，再进行操作，对于普通的变量，修改完不知道何时会更新到系统内存。但是如果是对volatile修饰的变量进行写操作，JVM就会向处理器发送一条Lock前缀的指令，将这个变量所在的缓存行的数据立即写回到系统内存。但是即便写回到系统内存，其他CPU中的缓存行数据还是旧的，为了保证数据一致性，其他CPU会嗅探在总线上传播的数据来检查自己的缓存行的值是否过期，当CPU发现缓存行对应的内存地址被修改，那么就会将当前缓存行设置为无效，下次当CPU对这个缓存行上 的数据进行修改时，会重新从系统内存中把数据读到处理器缓存 里。
+可见性可以理解为一个线程的写操作可以立即被其他线程得知。为了提高CPU处理速度，CPU一般不直接与内存进行通信，而是将系统内存的数据读到内部缓存，再进行操作。对于普通的变量，修改完不知道何时会更新到系统内存。但是如果是对volatile修饰的变量进行写操作，JVM就会向处理器发送一条Lock前缀的指令，将这个变量所在的缓存行的数据立即写回到系统内存。但是即便写回到系统内存，其他CPU中的缓存行数据还是旧的，为了保证数据一致性，其他CPU会嗅探在总线上传播的数据来检查自己的缓存行的值是否过期，当CPU发现缓存行对应的内存地址被修改，那么就会将当前缓存行设置为无效，下次当CPU对这个缓存行上的数据进行修改时，会重新从系统内存中把数据读到处理器缓存里。
 
 
 ##### 使用场景
 
 ##### 读写锁
 
-如果需要实现一个读写锁，每次只能一个线程去写数据，但是有多个线程来读数据，就synchronize同步锁来对set方法加锁，get方法不加锁， 使用volatile来修饰变量，保证内存可见性，不然多个线程可能会在变量修改后还读到一个旧值。
+如果需要实现一个读写锁，每次只能一个线程去写数据，但是有多个线程来读数据，就synchronized同步锁来对set方法加锁，get方法不加锁， 使用volatile来修饰变量，保证内存可见性，不然多个线程可能会在变量修改后还读到一个旧值。
+
+```java
+volatile Integer a;
+//可以实现一写多读的场景，保证并发修改数据时的正确。
+set(Integer c) {
+  synchronized(this.a) {
+		  this.a = c;
+    
+  }
+}
+get() {
+	return a;
+}
+```
 
 ##### 状态位
 
@@ -496,16 +523,16 @@ instance = new Singleton(); // instance是volatile变量
 
 所以传统的操作系统线程一般有以下状态
 
-1. 新建状态:
+1. **新建状态**:
    使用 new 关键字和 Thread 类或其子类建立一个线程对象后，该线程对象就处于新建状态。它保持这个状态直到程序 start() 这个线程。
 
-2. 就绪状态:
+2. **就绪状态**:
    当线程对象调用了start()方法之后，该线程就进入就绪状态。就绪状态的线程处于就绪队列中，要等待JVM里线程调度器的调度。
 
-3. 运行状态:
+3. **运行状态:**
    如果就绪状态的线程获取 CPU 资源，就可以执行 run()，此时线程便处于运行状态。处于运行状态的线程最为复杂，它可以变为阻塞状态、就绪状态和死亡状态。
 
-4. 阻塞状态:
+4. **阻塞状态:**
 
    如果一个线程执行了sleep（睡眠）、suspend（挂起）等方法，失去所占用资源之后，该线程就从运行状态进入阻塞状态。在睡眠时间已到或获得设备资源后可以重新进入就绪状态。可以分为三种：
 
@@ -513,7 +540,7 @@ instance = new Singleton(); // instance是volatile变量
    - 同步阻塞：线程在获取 synchronized同步锁失败(因为同步锁被其他线程占用)。
    - 其他阻塞：通过调用线程的 sleep() 或 join() 发出了 I/O请求时，线程就会进入到阻塞状态。当sleep() 状态超时，join() 等待线程终止或超时，或者 I/O 处理完毕，线程重新转入就绪状态。
 
-5. 死亡状态:
+5. **死亡状态:**
    一个运行状态的线程完成任务或者其他终止条件发生时，该线程就切换到终止状态。
 
 但是Java中Thread对象的状态划分跟传统的操作系统线程状态有一些区别。
@@ -611,7 +638,7 @@ join()方法是Thread类的一个实例方法。它的作用是让当前线程�
 
 实现原理是join()方法本身是一个sychronized修饰的方法，也就是调用join()这个方法需要先获取threadA的锁，获得锁之后再调用wait()方法来进行等待，一直到threadA执行完成后，threadA会调用notify_all()方法,唤醒所有等待的线程，当前线程才会结束等待。
 
-```
+```java
 Thread threadA = new Thread();
 threadA.join();
 ```
@@ -677,7 +704,7 @@ static void ensure_join(JavaThread* thread) {
 
 #### sleep()方法是什么？
 
-sleep方法是Thread类的一个静态方法。它的作用是让当前线程睡眠一段时间。：**sleep方法是不会释放当前的锁的，而wait方法会。**
+sleep方法是Thread类的一个静态方法。它的作用是让当前线程睡眠一段时间。：**sleep方法是不会释放当前线程持有的锁，而wait方法会。**
 
 sleep与wait方法的区别：
 
@@ -727,7 +754,9 @@ thread.interrupted()
 ```
 ### 线程间怎么通信？
 
-1.通过sychronized锁来进行同步，让一次只能一个线程来执行。
+##### 1.synchronized锁
+
+通过synchronized锁来进行同步，让一次只能一个线程来执行。
 
 #### 2.等待/通知机制
 
@@ -777,7 +806,7 @@ synchronized(对象) { while(条件不满足) {
 在代码清单4-12所示的例子中，创建了printThread，它用来接受main线程的输入，任何 main线程的输入均通过PipedWriter写入，而printThread在另一端通过PipedReader将内容读出并打印。 
 
 代码清单4-12 Piped.java 
-```
+```java
 public class Piped {
        public static void main(String[] args) throws Exception {
           PipedWriter out = new PipedWriter();
@@ -820,7 +849,7 @@ Thread.join()的使用如果一个线程A执行了thread.join()语句，当前�
 
 ThreadLocal，即线程变量，是一个以ThreadLocal对象为键、任意对象为值的存储结构。这 个结构被附带在线程上，也就是说一个线程可以根据一个ThreadLocal对象查询到绑定在这个 线程上的一个值。 
 
-```
+```java
 public class Profiler {
     // 第一次get()方法调用时会进行初始化(如果set方法没有调用)，每个线程会调用一次
     private static final ThreadLocal<Long> TIME_THREADLOCAL = new ThreadLocal<Long>() {
@@ -847,7 +876,42 @@ Profiler可以被复用在方法调用耗时统计的功能上，在方法的入
 ### 怎么实现实现一个生产者消费者？
 
 #### 1.使用Object.wait()和Object.notify()实现
-使用queue作为一个队列，存放数据，并且充当锁，每次只能同时存在一个线程来生产或者消费数据，一旦队列容量>10,就进入waiting状态，一旦成功往队列添加数据，那么就唤醒所有线程（主要是生产者线程起来消费）。生产者消费时一旦发现队列容量==0，也会主动进入waiting状态。
+使用queue作为一个队列，存放数据，并且使用Synchronized同步锁，每次只能同时存在一个线程来生产或者消费数据，
+
+生成线程发现队列容量>10,生产者线程就进入waiting状态，一旦成功往队列添加数据，那么就唤醒所有线程（主要是生产者线程起来消费）。
+
+消费线程消费时，发现队列容量==0，也会主动进入waiting状态。
+
+伪代码如下：
+
+```java
+LinkedList<Integer> queue = new LinkedList<>();
+void produce(Integer value) {
+  synchronized(queue) {//加锁控制，保证同一时间点，只能有一个线程生成或者消费
+    while(queue.size()>10) {
+					queue.waiting();
+    }
+    queue.add(value);
+    //唤醒消费者线程
+    queue.notifyAll();
+  }
+}
+Integer consumer() {
+  synchronized(queue) {//加锁控制，保证同一时间点，只能有一个线程生成或者消费
+    while(queue.size()==0) {
+       queue.waiting();
+    }
+    Integer value = queue.poll();
+    //唤醒生产者线程
+    queue.notifyAll();
+		return value;
+  }
+}
+
+
+```
+
+完整代码如下：
 
 ```java
 public static void main(String[] args) {
@@ -928,7 +992,7 @@ private static class Producer {
 
 调用Object.wait()方法可以让线程进入等待状态，被添加到Object的monitor监视器的等待队列中，Object.notifyAll()可以唤醒monitor监视器等待队列中的所有线程。
 
-而调用lock的newCondition()方法,可以返回一个ConditionObject实例对象，每个ConditionObject包含一个链表，存储等待队列。可以认为一个ReentrantLock有一个同步队列（存放没有获得锁的线程），和多个等待队列（存放调用await()方法的线程）。使用Condition.singal()和Condition.singalAll()可以更加精准的唤醒线程，也就是唤醒的都是这个Condition对应的等待队列里面的线程，而Object.notify()和Object.notifyAll()只能唤醒唯一的等待队列中的线程。
+而调用lock的newCondition()方法,可以返回一个ConditionObject实例对象，每个ConditionObject包含一个链表，存储等待队列。可以认为一个ReentrantLock有一个同步队列（存放没有获得锁的线程），和多个等待队列（存放调用await()方法的线程）。使用Condition.singal()和Condition.singalAll()可以更加**精准的唤醒线程**，也就是唤醒的都是这个Condition对应的等待队列里面的线程，而Object.notify()和Object.notifyAll()只能唤醒等待队列中的所有的线程。
 
 ```java
 ReentrantLock lock = new ReentrantLock();
@@ -1114,13 +1178,31 @@ public class BlockQueueRepository<T> extends AbstractRepository<T> implements Re
 
 #### 线程池有哪些参数？
 
+```java
+ public ThreadPoolExecutor(int corePoolSize,
+                              int maximumPoolSize,
+                              long keepAliveTime,
+                              TimeUnit unit,
+                              BlockingQueue<Runnable> workQueue,
+                              RejectedExecutionHandler handler) {
+        this(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue,
+             Executors.defaultThreadFactory(), handler);
+    }
+```
+
 ##### corePoolSize 核心线程数
 
-该线程池中**核心线程数最大值**，添加任务时，即便有空闲线程，只要当前线程池线程数<corePoolSize,都是会新建线程来执行这个任务。并且核心线程空闲时间超过keepAliveTime也是不会被回收的。（从阻塞队列取任务时，如果阻塞队列为空，核心线程的会一直卡在`workQueue.take`方法，被阻塞并挂起，不会占用CPU资源。非核心线程会workQueue.poll(keepAliveTime, TimeUnit.NANOSECONDS) ，如果超时还没有拿到，下一次循环判断**compareAndDecrementWorkerCount**就会返回`null`,Worker对象的`run()`方法循环体的判断为`null`,任务结束，然后线程被系统回收）
+该线程池中**核心线程数最大值**，添加任务时，即便有空闲线程，只要当前线程池线程数<corePoolSize,都是会新建线程来执行这个任务。并且核心线程空闲时间超过keepAliveTime也是不会被回收的。（
+
+从阻塞队列取任务时，如果阻塞队列为空:
+
+核心线程的会一直卡在`workQueue.take`方法，被阻塞并挂起，不会占用CPU资源。
+
+非核心线程会调用workQueue.poll(keepAliveTime, TimeUnit.NANOSECONDS)方法取任务 ，如果超过keepAliveTime时间后还没有拿到，下一次循环判断**compareAndDecrementWorkerCount**就会返回`null`,Worker对象的`run()`方法循环体的判断为`null`,任务结束，然后线程被系统回收）
 
 ##### maximumPoolSize 最大线程数
 
-**该线程池中线程总数最大值** ，一般是用于当线程池线程都在执行任务，并且等待队列满了时，如果当前线程数<maximumPoolSize,可以创建一个新线程来执行任务。maximumPoolSize一般也可以用来现在最大线程并发执行量。
+**该线程池中线程总数最大值** ，一般是用于当线程池中的线程都在执行任务，并且等待队列满了时，如果当前线程数<maximumPoolSize,可以创建一个新线程来执行任务。maximumPoolSize一般也可以用来现在最大线程并发执行量。
 
 ##### **workQueue 等待队列**
 
@@ -1128,12 +1210,12 @@ public class BlockQueueRepository<T> extends AbstractRepository<T> implements Re
 
 | ArrayBlockingQueue    | 有界队列，一种使用数组实现的先进先出的有界阻塞队列。支持公平锁和非公平锁，底层数据结构是数组，需要指定队列的大小。 |
 | --------------------- | ------------------------------------------------------------ |
-| LinkedBlockingQueue   | 无界队列，一种使用链表实现的先进先出的有界阻塞队列。默认的容量是`Interge.MAX_VALUE`，相比于`ArrayBlockingQueue`具有更高的吞吐量，但是却丢失了随机存储的特性。默认大小是`Integer.MAX_VALUE`，也可以指定大小。newFixedThreadPool()和newSingleThreadExecutor()的等待队列都是这个阻塞队列。 |
+| LinkedBlockingQueue   | 无界队列，一种使用链表实现的先进先出的有界阻塞队列。默认的容量是`Interge.MAX_VALUE`，相比于`ArrayBlockingQueue`具有更高的吞吐量，但是却丢失了快速随机存取的特性。默认大小是`Integer.MAX_VALUE`，也可以指定大小。newFixedThreadPool()和newSingleThreadExecutor()的等待队列都是这个阻塞队列。 |
 | LinkedBlockingDeque   | 一种使用链表实现的具有双向存取功能的有界阻塞队列。在高并发下，相比于`LinkedBlockingQueue`可以将锁竞争降低最多一半 |
 | PriorityBlockingQueue | 一种提供了优先级排序的无界阻塞队列。如果没有提供具体的排列方法，那么将会使用自然排序进行排序，会抛出`OOM`异常。 |
-| SynchronousQueue      | 一种不存储任务的同步队列。每一次的插入操作都必须等待其他线程进行相应的删除操作。支持公平锁和非公平锁。同步队列，内部容量为0，每个put操作必须等待一个take操作，反之亦然。newCachedThreadPool()的等待队列都是SynchronousQueue，所以一般都是对于每一个任务都是创建一个新线程去执行。 |
+| SynchronousQueue      | SynchronousQueue一种不存储任务的同步队列，内部没有使用AQS。如果是公平锁模式，每次调用put方法往队列中添加一个线程后，线程先进行自旋，然后超时后就阻塞等待直到有提取线程把调用take方法把操作取出，这样之前调用put方法的线程才能继续执行。如果是非公平锁模式，每次添加任务就是就是把任务添加到栈中，这样就是先进后出，所以非公平。 |
 | LinkedTransferQueue   | 一种使用链表实现的无界阻塞队列。                             |
-| DelayQueue            | 一种无界的延时队列，可以设置每个元素需要等待多久才能从队列中取出。 延迟队列，该队列中的元素只有当其指定的延迟时间到了，才能够从队列中获取到该元素 。一般是用于定时任务线程池newScheduledThreadPool。 |
+| DelayQueue            | 一种无界的延时队列，可以设置每个元素需要等待多久才能从队列中取出。 延迟队列，该队列中的元素只有当其指定的延迟时间到了，才能够从队列中获取到该元素 。底层数据数据结构是数组实现的堆结构。 |
 
 **keepAliveTime**：**非核心线程闲置超时时长**。
 
@@ -1141,7 +1223,7 @@ public class BlockQueueRepository<T> extends AbstractRepository<T> implements Re
 
 **RejectedExecutionHandler 拒绝处理策略**
 
-**拒绝处理策略**，线程数量大于最大线程数就会采用拒绝处理策略，四种拒绝处理的策略为 ：
+**拒绝处理策略**，核心线程已经满了，等待队列也满了，并且线程数量大于最大线程数时，就会采用拒绝处理策略进行处理，四种拒绝处理的策略为 ：
 
 1. ThreadPoolExecutor.AbortPolicy：**默认拒绝处理策略**，丢弃任务并抛出RejectedExecutionException异常。
 2. ThreadPoolExecutor.DiscardPolicy：丢弃新来的任务，但是不抛出异常。
@@ -1150,7 +1232,7 @@ public class BlockQueueRepository<T> extends AbstractRepository<T> implements Re
 
 ##### 线程池执行任务的过程？
 
-![asd21](../static/asd21.png)
+![图4 任务调度流程](../static/31bad766983e212431077ca8da92762050214.png)
 
 #### Executors提供的四种线程池的使用场景。
 
@@ -1158,14 +1240,6 @@ Executors提供四种线程池，分别为：
 
 ##### newFixedThreadPool 定长线程池
 
-创建一个定长线程池，可控制线程最大并发数，超出的线程会在队列中等待（比较适合需要控制并发量的情况）。主要是通过将核心线程数设置为与最大线程数相等实现的。缺点是LinkedBlockingQueue队列的默认长度是Integer.MAX_VALUE，也存在内存溢出的风险。
-
-**与CachedThreadPool的区别**：
-
-- 因为 corePoolSize == maximumPoolSize ，所以FixedThreadPool只会创建核心线程。 而CachedThreadPool因为corePoolSize=0，所以只会创建非核心线程。
-- 在 getTask() 方法，如果队列里没有任务可取，线程会一直阻塞在 LinkedBlockingQueue.take() ，线程不会被回收。 CachedThreadPool会在60s后收回。
-- 由于线程不会被回收，会一直卡在阻塞，所以**没有任务的情况下， FixedThreadPool占用资源更多**。
-- 都几乎不会触发拒绝策略，但是原理不同。FixedThreadPool是因为阻塞队列可以很大（最大为Integer最大值），故几乎不会触发拒绝策略；CachedThreadPool是因为线程池很大（最大为Integer最大值），几乎不会导致线程数量大于最大线程数，故几乎不会触发拒绝策略。
 
 ```java
 public static ExecutorService newFixedThreadPool(int nThreads) {
@@ -1178,9 +1252,18 @@ public LinkedBlockingQueue() {
 }
 ```
 
-##### newSingleThreadExecutor 单线程池
+一句话总结就是：**线程数固定，等待队列无限长**。
 
-创建一个单线程化的线程池，它只会用唯一的工作线程来执行任务，保证所有任务按照指定顺序(FIFO, LIFO, 优先级)执行。主要是通过将核心线程数和最大线程数都设置为1来实现。
+创建一个线程池，核心线程数与最大线程数值都是传入参数nThreads。可控制线程最大并发数，超出的线程会在队列中等待（比较适合需要控制并发量的情况）。主要是通过将核心线程数设置为与最大线程数相等实现的。缺点是LinkedBlockingQueue队列的默认长度是Integer.MAX_VALUE，也存在内存溢出的风险。
+
+**与CachedThreadPool的区别**：
+
+- 因为 corePoolSize == maximumPoolSize ，所以**newFixedThreadPool**只会创建核心线程。 而**CachedThreadPool**因为corePoolSize=0，所以只会创建非核心线程。
+- 在 getTask() 方法，如果队列里没有任务可取，线程会一直阻塞在 LinkedBlockingQueue.take() ，线程不会被回收。 **CachedThreadPool**的线程会在60s后收回。
+- 由于线程不会被回收，会一直卡在阻塞，所以**没有任务的情况下， FixedThreadPool占用资源更多**。
+- 都几乎不会触发拒绝策略，但是原理不同。FixedThreadPool是因为阻塞队列可以很大（最大为Integer最大值），故几乎不会触发拒绝策略；CachedThreadPool是因为线程池很大（最大为Integer最大值），几乎不会导致线程数量大于最大线程数，故几乎不会触发拒绝策略。
+
+##### newSingleThreadExecutor 单线程池
 
 ```java
 public static ExecutorService newSingleThreadExecutor() {
@@ -1190,10 +1273,14 @@ public static ExecutorService newSingleThreadExecutor() {
                                     new LinkedBlockingQueue<Runnable>()));
     }
 ```
+一句话总结就是：**单线程池，等待队列无限长。**
+创建一个单线程化的线程池，它只会用唯一的工作线程来执行任务，保证所有任务按照指定顺序(FIFO, LIFO, 优先级)执行。主要是通过将核心线程数和最大线程数都设置为1来实现。
 
 ##### newCachedThreadPool可缓存线程池
 
 创建一个可缓存线程池，如果线程池长度超过处理需要，可灵活回收空闲线程，若无可回收，则新建线程。但是由于最大线程数设置的是Integer.MAX_VALUE，存在内存溢出的风险。
+
+一句话总结就是：**最大线程数无限大，线程超时被回收**
 
 ```java
 public static ExecutorService newCachedThreadPool() {
@@ -1207,15 +1294,17 @@ public static ExecutorService newCachedThreadPool() {
 
 1. 提交任务进线程池。
 2. 因为**corePoolSize**为0的关系，不创建核心线程，线程池最大为Integer.MAX_VALUE。
-3. 尝试将任务添加到**SynchronousQueue**队列。
-4. 如果SynchronousQueue入列成功，等待被当前运行的线程空闲后拉取执行。如果当前没有空闲线程，那么就创建一个非核心线程，然后从SynchronousQueue拉取任务并在当前线程执行。
-5. 如果SynchronousQueue已有任务在等待，入列操作将会阻塞。
+3. 尝试将任务添加到**SynchronousQueue**队列。(需要注意的是**SynchronousQueue**本身不存储任务，只是将添加任务的线程加入一个栈中，进行阻塞等待，然后线程池中的线程空闲时，会从栈中取出线程，取出线程携带的任务，进行执行。)
+4. 如果**SynchronousQueue**入列成功，等待被当前运行的线程空闲后拉取执行。如果当前没有空闲线程，那么就创建一个非核心线程，然后从SynchronousQueue拉取任务并在当前线程执行。
+5. 如果**SynchronousQueue**已有任务在等待，入列操作将会阻塞。
 
 当需要执行很多**短时间**的任务时，CacheThreadPool的线程复用率比较高， 会显著的**提高性能**。而且线程60s后会回收，意味着即使没有任务进来，CacheThreadPool并不会占用很多资源。
 
 ##### newScheduledThreadPool定时执行线程池
 
 创建一个定时执行的线程池，主要是通过DelayedWorkQueue来实现（该队列中的元素只有当其指定的延迟时间到了，才能够从队列中获取到该元素）。支持定时及周期性任务执行。但是由于最大线程数设置的是Integer.MAX_VALUE，存在内存溢出的风险。
+
+一句话总结就是：线程数无限大，定时执行。
 
 ```java
 public ScheduledThreadPoolExecutor(int corePoolSize,
@@ -1225,13 +1314,23 @@ public ScheduledThreadPoolExecutor(int corePoolSize,
 }
 ```
 
+##### 为什么不建议大家使用Executors的四种线程池呢？
+
+主要是newFixedThreadPool和newSingleThreadExecutor的等待队列是LinkedBlockingQueue，长度是Integer.MAX_VALUE,，可以认为是无限大的，如果创建的任务特别多，可能会造成内存溢出。而newCachedThreadPool和newScheduledThreadPool的最大线程数是Integer.MAX_VALUE，如果创建的任务过多，可能会导致创建的线程过多，从而导致内存溢出。
+
+扩展资料：
+
+[Java线程池实现原理及其在美团业务中的实践](https://tech.meituan.com/2020/04/02/java-pooling-pratice-in-meituan.html)
+
+[SynchronousQueue实现原理](https://zhuanlan.zhihu.com/p/29227508)
+
 ### 线程池有哪些状态？
 
 线程池生命周期：
 
 - **RUNNING**：表示线程池处于运行状态，这时候的线程池可以接受任务和处理任务。值是-1，
 
-- **SHUTDOWN **：表示线程池不接受新任务，但仍然可以处理队列中的任务，二进制值是0。调用showdown()方法会进入到SHUTDOWN状态。
+- **SHUTDOWN**：表示线程池不接受新任务，但仍然可以处理队列中的任务，二进制值是0。调用showdown()方法会进入到SHUTDOWN状态。
 
 - **STOP**：表示线程池不接受新任务，也不处理队列中的任务，同时中断正在执行任务的线程，值是1。调用showdownNow()方法会进入到STOP状态。
 
@@ -1241,60 +1340,133 @@ public ScheduledThreadPoolExecutor(int corePoolSize,
 
   ![img](../static/640-20200728210136673.jpeg)
 
-参考链接：
+### 怎么根据业务场景确定线程池的参数corePoolSize和maximumPoolSize？
 
-https://mp.weixin.qq.com/s?src=11&timestamp=1595941110&ver=2487&signature=i8CGBfTlDi4SaG5SSOWYJo-Sgb*bauWAv8MEMYqWQMy4lFBQwjTY4*99R2-8PhC4WtBc4uBy-m3IveQ9a0RlQn53unVD6Xalfl2r30*IbwAdK7CPlbW6-8icKhG4OjKE&new=1
+#### 方法一 计算密集型任务
+因为是计算密集型任务，可以理解为每个任务在执行期间基本没有IO操作，全部都在CPU时间片中执行。所以可以理解为CPU就是满载的，CPU利用率就是100%，其实线程数等于CPU数就可以的，但是由于需要考虑到计算密集型的线程恰好在某时因为发生一个页错误或者因其他原因而暂停，此时应该需要有一个“额外”的空闲线程来获得时间片，然后执行，可以确保在这种情况下CPU周期不会中断工作，充分利用CPU。
+```java
+最佳线程数=CPU的数量+1 
+```
+#### 方法二 IO密集型任务
+这种任务在执行时，需要进行一些IO操作，所以为了充分利用CPU，应该在线程进行IO操作时，就让出时间片，CPU进行上下文切换，执行其他线程的任务，保证CPU利用率的100%。
+
+如果任务有50%的时间需要CPU执行状态，其他时间进行IO操作，则程序所需线程数为CPU数量的1除以0.5，也就是2倍。如果任务有20%的时时间需要CPU执行，其他时间需要进行IO操作，最佳线程数也就是1除以0.2，也就是CPU数的5倍
+所以公式为
+```java
+最佳线程数 = CPU数量/(每个任务中需要CPU执行的时间的比例)
+= CPU数量/(CPU运行时间/任务执行总时间)=CPU数量/(CPU运行时间/(CPU运行时间+IO操作时间))
+所以最终公式为
+最佳线程数/CPU数量 = CPU运行时间/(CPU运行时间+IO操作时间)
+```
+##### 不足
+但是在实际线上运行的环境中，每个任务执行的时间是各不相同的，而且我们其实是不太方便去监测每个任务执行时需要的CPU执行时间，IO操作时间的，所以这种方法只是一种理论。
+
+#### 方法三 动态化线程池
+这种其实是美团他们做的一个线程池监测平台，主要把任务分成两种，
+##### 追求响应时间的任务
+一种是追求响应时间的任务，例如使用线程池对发起多个网络请求，然后对结果进行计算。 这种任务的最大线程数需要设置大一点，然后队列使用同步队列，队列中不缓存任务，任务来了就会被执行。判断线程池资源不够用时，一般是发现活跃线程数/最大线程数>阀值(默认是0.8)时，或者是线程池抛出的RejectedExecut异常次数达到阀值，就会进行告警。然后程序员收到告警后，动态发送修改核心线程数，最大线程数，队列相关的指令，服务器进行动态修改。
+
+##### 追求高吞吐量的任务
+假设说需要定期自动化生成一些报表，不需要考虑响应时间，只是希望如何使用有限的资源，尽可能在单位时间内处理更多的任务，也就是吞吐量优先的问题。
+这种就是使用有界队列，对任务进行缓存，然后线程进行并发执行。判断线程池资源不够用时，一般是发现等待队列中的任务数量/等待队列的长度>阀值(默认是0.8)时，或者是线程池抛出的RejectedExecut异常次数达到阀值，就会进行告警。然后程序员收到告警后，动态发送修改核心线程数，最大线程数，队列相关的指令，服务器进行动态修改。
+
+ThreadPoolExecutor提供了如下几个public的setter方法
+
+![image-20210119104549770](../static/image-20210119104549770.png)
+
+
+
+调用corePoolSize方法之后，线程池会直接覆盖原来的corePoolSize值，并且基于当前值和原始值的比较结果采取不同的处理策略。（总得来说就是，多退少补的策略）
+
+**对于新corePoolSize<当前工作线程数的情况：**
+
+说明有多余的worker线程，此时会向当前idle状态的worker线程发起中断请求以实现回收，多余的worker在下次idel的时候也会被回收。
+
+**对于新corePoolSize>当前工作线程数的情况：**
+
+如果当前队列中有待执行任务，则线程池会创建新的worker线程来执行队列任务。
+
+setCorePoolSize的方法的执行流程入下图所示：
+
+
+
+![图20 setCorePoolSize方法执行流程](../static/9379fe1666818237f842138812bf63bd85645.png)
+
+扩展资料：
+[Java并发（八）计算线程池最佳线程数](https://www.cnblogs.com/jpfss/p/11016169.html)
 
 ### ThreadLocal是什么？怎么避免内存泄露？
+
 从字面意思上，ThreadLocal会被理解为线程本地存储，就是对于代码中的一个变量，每个线程拥有这个变量的一个副本，访问和修改它时都是对副本进行操作。
 ##### 使用场景：
-ThreadLocal 适用于每个线程需要自己独立的实例且该实例需要在多个方法中被使用，也即变量在线程间隔离而在方法或类间共享的场景。例如方法直接调用时传递的变量过多，为了代码简洁性，可以使用ThreadLocal，在前一个方法中，将变量进行存储，后一个方法中取，进行使用。
+ThreadLocal 适用于每个线程需要自己独立的实例且该实例需要在多个方法中被使用，也即变量在线程间隔离而在方法或类间共享的场景。(例如：方法直接调用时传递的变量过多，为了代码简洁性，可以使用ThreadLocal，在前一个方法中，将变量进行存储，后一个方法中取，进行使用。)
 ```java
-public class ThreadLocalUtil {
+public class A {
     // 每个线程本地副本初始化
-    private static ThreadLocal <UserData> userLocal = new ThreadLocal <>(). withInitial (() -> new UserData ());
+    private static ThreadLocal <UserData> threadLocal = new ThreadLocal <>(). withInitial (() -> new UserData ());
     public static void setUser (UserLogin user){
         if (user == null )
             return ;
-        UserData userData = userLocal. get ();
+        UserData userData = threadLocal.get();
         userData. setUserLogin (user);
     }
     public static UserLogin getUser (){
-        return userLocal. get (). getUserLogin ();
+        return threadLocal.get(). getUserLogin ();
     }
 }
 ```
 
 ##### 实现原理
 
-就是每个Thread有一个ThreadLocalMap，类似于HashMap，当调用ThreadLocal#set()进行存值时，实际上是先获取到当前的线程，然后获取线程的map，是一个ThreadLocalMap类型，然后会在这个map中添加一个新的键值对，key就是我们ThreadLocal实例，value就是我们存的值。ThreadLocalMap与HashMap不同的时，解决HashMap使用的是**开放定址法**，也就是当发现hashCode计算得到数组下标已经存储了元素后，会继续往后找，直到找到一个空的数组下标，存储键值对。
+就是每个Thread有一个ThreadLocalMap，类似于HashMap，当调用ThreadLocal#set()方法进行存值时，实际上是先获取到当前的线程，然后获取线程的map，是一个ThreadLocalMap类型，然后会在这个map中添加一个新的键值对，key就是我们ThreadLocal变量的地址，value就是我们存的值。ThreadLocalMap与HashMap不同的时，解决HashMap使用的是**开放定址法**，也就是当发现hashCode计算得到数组下标已经存储了元素后，会继续往后找，直到找到一个空的数组下标，存储键值对。
 
 ```java
+//ThreadLocal实例的赋值方法
 public void set(T value) {
+  	//获取当前线程
     Thread t = Thread.currentThread();
+  	//获取线程对应的Map
     ThreadLocalMap map = getMap(t);
+  	//将值存入线程特有的Map中
     if (map != null)
+      //key为this就是当前ThreadLocal引用变量的地址
+      //value就是我们要存储的值
       map.set(this, value);
     else
       createMap(t, value);
 }
 ThreadLocalMap getMap(Thread t) {
+  	//线程的threadLocals实例变量就是Map
     return t.threadLocals;
 }
 ```
 
 ##### ThreadLocal中的Entry的key使用了弱引用，为什么使用弱引用？
 
-1.如果使用强引用，那么Thread引用了ThreadLocalMap，ThreadLocalMap引用了每个key和value，key和value都无法回收，又因为key是ThreadLocal变量，从而引用了ThreadLocal的实例对象无法被回收，造成内存泄露。
+![thread](../static/thread.png)
 
-2.如果使用弱引用，不会影响key的回收，也就是不会影响引用了ThreadLocal的实例对象的回收，但是value依然不会被回收，会造成内存泄露。
+首先在上面类A的代码中，类A中有一个ThreadLocal类型的变量
 
-value回收的时机有两个：
+它们的引用链如下：
 
-1.我们在用完ThreadLocal后，手动调用ThreadLocal#remove()对键值对value释放。
+```java
+ThreadLocal变量所在的类的实例(代码中A的实例)->ThreadLocal
+执行代码的线程->线程独有的ThreadLocalMap->引用的key就是ThreadLocal
+```
+
+可以看到ThreadLocal变量不仅被所在的类A的实例所引用，还被执行的线程所引用，
+
+1.如果使用强引用，也就是线程对ThreadLocal变量是强引用，那么类A的实例即便已经不被其他变量所引用了，不会被访问到了，需要被回收了，类A被回收了，但是ThreadLocal变量由于有被执行线程所引用，只要线程还在，ThreadLocal变量也不能被被JVM回收，所以会造成内存泄露。
+
+2.如果使用弱引用，不会影响key的回收，也就是不会影响引用了ThreadLocal的实例对象的回收。
+
+但是即便使用弱引用，ThreadLocalMap对value的引用是强引用(一边value是局部变量，也不能用弱引用，那样在用到的时候就会被)，但是value依然不会被回收，会造成内存泄露。
+
+通常来说，value回收的时机有两个：
+
+1.我们在用完ThreadLocal后，应该遵循规范手动调用ThreadLocal#remove()对键值对value释放，这样可以使value被回收。
 
 2.此线程在其他对象中使用ThreadLocal对线程ThreadLocalMap进行set()和get()时,由于需要进行开放定址法进行探测，会对沿途过期的键值对(就是key为null的键值对)进行清除。以及set()方法触发的cleanSomeSlots()方法对过期键值对进行清除。
 
-![thread](../static/thread.png)
-
 [《一篇文章，从源码深入详解ThreadLocal内存泄漏问题》](https://www.jianshu.com/p/dde92ec37bd1)
+

@@ -40,19 +40,19 @@ static final int hash(Object key) {
 
 根据(n - 1) & hash计算得到插入的数组下标i，然后进行判断
 
-##### table[i]==null
+##### 3.1.数组为空(table[i]==null)
 
   那么说明当前数组下标下，没有hash冲突的元素，直接新建节点添加。
 
-##### table[i].hash == hash &&(table[i]== key || (key != null && key.equals(table[i].key)))
+##### 3.2.等于下标首元素，table[i].hash == hash &&(table[i]== key || (key != null && key.equals(table[i].key)))
 
   判断table[i]的首个元素是否和key一样，如果相同直接更新value。
 
-##### table[i] instanceof TreeNode
+##### 3.3.数组下标存的是红黑树，table[i] instanceof TreeNode
 
 判断table[i] 是否为treeNode，即table[i] 是否是红黑树，如果是红黑树，则直接在树中插入键值对。
 
-##### 其他情况
+##### 3.4.数组下标存的是链表
 
   上面的判断条件都不满足，说明table[i]存储的是一个链表，那么遍历链表，判断是否存在已有元素的key与插入键值对的key相等，如果是，那么更新value，如果没有，那么在链表末尾插入一个新节点。插入之后判断链表长度是否大于8，大于8的话把链表转换为红黑树。
 
@@ -66,14 +66,16 @@ static final int hash(Object key) {
 final V putVal(int hash, K key, V value, boolean onlyIfAbsent,
                    boolean evict) {
     Node<K,V>[] tab; Node<K,V> p; int n, i;
-    // tab为空则创建 
+    // 1.tab为空则创建 
     if ((tab = table) == null || (n = tab.length) == 0)
         n = (tab = resize()).length;
-    // 计算index，并对null做处理  
-    // (n - 1) & hash 确定元素存放在哪个桶中，桶为空，新生成结点放入桶中(此时，这个结点是放在数组中)
+    // 2.计算index，并对null做处理  
+    // 3.插入元素
+  //(n - 1) & hash 确定元素存放在哪个数组下标下
+  //下标没有元素，新生成结点放入中(此时，这个结点是放在数组中)
     if ((p = tab[i = (n - 1) & hash]) == null)
         tab[i] = newNode(hash, key, value, null);
-    // 桶中已经存在元素
+    // 下标中已经存在元素
     else {
         Node<K,V> e; K k;
         // 节点key存在，直接覆盖value 
@@ -796,7 +798,7 @@ abstract class HashIterator {
 
 ### 谈一谈你对LinkedHashMap的理解？
 
-LinkedHashMap是HashMap的子类，与HashMap的实现基本一致，只是说在HashMap的基础上做了一些扩展，所有的节点都有一个before指针和after指针，根据插入顺序形成一个**双向链表**。所以可以根据插入顺序进行遍历，默认accessOrder是false，也就是按照插入顺序来排序的，map.keySet().iterator().next()第一个元素是最早插入的元素的key。LinkedHashMap可以用来实现LRU算法。(accessOrder为true，会按照访问顺序来排序。)
+LinkedHashMap是HashMap的子类，与HashMap的实现基本一致，只是说在HashMap的基础上做了一些扩展，所有的节点都有一个before指针和after指针，根据插入顺序形成一个**双向链表**。默认accessOrder是false，也就是按照**插入顺序**来排序的，每次新插入的元素都是插入到链表的末尾。map.keySet().iterator().next()第一个元素是最早插入的元素的key。LinkedHashMap可以用来实现LRU算法。(accessOrder为true，会按照访问顺序来排序。)
 
 ![img](../static/249993-20161215143120620-1544337380-20201130113344624.png)LRU算法实现：
 

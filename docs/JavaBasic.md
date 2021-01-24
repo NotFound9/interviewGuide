@@ -173,7 +173,7 @@ final修饰方法时，有两个作用：
 
 * 修饰变量
 
-  final修饰的变量一旦初始化，就不能被修改。当final修饰实例变量时，可以在在定义变量时赋初值，也可以在动态代码块，或构造器中赋初值。（只能赋值一次）。
+  final修饰的变量一旦初始化，就不能被修改。当final修饰实例变量时，可以在在定义变量时赋初值，也可以在定义时不赋值，在动态代码块，或构造器中赋初值。（只能赋值一次）。
   
   如果final变量在声明时就指定了初始值，并且在编译时可以确定下来，那么在编译时，final变量本质上会变成一个宏变量，所有用到该变量的地方都直接替换成该变量的值。
 
@@ -355,13 +355,13 @@ public static Class<?> forName(String className)
   }
 ```
 
-```
+```java
 class2 is class com.test.Son
 ```
 ##### 类名+.class
 
 还有一种方式是使用**类名+.class**来获取类关联的Class对象，与上面两种方法不同之处在于，它返回的是编译时类型，也就是在编译时，类加载器将类加载到JVM中，然后初始化一个Class对象返回。
-```
+```java
   Class class3 = Son.class;
   System.out.println(class3);
 ```
@@ -377,14 +377,14 @@ PS:无论是使用哪种方式来获取类关联的Class对象，类都是只会
 
 可以看到Obejct类中的源码如下，可以看到equals()方法的默认实现是判断两个对象的内存地址是否相同来决定返回结果。
 
-```
+```java
     public native int hashCode();
 		public boolean equals(Object obj) {
         return (this == obj);
     }
 ```
 
-网上很多博客说hashCode的默认实现是返回内存地址，其实不对，以OpenJDK为例，hashCode的默认计算方法有5种，有返回随机数的，有返回内存地址，具体采用哪一种计算方法取决于运行时库和JVM的具体实现。
+网上很多博客说hashCode的默认实现是返回内存地址，其实不对，以OpenJDK为例，hashCode的默认计算方法有5种，有返回随机数的，有返回内存地址，具体采用哪一种计算方法取决于运行时库和JVM的具体实现。(可以理解Object类hashCode默认实现是对所有对象返回的值都不一样。)
 
 感兴趣的朋友可以看看这篇博客
 
@@ -654,7 +654,7 @@ OutClass.InnerClass object = out.new InnerClass();
 ### Java中的注解是什么？
 Java中的注解其实是继承于annotation接口的一个接口，根据@Retention修饰的作用范围，注解可以是作用于源码层面，字节码文件层面，运行时层面。
 
-```
+```java
 // 如果@Retention的值是RetentionPolicy.Source 那么在编译时注解就失效了，不会编译进class文件
 // 如果@Retention的值是RetentionPolicy.CLASS 那么会编译进class文件，但是JVM加载class文件时就会丢弃这个注解，在运行时注解就失效了
 // 如果@Retention的值是RetentionPolicy.RUNTIME 在运行时注解同样有效
@@ -662,7 +662,7 @@ Java中的注解其实是继承于annotation接口的一个接口，根据@Reten
 
 根据@Retention的值，注解主要分为编译时扫描和运行时扫描，例如@Override注解是作用于源码层面的，只是在编译时，编译器会去检验method是否是真正重写了父类的某个方法。
 
-```
+```java
 @Override
 public void method() {
 

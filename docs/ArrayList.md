@@ -16,9 +16,9 @@
 
 #### 1.底层使用的数据结构
 
-* Arraylist 底层使用的是Object数组，初始化时就会指向的会是一个static修饰的空数组，数组长度一开始为**0**，插入第一个元素时数组长度会初始化为**10**，之后每次数组空间不够进行扩容时都是增加为原来的**1.5倍**。ArrayList的空间浪费主要体现在在list列表的结尾会预留一定的容量空间，而LinkedList的空间花费则体现在它的每一个元素都需要消耗比ArrayList更多的空间（因为要存放直接后继和直接前驱以及数据）
+* Arraylist 底层使用的是**Object数组**，初始化时就会指向的会是一个static修饰的空数组，数组长度一开始为**0**，插入第一个元素时数组长度会初始化为**10**，之后每次数组空间不够进行扩容时都是增加为原来的**1.5倍**。ArrayList的空间浪费主要体现在在list列表的结尾会预留一定的容量空间(为了避免添加元素时，数组空间不够频繁申请内存)，而LinkedList的空间花费则体现在它的每一个元素都需要消耗比ArrayList更多的空间（因为要存放后继指针next和前驱指针pre以及数据）
 
-* LinkedList 底层使用的是双向链表数据结构，每个节点保存了指向前驱节点和后继结点的指针。初始化时，不执行任何操作，添加第一个元素时，再去构造链表中的节点。
+* LinkedList 底层使用的数据结构是**双向链表**，每个节点保存了指向前驱节点和后继结点的指针。初始化时，不执行任何操作，添加第一个元素时，再去构造链表中的节点。
 
 #### 2.是否保证线程安全：
 
@@ -42,25 +42,25 @@ public void add(int index, E element) {
 
 #### 3.插入和删除的复杂度：
 
-* ArrayList 采用数组存储，元素的物理存储地址是连续的，支持以O(1)的时间复杂度对元素快速访问。插入和删除元素后，需要将后面的元素进行移动，所以插入和删除元素的时间复杂度受元素位置的影响。复杂度是 O（n）， 
+* ArrayList 采用数组存储，元素的物理存储地址是连续的，支持以O(1)的时间复杂度对元素快速访问。插入和删除元素后，需要将后面的元素进行移动，所以插入和删除元素的时间复杂度受元素位置的影响。复杂度是 O(n)， 
 * LinkedList 采用链表存储，所以不能快速随机访问。所以首尾插入，删除元素时间复杂度不受元素位置的影响，都是近似 O(1)(如果是插入到中间位置还需要考虑寻找插入位置的时间复杂度)。而数组为近似 O(n)。
 
 #### 4.继承树
 
-* ArrayList继承于AbstractList抽象类，实现了List, RandomAccess, Cloneable, java.io.Serializable接口 。
-* LinkedList继承自AbstractSequentialList 实现List, Deque, Cloneable, java.io.Serializable接口。
+* ArrayList继承于AbstractList抽象类，实现了**List, RandomAccess, Cloneable, java.io.Serializable**接口 。
+* LinkedList继承自AbstractSequentialList 实现**List, Deque, Cloneable, java.io.Serializable**接口。
 
-AbstractSequentialList是AbstractList类的子类，实现了根据下标来访问元素的一些方法，主要是通过listIterator遍历获取特定元素。
+**AbstractSequentialList**是AbstractList类的子类，实现了根据下标来访问元素的一些方法，主要是通过listIterator遍历获取特定元素。
 
-List接口代表的是有序结合，与Set相反，List的元素是按照移动的顺序进行排列。
+**List接口**代表的是有序结合，与Set相反，List的元素是按照移动的顺序进行排列。
 
-Cloneable接口代表类会重新父类Object的clone()方法，支持对实例对象的clone操作。
+**Cloneable接口**代表类会重新父类Object的clone()方法，支持对实例对象的clone操作。
 
-java.io.Serializable接口代表类支持序列化。
+**java.io.Serializable**接口代表类支持序列化。
 
-RandomAccess是一个标示性接口，代表ArrayList支持快速访问，而LinkedList不支持。
+**RandomAccess**是一个标示性接口，代表ArrayList支持快速访问，而LinkedList不支持。
 
-Deque接口是双端队列的意思，代表LinkedList支持两端元素插入和移除。
+**Deque**接口是双端队列的意思，代表LinkedList支持两端元素插入和移除。
 
 ### 怎么使ArrayList，LinkedList变成线程安全的呢？
 
@@ -85,23 +85,24 @@ List<Integer> synchronizedRandomAccessList =  Collections.synchronizedList(linke
 SynchronizedList类的部分代码如下：
 
 ```java
- static class SynchronizedList<E>
+static class SynchronizedList<E>
         extends SynchronizedCollection<E>
         implements List<E> {
         final List<E> list;//源list
-       final Object mutex; 
+        final Object mutex; 
 
         SynchronizedCollection(Collection<E> c) {
             this.c = Objects.requireNonNull(c);
             mutex = this;//mutex就是SynchronizedList实例自己，作为同步锁使用
         }
-        
+   
 				public E get(int index) {
             synchronized (mutex) {
             是父类中的成员变量，在父类中会将list赋值给mutex
             		return list.get(index);
             }
         }
+   
         public E set(int index, E element) {
             synchronized (mutex) {return list.set(index, element);}
         }
@@ -112,7 +113,7 @@ SynchronizedList类的部分代码如下：
 
 CopyOnWriteArrayList跟ArrayList类似，都是实现了List接口，只不过它的父类是Object，而不是AbstractList。CopyOnWriteArrayList与ArrayList的不同在于，
 
-1.内部持有一个ReentrantLock类型的lock成员变量，
+##### 1.内部持有一个ReentrantLock类型的lock锁，用于控制并发访问
 
 ```java
 	final transient ReentrantLock lock = new ReentrantLock();
@@ -120,7 +121,7 @@ CopyOnWriteArrayList跟ArrayList类似，都是实现了List接口，只不过�
 
 在对数组进行修改的方法中，都会先获取lock，获取成功才能进行修改，修改完释放锁，保证每次只允许一个线程对数组进行修改。
 
-2.CopyOnWriteArrayList内部用于存储元素的Object数组使用volatile
+##### 2.使用volatile修饰Object数组，使得变量具备内存可见性
 
 ```java
    //CopyOnWriteArrayList
@@ -130,16 +131,16 @@ CopyOnWriteArrayList跟ArrayList类似，都是实现了List接口，只不过�
    private transient Object[] elementData;//transient
 ```
 
-可以看到区别主要在于CopyOnWriteArrayList的Object是使用volatile来修饰的，volatile可以使变量具备内存可见性，一个线程在工作内存中对变量进行修改后，会立即更新到物理内存，并且使得其他线程中的这个变量缓存失效，其他线程在读取会去物理内存中读取最新的值。（volatile修饰的是指向数组的引用变量，所以对数组添加元素，删除元素不会改变引用，所以为了保证内存可见性，CopyOnWriteArrayList.add()方法在添加元素时，都是复制出一个新数组，进行修改操作后，再设置到就数组上）
+可以看到区别主要在于CopyOnWriteArrayList的Object是使用volatile来修饰的，volatile可以使变量具备内存可见性，一个线程在工作内存中对变量进行修改后，会立即更新到物理内存，并且使得其他线程中的这个变量缓存失效，其他线程在读取会去物理内存中读取最新的值。（volatile修饰的是指向数组的引用变量，所以对数组添加元素，删除元素不会改变引用，只有对数组变量array重新赋值才会改变。所以为了保证内存可见性，CopyOnWriteArrayList.add()方法在添加元素时，都是复制出一个新数组，进行修改操作后，再设置到就数组上）
 
-注意事项:Object数组都使用transient修饰是因为transient修饰的属性不会参与序列化，ArrayList通过实现writeObject()和readObject()方法来自定义了序列化方法(基于反序列化时节约空间考虑，如果用默认的序列方法，源elementData数组长度为100，实际只有10个元素，反序列化时也会分配长度为100的数组，造成内存浪费。)
+注意事项:Object数组都使用transient修饰是**因为transient修饰的属性不会参与序列化**，ArrayList通过实现writeObject()和readObject()方法来自定义了序列化方法(基于反序列化时节约空间考虑，如果用默认的序列方法，源elementData数组长度为100，实际只有10个元素，反序列化时也会分配长度为100的数组，造成内存浪费。)
 
 **下面是CopyOnWriteArrayList的add()方法:**
 
 ```java
 public boolean add(E e) {
     final ReentrantLock lock = this.lock;
-	//1. 使用Lock,保证写线程在同一时刻只有一个
+	  //1. 使用Lock,保证写线程在同一时刻只有一个
     lock.lock();
     try {
 		//2. 获取旧数组引用
@@ -160,7 +161,11 @@ public boolean add(E e) {
 
 #### SynchronizedList和CopyOnWriteArrayList优缺点
 
+##### SynchronizedList:读写都加锁
+
 SynchronizedList是通过对读写方法使用synchronized修饰来实现同步的，即便只是多个线程在读数据，也不能进行，如果是读比较多的场景下，会性能不高，所以适合读写均匀的情况。
+
+##### CopyOnWriteArrayList:读不加锁，写加锁
 
 而CopyOnWriteArrayList是读写分离的，只对写操作加锁，但是每次写操作(添加和删除元素等)时都会复制出一个新数组，完成修改后，然后将新数组设置到旧数组的引用上，所以在写比较多的情况下，会有很大的性能开销，所以适合读比较多的应用场景。
 
@@ -335,7 +340,7 @@ private void fastRemove(int index) {
 }
 ```
 
-而当删除完元素后，进行下一次循环时，会调用下面源码中Itr.next()方法获取下一个元素，会调用checkForComodification()方法对ArrayList进行校验，判断在遍历ArrayList是否已经被修改，由于之前对modCount+1，而expectedModCount还是初始化时ArrayList.Itr对象时赋的值，所以会不相等，然后抛出ConcurrentModificationException异常。
+而当删除完元素后，进行下一次循环时，会调用下面源码中Itr.next()方法获取下一个元素，会调用checkForComodification()方法对ArrayList进行校验，判断在遍历ArrayList是否已经被修改，由于之前对modCount+1，而**Iterator中的expectedModCount**还是初始化时ArrayList.Itr对象时赋的值，所以会不相等，然后抛出ConcurrentModificationException异常。
 
 ##### 那么有什么办法可以让expectedModCount及时更新呢？
 
@@ -443,7 +448,7 @@ Exception in thread "main" java.util.ConcurrentModificationException
 
 第4种方法其实是第3种方法在编译后的代码，所以第四种写法也会抛出ConcurrentModificationException异常。这种需要注意的是，每次调用iterator的next()方法，会导致游标向右移动，从而达到遍历的目的。所以在单次循环中不能多次调用next()方法，不然会导致每次循环时跳过一些元素，我在一些博客里面看到了一些错误的写法，比如这一篇[《在ArrayList的循环中删除元素，会不会出现问题？》](https://juejin.im/post/5b92844a6fb9a05d290ed46c)文章中：
 
-![image-20200101124822998](/Users/ruiwendaier/Library/Application Support/typora-user-images/image-20200101124822998.png)
+![image-20200101124822998](../static/image-20200101124822998.png)
 
 先调用iterator.next()获取元素，与elem进行比较，如果相等，再调用list.remove(iterator.next());来移除元素，这个时候的iterator.next()其实已经不是与elem相等的元素了，而是后一个元素了，我们可以写个demo来测试一下
 
