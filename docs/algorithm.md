@@ -316,8 +316,6 @@ int find_left_bound(int[] array,double target) {
 }
 ```
 
-
-
 ### 查找链表倒数第K个节点
 
 ```java

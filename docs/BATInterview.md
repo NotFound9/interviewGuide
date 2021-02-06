@@ -6,13 +6,9 @@
 
 ![](http://notfound9.github.io/interviewGuide/static/wdsfsdfsmaster.png)
 
-<figure class="half">
-
-<img src="http://notfound9.github.io/interviewGuide/static/49160c2basfdsf.jpeg" width="30%"/>
 
 <img src="http://notfound9.github.io/interviewGuide/static/image1.jpg" width="30%"/>
 
-</figure>
 
 ## 目录：
 

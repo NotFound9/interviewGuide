@@ -622,7 +622,7 @@ SELECT * FROM user WHERE a='2222' OR b='13281899972'//这个就不会走联合�
 
 这样的语句可以走联合索引，但是不会走联合索引，因为符号这个范围的数据很多，查出之后，只能获得这些数据的主键，还需要根据主键去聚集索引中查，效率比较低，还不如直接全部扫描，所以直接去聚集索引下顺序得对全表进行扫描。
 
-```
+```sql
 SELECT * FROM user WHERE age=1 and height = 2
 
 SELECT * FROM user WHERE age=1 and weight=7
@@ -632,7 +632,7 @@ SELECT * FROM user WHERE weight=7 and age=1
 
 这些是可以走联合索引的，
 
-```
+```sql
 SELECT * FROM user WEHRE age=1 and height>2 and weight=7
 ```
 
@@ -804,7 +804,7 @@ SELECT a,b,c FROM user where a = 1
 
 关键在于两次查询中间，如果数据库删除过这个区间内的数据，time_min到time_max之间删除过数据，这样就不准，
 
-```
+```sql
 （1）将order by time offset X limit Y，改写成order by time offset X/N limit Y
 
 （2）找到最小值time_min
@@ -1088,11 +1088,43 @@ varchar的存储方式是，对每个英文字符占用2个字节，汉字也占
 ##### Using index 
 使用了索引进行查询。
 ##### Using where
-就是在innodb数据引擎将结果返回后，MySQL Server层对数据进行进一步的过滤，然后返回结果。
+
+一般就是where条件中一些判断字段没有索引，那么这个条件的过滤就会在Server端进行 在innodb数据引擎将结果返回给Server层后，MySQL Server层对数据进行进一步的过滤，然后返回结果。
+
+例如：
+
+假设test表只有主键id有索引，name没有索引，那么查询时就是把所有满足id > 100的数据行返回给Server层，然后Server层根据name='123'进行过滤，所有使用explain时会发现extra那里显示的是Using where
+
+```sql
+SELECT * FROM test where id > 100 AND name = '123'
+```
+
+##### Using index condition
+
+这个就是在MySQL5.6以后，做的一个优化，例如有一个联合索引(a，b，c)
+
+查询条件为**where a = '123' AND b like '%aa% AND c like '%cc%'**时，按照联合索引的最左匹配法则，只有a可以用上索引，以前版本的MySQL中，innodb存储引擎就会在联合索引把满足a = '123'的数据的主键id找出来，然后回表，然后把所有数据发送给Sever端，Server端根据b like '%aa% AND c like '%cc%'对数据进行过滤，
+
+现在有这个push down优化，因为联合索引中有b和c两个字段的信息，innodb在联合索引查找时就会考虑到b like '%aa% AND c like '%cc%'条件，所有回表的数据就都会是满足这三个条件的，然后返回给Server端的也都是满足条件的数据行，Server端就不会再自己进行数据过滤了。
+
+https://dev.mysql.com/doc/refman/5.7/en/index-condition-pushdown-optimization.html
+
 ##### Using filesort
 如果在关联表查询时，Order By的所有字段都来自第一个表(也就是驱动表)，那么在处理驱动表时，从驱动表中取出满足条件的结果集时就会进行排序，不需要使用临时表存储数据行，进行重排序。
 ##### Using temporary; Using fileSort
 再进行关联表查询时，如果Order By的字段不全是来自驱动表，那么会把关联结果存放在临时表中，等所有的关联都结束后，再在内存中对数据行进行排序。
+
+##### 优化的方法：
+
+1.优化索引使用情况。使用explain SQL查看解析结果，首先看结果中Extra那一列是否有Using Index，如果没有看是否是where判断条件的字段没有添加索引，不能使用索引。如果出现的是Using Where，可能是where子句里面判断的字段没有加索引，这样innodb就会把所有数据行查询出来，返回给MySQL Server层，Server层做的过滤。
+
+2.减少扫描的行数。查看explain SQL解析结果中rows那一列，看行数是不是特别多，通过添加索引的方式减少扫描的行数。
+
+3.只查询我们需要的列。看SQL中的查询字段是不是都是我们需要的，只选取我们需要的字段，而不是所有查询SQL都是使用SELECT *，这些多的字段的存在，会增大查询的时间，以及网络传输的数据量。
+
+4.优化join的方式，一般join的字段在被驱动表中有索引，那么join使用的算法就会是index  Nested-Loop Join，如果没有索引那么就是block  Nested-Loop Join。尽量让join的字段有索引可以使用，是在不行，可以增加join buffer Size的大小(默认是256K)。
+
+5.如果单表数据量大于1000万，考虑进行分库分表。
 
 ### 索引的创建步骤是怎么样的？
 
@@ -1195,7 +1227,7 @@ for(Row r1 in List<Row> t1){
 
 使用场景：只有内层表join的列有索引时，才能用到Index Nested-Loop Join进行连接。
 
-使用Index Nested-Loop Join算法时SQL的EXPLAIN结果extral列是Using index。
+使用**Index Nested-Loop Join**算法时SQL的EXPLAIN结果extral列是**Using index**。
 
 由于用到索引，如果索引是辅助索引而且返回的数据还包括内层表的其他数据，则会回内层表查询数据，多了一些IO操作。
 
@@ -1210,37 +1242,44 @@ Block Nested-Loop Join通过一次性缓存多条数据，把参与查询的列�
 伪代码表示
 
 ```java
-select * from t1 inner join t2 on t1.a=t2.a
-  
+select * from t1 inner join t2 on t1.tid=t2.tid
+假设字段tid在t1表，t2表中都没有建立索引，那么查找时就不能使用索引了，采用Block Nested-Loop Join算法就是每次从驱动表t1中加载一部分数据行到内存缓冲区Join Buffer 中来，然后对t2表进行全表扫描，扫描时每次拿t2表中的数据行与Join Buffer中的数据进行匹配，匹配完成就添加到结果集。
+  所以全表扫描的次数=驱动表t1的行数/Join Buffer的大小。
+因为Join Buffer是内存缓冲区，在内存中进行元素比较是比较快的，而对t2表进行全表扫描是磁盘Io，是比较慢的，所以应该是尽可能减少全表扫描的次数。所以优化的方式一般是增大Join Buffer的大小，或者是选取数据量小的表作为驱动表，这样可以减少全表扫描的次数，减少磁盘IO。
   
 List<Row> result = new ArrayList<>();
-for(Row r1 in List<Row> t1){
+//可以把subList理解为每次从t1表中取出，加载到join buufer的那一部分数据
+for( List<Row> subList in List<Row> t1){
 	for(Row r2 in List<Row> t2){
-		if(r1.id = r2.tid){
+		if(subList.contains(r2.tid){
 			result.add(r1.join(r2));
 		}
 	}
 }
 ```
 
-
-
 使用**Block Nested-Loop Join**算法时SQL的EXPLAIN结果extral列是**Using join buffer** 
 
 什么是Join Buffer？
 （1）Join Buffer会缓存所有参与查询的列而不是只有Join的列。
 （2）可以通过调整join_buffer_size缓存大小
-（3）join_buffer_size的默认值是256K，join_buffer_size的最大值在MySQL 5.1.22版本前是4G-1，而之后的版本才能在64位操作系统下申请大于4G的Join Buffer空间。
+（3）join_buffer_size的默认值是256K，join_buffer_size的最大值在MySQL 5.1.22版本前是4G，而之后的版本才能在64位操作系统下申请大于4G的Join Buffer空间。
 （4）使用Block Nested-Loop Join算法需要开启优化器管理配置的optimizer_switch的设置block_nested_loop为on，默认为开启。
-五.如何优化Join速度
-用小结果集驱动大结果集，减少外层循环的数据量：
+
+##### 怎么如何优化Join速度？
+1.用小结果集驱动大结果集，减少外层循环的数据量：
 如果小结果集和大结果集连接的列都是索引列，mysql在内连接时也会选择用小结果集驱动大结果集，因为索引查询的成本是比较固定的，这时候外层的循环越少，join的速度便越快。
-为匹配的条件增加索引：争取使用INLJ，减少内层表的循环次数
-增大join buffer size的大小：当使用BNLJ时，一次缓存的数据越多，那么外层表循环的次数就越少
-减少不必要的字段查询：
+为匹配的条件增加索引：争取使用Index Nested-Loop Join，减少内层表的循环次数
+2.增大join buffer size的大小：当使用BNLJ时，一次缓存的数据越多，那么外层表循环的次数就越少
+3.减少不必要的字段查询：
 （1）当用到BNLJ时，字段越少，join buffer 所缓存的数据就越多，外层表的循环次数就越少；
 （2）当用到INLJ时，如果可以不回表查询，即利用到覆盖索引，则可能可以提示速度。（未经验证，只是一个推论）
-六.参考文档
+
+4.排序时尽量使用驱动表中的字段
+
+因为如果使用的是非驱动表中的字段会对非驱动表（的字段排序）需要对循环查询的合并结果（临时表）进行排序，比较耗时，使用Explain时会发现出现Using temporary。
+
+参考文档
 https://www.wengbi.com/thread_99558_1.html
 https://www.cnblogs.com/starhu/p/6418842.html
 https://www.cnblogs.com/starhu/p/6418833.html
@@ -1251,49 +1290,35 @@ https://www.cnblogs.com/starhu/p/6418833.html
 
 full outer join 会包含两个表不满足条件的行
 
-left outer join 会包含左边的表不满足条件的行
+left join 会包含左边的表不满足条件的行，一般会使用左边的表作为驱动表。
 
-right outer join 会包含右边的表不满足条件的行
+right join 会包含右边的表不满足条件的行，一般会使用右边的表作为驱动表。
 
 inner join 就是只包含满足条件的行
 
 cross join 从表A循环取出每一条记录去表B匹配，cross join 后面不能跟on，只能跟where
 
-##### 工作流程
-
-在使用join时，默认会选择满足条件的行数少的表作为驱动表，然后将它作为外层循环，取驱动表的结果集中的每一行数据去下一个表中查询符号条件的数据，然后合并结果，得到结果集，如果还有第三个表，那么继续将结果集中的每一行去第三个表中查询符号条件的数据。
-
-在进行多表查询时，
-
-* 如果没有使用join，那么默认选择满足条件的行数少的表作为驱动表。
-
-* 如果使用了join，如果是left join，那么左边的表作为驱动表，如果是right join，那么右边的表作为驱动表，否则默认满足条件的行数少的表作为驱动表。
-
-##### 1.排序时尽量使用驱动表中的字段
-
-因为如果使用的是非驱动表中的字段会对非驱动表（的字段排序）需要对循环查询的合并结果（临时表）进行排序，比较耗时，使用Explain时会发现出现Using temporary。
-
-##### 2.去掉join，直接进行多表查询
-
-此时MySQL会自己选择小表作为驱动表，减少查询耗时。
-
-##### 3.增大join_buffer_size的值
-
-#### Join的底层实现算法
-
-##### Index Nested-Loop Join
-
-就是查询时，被驱动表上的索引可以使用，这样驱动表作为外层循环，对驱动表结果集遍历时，每次去被驱动表查询时可以使用索引。
-
-##### Block Nested-Loop Join
-
-就是查询时，每次可以将驱动表的一部分加载到内存缓冲区中join_buffer中去，这样每次对被驱动表进行遍历，每次取一个元素与join_buffer中的元素进行对比，这样被驱动表的遍历次数就等于(驱动表的行/每次能加到join_buffer中的行数)，这样join_buffer越大，被驱动表被扫描的次数就越少，所以可以增大join_buffer的大小。(驱动表行数越少，扫描次数也越少。)
-
-(join_buffer的大小是由参数join_buffer_size设定的，默认值是256k)
-
 ##### exits 和in，join的区别是什么？
 
 exists是拿外表作为驱动表，外表的数据做循环，每次循环去内表中查询数据，使用适内表比较大的情况
+
+例如
+
+select * from t1 where t1.tid exists (select t2.tid from t2)
+
+转换为伪代码为：
+
+```java
+//就是t1作为驱动表
+List<Row> result = new ArrayList<>();
+for(Row r1 in List<Row> t1){
+	for(Row r2 in List<Row> t2){
+		if(r1.id = r2.tid){
+			result.add(r1.join(r2));
+		}
+	}
+}
+```
 
 而 in的话正好相反，是那内表作为驱动表，内表的数据做循环，每次循环去外表查询数据，适合内表比较小的情况。
 
@@ -1309,5 +1334,42 @@ not in 和not exists如果查询语句使用了not in 那么内外表都进行�
 
 join的实现其实是先从一个表中找出所有行（或者根据where子句查出符号条件的行)，然后去下一个表中循环寻找匹配的行，依次下去，直到找到所有匹配的行，使用join不会去创建临时表，使用in的话会创建临时表，销毁临时表
 
-所以不管是in子查询，exists子查询还是join连接查询，底层的实现原理都是一样的，本质上是没有任何区别的，关键的点在关联表的顺序，如果是join连接查询，MySQL会自动调整表之间的关联顺序，选择最好的一种关联方式。和上面in和exists比较的结论一样，小表驱动大表才是最优的选择方式
+所以不管是in子查询，exists子查询还是join连接查询，底层的实现原理都是一样的，本质上是没有任何区别的，关键的点在关联表的顺序，如果是join连接查询，MySQL会自动调整表之间的关联顺序，选择最好的一种关联方式。和上面in和exists比较的结论一样，小表驱动大表才是最优的选择方式。
 
+### MySQL怎么排查使用率低的索引？
+
+MySQL 5.5以后，有一个`performance_schema`的配置，默认为不开启，开启后，可以统计MySQL数据库的性能进行监测统计，会将内存使用情况，SQL语句使用情况，IO读取情况等等进行统计，并将统计结果写入到performance_schema这个数据库中，这个数据库里面有很多表，记录了性能统计结果。在MySQL bentch中有一个界面会展示出没有使用到索引的结果。
+
+例如图中就是我们test数据库中有一个activity表有一个index索引没有使用到。
+
+![image-20210204164409753](../static/image-20210204164409753.png)
+
+
+
+这个界面的数据来源也是来自于`performance_schema`这个数据库，里面总共有52个性能统计结果表，其中有一个table_io_waits_summary_by_index_usage表，里面统计了索引使用情况，里面有统计索引在查询，插入，更新，删除语句中使用到的次数。
+
+```SQL
+SELECT
+ object_type,//类型，这里是table
+ object_schema,//索引所在的数据库名
+ object_name,//索引所在的表名
+ index_name,//索引名称
+COUNT_FETCH,//这个索引在查询语句中使用到的的次数
+COUNT_INSERT,//这个索引在插入语句中使用到的的次数
+COUNT_UPDATE,//这个索引在更新语句中使用到的的次数
+COUNT_DELETE//这个索引在删除语句中使用到的的次数
+FROM
+ PERFORMANCE_SCHEMA.table_io_waits_summary_by_index_usage;
+```
+
+这个是查询结果，可以看到idx_ipport这个索引在查询语句中用到了1次。
+
+![image-20210204170229799](../static/image-20210204170229799.png)
+
+table_io_waits_summary_by_index_usage这个表里面还有更详细的统计数据，具体可以看看下面这个链接，里面有介绍
+
+参考链接
+
+https://www.cnblogs.com/cchust/p/5057498.html
+
+https://www.cnblogs.com/cchust/p/5061131.html

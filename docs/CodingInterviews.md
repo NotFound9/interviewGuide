@@ -183,22 +183,7 @@
 - 不为空，那么递归调用printListFromTailToHead方法来获取后面的节点反序生成的ArrayList，然后添加当前的节点的值，然后返回arrayList。
 - 为空，那么说明当前节点是链表尾部节点，直接创建一个ArrayList，然后添加当前节点的值，然后返回arrayList。
 
-```java
-ArrayList<Integer> printListFromTailToHead(ListNode listNode) {
-    if(listNode == null) { return new ArrayList<Integer>(); }
-    ArrayList<Integer> arrayList;
-    ListNode nextNode = listNode.next;
-    if (nextNode!=null) {
-    		arrayList = printListFromTailToHead(nextNode);
-    		arrayList.add(listNode.val);
-    } else {
-    		arrayList = new ArrayList<>();
-    	  arrayList.add(listNode.val);
-  	}
-    return arrayList;
-}
-```
-或者是这样写，其实原理就是先递归遍历，然后再打印，这样链表打印的顺序就是逆序的了。
+其实原理就是先递归遍历，然后再打印，这样链表打印的顺序就是逆序的了。
 ```java
 ArrayList<Integer> list = new ArrayList<Integer>();
 public ArrayList<Integer> printListFromTailToHead(ListNode listNode) {
@@ -281,8 +266,6 @@ public ArrayList<Integer> printListFromTailToHead(ListNode listNode) {
 ## 题008旋转数组
 
 把一个数组最开始的若干个元素搬到数组的末尾，我们称之为数组的旋转。 输入一个非减排序的数组的一个旋转，输出旋转数组的最小元素。 例如数组{3,4,5,1,2}为{1,2,3,4,5}的一个旋转，该数组的最小值为1。 NOTE：给出的所有元素都大于0，若数组大小为0，请返回0。
-
-
 
 ```java
 int minNumberInRotateArray(int[] array) {
@@ -445,9 +428,11 @@ double Power(double base ,int exponent) {
 
 输入一个整数数组，实现一个函数来调整该数组中数字的顺序，使得所有的奇数位于数组的前半部分，所有的偶数位于数组的后半部分，并保证奇数和奇数，偶数和偶数之间的相对位置不变。
 
+解题思路：
+
 如果可以使用额外的内存空间，可以对数组遍历两遍，一遍将奇数取出，存放在额外的数组中去，一遍把剩下的偶数存放到额外的数组中去。
 
-如果不能使用额外的内存空间，就是查找奇数，然后与前面的元素互换，一直到替换到最后一个奇数的后面，有点像是冒泡排序
+如果不能使用额外的内存空间，就是查找奇数，然后与前面的元素互换，一直到替换到最后一个奇数的后面，有点像是冒泡排序。(因为不能改变相对位置，所以不能用快排)
 
 冒泡排序是其实是交换，从头开始，依次判断两个相邻的元素，将更大的元素向右交换，遍历一次后可以将当前序列最大的元素交换到最后面去，下次遍历就不用管最后一个元素。
 
@@ -479,14 +464,12 @@ ListNode FindKthToTail(ListNode head, int k) {
         return null;
     }
     ListNode secondNode = head;
-
     for (int i=0 ; i < k-1 ; i++) {//向前走k-1步
         if (secondNode.next==null) {//链表长度不足k个
             return null;
         }
         secondNode = secondNode.next;
     }
-
     ListNode firstNode = head;
     while (secondNode.next != null) {//一直遍历到secondNode成为最后一个节点
         secondNode = secondNode.next;
@@ -776,13 +759,13 @@ public int min() {
 所以可以对压入顺序A进行遍历，判断A压入的元素是否是出栈顺序B最前面的元素，
 
 * 如果不是，那么说明只是把元素压入栈tempStack，现在还没有出栈
-* 如果是，那么现在元素可以出栈了，将元素先压入tempStack，然后对B继续向后遍历，并且与tempStack的栈顶元素进行判断，是的话就出栈，知道tempStack的元素与B中遍历到的元素不相等，那么停止出栈，继续之前的循环。
+* 如果是，那么现在元素可以出栈了，将元素先压入tempStack，然后对B继续向后遍历，继续之前的循环。
 
 循环结束后，继续对B继续向后遍历，并且与tempStack的栈顶元素进行判断，是的话就出栈，知道tempStack的元素与B中遍历到的元素不相等，那么说明B与A对应不上。
 
 ```java
-public static boolean IsPopOrder1(int [] pushA,int [] popA) {
-        if (pushA==null||popA==null) {
+public static boolean IsPopOrder1(int [] pushA,int [] popB) {
+        if (pushA==null||popB==null) {
             return false;
         }
         Stack<Integer> stack = new Stack<>();
@@ -790,7 +773,7 @@ public static boolean IsPopOrder1(int [] pushA,int [] popA) {
  				//先根据入栈序列，往栈中压入数据
         for (int i = 0; i < pushA.length; i++) {
             //如果当前栈顶元素跟出栈序列当前遍历的元素一样，那么进行出栈处理
-            while (stack.size()>0 && j<popA.length && popA[j] == stack.peek()) {
+            while (stack.size()>0 && j<popA.length && popB[j] == stack.peek()) {
                 j++;
                 stack.pop();
             }
@@ -798,7 +781,7 @@ public static boolean IsPopOrder1(int [] pushA,int [] popA) {
             stack.push(pushA[i]);
         }
         //对剩余元素出栈
-        while (stack.size()>0 && j<popA.length && popA[j] == stack.peek()) {
+        while (stack.size()>0 && j<popA.length && popB[j] == stack.peek()) {
             j++;
             stack.pop();
         }

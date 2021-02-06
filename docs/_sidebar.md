@@ -12,10 +12,10 @@
   - [持久化(AOF和RDB)](docs/RedisStore.md)
   - [高可用(主从切换和哨兵机制)](docs/RedisUserful.md)
 * MySQL
-  - [面试题解答](docs/MySQLNote.md)
+  - [原创面试题解答](docs/MySQLNote.md)
   - [慢查询优化实践](docs/MySQLWork.md)
 * JVM
-  - [面试题解答](docs/JavaJVM.md)
+  - [原创面试题解答](docs/JavaJVM.md)
 - [《剑指Offer》解题思考](docs/CodingInterviews.md)
 - [《LeetCode热门100题》解题思考(上)](docs/LeetCode.md)
 - [《LeetCode热门100题》解题思考(下)](docs/LeetCode1.md)

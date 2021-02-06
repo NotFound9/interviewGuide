@@ -17,6 +17,7 @@
 #### [14.线程池有哪些状态？](#线程池有哪些状态？)
 
 ### 进程与线程的区别是什么？
+
 #### 批处理操作系统
 
 **批处理操作系统**就是把一系列需要操作的指令写下来，形成一个清单，一次性交给计算机。用户将多个需要执行的程序写在磁带上，然后交由计算机去读取并逐个执行这些程序，并将输出结果写在另一个磁带上。
@@ -110,7 +111,7 @@ class CustomThread extends Thread {
     }
     void run() {
         System.out.println(Thread.currentThread().getName()+"线程调用了run()方法");
-        for (int j = 0; j < 20; j++) {
+        for (int j = 0; j < 5; j++) {
             System.out.println(Thread.currentThread().getName()+"线程--j是"+j);
         }
         System.out.println("run()方法执行完毕！");
@@ -124,26 +125,10 @@ class CustomThread extends Thread {
 main线程调用了main方法
 Thread-0线程调用了run()方法
 Thread-0线程--j是0
-Thread-0线程--j是1
+main线程--i是1
 Thread-0线程--j是2
 Thread-0线程--j是3
 Thread-0线程--j是4
-Thread-0线程--j是5
-Thread-0线程--j是6
-Thread-0线程--j是7
-Thread-0线程--j是8
-Thread-0线程--j是9
-Thread-0线程--j是10
-Thread-0线程--j是11
-Thread-0线程--j是12
-Thread-0线程--j是13
-Thread-0线程--j是14
-main线程--i是1
-Thread-0线程--j是15
-Thread-0线程--j是16
-Thread-0线程--j是17
-Thread-0线程--j是18
-Thread-0线程--j是19
 run()方法执行完毕！
 main()方法执行完毕！
 ```
@@ -273,17 +258,15 @@ thread.start()
 
 #### 第三种 实现Callable接口
 
-创建一个类CallableTarget，实现Callable接口，实现带有返回值的call()方法，以CallableTarget实例对象作为创建FutureTask对象的参数，FutureTask实现了RunnableFuture接口，而RunnableFuture接口继承于Runnable, Future接口，所以FutureTask对象可以作为创建Thread对象的入参，创建Thread对象，然后调用start方法。
+Runnable接口中的run方法是没有返回值，如果我们需要执行的任务带返回值就不能使用Runnable接口。创建一个类CallableTarget，实现Callable接口，实现带有**返回值的call()方法**，然后根据CallableTarget创建一个任务FutureTask，然后根据FutureTask来创建一个线程Thread，调用Thread的start方法可以执行任务。
 
 ```java
 public class CallableTarget implements Callable<Integer> {
-
     public Integer call() throws InterruptedException {
         System.out.println(Thread.currentThread().getName()+"线程执行了call方法");
         Thread.sleep(5000);
         return 1;
     }
-
     public static void main(String[] args) throws ExecutionException, InterruptedException {
         System.out.println(Thread.currentThread().getName()+"线程执行了main方法");
         CallableTarget callableTarget = new CallableTarget();
@@ -297,18 +280,105 @@ public class CallableTarget implements Callable<Integer> {
 }
 ```
 
-Callable接口的源码
+原理就是Thread类默认的run()方法实现是会去调用自身实例变量target的run()方法，(target就是我们构造Thread传入的FutureTask)，而FutureTask的run方法中就会调用Callable接口的实例的call()方法。
 
 ```java
-@FunctionalInterface
-public interface Callable<V> {
-    V call() throws Exception;
+//Thread类的run方法实现
+@Override
+public void run() {
+  if (target != null) {
+    //这里target就是我们在创建Thread时传入的FutureTask实例变量
+    target.run();
+  }
+}
+//FutureTask类的run方法实现
+public void run() {
+  if (state != NEW ||
+      !UNSAFE.compareAndSwapObject(this, runnerOffset,
+                                   null, Thread.currentThread()))
+    return;
+  try {
+    Callable<V> c = callable;
+    if (c != null && state == NEW) {
+      V result;
+      boolean ran;
+      try {
+        //在这里会调用Callable实例的call方法
+        result = c.call();
+        ran = true;
+      } catch (Throwable ex) {
+        result = null;
+        ran = false;
+        setException(ex);
+      }
+      if (ran)
+        set(result);
+    }
+  } finally {
+    // runner must be non-null until state is settled to
+    // prevent concurrent calls to run()
+    runner = null;
+    // state must be re-read after nulling runner to prevent
+    // leaked interrupts
+    int s = state;
+    if (s >= INTERRUPTING)
+      handlePossibleCancellationInterrupt(s);
+  }
 }
 ```
 
-RunnableFuture接口的源码
+### Java中的Runnable、Callable、Future、FutureTask的区别和联系？
+
+最原始的通过新建线程执行任务的方法就是我们去新建一个类，继承Thread，然后去重写run()方法，但是这样限制太大了，Java也不支持多继承。所以有了Runnable。
+##### Runnable
+Runnable是一个接口，只需要新建一个类实现这个接口，然后重写run方法，将该类的实例作为创建Thread的入参，线程运行时就会调用该实例的run方法。
+```java
+@FunctionalInterfacepublic interface Runnable {
+ public abstract void run();
+}
+```
+
+Thread.start()方法->Thread.run()方法->target.run()方法
+
+##### Callable
+
+Callable跟Runnable类似，也是一个接口。只不过它的call方法有返回值，可以供程序接收任务执行的结果。
 
 ```java
+@FunctionalInterfacepublic interface Callable<V> {
+  V call() throws Exception;
+}
+```
+
+##### Future
+
+Future也是一个接口，Future就像是一个管理的容器一样，进一步对Runable和Callable的实例进行封装，提供了取消任务的cancel()方法，查询任务是否完成的isDone()方法，获取执行结果的get()方法，带有超时时间来获取执行结果的get()方法。
+
+```java
+public interface Future<V> {
+  
+ boolean cancel(boolean mayInterruptIfRunning);
+
+ boolean isCancelled();
+
+ boolean isDone();
+  
+ V get() throws InterruptedException, ExecutionException;
+  
+ V get(long timeout, TimeUnit unit)   
+   throws InterruptedException, ExecutionException, TimeoutException;
+}
+```
+
+##### FutureTask
+
+因为Future只是一个接口，并不能实例化，可以认为FutureTask就是Future接口的实现类，FutureTask实现了RunnableFuture接口，而RunnableFuture接口继承Runnable接口和Future接口。
+
+```java
+public class FutureTask<V> implements RunnableFuture<V> {
+...
+}
+
 public interface RunnableFuture<V> extends Runnable, Future<V> {
     void run();
 }
@@ -738,7 +808,7 @@ https://blog.csdn.net/u013332124/article/details/84647915
 
 ### 谈一谈你对线程中断的理解？
 
-在Java中认为，一个线程不应该由其他线程来强制中断或者停止，所以一些会强制中断线程的方法Thread.stop, Thread.suspend都已经废弃了。所以一般是通过调用thread.interrupt();方法来设置线程的中断标识，
+在Java中认为，一个线程不应该由其他线程来强制中断或者停止，所以一些会强制中断线程的方法Thread.stop(), Thread.suspend()方法都已经废弃了。所以一般是通过调用thread.interrupt();方法来设置线程的中断标识，
 
 1.这样如果线程是处于阻塞状态，会抛出InterruptedException异常，代码可以进行捕获，进行一些处理。（例如Object#wait、Thread#sleep、BlockingQueue#put、BlockingQueue#take。其中BlockingQueue主要调用conditon.await()方法进行等待，底层通过LockSupport.park()实现）
 
@@ -752,6 +822,15 @@ thread.isInterrupted()
 //会返回当前的线程中断状态，并且重置线程的中断标识，将中断标识设置为false
 thread.interrupted()
 ```
+
+### 线程执行的任务可以终止吗？
+
+FutureTask提供了cancel(boolean mayInterruptIfRunning)方法来取消任务，并且
+
+如果入参为false，如果任务已经在执行，那么任务就不会被取消。
+
+如果入参为true，如果任务已经在执行，那么会调用Thread的interrupt()方法来设置线程的中断标识，如果线程处于阻塞状态，会抛出异常，如果正常状态只是设置标志位，修改interrupted变量的值。所以如果要取消任务只能在任务内部中调用thread.isInterrupted()方法获取当前线程的中断状态，自行取消。
+
 ### 线程间怎么通信？
 
 ##### 1.synchronized锁
