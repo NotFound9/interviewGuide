@@ -25,7 +25,7 @@
 
 #### [12.为什么hashCode()和equal()方法要一起重写？](#为什么hashCode()和equal()方法要一起重写？)
 
-#### [13.Java 中有哪些数据类型？](#Java 中有哪些数据类型？)
+#### [13.Java中有哪些数据类型？](#Java中有哪些数据类型？)
 
 #### [14.包装类型和基本类型的区别是什么？](#包装类型和基本类型的区别是什么？)
 
@@ -698,7 +698,7 @@ RuntimeException以外的异常可以认为是编译时异常，从程序语法�
 
 @Transaction默认检测异常为RuntimeException及其子类，如果有其他异常需要回滚事务的需要自己手动配置，例如：@Transactional(rollbackFor = Exception.class)
 
-### Java 中有哪些基本数据类型？
+### Java中有哪些基本数据类型？
 
 
 | 类型    | 字节数                                             | 取值范围                                                     |

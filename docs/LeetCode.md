@@ -34,6 +34,7 @@
 ##### [第94题-二叉树的中序遍历](#第94题-二叉树的中序遍历)
 ##### [第64题-最小路径和](#第64题-最小路径和)
 ##### [第215题- 数组中的第K个最大元素](#第215题-数组中的第K个最大元素)
+
 ##### [第234题- 回文链表](#第234题-回文链表)
 ##### [第200题-岛屿数量](#第200题-岛屿数量)
 ##### [第48题-旋转图像](#第48题-旋转图像)
@@ -106,22 +107,17 @@ class Solution {
 #### 循环的解法：
 
 ```java
-/**
- * Definition for singly-linked list.
- * public class ListNode {
- *     int val;
- *     ListNode next;
- *     ListNode(int x) { val = x; }
- * }
- */
 class Solution {
     public ListNode reverseList(ListNode head) {
         if(head==null||head.next==null){return head;}
         ListNode preNode = head;
         ListNode currentNode = head.next;
+      	//将原来头结点的next指针设置为null
         head.next = null;
         while(currentNode!=null) {
+          	//保存指向下一个节点的指针
             ListNode saveNode = currentNode.next;
+          	//将当前节点的next指向前一个节点
             currentNode.next = preNode;
             preNode = currentNode;
             currentNode = saveNode;
@@ -212,7 +208,7 @@ public int lengthOfLongestSubstring(String s) {
 
 #### 题目详情：
 
-给出两个 非空 的链表用来表示两个非负的整数。其中，它们各自的位数是按照 逆序 的方式存储的，并且它们的每个节点只能存储 一位 数字。
+给出两个 非空 的链表用来表示两个非负的整数。其中，它们各自的位数是按照逆序的方式存储的，并且它们的每个节点只能存储 一位 数字。
 
 如果，我们将这两个数相加起来，则会返回一个新的链表来表示它们的和。
 
@@ -256,7 +252,8 @@ public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
             if(carryFlag == 0) {//没有进位，直接将剩余链表接过来
                 currentNode.next = l1.next == null ? l2.next : l1.next;
                 break;
-            } else {//有进位就建新节点
+            } else {
+              //两个链表都到末尾了，并且有进位就建新节点
                 if(l1.next == null && l2.next == null) {
                     currentNode.next = new ListNode(1);
                     break;
@@ -314,7 +311,11 @@ public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
 
 #### 解题思路
 
-就是遍历字符串，字符属于左括号就添加到栈中，属于右括号就判断是否属于与栈顶元素对应，是的话可以将栈顶出栈，不是的话就说明不匹配，返回 false。遍历完成需要判断栈的长度是否为0，不为0代表还存在没有匹配上的左括号，不满足要求。 
+就是遍历字符串，
+
+字符属于左括号就添加到栈中，
+
+字符属于右括号就判断是否属于与栈顶元素对应，是的话可以将栈顶出栈，不是的话就说明不匹配，返回 false。遍历完成需要判断栈的长度是否为0，不为0代表还存在没有匹配上的左括号，不满足要求。 
 
 ```java
 class Solution {
@@ -384,11 +385,12 @@ class Solution {
         char[] array = s.toCharArray();
         String maxString = String.valueOf(array[0]);
         for(int i = 1;i<array.length;i++) {
+          //判断是否是偶数回文串
             if(array[i] == array[i-1]) {//i跟i-1对称
                 String value = findMax(s, i-1,i);
                 maxString = maxString.length() < value.length() ? value : maxString;
             } 
-          	//这里必须是if，而不是else if，因为存在当前字符i与上一个字符i-1回文，同时月存在下一个字符i-1与上一个字符i+1回文，例如ccc
+          	//判断是否是奇数回文串
             if (i+1 <= array.length -1 && array[i-1] == array[i+1]) {//i+1跟i-1对称
                 String value = findMax(s, i-1,i+1);
                 maxString = maxString.length() < value.length() ? value : maxString;
@@ -648,6 +650,7 @@ public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
 ### 第283题-移动零
 
 题目详情：https://leetcode-cn.com/problems/move-zeroes/
+
 解题思路：
 
 对数组进行遍历，就是找到一个为0的数，然后继续往后找，找到一个不为0的数，与它进行交换，这样就可以把0全部移动到后面去了。
@@ -769,6 +772,7 @@ public int maxArea(int[] height) {
         int right = height.length-1;
         int maxArea = 0;
         while (left<right) {
+          	//每次都是移动height[i]较小的那个端点
             if (height[left]<height[right]) {
                 int area = height[left] * (right-left);
                 maxArea = maxArea > area ? maxArea : area;
@@ -871,8 +875,6 @@ public void tranverse(String digits,String currentString,int start,List<String> 
 
 **注意：**答案中不可以包含重复的三元组。
 
- 
-
 **示例：**
 
 ```java
@@ -894,8 +896,9 @@ for(int i=0;i<nums.length;i++) {
 ```
 主要难点其实是在于如何避免提交重复的三元组到数组中去，本题是通过只对不同的元素调用twoSum方法，并且调用范围为i+1到nums.length-1。
 ```java
-List<List<Integer>> totalList = new ArrayList<>();
+		List<List<Integer>> totalList = new ArrayList<>();
     public List<List<Integer>> threeSum(int[] nums) {
+      	//先对数组进行排序
         Arrays.sort(nums);
         for (int i = 0; i < nums.length; i++) {
             //说明上次循环已经添加了
@@ -903,8 +906,8 @@ List<List<Integer>> totalList = new ArrayList<>();
                 continue;
             }
             int target = 0 - nums[i];
-            //这里不是从0开始遍历，防止重复
-            twoSum(nums,i+1,target);
+            //这里不是从0开始遍历，而是只是对后面的元素遍历，防止三元组重复
+            twoSum(nums, i+1, target);
         }
         return totalList;
     }
@@ -981,11 +984,11 @@ public int maxDepth(TreeNode root) {
 
 输入：n = 3
 输出：[
-       "((()))",
-       "(()())",
-       "(())()",
-       "()(())",
-       "()()()"
+       "((()))", 000111
+       "(()())", 001011
+       "(())()", 001101
+       "()(())", 010011
+       "()()()"  010101
      ]
 
 ##### 解题思路
@@ -1000,26 +1003,27 @@ public int maxDepth(TreeNode root) {
 
 （    							  ）   （					  ）	  	（			  		）  （                   ）
 
-每次就使用回朔的方法进行深度遍历，每当发现当前的路径不符合要求时，进行剪枝，回退到上一层，遍历其他路径。(本题中剪枝的要求是左括号数量>n,右括号数量>n,右括号数量>左括号)
+每次就使用回朔的方法进行深度遍历，每当发现当前的路径不符合要求时，进行剪枝，回退到上一层，遍历其他路径。(本题中剪枝的要求是左括号数量>n，或者右括号数量>n，或者右括号数量>左括号。)
 
 ```java
-public List<String> generateParenthesis(int n) {
+		public List<String> generateParenthesis(int n) {
         List<String> totalList = new ArrayList<String>();
         if(n<=0) {
             return totalList;
         }
         LinkedList<Character> stack = new LinkedList<Character>();
-      //使用回朔算法进行遍历
+        //使用回朔算法进行遍历
         generateParenthesis(n,0,0,stack,totalList);
         return totalList;
     }
 		
     public void generateParenthesis(int n,int left,int right,LinkedList<Character> stack,List<String> totalList) {
       //不满足要求，进行剪枝，回退去遍历其他节点
-        if(left>n || right>n || right>left) {return;}  
-      if(left==n&&right==n) {//正好匹配上了，将栈中所有值转换为
+      
+       if(left>n || right>n || right>left) {return;}  
+       if(left==n&&right==n) {//正好匹配上了，将栈中所有值转换为
             StringBuffer str = new StringBuffer();
-            for(int i =0;i<stack.size();i++) {
+            for(int i = 0;i < stack.size(); i++) {
                 str.append(stack.get(i));
             }
             totalList.add(str.toString());
@@ -1050,7 +1054,6 @@ void backtrack(路径, 选择列表stack):
         做选择 stack.add(当前元素);
         backtrack(路径, 选择列表)
         撤销选择 stack.remove(当前元素);
-
 ```
 ### 第42题-接雨水
 
@@ -1073,16 +1076,19 @@ public int trap(int[] height) {
         if (height==null||height.length==0){return 0;}
         int[][] dp = new int[height.length][2];
         int leftMax = height[0];
+  			//统计每个柱子左边的最大值
         for (int i = 1; i < height.length; i++) {
             leftMax = leftMax > height[i] ? leftMax : height[i];
             dp[i][0] = leftMax;
         }
         int rightMax = height[height.length-1];
-        for (int i = height.length-2; i >=0 ; i--) {
+        //统计每个柱子右边的最大值
+  			for (int i = height.length-2; i >=0 ; i--) {
             rightMax = rightMax > height[i] ? rightMax : height[i];
             dp[i][1] = rightMax;
         }
         int area = 0;
+  			//统计每个柱子可以存的水
         for (int i = 1; i <= height.length-2; i++) {
             int min = dp[i][0] < dp[i][1] ? dp[i][0] : dp[i][1];
             area += min-height[i];
@@ -1090,12 +1096,6 @@ public int trap(int[] height) {
         return area;
     }
 ```
-
-
-
-
-
-
 
 
 
@@ -1125,7 +1125,7 @@ public int trap(int[] height) {
 
 ##### 解题思路
 
-其实就是二叉树的宽度优先遍历
+其实就是二叉树的宽度优先遍历，只不过返回结果，是每一层的节点存在同一个数组中
 
 ```java
 public List<List<Integer>> levelOrder(TreeNode root) {
@@ -1399,8 +1399,6 @@ public boolean canJump(int[] nums) {
 2. 向右 -> 向下 -> 向右
 3. 向下 -> 向右 -> 向右
 
-
-
 ##### 解题思路
 
 其实就是C(m-1,m-1+n-1)，其实总共要走m-1+n-1步，其中有m-1步是向右的，n-1步是向下的，所以其实是一个组合问题，相当于在m-1+n-1步中找出m-1步的组合数。
@@ -1430,10 +1428,11 @@ public int uniquePaths(int m, int n) {
 ```
 输入: intervals = [[1,3],[2,6],[8,10],[15,18]]
 输出: [[1,6],[8,10],[15,18]]
-解释: 区间 [1,3] 和 [2,6] 重叠, 将它们合并为 [1,6].
+解释: 区间 [1,3] 和 [2,6] 重叠, 将它们合并为 [1,6]。
 ```
 
 ##### 解题思路
+
 就是先根据左边界进行排序，排序完之后进行进行区间合并，合并的判断规则就是当前区间的左边界是否在上一个区间内。
 
 ```java
@@ -1441,6 +1440,7 @@ public int[][] merge(int[][] intervals) {
         if (intervals==null||intervals.length<=1) {
             return intervals;
         }
+  		//先进行排序
         quickSort(intervals,0,intervals.length-1);
         int lastIndex = 0;
         for (int i = 1; i < intervals.length; i++) {
@@ -1463,7 +1463,7 @@ public int[][] merge(int[][] intervals) {
         }
         return result;
     }
-		//快排
+		//快排，按照每个区间的左边界进行排序
     void quickSort(int[][] array,int start,int end) {
         if (start>=end){return;}
         int i = start;
@@ -1489,7 +1489,7 @@ public int[][] merge(int[][] intervals) {
     }
 ```
 ### 第169题-多数元素
-给定一个大小为 n 的数组，找到其中的多数元素。多数元素是指在数组中出现次数大于 ⌊ n/2 ⌋ 的元素。
+给定一个大小为 n 的数组，找到其中的多数元素。多数元素是指在数组中出现次数大于n/2 的元素。
 
 你可以假设数组是非空的，并且给定的数组总是存在多数元素。
 
@@ -1612,7 +1612,7 @@ public int search(int[] nums, int target) {
 输入: [2,2,1]
 输出: 1
 
-##### 解题思路 
+##### 解题思路
 
 ```java
 public int singleNumber(int[] nums) {
@@ -1664,8 +1664,7 @@ public ListNode mergeKLists(ListNode[] lists) {
             adjustHeap(arrayList,i,arrayList.size());
         }
         while (arrayList.size()>0) {
-            if (arrayList.get(0) == null) {//到最后一个节点了
-
+            if (arrayList.get(0) == null) {//这个链表到最后一个节点了，从小顶堆中移除
                 swap(arrayList,0,arrayList.size()-1);
                 arrayList.remove(arrayList.size()-1);
                 continue;
@@ -1733,6 +1732,8 @@ public List<Integer> inorderTraversal(TreeNode root) {
 ```
 
 栈解法
+
+就是遍历到每个节点时，先把这个节点的右节点right添加到栈，再把这个节点添加到栈，再把这个节点的左节点left添加到栈。再把这个节点的left和right指针设置为null，代表这个节点的左右子节点已经被访问到了，下次遍历到这个节点时可以直接添加到列表中。
 
 ```java
 public List<Integer> inorderTraversal1(TreeNode root) {
@@ -1824,6 +1825,7 @@ public int minPathSum(int[][] grid, int row,int col) {
 输出: 5
 
 ##### 解题思路
+
 就是Top K问题，这里可以使用堆排进行排序，需要注意的是，大顶堆建堆结束后，每次将堆顶元素移动到数组末尾，然后继续对剩下的0到i-1范围内的元素进行调整,所以是adjustHeap(nums,0,i);
 ```java
 public int findKthLargest(int[] nums, int k) {
@@ -2071,9 +2073,8 @@ public boolean isValidBST(TreeNode root) {
 }
 ```
 
-
-
 ### 第78题-子集
+
 给定一组不含重复元素的整数数组 nums，返回该数组所有可能的子集（幂集）。
 
 说明：解集不能包含重复的子集。
@@ -2095,6 +2096,9 @@ public boolean isValidBST(TreeNode root) {
 
 ##### 解题思路
 由于原数组是没有重复元素的，所以其实一共有2的nums.length次组合，也就是这么多组子集。
+
+可以用回朔法，也可以用循环法。
+
 ```java
 public List<List<Integer>> subsets(int[] nums) {
         List<List<Integer>> totalList = new ArrayList<List<Integer>>();
@@ -2142,15 +2146,15 @@ public List<List<Integer>> subsets(int[] nums) {
         int blue = nums.length-1;
         for (int i = 0; i <= blue; i++) {
             if (nums[i] == 0) {
-                if (i==0) {
-                    red++;
-                    continue;
-                } else {
+                //if (i==0) {
+                  //  red++;
+                  // continue;
+               // } else {
                     int temp = nums[red];
                     nums[red] = 0;
                     nums[i] = temp;
                     red++;
-                }
+                //}
             } else if(nums[i]==1) {
                 continue;
             } else if(nums[i]==2) {
@@ -2224,11 +2228,11 @@ List<List<Integer>> totalList = new ArrayList<List<Integer>>();
         }
 
         for (int i = 0; i*candidates[end] <= target ; i++) {
-            for (int j = 0; j < i; j++) {//添加n个当前元素
+            for (int j = 0; j < i; j++) {//添加j个当前元素,也就是假设子集和中有j个candidates[end]元素
                 stack.add(candidates[end]);
             }
             combinationSum(candidates,target-i*candidates[end],end-1,stack);
-            for (int j = 0; j < i; j++) {//移除n个当前元素
+            for (int j = 0; j < i; j++) {//移除j个当前元素
                 stack.removeLast();
             }
         }
@@ -2274,9 +2278,7 @@ public TreeNode invertTree(TreeNode root) {
 
 如果不存在下一个更大的排列，则将数字重新排列成最小的排列（即升序排列）。
 
-必须 原地 修改，只允许使用额外常数空间。
-
- 
+必须 原地 修改，只允许使用额外常数空间。 
 
 示例 1：
 
@@ -2284,7 +2286,7 @@ public TreeNode invertTree(TreeNode root) {
 输出：[1,3,2]
 
 ##### 解题思路
-本题其实就是提升数字的字典序,并且要提升的幅度最小。就是从后面往前找到第一个nums[i-1]<nums[i],这是需要调整使得数字字典序更大的地方，然后从i到length-1之间找到一个大于nums[i-1]但是又最小的数，然后与nums[i-1]替换。
+本题其实就是提升数字的字典序,并且要提升的幅度最小。就是从后面往前找到第一个nums[i-1]<nums[i]的数，这是需要调整使得数字字典序更大的地方，然后从i到length-1之间找到一个大于nums[i-1]但是又最小的数，然后与nums[i-1]替换。
 
 ```java
 public void nextPermutation(int[] nums) {
@@ -2441,6 +2443,7 @@ dp[i] = max(1,dp[k]+1); k<i,并且nums[k]<nums[i]
         int totalMax = 1;
         for (int i = 1; i < nums.length; i++) {
             int max = 1;
+          	//向前遍历，找到一个比nums[i]小的数，与它组成一个递增序列。
             for (int j = i-1; j >=0; j--) {
                 if (nums[j] < nums[i] && dp[j] + 1 > max) {
                     max = dp[j] + 1;

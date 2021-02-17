@@ -959,7 +959,6 @@ public RandomListNode Clone(RandomListNode pHead)
 
 
         }
-
         //设置新链表的特殊指针
         RandomListNode oldCurrentNode= pHead;
         RandomListNode newCurrentNode;
@@ -997,6 +996,7 @@ public RandomListNode Clone(RandomListNode pHead)
 
 
 ## 题025 二叉搜索树与双向链表
+
 输入一棵二叉搜索树，将该二叉搜索树转换成一个排序的双向链表。要求不能创建任何新的结点，只能调整树中结点指针的指向。
 
 二叉搜索树的中序遍历的结果就是递增的序列，所以递归实现二叉搜索树的中序遍历
@@ -1169,19 +1169,19 @@ f(n) 有两种取值
         if(array==null || array.length==0) {
             return 0;
         }
-        int max=array[0];
         int currentSum = array[0];
+        int maxSum = currentSum;
         for (int i = 1; i < array.length; i++) {
             if (currentSum<0) {
                 currentSum = array[i];
             } else {
                 currentSum = currentSum + array[i];
             }
-            if (currentSum>max) {
-                max = currentSum;
+            if (currentSum>maxSum) {
+                maxSum = currentSum;
             }
         }
-        return max;
+        return maxSum;
     }
 ```
 
@@ -1191,7 +1191,7 @@ f(n) 有两种取值
 
 解法一，就是对1到n进行遍历，对每个数统计该数1出现的次数，统计时用这个数x%10，判断个位数是否为1，然后用x=x/10的结果继续%10来进行判断个位数为1，一直到x=0，统计到x包含1的个数，这样的话，一共有N个数，每个数计算的时间复杂度log10 N，总时间复杂度是N*log10 (N)也就是Nlog(N)
 
-解法二：还是对1到n进行遍历，对每个数统计该数1出现的次数，将每个数转换为字符串，判断字符串包含字符"1"的个数，但是将数字转换为字符串的这个过程，由于使用了StringBuffer的append()方法，然后使用了Integer的getChars方法，复杂度还是Log100 (N)，所以总复杂度还是Nlog(N)
+解法二：还是对1到n进行遍历，对每个数统计该数1出现的次数，将每个数转换为字符串，判断字符串包含字符"1"的个数，但是将数字转换为字符串的这个过程，由于使用了StringBuffer的append()方法，然后使用了Integer的getChars方法，复杂度还是Log10 (N)，所以总复杂度还是Nlog(N)
 
 ```java
 public int NumberOf1Between1AndN_Solution(int n) {
@@ -1258,7 +1258,9 @@ public Boolean compare(int a, int b) {
 
 把只包含质因子2、3和5的数称作丑数（Ugly Number）。例如6、8都是丑数，但14不是，因为它包含质因子7。 习惯上我们把1当做是第一个丑数。求按从小到大的顺序的第N个丑数。
 
-第一个丑数是1，除了1以外，其他丑数都是2，3，5之间相乘得到的，也就是丑数的因子都是2，3，5，
+1 2 3 5 
+
+第一个丑数是1，除了1以外，其他丑数都是2，3，5之间相乘得到的，也就是丑数的因子都是2，3，4，5，6，
 
 第一种解决方案就是从1开始对所有整数遍历，将每个数一直除以2，3，5，看能否除尽，能除尽代表是丑数，一直得到第N个丑数。
 
@@ -1276,13 +1278,12 @@ public int GetUglyNumber_Solution(int index) {
         int temp5 = array[index5]*5;
         int minTemp = temp2 < temp3 ? temp2 : temp3;
         minTemp = minTemp < temp5 ? minTemp : temp5;
-
         if (temp2 == minTemp) {
             index2++;
         }
         if (temp3 == minTemp) {
             //可能存在一个丑数可以由多种丑数相乘得到，
-            // 例如6可以是2*2*2，也可以是2*3，所以这里的三个if需要分开判断赋值
+            // 例如12可以是6*2，也可以是4*3，所以这里的三个if需要分开判断赋值
             index3++;
         }
         if (temp5 == minTemp) {
@@ -1334,7 +1335,7 @@ public int GetUglyNumber_Solution(int index) {
 	
 	对于%100的数据,size<=2*10^5
 
-逆序对就是前面的数比后面的数大，就是一个逆序对，可以使用归并排序，每次组合并时，右边的组的数比左边的数小时，会出现逆序对，逆序对的个数为左边的组的数组元素个数。
+逆序对就是前面的数比后面的数大，就是一个逆序对，可以使用归并排序，每次组合并时，右边的组的数比左边的数小时，会出现逆序对，逆序对的个数为当前左边的组的元素个数。
 
 ```java
 public int InversePairs(int [] array) {
@@ -1385,7 +1386,7 @@ public int inversePairsort2(int[] array, int left, int right, int[] temp) {
 }
 ```
 
-思路就是先递归对数组进行分组，一直到每个组只有一个元素，然后每个组按大小进行合并，形成一个新的组。每次合并的时间复杂度是N，大概需要合并log(N)次，所以总时间复杂度是 Nlog(N)这样写简单是简单，就是空间复杂度太高了，每次创建新数组，空间复杂度是Nlog(N)
+思路就是先递归对数组进行分组，一直到每个组只有一个元素，然后每个组按大小进行合并，形成一个新的组。每次合并的时间复杂度是N，大概需要合并log(N)次，所以总时间复杂度是 Nlog(N)，这样写简单是简单，就是空间复杂度太高了，每次创建新数组，空间复杂度是Nlog(N)
 
 ```java
  public static int[] sort(int[] array,int start, int end) {
@@ -1869,7 +1870,7 @@ public static void qsort(int[] array, int start ,int end) {
 假设一开始有n个数，每个人的编号为0到n-1，让数到m的人出局，假设出局的人的编号为k，那么k=(m-1)%n;
 在n个人中间报数时，每个人的编号是
 0 1 2 ... k k+1 k+2 ... n-1
-当k出局以后，在n-1个人中报数时，每个人的编号是重新从k+1开始计数
+当k出局以后，在n-1个人中报数时，每个人的编号是重新从k+1开始计数，原来的编号就映射为下面这样了(原来k+1变成了0，原来的n-1变成了n-1-(k+1))
 n-k+1 ...   0  1   ... n-1 -(k+1)
 所以假设从n-1报数时的编号到n个人报数时的编号存在一个映射关系
 假设f(n)代表n个人报数编号
@@ -1882,7 +1883,7 @@ n>1时，f(n)=(f(n-1)+m)%n
 
 所以就是按照这个公式从2计算到n，得到f(n)
 
-```
+```java
 public int LastRemaining_Solution(int n, int m) {
     if (n<1|| m<1) {
         return -1;
@@ -1958,7 +1959,7 @@ public int Add(int num1,int num2) {
 
 -2147483648 至 2147483647
 
--2的31次方    2的31次方-1
+-2的31次方     2的31次方-1
 
 ```java
 public static int StrToInt(String str) {
@@ -2061,7 +2062,7 @@ public int[] multiply(int[] A) {
 就是使用一个数组来记录字符出现的次数。
 
 ```java
-StringBuffer str = new StringBuffer();
+		StringBuffer str = new StringBuffer();
     int[] table = new int[256];//记录出现次数，0代表0次，1代表1次，2代表2次及2次以上
     public void Insert(char ch)
     {
@@ -2230,21 +2231,21 @@ public ListNode deleteDuplication(ListNode pHead)
 
 所以当前节点的中序遍历中的下一个节点是
 
-1.有右子树 
+1.当前节点有右子树 
 
 ​	右子树有左节点，一直向下遍历，找到最左的叶子节点。
 
 ​	右子树没有左节点，就是右子树节点。
 
-2.没有右子树
+2.当前节点没有右子树
 
 ​	 没有父节点，那么没有下一个节点。
 
- 	有父节点
+ 	这个节点有父节点
 
-​				父节点是左子树，直接返回父节点。
+​				这个节点父节点是属于左边分支的，直接返回父节点。
 
-​				父节点是右子树，一直向上遍历，直到找到一个父节点，他是祖先节点是左节点的，找到就返回祖先节点，找不到就返回空。	
+​				这个节点父节点是属于右边分支的，一直向上遍历，直到找到一个父节点，他是祖先节点是左节点的，找到就返回祖先节点，找不到就返回空。	
 
 ```java
 public TreeLinkNode GetNext(TreeLinkNode pNode)

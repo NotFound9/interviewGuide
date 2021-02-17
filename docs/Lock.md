@@ -312,6 +312,7 @@ public final int getAndAddInt(Object var1, long var2, int var4) {
       //var5就是对象var1上偏移量为var2的一个变量
         var5 = this.getIntVolatile(var1, var2);
       //当var5的值没有变化时，就会进行加法操作，也就是var5 = var5 + var4
+      //如果var5的值变化了，就会取最新的var5的值，进行加法操作。
     } while(!this.compareAndSwapInt(var1, var2, var5, var5 + var4));
 
     return var5;

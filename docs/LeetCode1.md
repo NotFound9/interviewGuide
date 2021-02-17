@@ -422,8 +422,6 @@ public int[] topKFrequent(int[] nums, int k) {
 
 给定一棵二叉树，你需要计算它的直径长度。一棵二叉树的直径长度是任意两个结点路径长度中的最大值。这条路径可能穿过也可能不穿过根结点。
 
- 
-
 示例 :
 给定二叉树
 
@@ -486,6 +484,7 @@ HashSet<String> set = new HashSet<>();
         char firstChar = word.charAt(0);
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[0].length; j++) {
+                set = new HashSet<>();
                 if(board[i][j] == firstChar
                         && judgeTheChar(board, word,1,i,j) == true) {
                     return true;
@@ -530,7 +529,6 @@ HashSet<String> set = new HashSet<>();
                 && judgeTheChar(board, word,index+1,i,j+1) == true) {
             return true;
         }
-        set.remove(key);
         return false;
     }
 ```
@@ -545,11 +543,11 @@ HashSet<String> set = new HashSet<>();
 解释:
 给定 n = 3, 一共有 5 种不同结构的二叉搜索树:
 
-   1         3     3      2      1
-    \       /     /      / \      \
-     3     2     1      1   3      2
-    /     /       \                 \
-   2     1         2                 3
+   1         3     3          2        1
+    \       /     /           / \         \
+     3     2     1       1    3          2
+    /     /       \                              \
+   2     1         2                             3
 
 ##### 解题思路
 就是把一个二叉搜索树的组合种数，其实是左子树的组合数乘以右子树的组合数，假设n为4，f(n)代表组合种数，二叉树共有四个节点，那么二叉树肯定有根节点，组合主要分为以下几类：
@@ -558,6 +556,9 @@ HashSet<String> set = new HashSet<>();
 3.左子树有2个节点，右子树有1个节点,f(2)*f(1)
 4.左子树有3个节点，右子树有0个节点,f(3)*f(0)
 所以，f(4)=f(0)*f(3)+f(1)*f(2)+f(2)*f(1)+f(3)*f(0)
+
+而f(0)=1,f(1)=1,f(2)=2
+
 ```java
 public int numTrees(int n) {
         int[] array = new int[n+1];
@@ -719,7 +720,8 @@ TreeNode lowestCommonAncestor(TreeNode root, TreeNode node1, TreeNode node2) {
 
 例如，给定二叉树
 
-    1
+​    1
+
    / \
   2   5
  / \   \
@@ -744,7 +746,7 @@ TreeNode lowestCommonAncestor(TreeNode root, TreeNode node1, TreeNode node2) {
 
 
 ```java
-		TreeNode lastNode=null;
+		TreeNode lastNode;//lastNode用于保存上一个遍历的节点
     public void flatten(TreeNode root) {
         if(root == null) {return;}
         TreeNode left = root.left;
@@ -787,13 +789,15 @@ TreeNode lowestCommonAncestor(TreeNode root, TreeNode node1, TreeNode node2) {
 
 ##### 解题思路
 
-可以暴力求解，就对每个height[i]都计算包含它的元素的最大高度，这样复杂度是O(N^2)，也可以使用一个栈来计算遍历过程中比height[i]小的元素，
+可以暴力求解，就对每个height[i]都计算包含它的元素的最大高度，这样复杂度是O(N^2)，计算的方法主要是对于每个i找到左边最后一个大于height[i]的边界left，和右边最后一个大于height[i]的边界right，
 
-1.发现栈顶元素<height[i],将height[i]入栈。
+矩形面积=height[i]*(right-left+1)，例如对于第五个柱子值为2的那个柱子来说，左边界left就是值为5的柱子，右边界就是值为3的柱子。
 
-2.发现栈顶元素==height[i]，对栈顶元素进行替换。
+也可以使用一个最小栈Stack来保存过程中比height[i]小的元素，也就是Stack中的值只能是比height[i]小的元素。
 
-3.发现栈顶元素>height[i]时，那么进行出栈操作，并且计算出栈的元素组成的矩形面积。范围是[stack.peak()+1,i-1]
+遍历时，如果现在的height[i]比栈顶的元素height[j]小，那么就进行出栈，并且对出栈的元素计算矩形面积，因为出栈的元素的left边界就是新栈顶的index+1，right边界就是现在的i-1。
+
+ 面积=heights[j] * (right - left+1)
 
 ```java
 public int largestRectangleArea(int[] heights) {
@@ -805,9 +809,10 @@ public int largestRectangleArea(int[] heights) {
         stack.add(0);
         for (int i = 1; i <= heights.length; i++) {
             int currentH;
-            if (i==heights.length) {//这是最后新增了一个0元素，
-                // 防止整个数组是全体递增的，这样会计算不出面积
-                currentH =0;
+            if (i==heights.length) {
+              //这是最后新增了一个0元素
+              //防止整个数组是全体递增的，这样会计算不出面积
+                currentH = 0;
             } else {
                 currentH = heights[i];
             }
@@ -861,6 +866,7 @@ public int largestRectangleArea(int[] heights) {
 ```java
 		ListNode preHead = new ListNode(1);
     ListNode sortList(ListNode start) {
+      //归并排序划分到只有一个节点时，直接返回
         if (start.next == null || start==null) {return start;}
         ListNode quick = start;
         ListNode slow = start;

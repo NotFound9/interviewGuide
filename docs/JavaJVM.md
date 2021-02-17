@@ -660,7 +660,7 @@ ParNew收集器是Serial收集器的多线程并行版本，在进行垃圾收�
 
 #### Parallel Old收集器
 
-是Parallel Scanvenge老年代版本，支持多线程收集，使用标记整理法实现的，
+是Parallel Scanvenge老年代版本，支持多线程收集，使用标记整理法实现的。
 
 ![image-20200228191619466](../static/image-20200228191619466.png)
 
@@ -847,11 +847,11 @@ https://www.pianshen.com/article/7390335728/
 ##### 怎么查询当前JVM使用的垃圾收集器？
 
 使用这个命令可以查询当前使用的垃圾收集器
-java -XX:+PrintCommandLineFlags -version
+`java -XX:+PrintCommandLineFlags -version`
 
 另外这个命令可以查询到更加详细的信息
 
-java -XX:+PrintFlagsFinal -version | grep GC
+`java -XX:+PrintFlagsFinal -version | grep GC`
 
 我们在IDEA中启动的一个Springboot的项目，默认使用的垃圾收集器参数是
 -XX:+UseParallelGC
@@ -881,13 +881,26 @@ JDK8默认情况下服务端模式下JVM垃圾回收参数是-XX:+UseParallelGC�
 
 
 ### 容器的内存和 jvm 的内存有什么关系？参数怎么配置？
-在JDK8以后，JVM增加了容器感知功能，就是如果不显示指定-Xmx2048m 最大堆内存大小， -Xms2048m最小堆内存大小，会取容器所在的物理机的内存的25%作为最大堆内存大小，
-也可以通过这几个参数来设置堆内存占容器内存的比例
--XX:MinRAMPercentage
--XX:MaxRAMPercentage
--XX:InitialRAMPercentage
 
-如何大体估算java进程使用的内存呢？
+一般在使用容器部署Java应用时，一般为了充分利用物理机的资源，会在物理机上部署多个容器应用，然后对每个容器设置最大内存的限制，但是JVM的最大堆默认值一般取得的物理机最大内存的25%，一旦应用内存超出容器的最大内存限制，容器就会把应用进程kill掉，然后重启。为了解决这个问题，有3种解决方案：
+1.在应用的JVM参数中添加-Xmx 最大堆内存的大小，可以设置为容器最大内存限制的75%。一旦你在修改了容器的最大内存限制，每个应用的JVM参数-Xmx 也许需要同步进行修改。
+
+2.就是添加这几个参数可以让Java应用感知容器的内存限制，从而在设置最大堆内存大小时，根据容器的内存限制进行设置。
+`-XX:+UnlockExperimentalVMOptions 
+-XX:+UseCGroupMemoryLimitForHeap 
+-XX:MaxRAMFraction=2`
+
+下面是MaxRAMFraction取不同的值时，最大堆内存与容器最大内存限制的比例。考虑到除了内存中除了最大堆内存以外，还有方法区，线程栈等需要需要占用内存，所以MaxRAMFraction一般至少取2会比较合适。如果取值为1，在最大堆内存占满时，可能Java应用占用的总内存会超过容器最大内存限制。
+
+
+![image-20210207145307777](../static/image-20210207145307777.png)
+
+3.在JDK8以后，JVM增加了容器感知功能，就是如果不显示指定-Xmx2048m 最大堆内存大小， -Xms2048m最小堆内存大小，会取容器所在的物理机的内存的25%作为最大堆内存大小，也可以通过这几个参数来设置堆内存占容器内存的比例
+-XX:MinRAMPercentage 最小堆内存大小占容器内存限制的比例
+-XX:MaxRAMPercentage 最大堆内存大小占容器内存限制的比例
+-XX:InitialRAMPercentage 初始堆内存大小占容器内存限制的比例
+
+### 如何大体估算java进程使用的内存呢？
 
 Max memory = [-Xmx] + [-XX:MaxPermSize] + number_of_threads * [-Xss]
 
@@ -901,7 +914,7 @@ Max memory = [-Xmx] + [-XX:MaxPermSize] + number_of_threads * [-Xss]
 
 ### 怎么获取 dump 文件？怎么分析？
 
-1. 启动时配置，出现OOM问题时自动生成
+1.启动时配置，出现OOM问题时自动生成
 JVM启动时增加两个参数:
 
 
@@ -925,7 +938,14 @@ jmap -dump:format=b,file=/home/admin/logs/heap.hprof 6214
 
 ### gc日志怎么看？
 
-这是一条Minor GC的回收日志
+可以在启动Java应用的命令中添加这些参数，指定生成垃圾收集的日志的路径，可以记录垃圾收集的情况。
+
+`-XX:+PrintGCDetails 
+-XX:+PrintGCDateStamps 
+-Xloggc:/var/log/gc.log
+`
+
+这是一条Minor GC的回收日志(一般GC (Allocation Failure)代表Minor GC，老年代垃圾回收一般打印的是Full GC (Metadata GC Threshold) )
 
 ```java
 2020-05-07T16:28:02.845+0800: 78210.469: [GC (Allocation Failure) 2020-05-07T16:28:02.845+0800: 78210.469: [ParNew: 68553K->466K(76672K), 0.0221963 secs] 131148K->63062K(2088640K), 0.0223082 secs] [Times: user=0.02 sys=0.00, real=0.02 secs] 
@@ -950,6 +970,10 @@ jmap -dump:format=b,file=/home/admin/logs/heap.hprof 6214
 **[Times: user=0.02 sys=0.00, real=0.02 secs]** 
 
 用户态耗时0.02s，内核态耗时0s，总耗时0.02s
+
+ PS：有一个网站，可以对上传GC.log的日志进行分析，解析日志文件，统计出垃圾收集总占用的时间，以及新生代，老年代的内存使用峰值，https://gceasy.io/
+
+![image-20210208162512025](../static/image-20210208162512025.png)
 
 ### cpu 使用率特别高，怎么排查？通用方法？定位代码？cpu高的原因？
 
@@ -1015,7 +1039,7 @@ KiB Swap: 16777212 total, 16776604 free,      608 used. 13313188 avail Mem
 
 #### jstat
 
-jstat可以打印出当前JVM运行的各种状态信息，例如新生代内存使用情况，老年代内存使用情况，Minor GC发生总次数，总耗时，Full GC发生总次数，总耗时。
+jstat可以打印出当前JVM运行的各种状态信息，例如新生代内存使用情况，老年代内存使用情况，以及垃圾回收的时间。Minor GC发生总次数，总耗时，Full GC发生总次数，总耗时。(jmap -heap命令也可以打印出堆中各个分区的内存使用情况，但是不能定时监测，持续打印。例如每1s打印当前的堆中各个分区的内存使用情况，一直打印100次。)
 ```
 //5828是java进程id，1000是打印间隔，每1000毫秒打印一次，100是总共打印100次
 jstat -gc 5828 1000 100
@@ -1035,9 +1059,9 @@ jstat -gc 5828 1000 100
 
 `S1U` 新生代中第二个survivor（幸存区）目前已使用空间 (字节) 
 
-`EC` 新生代中Eden（伊甸园）的总容量 (字节) 
+`EC` 新生代中Eden区的总容量 (字节) 
 
-`EU` 新生代中Eden（伊甸园）目前已使用空间 (字节) 
+`EU` 新生代中Eden区目前已使用空间 (字节) 
 
 `OC` 老年代的总容量 (字节) 
 
@@ -1073,8 +1097,6 @@ jstat -gc 5828 1000 100
 | GCT  | 垃圾回收消耗总时间                                       |
 
 ![image-20200731152050340](../static/image-20200731152050340.png)
-
-
 
 #### jstack
 
@@ -1130,22 +1152,15 @@ public static void main(String[] args) {
 
 #### jmap
 
-一般可以生成当前堆栈快照。使用 jmap -heap可以打印出当前各个分区的内存使用情况，使用`jmap -dump:format=b,file=dump.hprof 进程id`可以生成当前的堆栈快照，堆快照和对象统计信息，对生成的堆快照进行分析，可以分析堆中对象所占用内存的情况，检查大对象等。执行`jvisualvm`命令打开使用Java自带的工具Java VisualVM来打开堆栈快照文件，进行分析。可以用于排查内存溢出，内存泄露问题。
+##### jmap -heap
 
-也可以配置启动时的JVM参数，让发送内存溢出时，自动生成堆栈快照文件。
+这个命令可以生成当前堆栈快照。使用 `jmap -heap 进程id`可以打印出当前堆各分区内存使用情况的情况，新生代(Eden区,To Survivor区,From Survivor区)，老年代区的内存使用情况。
 
-```
-//出现 OOM 时生成堆 dump: 
--XX:+HeapDumpOnOutOfMemoryError
-//生成堆文件地址：
--XX:HeapDumpPath=/home/liuke/jvmlogs/
-```
-
-*查看内存使用情况*
+使用jmap -heap查看内存使用情况的案例
 
 ![image-20200726173723112](../static/image-20200726173723112.png)
 
-
+##### jmap -histo
 
  **jmap -histo**打印出当前堆中的对象统计信息，包括类名，每个类的实例数量，总占用内存大小。
 
@@ -1159,11 +1174,26 @@ class name列：表示的就是当前类的名称，class name 对于基本数�
 
 ![image-20200726174009407](../static/image-20200726174009407.png) 
 
+
+
+##### jmap -dump
+
+使用`jmap -dump:format=b,file=dump.hprof 进程id`可以生成当前的堆栈快照，堆快照和对象统计信息，对生成的堆快照进行分析，可以分析堆中对象所占用内存的情况，检查大对象等。执行`jvisualvm`命令打开使用Java自带的工具Java VisualVM来打开堆栈快照文件，进行分析。可以用于排查内存溢出，内存泄露问题。在Java VisualVM里面可以看到每个类的实例对象占用的内存大小，以及持有这个对象的实例所在的类等等信息。
+
+也可以配置启动时的JVM参数，让发送内存溢出时，自动生成堆栈快照文件。
+
+```java
+//出现 OOM 时生成堆 dump: 
+-XX:+HeapDumpOnOutOfMemoryError
+//生成堆文件地址：
+-XX:HeapDumpPath=/home/liuke/jvmlogs/
+```
+
 使用**jmap -dump:format=b,file=/存放路径/heapdump.hprof 进程id**就可以得到堆转储文件，然后执行jvisualvm命令就可以打开JDK自带的jvisualvm软件。
 
 例如在这个例子中会造成OOM问题，通过生成heapdump.hprof文件，可以使用jvisualvm查看造成OOM问题的具体代码位置。
 
-```
+```java
 public class Test018 {
 
     ArrayList<TestObject> arrayList = new ArrayList<TestObject>();

@@ -42,7 +42,7 @@ Github项目主页：https://github.com/NotFound9/interviewGuide
     - [10.Java中的内部类是怎么样的？](docs/JavaBasic.md#Java中的内部类是怎么样的？)
     - [11.Java中的注解是什么？](docs/JavaBasic.md#Java中的注解是什么?)
     - [12.为什么hashCode()和equal()方法要一起重写？](docs/JavaBasic.md#为什么hashCode()和equal()方法要一起重写？)
-    -  [13.Java 中有哪些数据类型？](docs/JavaBasic.md#Java 中有哪些数据类型？)
+    -  [13.Java中有哪些数据类型？](docs/JavaBasic.md#Java中有哪些数据类型？)
     - [14.包装类型和基本类型的区别是什么？](docs/JavaBasic.md#包装类型和基本类型的区别是什么？)
   * 容器
     - [ArrayList和LinkedList](docs/ArrayList.md)

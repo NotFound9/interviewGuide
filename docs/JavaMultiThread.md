@@ -1258,18 +1258,18 @@ public class BlockQueueRepository<T> extends AbstractRepository<T> implements Re
 #### 线程池有哪些参数？
 
 ```java
- public ThreadPoolExecutor(int corePoolSize,
+public ThreadPoolExecutor(int corePoolSize,
                               int maximumPoolSize,
                               long keepAliveTime,
                               TimeUnit unit,
                               BlockingQueue<Runnable> workQueue,
-                              RejectedExecutionHandler handler) {
+                              ThreadFactory threadFactory) {
         this(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue,
-             Executors.defaultThreadFactory(), handler);
+             threadFactory, defaultHandler);
     }
 ```
 
-##### corePoolSize 核心线程数
+##### 1.corePoolSize 核心线程数
 
 该线程池中**核心线程数最大值**，添加任务时，即便有空闲线程，只要当前线程池线程数<corePoolSize,都是会新建线程来执行这个任务。并且核心线程空闲时间超过keepAliveTime也是不会被回收的。（
 
@@ -1279,11 +1279,11 @@ public class BlockQueueRepository<T> extends AbstractRepository<T> implements Re
 
 非核心线程会调用workQueue.poll(keepAliveTime, TimeUnit.NANOSECONDS)方法取任务 ，如果超过keepAliveTime时间后还没有拿到，下一次循环判断**compareAndDecrementWorkerCount**就会返回`null`,Worker对象的`run()`方法循环体的判断为`null`,任务结束，然后线程被系统回收）
 
-##### maximumPoolSize 最大线程数
+##### 2.maximumPoolSize 最大线程数
 
 **该线程池中线程总数最大值** ，一般是用于当线程池中的线程都在执行任务，并且等待队列满了时，如果当前线程数<maximumPoolSize,可以创建一个新线程来执行任务。maximumPoolSize一般也可以用来现在最大线程并发执行量。
 
-##### **workQueue 等待队列**
+##### **3.workQueue 等待队列**
 
 等待队列，一般是抽象类**BlockingQueue**的子类。
 
@@ -1296,11 +1296,11 @@ public class BlockQueueRepository<T> extends AbstractRepository<T> implements Re
 | LinkedTransferQueue   | 一种使用链表实现的无界阻塞队列。                             |
 | DelayQueue            | 一种无界的延时队列，可以设置每个元素需要等待多久才能从队列中取出。 延迟队列，该队列中的元素只有当其指定的延迟时间到了，才能够从队列中获取到该元素 。底层数据数据结构是数组实现的堆结构。 |
 
-**keepAliveTime**：**非核心线程闲置超时时长**。
+**4.keepAliveTime**：**非核心线程闲置超时时长**。
 
 非核心线程如果处于闲置状态超过该值，就会被销毁。如果设置allowCoreThreadTimeOut(true)，则会也作用于核心线程。
 
-**RejectedExecutionHandler 拒绝处理策略**
+**5.RejectedExecutionHandler 拒绝处理策略**
 
 **拒绝处理策略**，核心线程已经满了，等待队列也满了，并且线程数量大于最大线程数时，就会采用拒绝处理策略进行处理，四种拒绝处理的策略为 ：
 
@@ -1309,7 +1309,16 @@ public class BlockQueueRepository<T> extends AbstractRepository<T> implements Re
 3. ThreadPoolExecutor.DiscardOldestPolicy：丢弃等待队列头部（最旧的）的任务，然后重新尝试执行程序，将任务添加到队列中（如果再次失败，重复此过程）。
 4. ThreadPoolExecutor.CallerRunsPolicy：由调用线程处理该任务。
 
-##### 线程池执行任务的过程？
+##### 6.ThreadFactory创建线程的工厂
+
+ThreadFactory是一个接口，只有一个newThread()方法。(默认情况下ThreadPoolExecutor用的ThreadFactory默认都是Executors.defaultThreadFactory())。一般来说，你通过ThreadPoolExecutor来创建线程池，对于线程池中的线程你是无法直接接触到的，例如你为了更加方便得定位线程池的Bug，希望对线程池中线程设置跟业务相关的名称，那么就需要建一个类，实现ThreadFactory接口，编写newThread()方法的实现。
+```
+public interface ThreadFactory {
+    Thread newThread(Runnable r);
+}
+```
+
+#### 线程池执行任务的过程？
 
 ![图4 任务调度流程](../static/31bad766983e212431077ca8da92762050214.png)
 

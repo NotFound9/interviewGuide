@@ -5,6 +5,7 @@
 ####  [1.ArrayList与LinkedList的区别是什么？](#ArrayList与LinkedList的区别是什么？)
 
 #### [2.怎么使ArrayList，LinkedList变成线程安全的呢？](#怎么使ArrayList，LinkedList变成线程安全的呢？)
+
 #### [3.ArrayList遍历时删除元素有哪些方法？](#ArrayList遍历时删除元素有哪些方法？)
 #### [4.ConcurrentModificationException是什么？](#ConcurrentModificationException是什么？)
 
@@ -37,8 +38,6 @@ public void add(int index, E element) {
         size++;
 }
 ```
-
-
 
 #### 3.插入和删除的复杂度：
 
