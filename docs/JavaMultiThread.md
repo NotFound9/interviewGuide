@@ -356,7 +356,9 @@ Future也是一个接口，Future就像是一个管理的容器一样，进一�
 
 ```java
 public interface Future<V> {
-  
+  //mayInterruptIfRunning代表是否强制中断
+  //为true，如果任务已经执行，那么会调用Thread.interrupt()方法设置中断标识
+  //为false，如果任务已经执行，就只会将任务状态标记为取消，而不会去设置中断标识
  boolean cancel(boolean mayInterruptIfRunning);
 
  boolean isCancelled();
@@ -642,7 +644,7 @@ public enum State {
 
 #### BLOCKED 阻塞态
 
-阻塞状态。处于BLOCKED状态的线程正等待锁的释放以进入同步区。
+阻塞状态。线程没有申请到synchronize同步锁，就会处于阻塞状态，等待锁的释放以进入同步区。
 
 #### WAITING 等待态
 
@@ -825,11 +827,158 @@ thread.interrupted()
 
 ### 线程执行的任务可以终止吗？
 
+##### 1.设置中断
+
 FutureTask提供了cancel(boolean mayInterruptIfRunning)方法来取消任务，并且
 
 如果入参为false，如果任务已经在执行，那么任务就不会被取消。
 
-如果入参为true，如果任务已经在执行，那么会调用Thread的interrupt()方法来设置线程的中断标识，如果线程处于阻塞状态，会抛出异常，如果正常状态只是设置标志位，修改interrupted变量的值。所以如果要取消任务只能在任务内部中调用thread.isInterrupted()方法获取当前线程的中断状态，自行取消。
+如果入参为true，如果任务已经在执行，那么会调用Thread的interrupt()方法来设置线程的中断标识，如果线程处于阻塞状态，会抛出InterruptedException异常，如果正常状态只是设置标志位，修改interrupted变量的值。所以如果要取消任务只能在任务内部中调用thread.isInterrupted()方法获取当前线程的中断状态，自行取消。
+
+##### 2.线程的stop方法
+
+线程的stop()方法可以让线程停止执行，但是不会释放当前线程持有的锁。但是这个方法已经被标记为过期，不推荐使用了。
+
+### 让线程顺序执行有哪些方法？
+
+##### 1.主线程Join
+
+就是调用threadA.start()方法让线程A先执行，然后主线程调用threadA.join()方法，然后主线程进入TIME_WAITING状态，直到threadA执行结束后，主线程才能继续往下执行，执行线程B的任务。(join方法的底层实现其实是调用了threadA的wait()方法，当线程A执行完毕后，会自动调用notifyAll()方法唤醒所有线程。)
+
+示例代码如下：
+
+```java
+   Thread threadA = new Thread(new Runnable() {
+        @Override
+        public void run() {
+        //执行threadA的任务
+        }
+    });
+    Thread threadB= new Thread(new Runnable() {
+        @Override
+        public void run() {
+            //执行threadB的任务
+        }
+    });
+		//执行线程A任务
+    threadA.start();
+		//主线程进行等待
+    threadA.join();
+		//执行线程B的任务
+    threadB.start();
+```
+
+##### 子线程Join
+
+就是让线程B的任务在执行时，调用threadA.join()方法，这样就只有等线程A的任务执行完成后，才会执行线程B。
+
+```java
+   Thread threadA = new Thread(new Runnable() {
+        @Override
+        public void run() {
+        //执行threadA的任务
+        }
+    });
+    Thread threadB= new Thread(new Runnable() {
+        @Override
+        public void run() {
+          	//子线程进行等待，知道threadA任务执行完毕
+    				threadA.join();
+            //执行threadB的任务
+        }
+    });
+		//执行线程A任务
+    threadA.start();
+		//执行线程B的任务
+    threadB.start();
+```
+##### 单线程池法
+
+就是使用Executors.newSingleThreadExecutor()这个线程池，这个线程池的特点就是只有一个执行线程，可以保证任务按顺序执行。
+
+```java
+ExecutorService pool = Executors.newSingleThreadExecutor();
+//提交任务A
+executorService.submit(taskA);
+//提交任务B
+executorService.submit(taskB);
+```
+
+##### 等待通知法(wait和notify)
+
+就是在线程B中调用Object.waiting()方法进行等待，线程A执行完毕后调用Object.notify()方法进行唤醒。(这种方法有两个缺点，一个是Object.waiting()和notify()方法必须在同步代码块中调用，第二个是如果线程A执行过快，先调用了object.notify()方法，就会导致线程B后面一直得不到唤醒。)
+
+```java
+ 		final Object object = new Object();
+ 		Thread threadA = new Thread(new Runnable() {
+        @Override
+        public void run() {
+        //执行threadA的任务
+          synchronized(object) {
+             object.notify();
+          }
+        }
+    });
+    Thread threadB= new Thread(new Runnable() {
+        @Override
+        public void run() {
+            synchronized(object) {
+          	//子线程进行等待，知道threadA任务执行完毕
+    						object.wait();
+            //执行threadB的任务
+            }
+        }
+    });
+```
+
+##### 等待通知法(await和singal)
+
+具体实现就是Reentrantlock可以创建出一个Condition实例queue，可以认为是一个等待队列，线程B调用queue.await()就会进行等待，直到线程A执行完毕调用queue.signal()来唤醒线程B。
+
+```java
+ 				final ReentrantLock lock   = new ReentrantLock();
+        final Condition     queue1 = lock.newCondition();
+        final Object object = new Object();
+        final Thread threadA = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                //执行threadA的任务
+                    lock.lock();
+                    try {
+                      //唤醒线程B的任务
+                        queue1.signal();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    System.out.println("执行了任务A2");
+                    lock.unlock();
+            }
+        });
+        final Thread threadB= new Thread(new Runnable() {
+            @Override
+            public void run() {
+                lock.lock();
+                //子线程进行等待，知道threadA任务执行完毕
+                    try {
+                        queue1.await();
+                        System.out.println("执行了任务B2");
+
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    //执行threadB的任务
+                lock.unlock();
+            }
+        });
+        threadA.start();
+        threadB.start();
+```
+
+
+
+参考链接：
+
+http://cnblogs.com/wenjunwei/p/10573289.html
 
 ### 线程间怎么通信？
 
@@ -986,8 +1135,6 @@ Integer consumer() {
 		return value;
   }
 }
-
-
 ```
 
 完整代码如下：
@@ -1436,10 +1583,11 @@ public ScheduledThreadPoolExecutor(int corePoolSize,
 最佳线程数=CPU的数量+1 
 ```
 #### 方法二 IO密集型任务
-这种任务在执行时，需要进行一些IO操作，所以为了充分利用CPU，应该在线程进行IO操作时，就让出时间片，CPU进行上下文切换，执行其他线程的任务，保证CPU利用率的100%。
+这种任务在执行时，需要进行一些IO操作，所以为了充分利用CPU，应该在线程进行IO操作时，就让出时间片，CPU进行上下文切换，执行其他线程的任务，保证CPU利用率尽可能达到100%。
 
-如果任务有50%的时间需要CPU执行状态，其他时间进行IO操作，则程序所需线程数为CPU数量的1除以0.5，也就是2倍。如果任务有20%的时时间需要CPU执行，其他时间需要进行IO操作，最佳线程数也就是1除以0.2，也就是CPU数的5倍
+如果任务有50%的时间需要CPU执行状态，其他时间进行IO操作，则程序所需线程数为CPU数量的1除以0.5，也就是2倍。如果任务有20%的时时间需要CPU执行，其他时间需要进行IO操作，最佳线程数也就是1除以0.2，也就是CPU数的5倍。
 所以公式为
+
 ```java
 最佳线程数 = CPU数量/(每个任务中需要CPU执行的时间的比例)
 = CPU数量/(CPU运行时间/任务执行总时间)=CPU数量/(CPU运行时间/(CPU运行时间+IO操作时间))
@@ -1455,6 +1603,7 @@ public ScheduledThreadPoolExecutor(int corePoolSize,
 一种是追求响应时间的任务，例如使用线程池对发起多个网络请求，然后对结果进行计算。 这种任务的最大线程数需要设置大一点，然后队列使用同步队列，队列中不缓存任务，任务来了就会被执行。判断线程池资源不够用时，一般是发现活跃线程数/最大线程数>阀值(默认是0.8)时，或者是线程池抛出的RejectedExecut异常次数达到阀值，就会进行告警。然后程序员收到告警后，动态发送修改核心线程数，最大线程数，队列相关的指令，服务器进行动态修改。
 
 ##### 追求高吞吐量的任务
+
 假设说需要定期自动化生成一些报表，不需要考虑响应时间，只是希望如何使用有限的资源，尽可能在单位时间内处理更多的任务，也就是吞吐量优先的问题。
 这种就是使用有界队列，对任务进行缓存，然后线程进行并发执行。判断线程池资源不够用时，一般是发现等待队列中的任务数量/等待队列的长度>阀值(默认是0.8)时，或者是线程池抛出的RejectedExecut异常次数达到阀值，就会进行告警。然后程序员收到告警后，动态发送修改核心线程数，最大线程数，队列相关的指令，服务器进行动态修改。
 
@@ -1544,7 +1693,7 @@ ThreadLocal变量所在的类的实例(代码中A的实例)->ThreadLocal
 
 可以看到ThreadLocal变量不仅被所在的类A的实例所引用，还被执行的线程所引用，
 
-1.如果使用强引用，也就是线程对ThreadLocal变量是强引用，那么类A的实例即便已经不被其他变量所引用了，不会被访问到了，需要被回收了，类A被回收了，但是ThreadLocal变量由于有被执行线程所引用，只要线程还在，ThreadLocal变量也不能被被JVM回收，所以会造成内存泄露。
+1.如果使用强引用，也就是线程对ThreadLocal变量是强引用，那么即便实例A被回收了，只要线程还没有被回收，线程的ThreadLocalMap还会引用这个key(也就是这个ThreadLocal遍历)，导致这个key 没有被回收，造成内存泄露。
 
 2.如果使用弱引用，不会影响key的回收，也就是不会影响引用了ThreadLocal的实例对象的回收。
 

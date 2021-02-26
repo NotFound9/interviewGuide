@@ -6,13 +6,21 @@
 
 分发机制：
 
-* 发的消息指定了分区就发到特定分区下
+* 1.发的消息指定了分区就发到特定分区下
 
-* 指定了key，就根据murmur2 哈希算法对key计算得到一个哈希值，将哈希值与分区数量取余，得到分区。
+* 2.指定了key，就根据murmur2 哈希算法对key计算得到一个哈希值，将哈希值与分区数量取余，得到分区。
 
-* 没有指定分区，也没有指定key，那么就根据一个自增计数与分区数取余得到分区，这样可以让消息分发在每个分区更加均匀。
+* 3.没有指定分区，也没有指定key，那么就根据一个自增计数与分区数取余得到分区，这样可以让消息分发在每个分区更加均匀。
 
-3.每个分区就是一个目录，目录名是topic+分区编号在收到消息后会将消息写入到日志文件中，如果一个分区的消息都有存放在一个日志文件中，那么文件会比较大，查询时会比较慢，而且也不便于之后删除旧的消息。所以每个分区对应一个segement，每个segement的名称是上一个segement最后一条消息的offset，一个segement有两个文件，一个是.index文件，记录了每个offset的消息数据在log文件中的偏移量用于查询特定offset的消息。一个是.log文件，实际存储每个消息数据，每条消息数据大小不一，每条消息数据包含offset，消息体大小，消息体等等内容。查的时候根据offset先去index文件找到偏移量，然后去log文件中读。
+3.每个分区就是一个目录，目录名是topic+分区编号，在收到消息后会将消息写入到日志文件中，如果一个分区的消息都有存放在一个日志文件中，那么文件会比较大，查询时会比较慢，而且也不便于之后删除旧的消息。所以每个分区对应多个大小相等的segment文件，每个segment的名称是上一个segment最后一条消息的offset，一个segment有两个文件，一个是.index文件，记录了消息的offset及这条消息数据在log文件中的偏移量。一个是.log文件，实际存储每个消息数据，每条消息数据大小不一，每条消息数据包含offset，消息体大小，消息体等等内容。查的时候根据offset先去index文件找到偏移量，然后去log文件中读。
+
+(具体的segment切分有很多个触发条件：
+
+当log文件>log.segment.bytes时切分，默认是1G。
+
+或者是segment文件中最早的消息距离现在的时间>log.roll.ms配置的时间，默认是7天。
+
+或者是索引文件index>log.index.size.max.bytes的大小，默认是10M。）
 
 4.分区leader将消息存储到日志文件中后还不能算是写成功，会把消息同步给所有follower，当follower同步好消息之后就会给leader发ack，leader收到所有follower返回的ack之后，这条才算是写成功，然后才会给生产者返回写成功。（依据ACK配置来决定多少follower同步成功才算生产者发送消息成功）
 
@@ -22,7 +30,7 @@
 
 1.replication.factor>=2，也就是一个分区至少会有两个副本。
 
-2.min.insync.replicas默认是1，leader至少要有一个follow跟自己保持联系没有掉线。
+2.min.insync.replicas默认是1，leader至少要有一个follow跟自己保持联系没有掉线。(这个配置只有在ack为all或者-1时有用，也就是ack为all也只是要求生产者发送的消息，被leader以及ISR集合里面的从节点接收到，就算所有节点都接收到了。)
 
 3.一般设置了ack=all就不会丢数据。因为会保证所有的follower都收到消息，才算broker接收成功，默认ack=1。
 
@@ -38,8 +46,6 @@
 
 **-1** 也就是all，producer需要等待ISR中的所有follower都确认接收到数据后才算一次发送完成，可靠性最高。
 
-
-
 ### 怎么防止Kafka 丢数据？
 
 这块比较常见的一个场景，就是 `Kafka` 某个 `broker` 宕机，然后重新选举 `partition` 的 `leader` 。大家想想，要是此时其他的 `follower` 刚好还有些数据没有同步，结果此时 `leader` 挂了，然后选举某个 `follower` 成 `leader` 之后，不就少了一些数据？这就丢了一些数据啊。
@@ -49,13 +55,13 @@
 - 给 `topic` 设置 `replication.factor` 参数：这个值必须大于 1，要求每个 `partition` 必须有 **至少** 2 个副本。
 - 在 `Kafka` 服务端设置 `min.insync.replicas` 参数：这个值必须大于 1，这个是 **要求一个 leader 至少感知到有至少一个 follower 还跟自己保持联系**，没掉队，这样才能确保 `leader` 挂了还有一个 `follower` 吧。
 - 在 `producer` 端设置 `acks=all`：这个是要求每条数据，**必须是写入所有 replica 之后，才能认为是写成功了**。
-- 在 `producer` 端设置 `retries=MAX`（很大很大很大的一个值，无限次重试的意思）：这个是要求 **一旦写入失败，就无限重试**，卡在这里了。
+- 在 `producer` 端设置 `retries=MAX`（很大很大很大的一个值，无限次重试的意思）：这个是要求**一旦写入失败，就无限重试**，卡在这里了。
 
-这样配置之后，至少在 Kafka `broker` 端就可以保证在 `leader` 所在 `broker` 发生故障，进行 `leader` 切换时，数据不会丢失。
+这样配置之后，至少在Kafka `broker` 端就可以保证在`leader` 所在 `broker` 发生故障，进行`leader` 切换时，数据不会丢失。
 
 ### 生产者会不会弄丢数据？
 
-如果按照上述的思路设置了 `acks=all`，一定不会丢，要求是，你的 `leader` 接收到消息，所有的 `follower` 都同步到了消息之后，才认为本次写成功了。如果没满足这个条件，生产者可以自动不断的重试，重试无限次。
+如果按照上述的思路设置了`acks=all`，一定不会丢，要求是，你的 `leader` 接收到消息，所有的`follower` 都同步到了消息之后，才认为本次写成功了。如果没满足这个条件，生产者可以自动不断的重试，重试无限次。
 
 #### 怎么实现 Exactly-Once？
 
@@ -129,5 +135,5 @@
 
 #### ISR是什么？
 
-ISR（in-sync replica） 就是 Kafka 为某个分区维护的一组同步集合，即每个分区都有自己的一个 ISR 集合，处于 ISR 集合中的副本，意味着 follower 副本与 leader 副本保持同步状态，只有处于 ISR 集合中的副本才有资格被选举为 leader。follower从leader同步数据有一些延迟（延迟时间replica.lag.time.max.ms），一旦超过延迟时间，就会把这个这个follower从ISR列表中移除。被移除的followe会从leader复制数据进行追赶，一旦追赶上又可以重新进入ISR列表。一条 Kafka 消息，只有被 ISR 中的副本都接收到，才被视为“已同步”状态。这跟 zk 的同步机制不一样，zk 只需要超过半数节点写入，就可被视为已写入成功。
+ISR（in-sync replica） 就是 Kafka 为某个分区维护的一组同步集合，即每个分区都有自己的一个 ISR 集合，就是从分区的从节点中找出一些节点加入到ISR集合（min.insync.replicas这个参数设定ISR中的最小副本数是多少，默认值为1）。处于 ISR 集合中的副本，意味着 follower 副本与 leader 副本保持同步状态，只有处于 ISR 集合中的副本才有资格被选举为 leader。follower从leader同步数据有一些延迟（延迟时间replica.lag.time.max.ms），一旦超过延迟时间，就会把这个这个follower从ISR列表中移除。被移除的followe会从leader复制数据进行追赶，一旦追赶上又可以重新进入ISR列表。一条 Kafka 消息，只有被 ISR 中的副本都接收到，才被视为“已同步”状态。这跟 zk 的同步机制不一样，zk 只需要超过半数节点写入，就可被视为已写入成功。
 

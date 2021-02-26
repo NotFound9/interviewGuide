@@ -123,7 +123,7 @@ JVM会为每个线程在当前线程的栈帧中创建用于存储锁记录的�
 
 自旋是需要消耗CPU的，如果一直获取不到锁的话，那该线程就一直处在自旋状态，白白浪费CPU资源。
 
-JDK采用了适应性自旋，简单来说就是线程如果自旋成功了，则下次自旋的次数会更多，如果自旋失败了，则自旋的次数就会减少。
+JDK采用了适应性自旋，简单来说就是线程如果自旋成功了，则下次自旋时触发重量级锁的阀值会更高，如果自旋失败了，则自旋的次数就会减少。
 
 自旋也不是一直进行下去的，如果自旋到一定程度（和JVM、操作系统相关），依然没有获取到锁，称为自旋失败，那么这个线程会阻塞。同时这个锁就会升级成重量级锁。
 
@@ -220,23 +220,173 @@ ReentrantLock的非公平锁与公平锁的区别在于非公平锁在CAS更新s
 
 深入理解ReentrantLock的实现原理
 
+### synchronized锁与ReentrantLock锁的区别？
+
+相同点：
+
+1.可重入性
+
+两个锁都是可重入的，持有锁的线程再次申请锁时，会对锁的计数器+1。
+
+不同点：
+
+1.具体实现
+
+synchronized是一个Java 关键字，synchronized锁是JVM实现的，底层代码应该是C++代码，而ReenTrantLock是JDK实现的，是Java提供的一个类库，代码是Java代码，源码实现更加方便阅读。
+
+2.性能
+
+在以前，synchronized锁的实现只有重量级锁一种模式，性能会比较差，后面引入了偏向锁和轻量级锁后就优化了很多。
+
+3.功能
+
+synchronized只能修饰方法，或者用于代码块，而ReenTrantLock的加锁和解锁是调用lock和unlock方法，更加灵活。其次是synchronized的等待队列只有一个(调用wait()方法的线程会进入等待队列)，而ReenTrantLock可以有多个条件等待队列。可以分组唤醒需要唤醒的线程们，而不是像synchronized要么用notify方法随机唤醒一个线程要么用notifyAll方法唤醒全部线程。ReenTrantLock 提供了一种能够中断等待锁的线程的机制，就是线程通过调用lock.lockInterruptibly()方法来加锁时，一旦线程被中断，就会停止等待。
+
+4.公平性
+
+ synchronized锁是非公平锁，ReentrantLock有公平锁和非公平锁两种模式。
+
+### ReentrantLock的加锁流程是怎么样的？
+
+ReentrantLock非公平锁的加锁流程：
+
+1.尝试着使用CAS操作将锁的状态state由0修改为1，修改成功则线程获得锁。
+
+2.不成功就会再次尝试去抢锁，以及判断这个线程是否是当前持有锁的线程(如果是只需要将state+1，代表锁重入)。
+
+3.抢锁没成功，也不是持有锁的线程，那么就会添加到等待队列然后调用Lock.Support.park()方法进行阻塞等待，然后被唤醒。
+
+![图片](../static/640-3893313.png)
+
+公平锁加锁过程：
+
+1.如果当前锁没有被其他线程持有，并且等待队列中也没有其他线程等待，那么就使用CAS操作去抢锁。
+
+2.或者线程就是当前持有锁的线程，那么就对state+1，代表锁重入。
+
+3.以上情况都不是，就加入到等待队列进行等待。
+
+非公平锁解锁流程
+
+![图片](../static/640-20210221154207974.png)
+
+https://blog.csdn.net/qq_14996421/article/details/102967314
+
+##### 谈一谈你对AQS的理解？
+
+AQS是AbstractQueuedSynchronizer的缩写，是一个抽象同步队列类，可以基于它实现一个锁，例如ReentrantLock，只是需要实现tryAcquire()方法(也就是获取资源的方法，判断当前线程能否申请到独占锁)和tryRelease()方法(也就是释放资源的方法，在线程释放锁前对state进行更新)，AQS会根据tryAcquire()的返回结果，来进行下一步的操作，如果为true，代表线程获得锁了，如果为false，代表线程没有获得锁，由AQS负责将线程添加到CLH等待队列中，并且进行阻塞等待。当前一个线程释放锁时，AQS对这个线程进行唤醒。
+
+（不同的自定义同步器争用共享资源的方式也不同。**自定义同步器在实现时只需要实现资源state的获取与释放方法即可**，至于具体线程等待队列的维护（如获取资源失败入队/唤醒出队等），AQS已经在顶层实现好了）
+
+**公平锁加锁过程**
+
+加锁方法调用栈
+
+```java
+ReentrantLock lock = new ReentrantLock();
+lock.lock();//在我们代码中通过调用lock方法进行加锁
+FairSync.lock();//lock方法中会调用公平锁类FairSync的lock方法
+AbstractQueuedSynchronizer.acquire(1);//FairSync继承于Sync，而Sync继承于AQS，FairSync的lock方法中调用了acquire方法也就是去申请独占锁资源。
+public final void acquire(int arg) {
+        if (!tryAcquire(arg) &&
+            acquireQueued(addWaiter(Node.EXCLUSIVE), arg))
+            selfInterrupt();
+}
+FairSync.tryAcquire()//调用FairSync的tryAcquire去尝试着申请独占锁资源
+AbstractQueuedSynchronizer.addWaiter()//申请失败就将线程添加到等待队列尾部
+AbstractQueuedSynchronizer.acquireQueued()//并且让这个线程进入阻塞等待状态
+```
+
+对于加锁，**ReentrantLock**只需要去实现**tryAcquire**()方法，去根据state判断当前线程能不能获取锁，能获取就会返回true。不能获取就会返回false，然后由AQS来将未获得锁的线程添加到CLH队列尾部，然后等待被唤醒。(公平锁与非公平锁也就在于**ReentrantLock的tryAcquire**实现的区别，当锁被其他线程占用时，公平锁是只有当前等待队列没有其他线程时，才能去抢锁，而非公平锁则没有这个限制，在申请锁时就能去抢锁。)
+
+
+
+可以看到AQS的acquire()方法中是会先去调用tryAcquire()去尝试着申请独占锁资源,AQS默认的tryAcquire9)方法只有一行代码，会抛出UnsupportedOperationException异常，所以ReentrantLock的FairSync对tryAcquire()方法进行了实现。
+
+tryAcquire()返回true就代表获取独占锁资源成功：
+
+1.等待队列没有其他线程且这个线程CAS操作设置state成功
+
+2.当前线程就是持有锁的线程，那么只需要对state+1即可。
+
+tryAcquire()返回false代表获取独占锁资源失败，
+
+那么就调用AQS.addWaiter()方法申请失败就将线程添加到等待队列尾部，AQS.acquireQueued()方法让这个线程进入阻塞等待状态(在阻塞之前如果等待队列只有这一个线程，是会先尝试着获取锁，失败才会进入阻塞状态。)
+
+```java
+protected final boolean tryAcquire(int acquires) {
+            final Thread current = Thread.currentThread();
+            int c = getState();
+            if (c == 0) {
+                if (!hasQueuedPredecessors() &&
+                    compareAndSetState(0, acquires)) {
+                    setExclusiveOwnerThread(current);
+                    return true;
+                }
+            }
+            else if (current == getExclusiveOwnerThread()) {
+                int nextc = c + acquires;
+                if (nextc < 0)
+                    throw new Error("Maximum lock count exceeded");
+                setState(nextc);
+                return true;
+            }
+            return false;
+        }
+```
+
+**公平锁解锁过程：**
+
+解锁方法调用栈
+
+```java
+ReentrantLock lock = new ReentrantLock();
+lock.unlock();
+AbstractQueuedSynchronizer.release(1);
+//AbstractQueuedSynchronizer的release()方法
+public final boolean release(int arg) {
+        if (tryRelease(arg)) {
+            Node h = head;
+            if (h != null && h.waitStatus != 0)
+                unparkSuccessor(h);
+            return true;
+        }
+        return false;
+    }
+//ReentrantLock中Sync的tryRelease方法
+protected final boolean tryRelease(int releases) {
+            int c = getState() - releases;
+            if (Thread.currentThread() != getExclusiveOwnerThread())
+                throw new IllegalMonitorStateException();
+            boolean free = false;
+            if (c == 0) {
+                free = true;
+                setExclusiveOwnerThread(null);
+            }
+            setState(c);
+            return free;
+        }
+```
+
+对于解锁，ReentrantLock的公平锁和非公平锁的实现是一样的，都是对state赋以最新的值，然后由AQS的unparkSuccessor方法负责对线程进行唤醒。
+
+https://www.cnblogs.com/waterystone/p/4920797.html
+
 ### 悲观锁和乐观锁是什么？
 
-##### 悲观锁
+### 悲观锁
 
 就是假定在每次取数据的时候会修改这个数据，所以在取数据的时候就会进行加锁，这样其他调用者就不能取数据，阻塞等待，一直到获取到锁。Java中的同步锁sychronized和ReentrantLock就是悲观锁思想的实现。
 
-##### 乐观锁
-
-就是假定在每次取数据时不会修改这个数据，所以在取数据的时候不会加锁，只有在真正修改数据时才加锁。Java中的atomic原子变量类就是乐观锁的实现。
-
-##### 区别:
+##### 乐观锁和悲观锁的区别:
 
 悲观锁适合多写的场景
 
 乐观锁适合多读的场景，这样只有读写冲突会发生的比较少，减少加锁的性能开销。但是如果是多写的场景，这样会导致上层应用一直重试，增加性能开销。
 
-#### 乐观锁的实现
+#### 乐观锁
+
+就是假定在每次取数据时不会修改这个数据，所以在取数据的时候不会加锁，只有在真正修改数据时才加锁。Java中的atomic原子变量类就是乐观锁的实现。
 
 ##### 版本号机制
 
