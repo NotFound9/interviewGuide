@@ -111,6 +111,9 @@ Github项目主页：https://github.com/NotFound9/interviewGuide
     - [2.Redis中哨兵是什么？](docs/RedisUserful.md#Redis中哨兵是什么？)
     - [3.客户端是怎么接入哨兵系统的？](docs/RedisUserful.md#客户端是怎么接入哨兵系统的？)
     - [4.Redis哨兵系统是怎么实现自动故障转移的？](docs/RedisUserful.md#Redis哨兵系统是怎么实现自动故障转移的？)
+    - [5.谈一谈你对Redis Cluster的理解？](docs/RedisUserful.md#谈一谈你对RedisCluster的理解？)
+    - [6.RedisCluster是怎么实现数据分片的？](docs/RedisUserful.md#RedisCluster是怎么实现数据分片的？)
+    - [7.RedisCluster是怎么做故障转移和发现的？](docs/RedisUserful.md#RedisCluster是怎么做故障转移和发现的？)
 * MySQL
   - [原创面试题解答](docs/MySQLNote.md)
     - [1.一条MySQL更新语句的执行过程是什么样的？](docs/MySQLNote.md#一条MySQL更新语句的执行过程是什么样的？)

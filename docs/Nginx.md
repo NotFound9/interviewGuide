@@ -30,7 +30,7 @@ upstream bakend {
 ```
 ##### 3、ip_hash（根据ip地址分配）
 
-每个请求按访问IP的哈希结果分配，使来自同一个IP的访客固定访问一台后端服务器，并且可以有效解决动态网页存在的session共享问题。
+每个请求按访问IP的哈希结果分配，这样来自同一个IP的请求固定访问一台后端服务器，并且可以有效解决动态网页存在的session共享问题。
 
 每个请求按访问ip的hash结果分配，这样每个访客固定访问一个后端服务器，可以解决session的问题。
 例如：
@@ -155,7 +155,7 @@ Nginx官方版本限制IP的连接和并发分别有两个模块：
 
   限制访问速度
 
-  ```
+  ```nginx
   http {
       limit_req_zone $binary_remote_addr zone=one:10m rate=1r/s;
       server {
@@ -169,23 +169,64 @@ Nginx官方版本限制IP的连接和并发分别有两个模块：
 
   limit_req_zone中的参数
 
-  * 第一个参数：$binary_remote_addr 表示通过remote_addr（也就是用户请求的ip地址）这个标识来做限制，“binary_”的目的是缩写内存占用量，是限制同一客户端ip地址。
+  * 第一个参数：$binary_remote_addr 表示通过用户请求的ip地址这个标识来做限制，使用binary_remote_addr 而不是remote_addr目的是使用二进制格式的ip地址，可以缩小内存占用量。
 
   * 第二个参数：zone=one:10m表示生成一个大小为10M，名字为one的内存区域，用来存储访问的频次信息。
 
   * 第三个参数：rate=1r/s表示允许相同标识的客户端的访问频次，这里限制的是每秒1次只允许请求一次，还可以有比如30r/m的。
 
-  limit_req中的参数
+  limit_req_zone中的参数
 
   - 第二个参数：**burst=5**，burst是爆发的意思，这个配置的意思是设置一个大小为5的缓冲区当有大量请求（爆发）过来时，超过了访问频次限制的请求可以先放到这个缓冲区内先进行处理，处理完之后后面的请求还是需要等待生成令牌的速度跟上了之后才能处理。
-  - 第三个参数：**nodelay**，如果没有设置，那么超出缓存区的所有请求会进行排队等待等待，如果设置nodelay，超过访问频次而且缓冲区也满了的时候就会直接返回503。
+  
+- 第三个参数：**nodelay**，如果没有设置，那么超出缓存区的所有请求会进行排队等待等待，如果设置nodelay，超过访问频次而且缓冲区也满了的时候就会直接返回503。
+  
+
+默认情况下，当某个客户端超过它的限流，NGINX用**503（Service Temporarily Unavailable**状态码来响应。使用***limit_req_status\***指令设置一个不同的状态码，例如limit_req_status  444;
+
+##### 实战案例
+
+  ```nginx
+  limit_req_zone $binary_remote_addr zone=mylimiter:10M rate=2r/s;
+  server {
+  		location /search {
+  				limit_req_zone=mylimiter;
+  		}
+  }
+  ```
+
+  这个例子是限制同一ip地址请求/search接口时，限制每秒转发2个请求，也就是500ms转发一个。如果瞬间同一ip来了6个请求，只有第一个请求会成功，后面5个请求会被拒绝，因为nginx的限流统计是基于毫秒的，设置的速度是2r/s，转换一下就是500ms内单个IP只允许通过1个请求，从501ms开始才允许通过第二个请求。(此时也是默认的漏桶的算法)
+
+  ```nginx
+  limit_req_zone $binary_remote_addr zone=mylimiter:10M rate:2r/s;
+  server {
+  		location /search {
+  				limit_req_zone=mylimiter burst=4;
+  		}
+  }
+  ```
+
+  多了一个burst参数，可以认为burst是一个缓冲队列，可以将多余的请求缓存请求，这些请求也不会立即处理，只能等着慢慢被处理。假设同一ip来了6个请求，第一个请求会被立即处理，然后会有4个请求被缓存在队列中，然后每0.5s会从队列中取出一个进行处理。而最后一个请求，由于队列满了，是会被拒绝，返回503。
+
+  ```nginx
+  limit_req_zone $binary_remote_addr zone=mylimiter:10M rate:2r/s;
+  server {
+  		location /search {
+  				limit_req_zone=mylimiter burst=4 nodelay;
+  		}
+  }
+  ```
+
+多了一个nodelay参数，就是快速转发的意思，不会增加每秒能处理的请求数，但是可以让处于burst队列中请求，就会立即被后台worker处理。假设同一ip来了6个请求，那么第一个请求会被立即处理，然后会有4个请求被缓存在队列中，缓存队列中的请求也是立即被转发处理，第六个请求则是由于队列满了，被拒绝，返回503。  
+
+https://www.cnblogs.com/CarpenterLee/p/8084533.html
 
   #### 2.限制并发连接数
 
   Nginx 的 **ngx_http_limit_conn_module**模块提供了对资源连接数进行限制的功能。
-  
+
   例如：一次只允许每个IP地址一个连接。
-  
+
   ```
   limit_conn_zone $binary_remote_addr zone=addr:10m;
   

@@ -1164,10 +1164,7 @@ Innodb在1.0之后支持Fast Index Creation，就是添加辅助索引（主键�
 
 就是innodb在创建索引时，会将数据库的增删改命令写入缓存日志，创建完毕后通过重放日志来保持数据库的最终一致性。
 
-
 ### MySQL的join的实现是怎么样的？
-
-https://blog.csdn.net/u010841296/article/details/89790399
 
 1.什么是Nested-Loop Join？
 2.Index Nested-Loop Join怎么优化连接？
@@ -1269,6 +1266,10 @@ for( List<Row> subList in List<Row> t1){
 （2）可以通过调整join_buffer_size缓存大小
 （3）join_buffer_size的默认值是256K，join_buffer_size的最大值在MySQL 5.1.22版本前是4G，而之后的版本才能在64位操作系统下申请大于4G的Join Buffer空间。
 （4）使用Block Nested-Loop Join算法需要开启优化器管理配置的optimizer_switch的设置block_nested_loop为on，默认为开启。
+
+https://blog.csdn.net/u010841296/article/details/89790399
+
+https://mp.weixin.qq.com/s/8W3RzKE1HjKifGzJvzBYzA
 
 ##### 怎么如何优化Join速度？
 1.用小结果集驱动大结果集，减少外层循环的数据量：

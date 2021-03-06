@@ -21,23 +21,20 @@ public class UserDao implements IUserDao {
 //代理类
 public class UserDaoProxy implements IUserDao {
     private IUserDao target;
-
     public UserDaoProxy(IUserDao iuserDao) {
         this.target = iuserDao;
-    }
-    
+    } 
     public void save() {
-        System.out.println("开启事物...");
+        System.out.println("开启事务...");
         target.save();
-        System.out.println("关闭事物...");
+        System.out.println("关闭事务...");
     }
-
 }
 ```
 
 ### JDK动态代理
 
-通过调用Proxy.newProxyInstance()方法可以为目标类创建一个代理类，然后调用代理类的方法时会调用InvocationHandler的invoke()方法，然后我们可以在invoke方法里面做一些日志记录之类的额外操作，然后再调用真正的实现方法，也就是目标类的方法。
+通过调用Proxy.newProxyInstance()方法可以为目标类创建一个代理类，然后调用代理类的方法时会调用InvocationHandler的invoke()方法，然后我们可以在invoke()方法里面做一些日志记录之类的额外操作，然后再调用真正的实现方法，也就是目标类的方法。
 
 目标类必须有对应的接口类，我们拦截的方法必须是接口中定义的方法。
 
@@ -50,6 +47,7 @@ public class Test implements TestInterface {
 public interface TestInterface {
     void test(Integer a);
 }
+//创建一个类，继承InvocationHandler，重写invoke()方法，在这个方法里面做一些日志打印的操作后，然后通过反射的API调用method.invoke(target, args);本来的方法。
 public static class CustomInvocationHandler implements InvocationHandler {
     Object target;
     public CustomInvocationHandler(Object target) {
@@ -58,6 +56,7 @@ public static class CustomInvocationHandler implements InvocationHandler {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         System.out.println("before");
+      	//调用本来的方法
         Object result = method.invoke(target, args);
         System.out.println("after");
         return null;
@@ -72,7 +71,7 @@ TestInterface proxyInstance = (TestInterface) Proxy.newProxyInstance(test.getCla
 proxyInstance.test(11);
 ```
 
-实现原理：就是在调用Proxy.newProxyInstance()时会根据类加载器和目标类Class对象动态创建一个代理类出来，动态代理类的所有方法的实现都是向下面这样，方法内部都是调用invocationhandler的invoke方法
+实现原理：就是在调用Proxy.newProxyInstance()时会根据类加载器和目标类Class对象动态创建一个代理类出来，动态代理类的所有方法的实现都是向下面这样，方法内部都是调用invocationHandler的invoke()方法
 
 ```java
  public final void test(){
@@ -157,9 +156,16 @@ public static class Test implements TestInterface {
 
 ### 区别
 
-Java动态代理只能够对接口进行代理（动态创建了一个类，实现了接口中的方法），不能对普通的类进行代理（因为所有生成的代理类的父类为Proxy，Java类继承机制不允许多重继承）；CGLIB能够代理普通类；
-Java动态代理使用Java原生的反射API进行操作，在生成类上比较高效；CGLIB使用ASM框架直接对字节码进行操作，在类的执行过程中比较高效
+目标类必须有对应的接口类，然后JDK动态代理动态创建了一个类，实现了接口中的方法，不能对没有接口类的普通的类进行代理（因为所有生成的代理类的父类为Proxy，Java类继承机制不允许多重继承）；CGLIB能够代理普通类；
+Java动态代理只能对有接口类的类进行代理，并且使用Java原生的反射API进行操作，在生成类上比较高效，但是执行会效率低一些。CGLIB使用ASM框架直接对字节码进行操作，在类的执行过程中比较高效。
 
 参考链接：
 
 https://blog.csdn.net/gyshun/article/details/81000997
+
+### Spring IOC是什么？
+
+IOC就是invention of control，就是控制反转，将对象获取外界依赖资源的方式反转了。假设一个对象A依赖于对象B，在没有IOC以前，就是在对象A需要使用对象B时，去用代码显式地创建一个对象B。有了IOC以后，可以由Spring IOC容器来负责对象B的创建和销毁，创建后放在容器中，在对象A需要的时候再来取。
+DI(Dependency Injection，依赖注入)其实就是IOC的另外一种说法，就是IOC是通过依赖注入技术实现的。
+《跟我学spring3系列》https://www.iteye.com/blog/jinnianshilongnian-1413851
+https://www.cnblogs.com/xdp-gacl/p/4249939.html
