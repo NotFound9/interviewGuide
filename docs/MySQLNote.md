@@ -1107,7 +1107,7 @@ SELECT * FROM test where id > 100 AND name = '123'
 
 这个就是在MySQL5.6以后，做的一个优化，例如有一个联合索引(a，b，c)
 
-查询条件为**where a = '123' AND b like '%aa% AND c like '%cc%'**时，按照联合索引的最左匹配法则，只有a可以用上索引，以前版本的MySQL中，innodb存储引擎就会在联合索引把满足a = '123'的数据的主键id找出来，然后回表，然后把所有数据发送给Sever端，Server端根据b like '%aa% AND c like '%cc%'对数据进行过滤，
+查询条件为 **where a = '123' AND b like '%aa% AND c like '%cc%'** 时，按照联合索引的最左匹配法则，只有a可以用上索引，以前版本的MySQL中，innodb存储引擎就会在联合索引把满足a = '123'的数据的主键id找出来，然后回表，然后把所有数据发送给Sever端，Server端根据b like '%aa% AND c like '%cc%'对数据进行过滤，
 
 现在有这个push down优化，因为联合索引中有b和c两个字段的信息，innodb在联合索引查找时就会考虑到b like '%aa% AND c like '%cc%'条件，所有回表的数据就都会是满足这三个条件的，然后返回给Server端的也都是满足条件的数据行，Server端就不会再自己进行数据过滤了。
 
