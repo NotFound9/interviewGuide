@@ -32,7 +32,7 @@
 
 ### Java中的多态是什么？
 
-**多态**指的是相同类型的变量在调用通一个方法时呈现出多种**不同的行为特征**。而造成这一现象的原因在于Java中的变量有两个类型：
+**多态**指的是相同类型的变量在调用同一个方法时呈现出多种**不同的行为特征**。而造成这一现象的原因在于Java中的变量有两个类型：
 
 * 编译时类型，由声明变量时的类型决定。
 
@@ -291,7 +291,7 @@ StringBuffer的读写方法都使用了synchronized修饰，同一时间只有�
 
 ### Object类有哪些自带方法？
 
-#### registerNatives
+#### registerNatives()
 
 首先Object类有一个本地方法registerNatives()，会在类加载时调用，主要是将Object类中的一些本地方法绑定到指定的函数中去，便于之后调用。例如将hashCode和clone本地方法绑定到JVM_IHashCode和JVM_IHashCode函数。
 
@@ -308,7 +308,7 @@ StringBuffer的读写方法都使用了synchronized修饰，同一时间只有�
 
 [Object类中的registerNatives方法的作用深入介绍](https://blog.csdn.net/Saintyyu/article/details/90452826)
 
-#### getClass
+#### getClass()
 
 **getClass()**方法会返回对象的**运行时**类。
 
@@ -334,7 +334,7 @@ StringBuffer的读写方法都使用了synchronized修饰，同一时间只有�
 ```java
 class1 is class com.test.Son
 ```
-##### Classs.forName
+##### Classs.forName()
 与**getClass()**类似的方法还有两个，一个是Class类中的**forName()**方法，也是在**运行时**，根据传入的类名去加载类，然后返回与类关联的Class对象。也正是因为是动态加载，在编译时可以没有这个类，也不会对类名进行检验，所以有可能抛出ClassNotFoundException异常。
 
 ```java
@@ -372,14 +372,15 @@ class2 is class com.test.Son
 
 PS:无论是使用哪种方式来获取类关联的Class对象，类都是只会加载一次，如果获取Class对象时，不会重复加载类。
 
-### 为什么hashCode()和equal()方法要一起重写？
-#### hashCode()和equal()方法
+### 为什么hashCode()和equals()方法要一起重写？
+#### hashCode()和equals()方法
 
 可以看到Obejct类中的源码如下，可以看到equals()方法的默认实现是判断两个对象的内存地址是否相同来决定返回结果。
 
 ```java
     public native int hashCode();
-		public boolean equals(Object obj) {
+
+    public boolean equals(Object obj) {
         return (this == obj);
     }
 ```
@@ -398,17 +399,17 @@ PS:无论是使用哪种方式来获取类关联的Class对象，类都是只会
 
 * 快速判断对象是否不相等
 
-  因为两个对象hashCode相等，调用equal()方法的结果不一定为true，
+  因为两个对象hashCode相等，调用equals()方法的结果不一定为true，
 
-  因为两个对象调用equal()方法相等，hashCode一定相等。
+  因为两个对象调用equals()方法相等，hashCode一定相等。
 
   所以hashCode不相等可以作为两个对象不相等的快速判断条件。
 
-  在往HashMap中添加一个键值对时，计算得到数组下标后，会遍历数组下标下存储的链表中，拿key的hashCode与每个节点的hashCode进行比较，相等时，才调用equal()方法进行继续调用，节约时间。（在一些类的equal()方法的自定义实现中也会对hashCode进行判断）。
+  在往HashMap中添加一个键值对时，计算得到数组下标后，会遍历数组下标下存储的链表中，拿key的hashCode与每个节点的hashCode进行比较，相等时，才调用equals()方法进行继续调用，节约时间。（在一些类的equal()方法的自定义实现中也会对hashCode进行判断）。
 
 ##### 假如只重写hashCode()方法（结果：HashMap可以存在两个内存地址不相同，但是相等的对象，无法保证去重）
 
-此时equal()方法的实现是默认实现，也就是当两个对象的内存地址相等时，equal()方法才返回true，假设两个键值对，它们的key类型都是TestObject，的值都是test，但是由于是使用new String()创建而成的字符串对象，key1和key2的内存地址不相等，所以key1==key2的结果会是false，TestObject的equals()方法默认实现是判断两个对象的内存地址，所以 key1.equals(key2)也会是false， 所以两个键值对可以重复地添加到hashMap中去。
+此时equals()方法的实现是默认实现，也就是当两个对象的内存地址相等时，equals()方法才返回true，假设两个键值对，它们的key类型都是TestObject，的值都是test，但是由于是使用new String()创建而成的字符串对象，key1和key2的内存地址不相等，所以key1==key2的结果会是false，TestObject的equals()方法默认实现是判断两个对象的内存地址，所以 key1.equals(key2)也会是false， 所以两个键值对可以重复地添加到hashMap中去。
 
 ```java
 public class TestObject {
@@ -494,15 +495,15 @@ HashMap是
 
 #### clone()方法
 
-clone方法会创建并返回当前对象的副本。副本与原对象的区别在于它们相等，但是存储在不同的内存位置中。
+clone()方法会创建并返回当前对象的副本。副本与原对象的区别在于它们相等，但是存储在不同的内存位置中。
 
 ```java
 protected native Object clone() throws CloneNotSupportedException;
 ```
 
-要调用clone方法必须实现Cloneable接口，否则调用默认的Object类的clone方法会抛出CloneNotSupportedException异常。默认clone()方法返回的对象是浅拷贝的。
+要调用clone()方法必须实现Cloneable接口，否则调用默认的Object类的clone方法会抛出CloneNotSupportedException异常。默认clone()方法返回的对象是浅拷贝的。
 
-#### toString方法
+#### toString()方法
 
 返回类名+@+hashCode的16进制字符串
 
@@ -521,15 +522,15 @@ public final native void notify();
 public final native void notifyAll();
 ```
 
-##### wait
+##### wait()
 
 wait()方法可以让当前线程放弃对象的监视器(可以简单认为监视器就是一个锁)，进入等待队列，进行等待，直到其他线程调用notify()或者notifyAll()后(或者过了超时时间)，线程才会从等待队列，移动到同步队列，再次获得对象的监视器后才能继续执行。
 
-##### notify
+##### notify()
 
 notify()可以唤醒等待队列中的某一个线程，线程被唤醒后会从等待队列移动到同步队列，线程再次获得对象的监视器后才能继续执行。（然后调用notify()方法的线程会继续执行，在同步块中执行完毕后，会释放对象的监视器。）
 
-##### notifyAll
+##### notifyAll()
 
 notifyAll()方法与notify()方法类似，只是会将等待队列中的所有线程唤醒。
 
@@ -584,7 +585,7 @@ public 只允许在所有地方访问。
 
 ##### 注意事项:
 
-如果某个类Father一个方法A是没有使用访问修饰符，那么子类Son如果是在其他包中，不能调用这个方法A。但是如果方法A是使用protected修饰的，那么在子类中可以调用。(但是不能是使用父类去调用，就是不能在子类中去创建父类对象，然后用父类对象去调用。)
+如果某个类Father一个方法A是没有使用访问修饰符，那么子类Son如果是在其他包中，不能调用这个方法A。但是如果方法A是使用protected修饰的，那么在子类中可以调用。(但是不能使用父类去调用，就是不能在子类中去创建父类对象，然后用父类对象去调用。)
 
 具体可以看看下面这个例子：
 
@@ -623,7 +624,7 @@ public class Test {
   }
 }
 ```
-1.如果没有自定义构造器，系统会提供一个默认的无参数构造器。如果提供了自定义的构造器，系统就不会提供默认的无参数构造器。(也就是不能直接调用new Test()来创建一个对象了，除非自己自己自定义一个无参数构造器)。
+1.如果没有自定义构造器，系统会提供一个默认的无参数构造器。如果提供了自定义的构造器，系统就不会提供默认的无参数构造器。(也就是不能直接调用new Test()来创建一个对象了，除非自己自定义一个无参数构造器)。
 
 2.在上面的代码中，其实在构造器Test(String str)调用之前，系统已经分配好空间，创建一个对象，然后执行构造器Test(String str)方法对对象进行初始化，然后返回。
 
@@ -633,11 +634,11 @@ public class Test {
 
 ### Java中的内部类是怎么样的？
 
-内部类分为静态内部类和非静态内部类。静态内部类是与外部类相关的，而非静态内部类外部类的实例对象相关的。
+内部类分为静态内部类和非静态内部类。静态内部类是与外部类相关的，而非静态内部类是与外部类的实例对象相关的。
 
 ##### 静态内部类
 
-静态内部类一般使用public static修饰，也可以使用private static使用，那样只能在外部内内部使用。在外部类以外的地方使用静态类时，需要带上外部类的包名，例如创建一个静态内部类对象：
+静态内部类一般使用public static修饰，也可以使用private static使用，那样只能在外部类内部使用。在外部类以外的地方使用静态类时，需要带上外部类的包名，例如创建一个静态内部类对象：
 
 ```java
 OutClass.InnerClass object = new OutClass.InnerClass();
@@ -645,7 +646,7 @@ OutClass.InnerClass object = new OutClass.InnerClass();
 
 ##### 非静态内部类
 
-非静态内部类是跟外部类的实例对象对象绑定在一起的。外部类一般是由两种访问修饰符default（只能包内访问），public（所有位置可以访问）。而非静态内部类又private，default，protected，public四种访问修饰符。因为必须跟外部类的实例对象对象绑定在一起，所有非静态内部类不能有静态方法，静态成员变量，静态初始化块，在外面创建一个非静态内部类对象：
+非静态内部类是跟外部类的实例对象绑定在一起的。外部类一般是由两种访问修饰符default（只能包内访问），public（所有位置可以访问）。而非静态内部类有private，default，protected，public四种访问修饰符。因为必须跟外部类的实例对象绑定在一起，所以非静态内部类不能有静态方法，静态成员变量，静态初始化块，在外面创建一个非静态内部类对象：
 
 ```java
 OutClass out = new OutClass();
@@ -686,13 +687,13 @@ Throwable的子类为Error和Exception
 
 Exception的子类为RuntimeException异常和RuntimeException以外的异常（例如IOException）。
 
-主要分为Error，RuntimeException异常和RuntimeException以外的异常。
+主要分为Error，RuntimeException类及其子类的非受检异常和非受检异常以外的受检异常。
 
 Error就是一些程序处理不了的错误，代表JVM出现了一些错误，应用程序无法处理。例如当 JVM 不再有继续执行操作所需的内存资源时，将出现 OutOfMemoryError。
 
-RuntimeException异常就是应用程序运行时，可能会抛出的异常。这些异常是不检查异常，编译时Java编译器不会去检查，不会强制程序员添加处理异常的代码。程序中可以选择捕获处理，也可以不处理。如NullPointerException(空指针异常)、IndexOutOfBoundsException(下标越界异常)等。
+RuntimeException异常就是应用程序运行时，可能会抛出的异常。这些异常是非受检异常，编译时Java编译器不会去检查，不会强制程序员添加处理异常的代码。程序中可以选择捕获处理，也可以不处理。如NullPointerException(空指针异常)、IndexOutOfBoundsException(下标越界异常)等。
 
-RuntimeException以外的异常可以认为是编译时异常，从程序语法角度讲是必须进行处理的异常，编译时编译器就会要求有相关的异常捕获处理的代码逻辑。如IOException、SQLException。
+非受检异常以外的异常可以认为是受检异常，从程序语法角度讲是必须进行处理的异常，编译时编译器就会要求有相关的异常捕获处理的代码逻辑。如IOException、SQLException。
 
 ##### PS：
 
