@@ -169,3 +169,23 @@ IOC就是invention of control，就是控制反转，将对象获取外界依赖
 DI(Dependency Injection，依赖注入)其实就是IOC的另外一种说法，就是IOC是通过依赖注入技术实现的。
 《跟我学spring3系列》https://www.iteye.com/blog/jinnianshilongnian-1413851
 https://www.cnblogs.com/xdp-gacl/p/4249939.html
+
+### Spring IOC是怎么解决循环依赖问题的？
+
+Spring使用了3个Map来保存Bean，俗称为三级依赖：
+
+singletonObjects 一级缓存，用于保存实例化、注入、初始化完成的bean实例，可以使用的。
+
+earlySingletonObjects 二级缓存，用于保存依赖注入完成的bean实例，但是没有完成初始化完成的bean。
+
+singletonFactories 三级缓存，用于保存bean创建工厂，以便于后面扩展有机会创建代理对象，此时的bean是没有完成属性填充的。
+
+
+
+假设A类和B类相互依赖，A中有一个B类的属性，B中有一个A类的属性。那么在初始化A的Bean时，首先会依次去一级依赖，去二级依赖，三级依赖中去找，都没有就调用创建方法创建实例A，将A添加到三级依赖中，然后对A的属性进行依赖注入，填充属性时，发现B的Bean在各级依赖中都没有，就创建B的bean添加到三级依赖，然后对B的属性进行填充，填充B的属性A时，会从三级依赖中取出A，填充完放到二级依赖，然后对B进行初始化，初始化完成添加到一级依赖。B初始化完成后，将B从一级依赖中，填充到实例A，A可以进入到二级依赖，完全初始化完成后，A进入到一级依赖，供用户代码使用。
+
+![img](../static/d7687db8ecbd43a79d041badf07bbaf4~tplv-k3u1fbpfcp-watermark.image)
+
+https://juejin.cn/post/6911692836714840077
+
+https://segmentfault.com/a/1190000015221968

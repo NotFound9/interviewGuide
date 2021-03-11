@@ -502,7 +502,7 @@ table = newTab;
 hash%length=hash&(length-1)
 ```
 
-而因为length是2的N次幂，length-1在二进制中其实是N-1个1。例如：
+而因为length是2的N次幂，length-1在二进制中其实是N个1。例如：
 
 length为16，length用2进制表示是10000，
 

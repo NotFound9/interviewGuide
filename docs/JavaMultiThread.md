@@ -54,15 +54,15 @@ Linux系统会给每个进程分配4G的虚拟地址空间(0到3G是User地址�
 
 五态模型一般指的是:
 
-新建态（创建一个进程）
+**新建态**（创建一个进程）
 
-就绪态（已经获取到资源，准备好了，进入运行队列，一旦获得时间片可以立即执行）
+**就绪态**（已经获取到资源，准备好了，进入运行队列，一旦获得时间片可以立即执行）
 
-运行态（获取到了时间片，执行程序）
+**运行态**（获取到了时间片，执行程序）
 
-阻塞态（运行过程中等待获取其他资源，I/O请求等）
+**阻塞态**（运行过程中等待获取其他资源，I/O请求等）
 
-终止态（进程被杀死了)
+**终止态**（进程被杀死了)
 
 #### 并发性
 
@@ -204,7 +204,7 @@ class ThreadTarget implements Runnable {
 
 ##### 原理
 
-之所以有这种实现方法，是因为Thread类的run方法中会判断成员变量target是否为空，不为空就会调用target类的run方法。
+之所以有这种实现方法，是因为Thread类的run()方法中会判断成员变量target是否为空，不为空就会调用target类的run方法。
 
 ```java
 private Runnable target;
@@ -258,7 +258,7 @@ thread.start()
 
 #### 第三种 实现Callable接口
 
-Runnable接口中的run方法是没有返回值，如果我们需要执行的任务带返回值就不能使用Runnable接口。创建一个类CallableTarget，实现Callable接口，实现带有**返回值的call()方法**，然后根据CallableTarget创建一个任务FutureTask，然后根据FutureTask来创建一个线程Thread，调用Thread的start方法可以执行任务。
+Runnable接口中的run()方法是没有返回值，如果我们需要执行的任务带返回值就不能使用Runnable接口。创建一个类CallableTarget，实现Callable接口，实现带有**返回值的call()方法**，然后根据CallableTarget创建一个任务FutureTask，然后根据FutureTask来创建一个线程Thread，调用Thread的start方法可以执行任务。
 
 ```java
 public class CallableTarget implements Callable<Integer> {
@@ -384,6 +384,40 @@ public class FutureTask<V> implements RunnableFuture<V> {
 public interface RunnableFuture<V> extends Runnable, Future<V> {
     void run();
 }
+```
+
+##### 使用案例
+
+使用时，Runnable实现类的实例可以作为Thread的入参使用，而Callable只能使用FutureTask进行封装使用。
+
+```java
+//Runnable配合Thread进行使用
+Thread threadA = new Thread(new Runnable() {
+   @Override
+      public void run() {   
+			//任务的代码
+      }
+ });
+
+//Callable使用FutureTask封装后，配合线程池进行使用
+ExecutorService pool = Executors.newSingleThreadExecutor();
+FutureTask task = new FutureTask(new Callable() {
+        @Override
+        public Object call() throws Exception {
+          //任务的代码
+          return null;
+        }
+});
+pool.submit(task);
+
+//Runnable使用FutureTask封装后，配合线程池进行使用
+FutureTask task1 = new FutureTask(new Runnable() {
+      @Override
+      public void run() {
+   				//任务的代码
+      }
+});
+pool.submit(task1);
 ```
 
 ### Java中单例有哪些写法？
@@ -762,14 +796,11 @@ static void ensure_join(JavaThread* thread) {
 
   thread->clear_pending_exception();
 
-  java_lang_Thread::set_thread_status(threadObj(), java_lang_Thread::TERMINATED);
-
+  java_lang_Thread::set_thread_status(threadObj(),        java_lang_Thread::TERMINATED);
   java_lang_Thread::set_thread(threadObj(), NULL);
-
   //同志们看到了没，别的不用看，就看这一句
   //thread就是当前线程，是啥？就是刚才例子中说的threadA线程
   lock.notify_all(thread);
-
   thread->clear_pending_exception();
 }
 ```
@@ -848,24 +879,24 @@ FutureTask提供了cancel(boolean mayInterruptIfRunning)方法来取消任务，
 示例代码如下：
 
 ```java
-   Thread threadA = new Thread(new Runnable() {
-        @Override
-        public void run() {
+Thread threadA = new Thread(new Runnable() {
+      @Override
+      public void run() {
         //执行threadA的任务
-        }
-    });
-    Thread threadB= new Thread(new Runnable() {
-        @Override
-        public void run() {
-            //执行threadB的任务
-        }
-    });
-		//执行线程A任务
-    threadA.start();
-		//主线程进行等待
-    threadA.join();
-		//执行线程B的任务
-    threadB.start();
+      }
+});
+Thread threadB= new Thread(new Runnable() {
+      @Override
+      public void run() {
+        //执行threadB的任务
+      }
+});
+//执行线程A任务
+threadA.start();
+//主线程进行等待
+threadA.join();
+//执行线程B的任务
+threadB.start();
 ```
 
 ##### 子线程Join
@@ -1422,9 +1453,9 @@ public ThreadPoolExecutor(int corePoolSize,
 
 从阻塞队列取任务时，如果阻塞队列为空:
 
-核心线程的会一直卡在`workQueue.take`方法，被阻塞并挂起，不会占用CPU资源。
+**核心线程**的会一直卡在`workQueue.take`方法，被阻塞并挂起，不会占用CPU资源。
 
-非核心线程会调用workQueue.poll(keepAliveTime, TimeUnit.NANOSECONDS)方法取任务 ，如果超过keepAliveTime时间后还没有拿到，下一次循环判断**compareAndDecrementWorkerCount**就会返回`null`,Worker对象的`run()`方法循环体的判断为`null`,任务结束，然后线程被系统回收）
+**非核心线程**会调用workQueue.poll(keepAliveTime, TimeUnit.NANOSECONDS)方法取任务 ，如果超过keepAliveTime时间后还没有拿到，下一次循环判断**compareAndDecrementWorkerCount**就会返回`null`,Worker对象的`run()`方法循环体的判断为`null`,任务结束，然后线程被系统回收）
 
 ##### 2.maximumPoolSize 最大线程数
 
@@ -1610,8 +1641,6 @@ public ScheduledThreadPoolExecutor(int corePoolSize,
 ThreadPoolExecutor提供了如下几个public的setter方法
 
 ![image-20210119104549770](../static/image-20210119104549770.png)
-
-
 
 调用corePoolSize方法之后，线程池会直接覆盖原来的corePoolSize值，并且基于当前值和原始值的比较结果采取不同的处理策略。（总得来说就是，多退少补的策略）
 
