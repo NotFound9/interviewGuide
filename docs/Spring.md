@@ -172,20 +172,73 @@ https://www.cnblogs.com/xdp-gacl/p/4249939.html
 
 ### Spring IOC是怎么解决循环依赖问题的？
 
+Spring IOC只能解决属性注入之间的循环依赖问题，如果是构造器之间的循环依赖，只会抛出BeanCurrentlyInCreationException异常。
+
 Spring使用了3个Map来保存Bean，俗称为三级依赖：
 
 singletonObjects 一级缓存，用于保存实例化、注入、初始化完成的bean实例，可以使用的。
 
-earlySingletonObjects 二级缓存，用于保存依赖注入完成的bean实例，但是没有完成初始化完成的bean。
+earlySingletonObjects 二级缓存，bean刚刚构造完成，但是还没有进行属性填充。
 
-singletonFactories 三级缓存，用于保存bean创建工厂，以便于后面扩展有机会创建代理对象，此时的bean是没有完成属性填充的。
-
-
+singletonFactories 三级缓存，用于保存正在创建中的bean，以便于后面扩展有机会创建代理对象，此时的bean是没有完成属性填充的。
 
 假设A类和B类相互依赖，A中有一个B类的属性，B中有一个A类的属性。那么在初始化A的Bean时，首先会依次去一级依赖，去二级依赖，三级依赖中去找，都没有就调用创建方法创建实例A，将A添加到三级依赖中，然后对A的属性进行依赖注入，填充属性时，发现B的Bean在各级依赖中都没有，就创建B的bean添加到三级依赖，然后对B的属性进行填充，填充B的属性A时，会从三级依赖中取出A，填充完放到二级依赖，然后对B进行初始化，初始化完成添加到一级依赖。B初始化完成后，将B从一级依赖中，填充到实例A，A可以进入到二级依赖，完全初始化完成后，A进入到一级依赖，供用户代码使用。
 
-![img](../static/d7687db8ecbd43a79d041badf07bbaf4~tplv-k3u1fbpfcp-watermark.image)
+![](../static/d7687db8ecbd43a79d041badf07bbaf4~tplv-k3u1fbpfcp-watermark-20210316161015142.image)
+
+
 
 https://juejin.cn/post/6911692836714840077
 
 https://segmentfault.com/a/1190000015221968
+
+https://blog.csdn.net/qq_35165000/article/details/108185093?spm=1001.2014.3001.5501
+
+### Bean的生命周期是怎么样的？
+
+Bean的生命周期主要分为以下四个阶段：
+
+1.**Bean的实例化阶段**-主要是在createBeanInstance()方法中，调用类的构造器方法来创建一个Bean实例。用户可以自定义一个类，继承InstantiationAwareBeanPostProcessorAdapter，重写它的两个方法，对Bean的实例化前后做一些额外的操作，例如打印日志。
+
+```java
+public class MyInstantiationAwareBeanPostProcessorAdapter extends InstantiationAwareBeanPostProcessorAdapter {
+   @Override
+   public Object postProcessBeforeInstantiation(Class<?> beanClass, String beanName) throws BeansException {
+      if (beanName.equals("car")) {
+         System.out.println(beanName + "在实例化之前");
+      }
+      return super.postProcessBeforeInstantiation(beanClass, beanName);
+   }
+   @Override
+   public boolean postProcessAfterInstantiation(Object bean, String beanName) throws BeansException {
+      if (beanName.equals("car")) {
+         System.out.println(beanName + "在实例化之后");
+      }
+      return super.postProcessAfterInstantiation(bean, beanName);
+   }
+}
+```
+
+2.**属性复制阶段**-主要是在populateBean()方法中，对Bean的各项属性进行赋值。
+
+3.**Bean的初始化阶段**-主要调用用户自定义的初始化方法InitializingBean()，
+
+用户可以自定义一个类，继承BeanPostProcessor，重写它的两个方法，对Bean的初始化前后做一些额外的操作，例如打印日志。
+
+```java
+public class NdBeanPostProcessor implements BeanPostProcessor {
+   public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+      System.out.println("NdBeanPostProcessor 在" + beanName + "对象初始化之前调用......");
+      if (beanName.equals("car")) {
+         return new CglibInterceptor().getIntance(bean.getClass());
+      }
+      return bean;
+   }
+   public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+      System.out.println("NdBeanPostProcessor 在" + beanName + "对象初始化之后调用......");
+      return bean;
+   }
+}
+```
+
+4.**Bean销毁阶段**，用户可以自定义destroyMethod()方法，在Bean被销毁时被调用。

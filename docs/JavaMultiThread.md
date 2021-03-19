@@ -868,7 +868,7 @@ FutureTask提供了cancel(boolean mayInterruptIfRunning)方法来取消任务，
 
 ##### 2.线程的stop方法
 
-线程的stop()方法可以让线程停止执行，但是不会释放当前线程持有的锁。但是这个方法已经被标记为过期，不推荐使用了。
+线程的stop()方法可以让线程停止执行，释放所有的锁，抛出ThreadDeath这种Error。但是在释放锁之后，没有办法让受这些锁保护的资源，对象处于一个安全，一致的状态。（例如有一个变量a，本来的值是0，你的线程任务是将a++后然后再进行a--。正常情况下任务执行完之后，其他线程取到这个变量a的值应该是0，但是如果之前调用了Thread.stop方法时，正好是在a++之后，那么变量a就会是1，这样其他线程取到的a就是出于不一致的状态。）
 
 ### 让线程顺序执行有哪些方法？
 
@@ -1736,3 +1736,12 @@ ThreadLocal变量所在的类的实例(代码中A的实例)->ThreadLocal
 
 [《一篇文章，从源码深入详解ThreadLocal内存泄漏问题》](https://www.jianshu.com/p/dde92ec37bd1)
 
+### BlockingQueue的原理是怎么样的？
+
+https://www.cnblogs.com/tjudzj/p/4454490.html
+
+
+
+### 进程间通信的方式
+
+https://network.51cto.com/art/201911/606827.htm?mobile
