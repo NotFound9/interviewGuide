@@ -242,3 +242,43 @@ public class NdBeanPostProcessor implements BeanPostProcessor {
 ```
 
 4.**Bean销毁阶段**，用户可以自定义destroyMethod()方法，在Bean被销毁时被调用。
+
+### BeanFactory和FactoryBean有什么区别？
+
+BeanFactory是一个接口，定义了IOC容器的最基本的规范，并提供了IOC容器应遵守的的最基本的方法。在Spring代码中，BeanFactory只是个接口，并不是IOC容器的具体实现，但是Spring容器给出了很多种实现，如 DefaultListableBeanFactory、XmlBeanFactory、ApplicationContext等，都是附加了某种功能的实现。
+
+```java
+package org.springframework.beans.factory;  
+import org.springframework.beans.BeansException;  
+public interface BeanFactory {  
+    String FACTORY_BEAN_PREFIX = "&";  
+    Object getBean(String name) throws BeansException;  
+    <T> T getBean(String name, Class<T> requiredType) throws BeansException;  
+    <T> T getBean(Class<T> requiredType) throws BeansException;  
+    Object getBean(String name, Object... args) throws BeansException;  
+    boolean containsBean(String name);  
+    boolean isSingleton(String name) throws NoSuchBeanDefinitionException;  
+    boolean isPrototype(String name) throws NoSuchBeanDefinitionException;  
+    boolean isTypeMatch(String name, Class<?> targetType) throws NoSuchBeanDefinitionException;  
+    Class<?> getType(String name) throws NoSuchBeanDefinitionException;  
+    String[] getAliases(String name);  
+}  
+```
+
+FactoryBean是一个接口，有一个创建bean对象的方法getObject()，当一些bean对象不能由ioc容器简单得调用类的构造器方法来创建实例对象时使用，可以将Bean类实现FactoryBean接口，实现getObject()方法，供ioc容器调用来创建bean对象。
+
+```java
+public interface FactoryBean<T> {
+    @Nullable
+    T getObject() throws Exception;
+
+    @Nullable
+    Class<?> getObjectType();
+
+    default boolean isSingleton() {
+        return true;
+    }
+}
+```
+
+https://www.cnblogs.com/aspirant/p/9082858.html

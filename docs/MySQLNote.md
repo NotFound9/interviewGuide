@@ -169,7 +169,7 @@ undo log是一种逻辑日志，是旧数据的备份。有两个作用用于事
 
 ##### redo log是什么？
 
-redo log用于保证数据的持久性。redo log记录的是数据页的物理变化，是新数据的备份，在事务提交前，将redo log 持久化就行，不需要将数据持久化，系统崩溃时，可以根据redo log将数据恢复到最新状态。
+redo log用于保证数据的持久性。redo log记录的是数据页的物理变化，是物理日志，是新数据的备份，在事务提交前，将redo log 持久化就行，不需要将数据持久化，系统崩溃时，可以根据redo log将数据恢复到最新状态。
 
 redo log只做顺序追加操作，当事务需要回滚时，在redo log中也不会删除之前的事务记录。
 
@@ -192,6 +192,8 @@ redo log只做顺序追加操作，当事务需要回滚时，在redo log中也�
 ##### Bin log 是什么？
 
 保存的是逻辑日志，主要是存储每一条会修改数据的SQL。
+
+https://blog.csdn.net/qq_41652863/article/details/98800650
 
 
 ### MySQL中的事务是什么？
@@ -271,6 +273,8 @@ innodb在解决幻读的问题主要是通MVVC 多版本并发版本控制来实
 参考文档：
 
 https://dev.mysql.com/doc/refman/5.7/en/innodb-multi-versioning.html
+
+https://blog.csdn.net/qq_41652863/article/details/98800650
 
 ### MySQL是怎么解决幻读的问题的？
 
