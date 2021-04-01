@@ -219,7 +219,7 @@ public class MyInstantiationAwareBeanPostProcessorAdapter extends InstantiationA
 }
 ```
 
-2.**属性复制阶段**-主要是在populateBean()方法中，对Bean的各项属性进行赋值。
+2.**属性赋值阶段**-主要是在populateBean()方法中，对Bean的各项属性进行赋值。
 
 3.**Bean的初始化阶段**-主要调用用户自定义的初始化方法InitializingBean()，
 
@@ -245,7 +245,7 @@ public class NdBeanPostProcessor implements BeanPostProcessor {
 
 ### BeanFactory和FactoryBean有什么区别？
 
-BeanFactory是一个接口，定义了IOC容器的最基本的规范，并提供了IOC容器应遵守的的最基本的方法。在Spring代码中，BeanFactory只是个接口，并不是IOC容器的具体实现，但是Spring容器给出了很多种实现，如 DefaultListableBeanFactory、XmlBeanFactory、ApplicationContext等，都是附加了某种功能的实现。
+**BeanFactory**是一个接口，定义了IOC容器的最基本的规范，并提供了IOC容器应遵守的的最基本的方法。在Spring代码中，BeanFactory只是个接口，并不是IOC容器的具体实现，但是Spring容器给出了很多种实现，如 DefaultListableBeanFactory、XmlBeanFactory、ApplicationContext等，都是附加了某种功能的实现。
 
 ```java
 package org.springframework.beans.factory;  
@@ -265,7 +265,7 @@ public interface BeanFactory {
 }  
 ```
 
-FactoryBean是一个接口，有一个创建bean对象的方法getObject()，当一些bean对象不能由ioc容器简单得调用类的构造器方法来创建实例对象时使用，可以将Bean类实现FactoryBean接口，实现getObject()方法，供ioc容器调用来创建bean对象。
+**FactoryBean**是一个接口，有一个创建bean对象的方法getObject()，当一些bean对象不能由ioc容器简单得调用类的构造器方法来创建实例对象时使用，可以将Bean类实现FactoryBean接口，实现getObject()方法，供ioc容器调用来创建bean对象。
 
 ```java
 public interface FactoryBean<T> {
@@ -282,3 +282,52 @@ public interface FactoryBean<T> {
 ```
 
 https://www.cnblogs.com/aspirant/p/9082858.html
+
+### Springboot启动过程
+
+##### 构造SpringApplication实例
+
+1.首先会调用SpringApplication的静态方法run()，在这个方法里面会调用构造器方法创建出一个SpringApplication实例，在构造器中会确定当前web应用类型，是reactive web类型，还是servlet web类型，还是none类型。以及设置监听器等等，完成一些初始化操作。(监听器就是来监听SpringApplication启动过程的，在开始启动，创建上下文，启动失败等生命周期事件时都会调用监听器相关的方法)
+
+##### 执行run()方法
+
+2.然后去执行实例的run()方法，首先会创建一个StopWatch计时器器，来统计run()方法的启动耗时，在日志里面会显示启动时间，那个时间就是在这里统计的。然后处理环境参数，就是`java -jar ***.jar`启动命令中带的那些jvm参数。
+
+![img](../static/up-70a9e95e6c1208288334341bdb54bd59c17.png)
+
+##### 创建applicationContext
+
+3.会创建出一个ApplicationContext，一般servlet的应用的context类型是AnnotationConfigServletWebServerApplicationContext。(可以认为beanFactory就是ioc容器，但是我们一般不直接使用beanFactory获取bean，而是通过applicationContext来获取，ioc容器beanFactory是应用上下文applicationContext的一个属性，applicationContext也实现了BeanFactory接口，可以认为applicationContext是一个高级容器，applicationContext支持国际化，默认是启动时加载所有bean，而不是用到时才进行懒加载，以及支持事件机制。)
+
+##### 执行prepareContext()方法
+
+4.然后会调用prepareContext()方法来为应用上下文做一些准备工作，会将运行时的参数封装成bean，注册到beanFactory中去，以及使用load方法加载启动类。
+
+##### 执行refreshContext()方法
+
+5.在这里会启动容器，也就是会为beanFactory做很多配置，注册BeanPostProcessors，设置类加载器等等。在这一步也会解析启动类中@SpringBootApplication这个组合注解。
+
+##### afterRefresh()方法
+
+6.这个方法里面会把容器里面所有ApplicationRunner自定义子类和CommandLineRunner自定义子类的Bean全部取出来，执行它们的run()方法。(就是有时候如果需要在应用启动后执行一些我们自定义的初始化操作，可以通过自定义一个类，继承ApplicationRunner类来实现。)
+
+之后会调用listeners.started()方法，通知所有Listener，application已经启动完成了，以及调用listeners.running()方法通知所有Listener，application已经运行了。
+
+```java
+//系统启动完可以做一些业务操作
+@Component
+//如果有多个runner需要指定一些顺序
+@Order(1)
+public class SimosApplicationRunner implements ApplicationRunner {
+@Autowired
+SystemInitService systemInitService;
+@Override
+public void run(ApplicationArguments args) throws Exception {
+    systemInitService.systemInit();
+}
+}
+```
+
+https://my.oschina.net/funcy/blog/4873261
+
+https://www.imooc.com/article/264722

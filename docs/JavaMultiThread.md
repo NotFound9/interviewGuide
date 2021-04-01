@@ -1736,6 +1736,92 @@ ThreadLocal变量所在的类的实例(代码中A的实例)->ThreadLocal
 
 [《一篇文章，从源码深入详解ThreadLocal内存泄漏问题》](https://www.jianshu.com/p/dde92ec37bd1)
 
+### Random类取随机数的原理是什么？
+
+首先在初始化Random实例的时候就会根据当前的时间戳生成一个种子数seed。
+
+```java
+public Random() {
+        this(seedUniquifier() ^ System.nanoTime());
+    }
+
+    private static long seedUniquifier() {
+        // L'Ecuyer, "Tables of Linear Congruential Generators of
+        // Different Sizes and Good Lattice Structure", 1999
+        for (;;) {
+            long current = seedUniquifier.get();
+            long next = current * 181783497276652981L;
+            if (seedUniquifier.compareAndSet(current, next))
+                return next;
+        }
+    }
+```
+
+然后每次取随机数时是拿seed乘以一个固定值multiplier，作为随机数。
+
+```java
+ protected int next(int bits) {
+        long oldseed, nextseed;
+        AtomicLong seed = this.seed;
+        do {
+            oldseed = seed.get();
+            nextseed = (oldseed * multiplier + addend) & mask;
+        } while (!seed.compareAndSet(oldseed, nextseed));
+        return (int)(nextseed >>> (48 - bits));
+    }
+```
+
+但是这样的话，多线程并发使用Math.random取随机数时，同一个时间点取到的随机数一样的概率会比较大。所以可以使用ThreadLocalRandom.current().nextInt()方法去取随机数。每个线程第一次调用ThreadLocalRandomd的current()方法时，会为这个线程生成一个线程独立的种子数seed，这样多线程并发读取随机数时，可以保证取到的随机数都是不一样的。
+
+```java
+public static ThreadLocalRandom current() {
+  			//判断这个线程是否生成种子
+        if (UNSAFE.getInt(Thread.currentThread(), PROBE) == 0)
+            localInit();
+        return instance;
+    }
+
+//为这个线程生成一个种子seed，并且将种子seed，和线程已生成种子的标志 存储到Unsafe类中
+static final void localInit() {
+        int p = probeGenerator.addAndGet(PROBE_INCREMENT);
+        int probe = (p == 0) ? 1 : p; // skip 0
+        long seed = mix64(seeder.getAndAdd(SEEDER_INCREMENT));
+        Thread t = Thread.currentThread();
+        UNSAFE.putLong(t, SEED, seed);
+        UNSAFE.putInt(t, PROBE, probe);
+    }
+
+//获取随机数，根据当前种子计算随机数
+public int nextInt(int origin, int bound) {
+        if (origin >= bound)
+            throw new IllegalArgumentException(BadRange);
+        return internalNextInt(origin, bound);
+    }
+
+final int internalNextInt(int origin, int bound) {
+        int r = mix32(nextSeed());
+        if (origin < bound) {
+            int n = bound - origin, m = n - 1;
+            if ((n & m) == 0)
+                r = (r & m) + origin;
+            else if (n > 0) {
+                for (int u = r >>> 1;
+                     u + m - (r = u % n) < 0;
+                     u = mix32(nextSeed()) >>> 1)
+                    ;
+                r += origin;
+            }
+            else {
+                while (r < origin || r >= bound)
+                    r = mix32(nextSeed());
+            }
+        }
+        return r;
+    }
+```
+
+
+
 ### BlockingQueue的原理是怎么样的？
 
 https://www.cnblogs.com/tjudzj/p/4454490.html
