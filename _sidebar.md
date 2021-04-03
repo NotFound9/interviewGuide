@@ -16,13 +16,14 @@
   - [慢查询优化实践](docs/MySQLWork.md)
 * JVM
   - [基础](docs/JavaJVM.md)
-- [《剑指Offer》解题思考](docs/CodingInterviews.md)
-- [《LeetCode热门100题》解题思考(上)](docs/LeetCode.md)
-- [《LeetCode热门100题》解题思考(下)](docs/LeetCode1.md)
 - [Kafka](docs/Kafka.md)
 - [ZooKeeper](docs/ZooKeeper.md)
 - [HTTP](docs/HTTP.md)
-- [大厂面试系列](docs/BATInterview.md)
+* 算法  
+  - [《剑指Offer》解题思考](docs/CodingInterviews.md)
+  - [《LeetCode热门100题》解题思考(上)](docs/LeetCode.md)
+  - [《LeetCode热门100题》解题思考(下)](docs/LeetCode1.md)
+- [大厂面试公众号文章系列](docs/BATInterview.md)
 * 读书笔记
   - [《Redis设计与实现》读书笔记 上](docs/RedisBook1.md)
   - [《Redis设计与实现》读书笔记 下](docs/RedisBook2.md)
