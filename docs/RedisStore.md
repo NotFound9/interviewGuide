@@ -15,7 +15,7 @@
 
 #### AOF持久化
 
-AOF持久化主要是Redis在修改相关的命令后，将命令添加到aof_buf缓存区（aof_buf是Redis中的SDS结构，SDS结构可以认为是对C语言中字符串的扩展）的末尾，然后在每次事件循环结束时，根据appendfsync的配置（always是总是写入，everysec是每秒写入，no是根据操作系统来决定何时写入），判断是否需要将aof_buf写入AOF文件。生产环境中一般用默认配置everysec，也就是每秒写入一次，一旦挂机会丢掉1分钟的数据。
+AOF持久化主要是Redis在修改相关的命令后，将命令添加到aof_buf缓存区（aof_buf是Redis中的SDS结构，SDS结构可以认为是对C语言中字符串的扩展）的末尾，然后在每次事件循环结束时，根据appendfsync的配置（always是每次事件循环都将aof_buf缓冲区的内容写入，everysec是每秒写入，no是根据操作系统来决定何时写入），判断是否需要将aof_buf写入AOF文件。生产环境中一般用默认配置everysec，也就是每秒写入一次，一旦挂机会丢掉1分钟的数据。
 
 ```c
 struct redisServer {

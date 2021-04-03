@@ -119,6 +119,7 @@ Set是一个无序的，不重复的字符串集合，底层编码有inset和has
 当元素个数较多时，Set使用hashtable来保存元素，元素的值作为key，value都是NULL。
 
 ### 谈一谈你对Redis中有序集合ZSet的理解？
+
 Zset与Set的区别在于每一个元素都有一个Score属性，并且存储时会将元素按照Score从低到高排列。底层是通过跳跃表实现的。
 
 ##### ziplist
@@ -127,7 +128,7 @@ Zset与Set的区别在于每一个元素都有一个Score属性，并且存储�
 
 ##### skiplist+dict
 
-当元素较多时，使用skiplist+dict来实现，
+当元素较多时，使用skiplist+dict来实现。
 skiplist存储元素的值和Score，并且将所有元素按照分值有序排列。便于以O(logN)的时间复杂度插入，删除，更新，及根据Score进行范围性查找。
 
 dict存储元素的值和Score的映射关系，便于以O(1)的时间复杂度查找元素对应的分值。
