@@ -107,7 +107,7 @@ Github项目主页：https://github.com/NotFound9/interviewGuide
     - [6.RedisCluster是怎么实现数据分片的？](docs/RedisUserful.md#RedisCluster是怎么实现数据分片的？)
     - [7.RedisCluster是怎么做故障转移和发现的？](docs/RedisUserful.md#RedisCluster是怎么做故障转移和发现的？)
 * MySQL
-  - [原创面试题解答](docs/MySQLNote.md)
+  - [基础](docs/MySQLNote.md)
     - [1.一条MySQL更新语句的执行过程是什么样的？](docs/MySQLNote.md#一条MySQL更新语句的执行过程是什么样的？)
     - [2.脏页是什么？](docs/MySQLNote.md#脏页是什么？)
     - [3.Checkpoint是什么？](docs/MySQLNote.md#Checkpoint是什么？)
@@ -138,7 +138,7 @@ Github项目主页：https://github.com/NotFound9/interviewGuide
     - [28.MySQL的join的实现是怎么样的？](docs/MySQLNote.md#MySQL的join的实现是怎么样的？)
   - [慢查询优化实践](docs/MySQLWork.md) 
 * JVM
-  - [原创面试题解答](docs/JavaJVM.md)
+  - [基础](docs/JavaJVM.md)
     - [1.Java内存区域怎么划分的？](docs/JavaJVM.md#Java内存区域怎么划分的？)
     - [2.Java中对象的创建过程是怎么样的？](docs/JavaJVM.md#Java中对象的创建过程是怎么样的？)
     - [3.Java对象的内存布局是怎么样的？](docs/JavaJVM.md#Java对象的内存布局是怎么样的？)
