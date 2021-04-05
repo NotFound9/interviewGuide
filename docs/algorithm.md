@@ -65,6 +65,7 @@ int[] sorted(int[] array) {
 int[] sorted2(int[] array) {
   if(array == null || array.length==0 || array.length==1) {return array;}
   for(int i=1;i<array.length;i++) {
+    //此时的0到都是排好序的序列了，把array[i]在0到i-1中找到一个合适的位置
         for(int j = i;j>0;j--) {
         if(array[j]<array[j-1]) {//小于就交换
           int temp = array[j];
@@ -322,7 +323,7 @@ int find_left_bound(int[] array,double target) {
 public ListNode findKNode(ListNode node，int k) {
         if (head==null || k <= 0) {//空链表，或者k小于等于0
         return null;
-    }
+       }
         ListNode quickNode = node;
         for(int i=0;i<k;i++) {
                 if(quickNode == null) {

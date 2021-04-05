@@ -1,10 +1,10 @@
-MySQL慢查询优化（真实案例调优）
+## 文章说明
+这篇文章主要是记录自己最近在真实工作中遇到的慢查询的案例，然后进行调优分析的过程，欢迎大家一起讨论调优经验。（以下出现的表名，列名都是化名，实际数据也进行过一点微调。可能文章比较贴近实践，已经被51CTO的编辑申请转载了）
 
-这篇文章主要是记录自己最近在真实工作中遇到的慢查询的案例，然后进行调优分析的过程，欢迎大家一起讨论调优经验。（以下出现的表名，列名都是化名，实际数据也进行过一点微调。）
 
-### 复杂的深分页问题优化
+## 一.复杂的深分页问题优化
 
-##### 背景
+#### 背景
 
 有一个article表，用于存储文章的基本信息的，有文章id，作者id等一些属性，有一个content表，主要用于存储文章的内容，主键是article_id，需求需要将一些满足条件的作者发布的文章导入到另外一个库，所以我同事就在项目中先查询出了符合条件的作者id，然后开启了多个线程，每个线程每次取一个作者id，执行查询和导入工作。
 
@@ -26,7 +26,7 @@ LIMIT 210000,100
 
 然后我们开始分析这条命令执行慢的原因：
 
-##### 是否是联合索引的问题
+#### 是否是联合索引的问题
 
 当前是索引情况如下：
 
@@ -41,26 +41,29 @@ content表的主键是article_id
 
 流程确实是这个流程，但是去查询时，如果limit还是210000, 100时，还是查不出数据，几分钟都没有数据，一直到navica提示超时，使用Explain看的话，确实命中索引了，如果将offset调小，调成6000, 100，勉强可以查出数据，但是需要46s，所以瓶颈不在这里。
 
-真实原因如下：
-
-先看关于深分页的两个查询，id是主键，val是普通索引
-
-##### 直接查询法
+### 查询慢的原因
 
 ```SQL
-select * from test where val=4 limit 300000,5;
+SELECT
+	a.*, c.*
+FROM
+	article a
+LEFT JOIN content c ON a.id = c.article_id
+WHERE
+	a.author_id = 1111
+AND a.create_time < '2020-04-29 00:00:00'
+LIMIT 210000,100
 ```
-##### 先查主键再join
-```SQL
-select * from test a 
-inner join
-(select id from test where val=4 limit 300000,5) as b 
-on a.id=b.id;
-```
+首先我们需要知道innodb引擎在执行时，并不了解我们的业务规则，它是不知道article表中如果有一篇文章存在，那么在content表里面一定会有这篇文章的内容信息，也就是它不知道article表的id在content表中一定会有一个article_id与之对应。所以innodb引擎的执行流程是这样：
 
-这两个查询的结果都是查询出offset是30000后的5条数据，区别在于第一个查询需要先去普通索引val中查询出300005个id，然后去聚集索引下读取300005个数据页，然后抛弃前面的300000个结果，只返回最后5个结果，过程中会产生了大量的随机I/O。第二个查询一开始在普通索引val下就只会读取后5个id，然后去聚集索引下读取5个数据页。
+1.先去article表中找出满足`a.author_id = 1111
+AND a.create_time < '2020-04-29 00:00:00'`条件的22000条数据的所有字段，加载到内存中。（在MySQL进行join时，加载到内存中并不只是join字段，而是SELECT 的所有字段，很容易理解，如果只是join的字段，那么最后还需要根据join的字段去回表。）
 
-同理我们业务中那条查询其实是更加**复杂**的情况，因为我们业务的那条SQL不仅会读取article表中的210100条结果，而且会每条结果去content表中查询文章相关内容，而这张表有几个TEXT类型的字段，我们使用show table status命令查看表相关的信息发现
+2.然后根据这22000数据去content表里面查找文章内容相关的字段。（由于content表存储了文章内容，一些字段是特别大的，是不会存储在聚簇索引的叶子节点中的，而且存储在其他地方，所以会产生大量随机IO，这是导致这个查询这么慢的原因。）
+
+3.最终把22000条数据返回给MySQL Server，取最后面的100条数据，返回给客户端。
+
+使用show table status命令查看article表和content表显示的数据行平均长度
 
 | Name    | Engine | Row_format | Rows    | Avg_Row_length |
 | ------- | ------ | ---------- | ------- | -------------- |
@@ -71,7 +74,7 @@ on a.id=b.id;
 
 （详细了解可以看看这篇文章[深度好文带你读懂MySQL和InnoDB](https://mp.weixin.qq.com/s?src=11&timestamp=1588316993&ver=2311&signature=wlqIQrV2ZK4JJhqP4E1hqr8j3SBaQSEaiPoPM2KlAF9z-*jpWnwYiORweW3LDIWfY2J6LY8coaqXDMFezKZvEIEGRIaMEs5G*0N4naBh9DBCmUjRQnvuluU8Q5LOPttc&new=1)）
 
-![img](https://user-gold-cdn.xitu.io/2020/5/1/171cf4968afd910e?w=640&h=144&f=jpeg&s=5598)
+![img](../static/f10940650d2d478a9c71bce1d9a0db3a~tplv-k3u1fbpfcp-zoom-1.image)
 
 这样再从content表里面查询连续的100行数据时，读取每行数据时，还需要去读溢出页的数据，这样就需要大量随机IO，因为机械硬盘的硬件特性，随机IO会比顺序IO慢很多。所以我们后来又进行了测试，
 
@@ -93,11 +96,11 @@ FROM article_content c
 WHERE c.article_id in(100个article_id)
 ```
 
-#### 解决方案
+### 解决方案
 
 所以针对这个问题的解决方案主要有两种：
 
-##### 先查出主键id再inner join
+#### 先查出主键id再inner join
 
 非连续查询的情况下，也就是我们在查第100页的数据时，不一定查了第99页，也就是允许跳页查询的情况，那么就是使用**先查主键再join**这种方法对我们的业务SQL进行改写成下面这样，下查询出210000, 100时主键id，作为临时表temp_table，将article表与temp_table表进行inner join，查询出中文章相关的信息，并且去left Join content表查询文章内容相关的信息。 第一次查询大概1.11s，后面每次查询大概0.15s
 
@@ -115,13 +118,13 @@ INNER JOIN(
 LEFT JOIN content c ON a.id = c.article_id
 ```
 
-##### 优化结果
+#### 优化结果
 
 优化前，offset达到20万的量级时，查询时间过长，一直到超时。
 
 优化后，offset达到20万的量级时，查询时间为1.11s。
 
-##### 利用范围查询条件来限制取出的数据
+#### 利用范围查询条件来限制取出的数据
 
 这种方法的大致思路如下，假设要查询test_table中offset为10000的后100条数据，假设我们事先已知第10000条数据的id，值为min_id_value
 
@@ -139,13 +142,13 @@ while(min_id<max_id) {
 		//这100条数据导入完毕后，将100条数据数据中最大的id赋值给min_id，以便导入下100条数据
 }
 ```
-##### 优化结果
+#### 优化结果
 
 优化前，offset达到20万的量级时，查询时间过长，一直到超时。
 
 优化后，offset达到20万的量级时，由于知道第20万条数据的id，查询时间为0.34s。
 
-## 联合索引问题
+## 二.联合索引问题优化
 
 联合索引其实有两个作用：
 #### 1.充分利用where条件，缩小范围
@@ -234,21 +237,21 @@ and a.status = 1
 
 先介绍一下EXPLAIN中Extra列的各种取值的含义
 
-##### Using filesort
+#### Using filesort
 
 当Query 中包含 ORDER BY 操作，而且无法利用索引完成排序操作的时候，MySQL Query Optimizer 不得不选择相应的排序算法来实现。数据较少时从内存排序，否则从磁盘排序。Explain不会显示的告诉客户端用哪种排序。
 
-##### Using index
+#### Using index
 
 仅使用索引树中的信息从表中检索列信息，而不需要进行附加搜索来读取实际行(使用二级覆盖索引即可获取数据)。 当查询仅使用作为单个索引的一部分的列时，可以使用此策略。
 
-##### Using temporary
+#### Using temporary
 要解决查询，MySQL需要创建一个临时表来保存结果。 如果查询包含不同列的GROUP BY和ORDER BY子句，则通常会发生这种情况。官方解释：”为了解决查询，MySQL需要创建一个临时表来容纳结果。典型情况如查询包含可以按不同情况列出列的GROUP BY和ORDER BY子句时。很明显就是通过where条件一次性检索出来的结果集太大了，内存放不下了，只能通过加临时表来辅助处理。
 
-##### Using where
+#### Using where
 表示当where过滤条件中的字段无索引时，MySQL Sever层接收到存储引擎(例如innodb)的结果集后，根据where条件中的条件进行过滤。
 
-##### Using index condition
+#### Using index condition
 Using index condition 会先条件过滤索引，过滤完索引后找到所有符合索引条件的数据行，随后用 WHERE 子句中的其他条件去过滤这些数据行；
 
 
@@ -272,7 +275,7 @@ between '2020-03-22 03:00:00.003' and '2020-04-22 03:00:00.003'
 and a.audit_status = 1
 ```
 
-#### 发散思考：如果将联合索引(createTime，status)改成(status，createTime)会怎么样？
+### 发散思考：如果将联合索引(createTime，status)改成(status，createTime)会怎么样？
 
 ```
 where
@@ -306,4 +309,17 @@ and a.status = 1
 | 3    | range | idx_status_createTime | 6       | 52542  | 100.00   | Using index condition |
 
 扫描行数确实会少一些，因为在idx_status_createTime的索引中，一开始根据status = 1排除掉了status取值为其他值的情况。
+
+之前建了一个技术交流群，进群可以领取《面试指北》PDF版，希望可以和大家一起学习进步！
+
+## 干货内容回顾：
+### [【大厂面试01期】高并发场景下，如何保证缓存与数据库一致性？](https://mp.weixin.qq.com/s/hwMpAVZ1_p8gLfPAzA8X9w)
+### [【大厂面试02期】Redis过期key是怎么样清理的？](https://mp.weixin.qq.com/s/J_nOPKS17Uax2zGrZsE8ZA)
+### [【大厂面试03期】MySQL是怎么解决幻读问题的？](https://mp.weixin.qq.com/s/8D6EmZM3m6RiSk0-N5YCww)
+### [【大厂面试04期】讲讲一条MySQL更新语句是怎么执行的？](https://mp.weixin.qq.com/s/pNe1vdTT24oEoJS_zs-5jQ)
+### [【大厂面试05期】说一说你对MySQL中锁的理解？](https://mp.weixin.qq.com/s/pTpPE33X-iYULYt8DOPp2w)
+### [【大厂面试06期】谈一谈你对Redis持久化的理解？](https://mp.weixin.qq.com/s/nff4fd5TnM-CMWb1hQIT9Q)
+### [【大厂面试07期】说一说你对synchronized锁的理解？](https://mp.weixin.qq.com/s/H8Cd2fj82qbdLZKBlo-6Dg)
+### [【大厂面试08期】谈一谈你对HashMap的理解？](https://mp.weixin.qq.com/s/b4f5NIPl9uVLkRg_UpWSJQ)
+![](../static/7795953b44734c0c84b94c78943f88ef~tplv-k3u1fbpfcp-zoom-1.image)
 

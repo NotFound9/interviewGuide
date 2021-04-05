@@ -9,15 +9,7 @@ Github项目主页：https://github.com/NotFound9/interviewGuide
 
 ## 为什么要做这个开源项目？
 
-之前喜欢在空闲时看一些技术书籍，但是发现看完后，即便每一章都写了读书笔记，看到一些实际的问题时，自己还是一脸茫然，所以我认为学习一项技术分为三个阶段：
-
-1.看过入门教程，会用API。
-
-2.看过相关的技术书籍，了解一部分原理。
-
-3.能够根据了解的原理对实际的问题进行分析，解决问题，这样才能对技术有较为深入的理解，在工作中遇到复杂问题时，才能解决。
-
-所以我发起了这个项目，一方面是便于自己复习巩固，一方面是将这些自己写的解答开源出来分享给大家，希望可以帮助到大家，也欢迎大家一起来完善这个项目，为开源做贡献。
+之前在业余时间阅读技术书籍时，发现只阅读而不产出，这样收效甚微。所以就在网上找了很多常见的技术问题，根据自己的技术积累，查阅书籍，阅读文档和博客等资料，尝试着用自己的话去写了很多原创解答，最终整理开源到Github。一方面是便于自己复习巩固，一方面是将这些自己写的解答开源出来分享给大家，希望可以帮助到大家，也欢迎大家一起来完善这个项目，为开源做贡献。
 
 欢迎大家进群一起学习进步！
 
@@ -111,8 +103,11 @@ Github项目主页：https://github.com/NotFound9/interviewGuide
     - [2.Redis中哨兵是什么？](docs/RedisUserful.md#Redis中哨兵是什么？)
     - [3.客户端是怎么接入哨兵系统的？](docs/RedisUserful.md#客户端是怎么接入哨兵系统的？)
     - [4.Redis哨兵系统是怎么实现自动故障转移的？](docs/RedisUserful.md#Redis哨兵系统是怎么实现自动故障转移的？)
+    - [5.谈一谈你对Redis Cluster的理解？](docs/RedisUserful.md#谈一谈你对RedisCluster的理解？)
+    - [6.RedisCluster是怎么实现数据分片的？](docs/RedisUserful.md#RedisCluster是怎么实现数据分片的？)
+    - [7.RedisCluster是怎么做故障转移和发现的？](docs/RedisUserful.md#RedisCluster是怎么做故障转移和发现的？)
 * MySQL
-  - [原创面试题解答](docs/MySQLNote.md)
+  - [基础](docs/MySQLNote.md)
     - [1.一条MySQL更新语句的执行过程是什么样的？](docs/MySQLNote.md#一条MySQL更新语句的执行过程是什么样的？)
     - [2.脏页是什么？](docs/MySQLNote.md#脏页是什么？)
     - [3.Checkpoint是什么？](docs/MySQLNote.md#Checkpoint是什么？)
@@ -143,7 +138,7 @@ Github项目主页：https://github.com/NotFound9/interviewGuide
     - [28.MySQL的join的实现是怎么样的？](docs/MySQLNote.md#MySQL的join的实现是怎么样的？)
   - [慢查询优化实践](docs/MySQLWork.md) 
 * JVM
-  - [原创面试题解答](docs/JavaJVM.md)
+  - [基础](docs/JavaJVM.md)
     - [1.Java内存区域怎么划分的？](docs/JavaJVM.md#Java内存区域怎么划分的？)
     - [2.Java中对象的创建过程是怎么样的？](docs/JavaJVM.md#Java中对象的创建过程是怎么样的？)
     - [3.Java对象的内存布局是怎么样的？](docs/JavaJVM.md#Java对象的内存布局是怎么样的？)
@@ -156,13 +151,17 @@ Github项目主页：https://github.com/NotFound9/interviewGuide
     - [10.Minor GC和Full GC是什么？](docs/JavaJVM.md#MinorGC和FullGC是什么？)
     - [11.如何确定一个对象可以回收？](docs/JavaJVM.md#如何确定一个对象是否可以被回收？)
     - [12.目前通常使用的是什么垃圾收集器？](docs/JavaJVM.md#目前通常使用的是什么垃圾收集器？)
-- [《剑指Offer》解题思考](docs/CodingInterviews.md)
-- [《LeetCode热门100题》解题思考(上)](docs/LeetCode.md)
-- [《LeetCode热门100题》解题思考(下)](docs/LeetCode1.md)
 - [Kafka](docs/Kafka.md)
 - [ZooKeeper](docs/ZooKeeper.md)
 - [HTTP](docs/HTTP.md)
-- [大厂面试系列](docs/BATInterview.md)
+- [Spring](docs/Spring.md)
+- [Nginx](docs/Nginx.md)
+- [系统设计](docs/SystemDesign.md)
+* 算法
+    - [《剑指Offer》解题思考](docs/CodingInterviews.md)
+    - [《LeetCode热门100题》解题思考(上)](docs/LeetCode.md)
+    - [《LeetCode热门100题》解题思考(下)](docs/LeetCode1.md)
+- [大厂面试公众号文章系列](docs/BATInterview.md)
   - [【大厂面试01期】高并发场景下，如何保证缓存与数据库一致性？](https://mp.weixin.qq.com/s/hwMpAVZ1_p8gLfPAzA8X9w)
   - [【大厂面试02期】Redis过期key是怎么样清理的？](https://mp.weixin.qq.com/s/J_nOPKS17Uax2zGrZsE8ZA)
   - [【大厂面试03期】MySQL是怎么解决幻读问题的？](https://mp.weixin.qq.com/s/8D6EmZM3m6RiSk0-N5YCww)

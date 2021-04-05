@@ -386,7 +386,7 @@ synchronized (f) {//f就是数组下标存储的元素
 
 #### 4.是否允许null值出现
 
-HashMap的key和null都可以为null，如果key为null，那么计算的hash值会是0，最终计算得到的数组下标也会是0，所以key为null的键值对会存储在数组中的首元素的链表中。value为null的键值对也能正常插入，跟普通键值对插入过程一致。
+HashMap的key和value都可以为null，如果key为null，那么计算的hash值会是0，最终计算得到的数组下标也会是0，所以key为null的键值对会存储在数组中的首元素的链表中。value为null的键值对也能正常插入，跟普通键值对插入过程一致。
 
 ```java
 static final int hash(Object key) {
@@ -423,8 +423,8 @@ final V putVal(K key, V value, boolean onlyIfAbsent) {
 
 ##### 不指定初始容量
 如果不指定初始容量，HashMap和ConcurrentHashMap默认会是16，HashTable的容量默认会是11。
-##### 不指定初始容量
-如果制定了初始容量，HashMap和ConcurrentHashMap的容量会是比初始容量稍微大一些的2的幂次方大小，HashTable会使用初始容量，
+##### 指定初始容量
+如果指定了初始容量，HashMap和ConcurrentHashMap的容量会是比初始容量稍微大一些的2的幂次方大小，HashTable会使用初始容量，
 ##### 扩容
 扩容时，如果远长度是N，HashMap和ConcurrentHashMap扩容时会是2N，HashTable则是2N+1。
 
@@ -502,7 +502,7 @@ table = newTab;
 hash%length=hash&(length-1)
 ```
 
-而因为length是2的N次幂，length-1在二进制中其实是N-1个1。例如：
+而因为length是2的N次幂，length-1在二进制中其实是N个1。例如：
 
 length为16，length用2进制表示是10000，
 
