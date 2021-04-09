@@ -67,13 +67,13 @@ int[] sorted2(int[] array) {
   for(int i=1;i<array.length;i++) {
     //此时的0到都是排好序的序列了，把array[i]在0到i-1中找到一个合适的位置
         for(int j = i;j>0;j--) {
-        if(array[j]<array[j-1]) {//小于就交换
-          int temp = array[j];
-          array[j] = array[j-1];
-          array[j-1] = temp;
-        } else {//如果是大于说明是已经处于排序好的序列中合适的位置了
-          break;
-        }
+          if(array[j]<array[j-1]) {//小于就交换
+            int temp = array[j];
+            array[j] = array[j-1];
+            array[j-1] = temp;
+          } else {//如果是大于说明是已经处于排序好的序列中合适的位置了
+            break;
+          }
       }
   }
   return array;
@@ -88,16 +88,16 @@ int[] sorted2(int[] array) {
 int[] sorted3(int[] array) {
       if(array == null || array.length==0 || array.length==1) {return array;}
       for(int i= 0;i<array.length-1;i++) {
-        int min = i;
+        int minIndex = i;
         //每次遍历选出最小值，并且放在数组下标为i的位置
         for(int j = i+1;j<array.length;j++) {
-          if(array[j]<array[min]){
-            min = j;
+          if(array[j]<array[minIndex]){
+            minIndex = j;
           }
         }
         int temp = array[i];
-        array[i] = array[min];
-        array[min] = temp;
+        array[i] = array[minIndex];
+        array[minIndex] = temp;
       }
       return array;
 }
@@ -463,7 +463,8 @@ public static Integer findKByPickSort(int[] input, int k) {
 要么选择物品i，那么背包的容量就变为capcity-weight[i]，然后继续对剩下的i-1的这些物品进行选择。
 总价值f(i,capacity) = value[i] +f(i-1,capcity-weight[i])
 要么不选择物品i，容量还是capcity，继续对剩下的i-1的物品进行选择
-总价值f(i,capacity) = f(i-1,capcity-weight[i])
+总价值f(i,capacity) = f(i-1,capcity)
+
 ```java
   int testKnapsack1(int[] value,int[] weight, int i, int capacity) {
         int result = 0;
