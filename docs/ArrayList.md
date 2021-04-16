@@ -95,7 +95,7 @@ static class SynchronizedList<E>
             mutex = this;//mutex就是SynchronizedList实例自己，作为同步锁使用
         }
    
-				public E get(int index) {
+  			public E get(int index) {
             synchronized (mutex) {
             是父类中的成员变量，在父类中会将list赋值给mutex
             		return list.get(index);
