@@ -124,7 +124,7 @@ Zset与Set的区别在于每一个元素都有一个Score属性，并且存储�
 
 ##### ziplist
 
-当元素较少时，ZSet的底层编码使用ziplist实现，所有元素按照Score从低到高排序。
+当元素较少时(元素个数<128个，且每个元素的长度小于64字节)，ZSet的底层编码使用ziplist实现，所有元素按照Score从低到高排序。
 
 ##### skiplist+dict
 

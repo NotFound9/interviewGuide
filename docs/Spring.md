@@ -3,6 +3,8 @@
 #### [1.SpringAOP是怎么实现的？](#SpringAOP是怎么实现的？)
 ### SpringAOP是怎么实现的？
 
+Spring Aop是一种可以减少大量重复代码的一种编程技术，可以设置一个切面，比如说是某个包下面的所有方法，这些方法在执行的时候就会调用我们写的拦截方法，我们可以做一些类似于日志打印等一些操作。
+
 实现AOP有三种方式：静态代理，使用JDK的Proxy类实现动态代理，使用CGLIB实现动态代理。
 
 #### 静态代理
@@ -221,7 +223,7 @@ public class MyInstantiationAwareBeanPostProcessorAdapter extends InstantiationA
 
 2.**属性赋值阶段**-主要是在populateBean()方法中，对Bean的各项属性进行赋值。
 
-3.**Bean的初始化阶段**-主要调用用户自定义的初始化方法InitializingBean()，
+3.**Bean的初始化阶段**-主要调用用户自定义的初始化方法init-Method()
 
 用户可以自定义一个类，继承BeanPostProcessor，重写它的两个方法，对Bean的初始化前后做一些额外的操作，例如打印日志。
 

@@ -515,7 +515,7 @@ public String toString() {
 
 #### wait()方法和notify()方法
 
-```
+```java
 //timeout是超时时间，也就是等待的最大毫秒数，如果为0，代表会一直等待下去
 public final native void wait(long timeout) throws InterruptedException;
 public final native void notify();
@@ -693,7 +693,7 @@ Error就是一些程序处理不了的错误，代表JVM出现了一些错误，
 
 RuntimeException异常就是应用程序运行时，可能会抛出的异常。这些异常是非受检异常，编译时Java编译器不会去检查，不会强制程序员添加处理异常的代码。程序中可以选择捕获处理，也可以不处理。如NullPointerException(空指针异常)、IndexOutOfBoundsException(下标越界异常)等。
 
-非受检异常以外的异常可以认为是受检异常，从程序语法角度讲是必须进行处理的异常，编译时编译器就会要求有相关的异常捕获处理的代码逻辑。如IOException、SQLException。
+非受检异常以外的异常可以认为是受检异常，从程序语法角度讲是必须进行处理的异常，编译时编译器就会要求有相关的异常捕获处理的代码逻辑。如IOException、SQLException，FileNotFoundException。
 
 ##### PS：
 

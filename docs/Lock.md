@@ -76,7 +76,7 @@ public class SyncTest {
 
 就是Java对象的内存布局其实由对象头+实例数据+对齐填充三部分组成，而对象头主要包含Mark Word+指向对象所属的类的指针组成。Mark Word主要用于存储对象自身的运行时数据，哈希码，GC分代年龄，锁标志等。
 
-![img](../static/640)
+![img](../static/640的副本)
 
 下面就是Mark Word的数据映射表
 
@@ -240,7 +240,11 @@ synchronized是一个Java 关键字，synchronized锁是JVM实现的，底层代
 
 3.功能
 
-synchronized只能修饰方法，或者用于代码块，而ReenTrantLock的加锁和解锁是调用lock和unlock方法，更加灵活。其次是synchronized的等待队列只有一个(调用wait()方法的线程会进入等待队列)，而ReenTrantLock可以有多个条件等待队列。可以分组唤醒需要唤醒的线程们，而不是像synchronized要么用notify方法随机唤醒一个线程要么用notifyAll方法唤醒全部线程。ReenTrantLock 提供了一种能够中断等待锁的线程的机制，就是线程通过调用lock.lockInterruptibly()方法来加锁时，一旦线程被中断，就会停止等待。
+synchronized只能修饰方法，或者用于代码块，而ReenTrantLock的加锁和解锁是调用lock和unlock方法，更加灵活。
+
+其次是synchronized的等待队列只有一个(调用wait()方法的线程会进入等待队列)，而ReenTrantLock可以有多个条件等待队列。可以分组唤醒需要唤醒的线程们，而不是像synchronized要么用notify方法随机唤醒一个线程要么用notifyAll方法唤醒全部线程。ReenTrantLock 提供了一种能够中断等待锁的线程的机制，就是线程通过调用lock.lockInterruptibly()方法来加锁时，一旦线程被中断，就会停止等待。
+
+ReenTrantLock可以使用tryLock(long timeout, TimeUnit unit)方法来尝试申请锁，设置一个超时时间，超过超时时间，就会直接返回false，而不是一直等待锁。
 
 4.公平性
 

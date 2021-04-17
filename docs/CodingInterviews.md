@@ -170,8 +170,6 @@
 }
 ```
 
-
-
 ## 题005 从尾到头打印链表
 
 输入一个链表，按链表值从尾到头的顺序返回一个ArrayList。
@@ -229,6 +227,7 @@ public ArrayList<Integer> printListFromTailToHead(ListNode listNode) {
                 int leftLength = i - inStart;//左子树长度
                 treeNode.left = reConstructBinaryTree(pre, preStart + 1, preStart+leftLength, in, inStart, i-1);
                 treeNode.right = reConstructBinaryTree(pre, preStart +leftLength+1, preEnd, in, i+1, inEnd);
+               break;
             }
         }
         return treeNode;
@@ -244,11 +243,9 @@ public ArrayList<Integer> printListFromTailToHead(ListNode listNode) {
 ```java
 		Stack<Integer> stack1 = new Stack<Integer>();
     Stack<Integer> stack2 = new Stack<Integer>();
-    
     public void push(Integer number) {
         stack1.push(number);
     }
-
     public Integer pop() {
         if (stack2.size()>0) {
             return stack2.pop();
@@ -291,9 +288,9 @@ int minNumberInRotateArray(int[] array) {
                 }
                 return min;
             }
-            if ( array[mid]>=array[start]){
+            if ( array[mid]>=array[start]){//左半部分是递增的，那么就去掉左半部分
                 start = mid;
-            } else if(array[mid]<=array[end]) {
+            } else if(array[mid]<=array[end]) {//右半部分是递增的，那么就去掉右半部分
                 end = mid;
             }
         }
