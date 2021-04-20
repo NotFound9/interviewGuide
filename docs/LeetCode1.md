@@ -1549,10 +1549,15 @@ public int longestConsecutive(int[] nums) {
 其实就是判断有向图是否存在环，有两种解法
 ##### 深度优先遍历
 就是先根据二维数组构建一个邻接表，这里我们使用一个map来作为领接表，然后递归遍历map中的节点，对于图中每个节点有三种状态：
-1.未被访问过（在statusMap中值为null）
-2.已被访问过，并且它的子节点没有遍历访问完成（在statusMap中值为1）
-3.已被访问过，并且子节点也遍历访问完成(在statusMap中值为2)
+
+1.未被访问过（在statusMap中值为null）。
+
+2.已被访问过，并且它的子节点没有遍历访问完成（在statusMap中值为1）。
+
+3.已被访问过，并且子节点也遍历访问完成(在statusMap中值为2)。
+
 在递归遍历过程中，遇到上面第2种节点，说明就存在环。
+
 ```java
 public boolean canFinish(int numCourses, int[][] prerequisites) {
         HashMap<Integer, List<Integer>> map = new HashMap<>();

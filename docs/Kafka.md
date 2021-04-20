@@ -82,6 +82,8 @@
 
 - 前一条消息发送失败，后一条消息发送成功，前一条消息重试后成功，造成数据乱序。
 
+  http://www.jasongj.com/kafka/transaction/
+
 ##### 消费端幂等性
 
 只能自己从业务层面保证重复消费的幂等性，例如引入版本号机制。
@@ -210,6 +212,7 @@ log.flush.scheduler.interval.ms 定期刷盘间隔
 可以通过设置 最大刷盘消息数量 和 最大刷盘时间间隔 来控制fsync系统调用的时间，但是Kafka不推荐去设置这些参数，希望让操作系统来决定刷盘的时机，这样可以支持更高的吞吐量。而且Kafka保证可用性是通过多副本来实现的，一个机器挂掉了就会选举副本作为leader。
 ### Kafka什么时候进行rebalance？
 1.topic下分区的数量增加了或者减少了。(这个一般是我们手动触发的)
+
 2.消费者的数量发生了改变，例如新增加了消费者或者有消费者挂掉了。
 Kafka有一个session.timeout.ms，最大会话超时时间，最长是10s。就是如果broker与消费者之间的心跳包超过10s还没有收到回应，就会认为消费者掉线了。以及还有一个max.poll.interval.ms参数，消费者两次去broker拉取消息的间隔，默认是5分钟。如果消费者两次拉取消息的间隔超过了5分钟，就会认为消费者掉线了。
 
@@ -222,3 +225,29 @@ Kafka有一个session.timeout.ms，最大会话超时时间，最长是10s。就
 2.可以自行在MySQL或者Redis里面存储每个分区消费的offset，然后消费者去一个新的分区拉取消息时先去读取上次消费的offset。
 
 3.为消息分配一个唯一的消息id，通过消息id来判定是否重复消费了。
+
+##### kafka 1.1的优化
+
+新版本新增了**group.initial.rebalance.delay.ms**参数。空消费组接受到成员加入请求时，不立即转化到PreparingRebalance状态来开启reblance。当时间超过**group.initial.rebalance.delay.ms**后，再把group状态改为PreparingRebalance（开启reblance），这样可以避免服务启动时，consumer陆续加入引起的频繁Rebalance。
+
+##### Kafka2.3对reblance的优化
+
+但对于运行过程中，consumer超时或重启引起的reblance则无法避免，其中一个原因就是，consumer重启后，它的身份标识会变。简单说就是Kafka不确认新加入的consumer是否是之前挂掉的那个。
+
+在Kafka2.0中引入了静态成员ID，使得consumer重新加入时，可以保持旧的标识，这样Kafka就知道之前挂掉的consumer又恢复了，从而不需要Reblance。这样做的好处有两个：
+
+1. 降低了Kafka Reblance的频率
+2. 即使发生Reblance，Kafka尽量让其他consumer保持原有的partition，减少了重分配引来的耗时、幂等等问题
+
+https://blog.csdn.net/weixin_37968613/article/details/104607012
+
+https://blog.csdn.net/z69183787/article/details/105138782
+
+https://zhuanlan.zhihu.com/p/87577979
+
+https://www.cnblogs.com/runnerjack/p/12108132.html
+
+### kafka的选举机制
+
+https://blog.csdn.net/qq_37142346/article/details/91349100
+

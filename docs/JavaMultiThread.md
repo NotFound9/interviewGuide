@@ -1013,7 +1013,7 @@ http://cnblogs.com/wenjunwei/p/10573289.html
 
 ### 线程间怎么通信？
 
-##### 1.synchronized锁
+#### 1.synchronized锁
 
 通过synchronized锁来进行同步，让一次只能一个线程来执行。
 
@@ -1387,7 +1387,8 @@ private static class Producer {
 
 ```java
 public class BlockQueueRepository<T> extends AbstractRepository<T> implements Repository<T> {
-    public BlockQueueRepository() {
+    public BlockQueueRepository(int cap) {
+      //cap代表队列的最大容量
         products = new LinkedBlockingQueue<>(cap);
     }
 
