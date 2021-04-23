@@ -202,7 +202,7 @@ JDK采用了适应性自旋，简单来说就是线程如果自旋成功了，�
 ### AbstractQueuedSynchronizer(缩写为AQS)是什么？
 
 AQS就是AbstractQueuedSynchronizer，抽象队列同步器，是一个可以用于实现基于先进先出等待队列的锁和同步器的框架。实现锁
-ReentrantLock，Semaphore，ReentrantReadWriteLock，SynchronousQueue，FutureTask等等皆是基于AQS的。
+ReentrantLock，CountDownLatch,Semaphore，ReentrantReadWriteLock，SynchronousQueue，FutureTask等等皆是基于AQS的。
 
 ReentrantLock其实就是有一个变量sync，Sync父类是AbstractQueuedSynchronizer
 
@@ -222,17 +222,17 @@ ReentrantLock的非公平锁与公平锁的区别在于非公平锁在CAS更新s
 
 ### synchronized锁与ReentrantLock锁的区别？
 
-相同点：
+**相同点：**
 
 1.可重入性
 
 两个锁都是可重入的，持有锁的线程再次申请锁时，会对锁的计数器+1。
 
-不同点：
+**不同点：**
 
-1.具体实现
+1.实现原理
 
-synchronized是一个Java 关键字，synchronized锁是JVM实现的，底层代码应该是C++代码，而ReenTrantLock是JDK实现的，是Java提供的一个类库，代码是Java代码，源码实现更加方便阅读。
+synchronized是一个Java 关键字，synchronized锁是JVM实现的，底层代码应该是C++代码。而ReenTrantLock是JDK实现的，是Java提供的一个类库，代码是Java代码，源码实现更加方便阅读。
 
 2.性能
 
@@ -276,9 +276,13 @@ ReentrantLock非公平锁的加锁流程：
 
 https://blog.csdn.net/qq_14996421/article/details/102967314
 
-##### 谈一谈你对AQS的理解？
+### 谈一谈你对AQS的理解？
 
-AQS是AbstractQueuedSynchronizer的缩写，是一个抽象同步队列类，可以基于它实现一个锁，例如ReentrantLock，只是需要实现tryAcquire()方法(也就是获取资源的方法，判断当前线程能否申请到独占锁)和tryRelease()方法(也就是释放资源的方法，在线程释放锁前对state进行更新)，AQS会根据tryAcquire()的返回结果，来进行下一步的操作，如果为true，代表线程获得锁了，如果为false，代表线程没有获得锁，由AQS负责将线程添加到CLH等待队列中，并且进行阻塞等待。当前一个线程释放锁时，AQS对这个线程进行唤醒。
+AQS是AbstractQueuedSynchronizer的缩写，是一个抽象同步队列类，可以基于它实现一个锁，例如ReentrantLock，只是需要实现tryAcquire()方法(也就是获取资源的方法，判断当前线程能否申请到独占锁)和tryRelease()方法(也就是释放资源的方法，在线程释放锁前对state进行更新)，AQS会根据tryAcquire()的返回结果，来进行下一步的操作，
+
+如果为true，代表线程获得锁了。
+
+如果为false，代表线程没有获得锁，由AQS负责将线程添加到CLH等待队列中，并且进行阻塞等待。当前一个线程释放锁时，AQS对这个线程进行唤醒。
 
 （不同的自定义同步器争用共享资源的方式也不同。**自定义同步器在实现时只需要实现资源state的获取与释放方法即可**，至于具体线程等待队列的维护（如获取资源失败入队/唤醒出队等），AQS已经在顶层实现好了）
 
@@ -305,7 +309,7 @@ AbstractQueuedSynchronizer.acquireQueued()//并且让这个线程进入阻塞等
 
 
 
-可以看到AQS的acquire()方法中是会先去调用tryAcquire()去尝试着申请独占锁资源,AQS默认的tryAcquire9)方法只有一行代码，会抛出UnsupportedOperationException异常，所以ReentrantLock的FairSync对tryAcquire()方法进行了实现。
+可以看到AQS的acquire()方法中是会先去调用tryAcquire()去尝试着申请独占锁资源,AQS默认的tryAcquire()方法只有一行代码，会抛出UnsupportedOperationException异常(强制子类对这个方法进行实现)。所以ReentrantLock的FairSync对tryAcquire()方法进行了实现。
 
 tryAcquire()返回true就代表获取独占锁资源成功：
 
@@ -318,16 +322,19 @@ tryAcquire()返回false代表获取独占锁资源失败，
 那么就调用AQS.addWaiter()方法申请失败就将线程添加到等待队列尾部，AQS.acquireQueued()方法让这个线程进入阻塞等待状态(在阻塞之前如果等待队列只有这一个线程，是会先尝试着获取锁，失败才会进入阻塞状态。)
 
 ```java
+//公平锁的tryAcquire方法实现
 protected final boolean tryAcquire(int acquires) {
             final Thread current = Thread.currentThread();
             int c = getState();
             if (c == 0) {
+              	//等待队列中没有线程，使用cas操作去抢锁，抢锁成功，就返回true
                 if (!hasQueuedPredecessors() &&
                     compareAndSetState(0, acquires)) {
                     setExclusiveOwnerThread(current);
                     return true;
                 }
             }
+  					//当前线程与持有锁的线程是同一个，那么进行重入
             else if (current == getExclusiveOwnerThread()) {
                 int nextc = c + acquires;
                 if (nextc < 0)
@@ -363,6 +370,7 @@ protected final boolean tryRelease(int releases) {
             if (Thread.currentThread() != getExclusiveOwnerThread())
                 throw new IllegalMonitorStateException();
             boolean free = false;
+  					//state为0就释放锁，否则只是锁的state减去releases
             if (c == 0) {
                 free = true;
                 setExclusiveOwnerThread(null);
