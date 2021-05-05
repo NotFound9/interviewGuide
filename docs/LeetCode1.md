@@ -4,9 +4,12 @@
 
 ##### [第155题-最小栈](#第155题-最小栈)
 ##### [第160题-相交链表](#第160题-相交链表)
+
 ##### [第142题-环形链表II](#第142题-环形链表II)
 ##### [第739题-每日温度](#第739题-每日温度)
+
 ##### [第347题-前K个高频元素](#第347题-前K个高频元素)
+
 ##### [第49题-字母异位词分组](#第49题-字母异位词分组)
 ##### [第32题-最长有效括号](#第32题-最长有效括号)
 ##### [第543题-二叉树的直径](#第543题-二叉树的直径)
@@ -204,7 +207,7 @@ public ListNode detectCycle(ListNode head) {
             quick = quick.next;
             quick = quick.next;
         }
-    			//计算环的长度
+    		//计算环的长度
         int circleLength = 1;
         ListNode copySlow = slow.next;
         while (copySlow != slow) {
@@ -435,23 +438,21 @@ public int[] topKFrequent(int[] nums, int k) {
 ##### 解题思路
 其实根节点的直径就是左节点深度+右节点深度，其他节点也是这个公示，所以可以递归求解出左右节点的深度，然后计算当前节点的直径，然后与左右节点的直径进行判断，返回最大值。
 ```java
-    public int diameterOfBinaryTree(TreeNode root) {
-        if (root==null){return 0;}
-        int leftDepth = maxDepth(root.left);
-        int rightDepth = maxDepth(root.right);
-        int rootDiameter = leftDepth+rightDepth+1;
-        int leftDiameter =  diameterOfBinaryTree(root.left);
-        int rightDiameter =  diameterOfBinaryTree(root.right);
-        int maxDiameter = rootDiameter > leftDiameter ? rootDiameter : leftDiameter;
-        maxDiameter = maxDiameter > rightDiameter ? maxDiameter:rightDiameter;
-        return maxDiameter;
-    }
-    public int maxDepth(TreeNode root) {
-        if (root==null) {return 0;}
-        int leftDepth = maxDepth(root.left);
-        int rightDepth = maxDepth(root.right);
-        return leftDepth>rightDepth?leftDepth+1 : rightDepth+1;
-    }
+int maxDiameter = 0;
+public int diameterOfBinaryTree(TreeNode root) {
+      if (root==null){return 0;}
+      maxDepth(root);
+      return maxDiameter;
+}
+
+public int maxDepth(TreeNode root) {
+      if (root==null) {return 0;}
+      int leftDepth = maxDepth(root.left);
+      int rightDepth = maxDepth(root.right);
+      int diameter = leftDepth + rightDepth;
+      maxDiameter = diameter > maxDiameter ? diameter : maxDiameter;
+      return leftDepth>rightDepth?leftDepth+1 : rightDepth+1;
+}
 ```
 
 ### 第79题-单词搜索
@@ -459,7 +460,7 @@ public int[] topKFrequent(int[] nums, int k) {
 
 单词必须按照字母顺序，通过相邻的单元格内的字母构成，其中“相邻”单元格是那些水平相邻或垂直相邻的单元格。同一个单元格内的字母不允许被重复使用。
 
- 
+
 
 示例:
 
@@ -574,7 +575,31 @@ public int numTrees(int n) {
     }
 ```
 
+递归解法
+
+```java
+int[] cacheArray;
+public int numTrees(int n) {
+        if(n == 0 || n == 1){return 1;}
+        if(n==2) {
+            return 2;
+        }
+        if(cacheArray == null) {
+            cacheArray = new int[n+1];
+        } else if (cacheArray[n] !=0) {
+            return cacheArray[n];
+        }
+        int sum = 0;
+        for(int i = 0; i<n;i++) {
+            sum+=numTrees(i)*numTrees(n-1-i);
+        }
+        cacheArray[n] = sum;
+        return sum;
+}
+```
+
 ### 第239题-滑动窗口最大值
+
 给你一个整数数组 nums，有一个大小为 k 的滑动窗口从数组的最左侧移动到数组的最右侧。你只可以看到在滑动窗口内的 k 个数字。滑动窗口每次只向右移动一位。
 返回滑动窗口中的最大值。
 示例 1：
@@ -636,35 +661,35 @@ LRU的put()方法
 2.不存在这个key，判断是否超过容量，超过将最后一个键值对移除，将键值对添加到map。
 ```java
 LinkedHashMap<Integer, Integer> map = new LinkedHashMap();
-        int capacity;
+int capacity;
 
-        public LRUCache(int capacity) {
-            this.capacity = capacity;
-        }
+public LRUCache(int capacity) {
+  	this.capacity = capacity;
+}
 
-        public int get(int key) {
-            Integer value = map.get(key);
-            if (value == null) {
-                return -1;
-            }
-            map.remove(key);
-            map.put(key,value);
-            return value;
-        }
+public int get(int key) {
+    Integer value = map.get(key);
+    if (value == null) {
+      return -1;
+    }
+    map.remove(key);
+    map.put(key,value);
+    return value;
+}
 
-        public void put(int key, int value) {
-            Integer oldValue = map.get(key);
-            if (oldValue!=null) {
-                //只是覆盖value的话，put方法不会改变键值对在链表中的顺序，所以需要先remove
-                map.remove(key);
-                map.put(key,value);
-                return;
-            }
-            if (map.size()>=capacity) {
-                map.remove(map.keySet().iterator().next());
-            }
-            map.put(key,value);
-        }
+public void put(int key, int value) {
+    Integer oldValue = map.get(key);
+    if (oldValue!=null) {
+        //只是覆盖value的话，put方法不会改变键值对在链表中的顺序，所以需要先remove
+        map.remove(key);
+        map.put(key,value);
+        return;
+    }
+    if (map.size()>=capacity) {
+    	  map.remove(map.keySet().iterator().next());
+    }
+    map.put(key,value);
+}
 ```
 
 ### 第236题-二叉树的最近公共祖先
@@ -693,12 +718,13 @@ LinkedHashMap<Integer, Integer> map = new LinkedHashMap();
 3.节点1，节点2全部位于此节点的左子树，或者是右子树
 4.此节点左子树包含节点1，右子树包含节点2
 所以第4种就是我们要寻找的节点，并且在二叉树中只有一个，所以我们对二叉树进行遍历，判断某个节点左子树，右子树都包含节点，那么就返回该节点。
+
 ```java
 TreeNode lowestCommonAncestor(TreeNode root, TreeNode node1, TreeNode node2) {
         if (root==null) {
             return null;
         }
-            if (root==node1 || root==node2) {//当前节点就是要找的节点之一
+        if (root==node1 || root==node2) {//当前节点就是要找的节点之一
             return root;
         }
         TreeNode leftNode = lowestCommonAncestor(root.left,node1,node2);//判断左子树中是否有节点
@@ -793,11 +819,19 @@ TreeNode lowestCommonAncestor(TreeNode root, TreeNode node1, TreeNode node2) {
 
 矩形面积=height[i]*(right-left+1)，例如对于第五个柱子值为2的那个柱子来说，左边界left就是值为5的柱子，右边界就是值为3的柱子。
 
-也可以使用一个最小栈Stack来保存过程中比height[i]小的元素，也就是Stack中的值只能是比height[i]小的元素。
+单调栈解法
 
-遍历时，如果现在的height[i]比栈顶的元素height[j]小，那么就进行出栈，并且对出栈的元素计算矩形面积，因为出栈的元素的left边界就是新栈顶的index+1，right边界就是现在的i-1。
+理论就是假设f(i)代表包含圆柱i的最大矩形，那么其实就是在圆柱i的左边和右边各自找到第一个高度更小的圆柱k和j，f(i) = height[i]*(j-k+1)。所以可以使用单调栈来保存比当前圆柱高度height[i]小的元素，如果栈中元素高度比height[i]大，那么那些元素就需要出栈了。
 
- 面积=heights[j] * (right - left+1)
+ 
+
+可以使用一个栈Stack来保存左边圆柱高度比height[i]小的元素，也就是Stack中的值只能是比height[i]小的元素。栈底元素是最小的，栈顶元素高度是最大的。
+
+遍历时，如果当前height[i]>栈顶元素的高度，说明当前栈顶元素还没有碰到比它小的数，所以还不能计算面积，就把height[i]入栈。
+
+如果现在的height[i]<栈顶的元素高度小，说明栈顶元素碰到比它小的元素了，就需要出栈计算矩形面积，
+
+ 面积=heights[j] * (i - left)
 
 ```java
 public int largestRectangleArea(int[] heights) {
@@ -827,13 +861,12 @@ public int largestRectangleArea(int[] heights) {
                     Integer index = stack.pop();
                     //此时area的范围是[stack.peek()+1,i-1]
                     int leftIndex;
-                    int rightIndex = i-1;
                     if (stack.size()>0) {
                         leftIndex = stack.peek() + 1;
                     } else {
                         leftIndex = 0;
                     }
-                    int area = heights[index] * (rightIndex - leftIndex+1);
+                    int area = heights[index] * (i - leftIndex);
                     maxArea = maxArea > area ? maxArea : area;
                 }
                 stack.push(i);
@@ -1034,7 +1067,6 @@ public int maxProduct(int[] nums) {
                 if (nums[i] < 0 && firstNegativeIndex == null) {
                     firstNegativeIndex = i;
                 }
-
                 if (nums[i] < 0) {
                     lastNegativeIndex = i;
                 }
@@ -1325,7 +1357,7 @@ public String minWindow(String s, String t) {
 两个整数之间的汉明距离指的是这两个数字对应二进制位不同的位置的数目。
 给出两个整数 x 和 y，计算它们之间的汉明距离。
 注意：
-0 ≤ x, y < 231.
+0 ≤ x, y < 2的31次方.
 
 示例:
 
@@ -1346,13 +1378,13 @@ public int hammingDistance(int x, int y) {
         int result = x^y;
         int num=0;
         while(result>0) {
-            if((result&1) == 1) {
-                num++;
-            }
-            result = result>>1; 
+          if((result&1) == 1) {
+            num++;
+          }
+          result = result>>1; 
         } 
         return num;
-    }
+}
 ```
 
 ### 第128题-最长连续序列
@@ -1615,6 +1647,21 @@ public boolean canFinish(int numCourses, int[][] prerequisites) {
 
 你不能同时参与多笔交易（你必须在再次购买前出售掉之前的股票）。
 卖出股票后，你无法在第二天买入股票 (即冷冻期为 1 天)。
+
+``` java
+dp[i][0]//代表不持有股票
+dp[i][1]//代表持有股票
+	
+  //如果今天不持有股票，要么是之前没有股票，要么是卖了股票
+  dp[i][0] = max(dp[i-1][0],dp[i-1][1] + value[i])
+  //如果今天持有股票，要么是之前就持有，要么是今天新买的
+  dp[i][1] = max(dp[i-1][1],dp[i-2][0] - value[i])
+
+
+```
+
+
+
 示例:
 
 输入: [1,2,3,0,2]
@@ -1622,10 +1669,19 @@ public boolean canFinish(int numCourses, int[][] prerequisites) {
 解释: 对应的交易状态为: [买入, 卖出, 冷冻期, 买入, 卖出]
 
 ##### 解题思路
+
 这个跟上一题的区别就是有冷冻期，就是当你第i天要持有股票时，要么是第i-1天已持有股票，要么是第i-1天没有买卖股票才能在第天买股票。
 卖出股票后，你无法在第二天买入股票 (即冷冻期为 1 天)。
-第i天不持有股票 dp[i][0] = max(dp[i-1][1]+prices[i], dp[i-1][0])
-第i天持有股票 dp[i][1] = max(dp[i-2][0]-prices[i],dp[i-1][1])
+
+```java
+  //如果今天不持有股票，要么是之前没有股票，要么是第i天卖了股票
+  dp[i][0] = max(dp[i-1][0],dp[i-1][1] + value[i])
+  //如果今天持有股票，要么是之前就持有，要么是第i天新买的
+  dp[i][1] = max(dp[i-1][1],dp[i-2][0] - value[i])
+```
+
+代码
+
 ```java
     public int maxProfit(int[] prices) {
         if(prices==null||prices.length<=1) {return 0;}
@@ -1685,7 +1741,6 @@ public boolean canPartition(int[] nums) {
             return canPartition(nums,nums.length-1,sum/2);
         }
     }
-
     //使用HashMap缓存结果，避免重复计算
     HashMap<String,Boolean> resultCacheMap = new HashMap<String,Boolean>();
     //判断在0到i-1这些元素中进行能选择，看能否选择出的元素和为sum
@@ -1800,13 +1855,13 @@ public List<Integer> findDisappearedNumbers(int[] nums) {
 
 root = [10,5,-3,3,2,null,11,3,-2,null,1], sum = 8
 
-      10
-     /  \
-    5   -3
-   / \    \
-  3   2   11
- / \   \
-3  -2   1
+   10
+   /  \
+  5   -3
+  / \    \
+ 3   2   11
+ /      \      \
+3       -2       1
 
 返回 3。和等于 8 的路径有:
 
@@ -1824,8 +1879,8 @@ int pathNum = 0;
         //必须包含根节点的
         pathSumMustHasRoot(root,sum,0);
         //不包含根节点的
-        pathSum(root.left,sum);
-        pathSum(root.right,sum);
+        pathSumMustHasRoot(root.left,root.val);
+        pathSumMustHasRoot(root.right,root.val);
         return pathNum;
     }
     //对每个节点计算路径和，然后继续向下
@@ -1952,9 +2007,10 @@ public int[] countBits(int num) {
 
 你可以将以下二叉树：
 
-    1
-   / \
-  2   3
+​      1
+
+   /      \
+  2        3
      / \
     4   5
 
@@ -2085,10 +2141,10 @@ public List<Integer> findAnagrams(String s, String p) {
                 if (valid_num==p.length()) {//说明满足需求
                     list.add(left);
                 }
-                //窗口左移
+                //窗口左边界移动一个字符
                 Character leftChar = s.charAt(left);
                 if (needMap.containsKey(leftChar)) {
-                    //移除左边界字符
+                    //移除一个左边界字符
                     Integer times = windowsMap.get(leftChar);
                     times--;
                     windowsMap.put(leftChar,times);
@@ -2161,7 +2217,7 @@ public boolean searchMatrix(int[][] matrix, int target) {
 给定一个非负整数数组，a1, a2, ..., an, 和一个目标数，S。现在你有两个符号 + 和 -。对于数组中的任意一个整数，你都可以从 + 或 -中选择一个符号添加在前面。
 
 返回可以使最终数组和为目标数 S 的所有添加符号的方法数。
-示例：
+示例： 
 
 输入：nums: [1, 1, 1, 1, 1], S: 3
 输出：5
@@ -2286,7 +2342,7 @@ public int findUnsortedSubarray(int[] nums) {
         if (nums==null||nums.length==0) {
             return 0;
         }
-        //从左开始遍历，找到需要调整的最右边的位置的下标
+        //从左往右开始遍历，记录最大值，找到需要调整的最右边的位置的下标
         Integer right = null;
         int maxIndex = 0;
         for (int i = 0; i < nums.length; i++) {
@@ -2295,7 +2351,7 @@ public int findUnsortedSubarray(int[] nums) {
             }
             maxIndex = nums[i] > nums[maxIndex] ? i : maxIndex;
         }
-        //从右开始遍历，找到需要调整的最右边的位置的下标
+        //从右往左开始遍历，记录最小值，找到需要调整的最右边的位置的下标
         Integer left = null;
         int minIndex = nums.length-1;
         for (int i = nums.length-1; i >=0; i--) {

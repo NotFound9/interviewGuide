@@ -4,6 +4,7 @@
 
 ##### [第1题-两数之和](#第1题-两数之和)
 ##### [第206题-反转链表](#第206题-反转链表)
+
 ##### [第2题-两数相加](#第2题-两数相加)
 ##### [第3题-无重复字符的最长子串](#第3题-无重复字符的最长子串)
 ##### [第20题-有效的括号](#第20题-有效的括号)
@@ -649,7 +650,14 @@ public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
 
 ### 第283题-移动零
 
+给定一个数组 `nums`，编写一个函数将所有 `0` 移动到数组的末尾，同时保持非零元素的相对顺序。
+
 题目详情：https://leetcode-cn.com/problems/move-zeroes/
+
+```
+输入: [0,1,0,3,12]
+输出: [1,3,12,0,0]
+```
 
 解题思路：
 
@@ -763,7 +771,9 @@ int findLeftBound(int[] nums,double target) {
 
 ##### 解题思路
 
-我们取两个指针从数组的两端往内遍历，i从数组头部出发，j从数组尾部出发，对于两个端点i和j来说，容纳水的面积是是等于(j-i)*min(height[i],height[j])，假设height[i]是两者之间较小的那一个，那么面积等于(j-i)*height[i],假设i不移动，j向左移动，这样宽度j-i会减少，而height[j]即便变大也不会使得面积变大，因为面积是由宽度乘以两者中较小的高度决定的，所以此时的面积对于i这个端点来说，已经是最大的面积，我们可以右移端点i。
+我们取两个指针从数组的两端往内遍历，i从数组头部出发，j从数组尾部出发。每次计算最大面积，并且移动高度较小的那个端点。
+
+对于两个端点i和j来说，容纳水的面积是是等于(j-i)*min(height[i],height[j])，假设height[i]是两者之间较小的那一个，那么面积等于(j-i)*height[i],假设i不移动，j向左移动，这样宽度j-i会减少，而height[j]即便变大也不会使得面积变大，因为面积是由宽度乘以两者中较小的高度决定的，所以此时的面积对于i这个端点来说，已经是最大的面积，我们可以右移高度较小的端点i。
 
 ```java
 public int maxArea(int[] height) {
@@ -1019,7 +1029,6 @@ public int maxDepth(TreeNode root) {
 		
     public void generateParenthesis(int n,int left,int right,LinkedList<Character> stack,List<String> totalList) {
       //不满足要求，进行剪枝，回退去遍历其他节点
-      
        if(left>n || right>n || right>left) {return;}  
        if(left==n&&right==n) {//正好匹配上了，将栈中所有值转换为
             StringBuffer str = new StringBuffer();
@@ -1046,6 +1055,8 @@ PS:回朔算法的框架
 ```
 List result = new ArrayList<>();
 void backtrack(路径, 选择列表stack):
+    if 超出范围 return
+    
     if 满足结束条件:
         result.add(路径)
         return
@@ -1179,6 +1190,8 @@ public List<List<Integer>> levelOrder(TreeNode root) {
 f(0)=nums[0];
 
 f(1)=nums[1]>nums[0]?nums[1]:nums[0];//也就是num[0]和nums[1]之间的最大值。
+
+状态转移方程如下：
 
 f(n) = f(n-1) > f(n-2)+nums[n] ? f(n-1) :f(n-2)+nums[n]
 
@@ -1387,7 +1400,9 @@ public boolean canJump(int[] nums) {
 
 机器人每次只能向下或者向右移动一步。机器人试图达到网格的右下角（在下图中标记为 “Finish” ）。
 
-问总共有多少条不同的路径？
+问总共有多少条不同的路径？  右6  下2 C 2 8 
+
+
 
 ![img](../static/robot_maze.png)
 
@@ -1695,7 +1710,6 @@ public ListNode mergeKLists(ListNode[] lists) {
             }
         }
     }
-
     void swap(ArrayList<ListNode>  lists,int a, int b) {
         ListNode temp = lists.get(a);
         lists.set(a,lists.get(b));
@@ -2106,6 +2120,7 @@ public List<List<Integer>> subsets(int[] nums) {
         for (int i = 0; i < size; i++) {
             List<Integer> list = new ArrayList<>();
             for (int j = 0; j < nums.length; j++) {
+               //j是元素在数组中的位置，通过判断i的第j个二进制位是否为0，来决定是否添加这个元素
                 int result = i & (1<<j);
                 if (result!=0) {
                     list.add(nums[j]);
@@ -2293,22 +2308,26 @@ public void nextPermutation(int[] nums) {
         int flag=0;
         for (int i = nums.length-1; i >0 ; i--) {
 
-            if (nums[i-1]<nums[i])  {
+            if (nums[i-1]<nums[i])  {//从往前找到第一个前一个数<后一个数的情况
                 
                 int min = i;
+              //再后面找到一个比nums[i-1]大，但是又最小的值
                 for (int j = i; j <nums.length ; j++) {
                     if (nums[j] < nums[min] && nums[j] > nums[i-1]) {
                         min = j;
                     }
                 }
+              //进行交换
                 int temp = nums[i-1];
                 nums[i-1] = nums[min];
                 nums[min] = temp;
                 flag=1;
+              //然后再对后面的元素进行排序
                 Arrays.sort(nums,i,nums.length);
                 break;
             }
         }
+  			//如果现在的数组就是字典序最大的，那么就排序，得到字典序最小的进行返回。
         if (flag==0) {
             Arrays.sort(nums);
         }

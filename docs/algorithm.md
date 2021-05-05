@@ -49,9 +49,9 @@ int[] sorted(int[] array) {
       }
     }
      // 该趟排序中没有发生，表示已经有序
-        if (0 == sortedFlag) {
-            break;
-        }
+    if (0 == sortedFlag) {
+      break;
+    }
   }
   return array;
 }
@@ -171,10 +171,10 @@ int[] quickSorted(int [] array, int start,int end) {
     array[start] = array[i];
     array[i] = base;
     //左边的组继续进行快排
-  quickSorted(array,start,i-1);
+    quickSorted(array,start,i-1);
     //右边的组继续进行快排
-  quickSorted(array,i+1,end);
-  return array;
+    quickSorted(array,i+1,end);
+    return array;
 }
 ```
 
@@ -460,9 +460,12 @@ public static Integer findKByPickSort(int[] input, int k) {
 有两种节点：
 ##### 分治法
 就是假设当前有i个物品，我们对于第i个物品进行选择，只有两种可能
-要么选择物品i，那么背包的容量就变为capcity-weight[i]，然后继续对剩下的i-1的这些物品进行选择。
+要么选择物品i，那么背包的容量就变为capcity-weight[i]，然后继续对剩下的i-1的这些物品进行选择：
+
 总价值f(i,capacity) = value[i] +f(i-1,capcity-weight[i])
-要么不选择物品i，容量还是capcity，继续对剩下的i-1的物品进行选择
+
+要么不选择物品i，容量还是capcity，继续对剩下的i-1的物品进行选择：
+
 总价值f(i,capacity) = f(i-1,capcity)
 
 ```java
@@ -474,9 +477,10 @@ public static Integer findKByPickSort(int[] input, int k) {
         } else if(weight[i] > capacity) {
             // 装不下该珠宝
             result = testKnapsack1(value,weight,i-1, capacity);
-        } else if (weight[i] <= capacity) {//可以选择当前物品的
-            // 可以装下
+        } else if (weight[i] <= capacity) {// 可以装下
+            //选择物品i
             int choose = testKnapsack1(value,weight,i-1, capacity-weight[i]) + value[i];
+          	//不选择物品i
             int notChoose = testKnapsack1(value,weight,i-1, capacity);
             result = choose > notChoose ? choose : notChoose;
         }

@@ -1454,9 +1454,13 @@ public ThreadPoolExecutor(int corePoolSize,
 
 从阻塞队列取任务时，如果阻塞队列为空:
 
-**核心线程**的会一直卡在`workQueue.take`方法，被阻塞并挂起，不会占用CPU资源。
+**核心线程**的会一直卡在`workQueue.take`方法，这个take方法每种等待队列的实现各不相同，以LinkedBlockingQueue为例，
 
-**非核心线程**会调用workQueue.poll(keepAliveTime, TimeUnit.NANOSECONDS)方法取任务 ，如果超过keepAliveTime时间后还没有拿到，下一次循环判断**compareAndDecrementWorkerCount**就会返回`null`,Worker对象的`run()`方法循环体的判断为`null`,任务结束，然后线程被系统回收）
+在这个方法里会调用notEmpty队列(这是Condition实例)的await()方法一直阻塞并挂起，不会占用CPU资源。
+
+**非核心线程**会调用workQueue.poll(keepAliveTime, TimeUnit.NANOSECONDS)方法取任务 ，这个poll方法每种等待队列的实现各不相同，以LinkedBlockingQueue为例，
+
+在这个方法里面会调用notEmpty队列(这是Condition实例)的awaitNanos()方法进行超时等待，如果超过keepAliveTime时间后还没有新的任务，就会返回`null`,Worker对象的`run()`方法循环体的判断为`null`,任务结束，然后线程被系统回收）
 
 ##### 2.maximumPoolSize 最大线程数
 
@@ -1821,14 +1825,19 @@ final int internalNextInt(int origin, int bound) {
     }
 ```
 
+### 僵尸进程，孤儿进程，守护进程是什么？
 
+僵尸进程：通常来说，使用fork()系统调用从一个父进程创建出一个子进程，子进程退出，是需要父进程调用wait()或者是waitpid()函数来回收子进程的资源，如果父进程没有调用，子进程的信息就会一直在内存中，而不会被回收，变成僵尸进程。
+
+孤儿进程：就是父进程先退出了，它的子进程会被init进程接管，由它来收集子进程的状态。(init进程是内核启动时，创建出来的进程，是一个以root身份运行的普通用户进程，是永远不会停止的。)
+
+守护进程是脱离于终端并且在后台运行的进程，脱离终端是为了避免将在执行的过程中的信息打印在终端上，并且进程也不会被任何终端所产生的终端信息所打断。
 
 ### BlockingQueue的原理是怎么样的？
 
 https://www.cnblogs.com/tjudzj/p/4454490.html
 
-
-
 ### 进程间通信的方式
 
 https://network.51cto.com/art/201911/606827.htm?mobile
+

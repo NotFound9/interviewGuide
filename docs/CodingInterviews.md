@@ -895,13 +895,14 @@ public static boolean VerifySquenceOfBST(int[] sequence, int start, int end) {
     } else if(rightChildIndex== start) {//说明全部位于右边子树
         return VerifySquenceOfBST(sequence,start,end-1);
     }
+  //继续校验
     return VerifySquenceOfBST(sequence,start,rightChildIndex-1) && VerifySquenceOfBST(sequence,rightChildIndex, end-1);
 }
 ```
 
 ## 题023 二叉树中和为某一值的路径
 
-输入一颗二叉树的跟节点和一个整数，打印出二叉树中结点值的和为输入整数的所有路径。路径定义为从树的根结点开始往下一直到叶结点所经过的结点形成一条路径。(注意: 在返回值的 list 中，数组长度大的数组靠前)
+输入一颗二叉树的根节点和一个整数，打印出二叉树中结点值的和为输入整数的所有路径。路径定义为从树的根结点开始往下一直到叶结点所经过的结点形成一条路径。(注意: 在返回值的 list 中，数组长度大的数组靠前。)
 
 就是递归调用每个节点的左右子树，然后将节点值相加，如果节点值和为某个预期值，并且该节点为叶子节点，那么这条路径就是要找的路径。
 
@@ -1067,8 +1068,6 @@ public RandomListNode Clone(RandomListNode pHead)
     }
 ```
 
-
-
 ## 题027数组中出现的次数超过一半的数字
 
 数组中有一个数字出现的次数超过数组长度的一半，请找出这个数字。例如输入一个长度为9的数组{1,2,3,2,2,2,5,4,2}。由于数字2在数组中出现了5次，超过数组长度的一半，因此输出 2 。如果不存在则输出 0 。
@@ -1115,7 +1114,7 @@ public int MoreThanHalfNum_Solution(int [] array) {
 
 输入n个整数，找出其中最小的K个数。例如输入4,5,1,6,2,7,3,8这8个数字，则最小的4个数字是1,2,3,4。
 
-其实就是插入排序，只不过只是对k个数进行插入排序
+其实就是插入排序，只不过只是对k个数进行插入排序，但是这样的时间复杂度会是O(N^2)，如果是使用快排来做，平均时间复杂度就是O(N)。
 
 ```java
 public ArrayList<Integer> GetLeastNumbers_Solution(int [] input, int k) {
@@ -1150,13 +1149,13 @@ public ArrayList<Integer> GetLeastNumbers_Solution(int [] input, int k) {
 
 ## 题029连续子数组的最大和
 
-例如:{6,-3,-2,7,-15,1,2,2},连续子向量的最大和为8(从第0个开始,到第3个为止)。给一个数组，返回它的最大连续子序列的和，你会不会被他忽悠住？(子向量的长度至少是1)
+例如:{6,-3,-2,7,-15,1,2,2},连续子向量的最大和为8(从第1个开始,到第4个为止)。给一个数组，返回它的最大连续子序列的和，你会不会被他忽悠住？(子向量的长度至少是1)
 
 使用动态规划的方法来进行思考
 
 f(n) 有两种取值
 
-* 当f(n-1)<=0时，取array[n]
+* 当f(n-1)<=0时，取array[n]，从这个元素重新开始
 
 * 当f(n-1)>0时，取f(n-1)+array[n]
 
@@ -1169,7 +1168,7 @@ f(n) 有两种取值
         int currentSum = array[0];
         int maxSum = currentSum;
         for (int i = 1; i < array.length; i++) {
-            if (currentSum<0) {
+            if (currentSum<0) {//前面的和是负数，就直接丢弃
                 currentSum = array[i];
             } else {
                 currentSum = currentSum + array[i];
@@ -1618,7 +1617,7 @@ public int IsBalanced_Solution_Depth(TreeNode root) {
     int right = IsBalanced_Solution_Depth(root.right);
     if (left!=-1 && right!= -1) {
         int temp = left-right;
-        if (temp<=1&& temp>=-1) {
+        if (temp<=1 && temp>=-1) {
             return left > right ? left + 1 : right + 1;
         }
     }
@@ -1868,7 +1867,7 @@ public static void qsort(int[] array, int start ,int end) {
 在n个人中间报数时，每个人的编号是
 0 1 2 ... k k+1 k+2 ... n-1
 当k出局以后，在n-1个人中报数时，每个人的编号是重新从k+1开始计数，原来的编号就映射为下面这样了(原来k+1变成了0，原来的n-1变成了n-1-(k+1))
-n-k+1 ...   0  1   ... n-1 -(k+1)
+n-k-1 ...   0  1   ... n-1 -(k+1)
 所以假设从n-1报数时的编号到n个人报数时的编号存在一个映射关系
 假设f(n)代表n个人报数编号
 f(n) = (f(n-1)+k+1)%n = (f(n-1)+ (m-1)%n + 1)%n = 
@@ -1956,7 +1955,7 @@ public int Add(int num1,int num2) {
 
 -2147483648 至 2147483647
 
--2的31次方     2的31次方-1
+-2的31次方          2的31次方 -1 
 
 ```java
 public static int StrToInt(String str) {
@@ -2037,12 +2036,14 @@ public int[] multiply(int[] A) {
     int[] d = new int[A.length];
     c[0] = 1;
     int result1 = c[0];
+    //构建数组C
     for (int i = 1; i < c.length; i++) {
         result1 = result1 * A[i-1];
         c[i] = result1;
     }
     d[d.length-1] = 1;
     int result2 = 1;
+    //构建数组D
     for (int i = d.length-2; i >=0; i--) {
         result2 = result2 * A[i+1];
         d[i] = result2;
@@ -2070,15 +2071,15 @@ public int[] multiply(int[] A) {
     }
 
 public char FirstAppearingOnce()
-    {
-        for (int i = 0; i < str.length(); i++) {
-            char c = str.charAt(i);
-             if (table[c] == 1) {
-                 return c;
-             }
-        }
-        return '#';
+{
+    for (int i = 0; i < str.length(); i++) {
+      char c = str.charAt(i);
+      if (table[c] == 1) {
+        return c;
+      }
     }
+    return '#';
+}
 ```
 
 ## 题054 链表中环的入口节点
@@ -2088,11 +2089,11 @@ public char FirstAppearingOnce()
 
 一种方法是遍历整个链表，将每个节点添加到HashSet中，判断是否在HashSet中出现过，第一个重复的节点就是环的入口节点。
 
-另一种解决方法是，假设存在环，环的长度为x，第一个指针先走x步，然后第二个指针从链表头结点出发，两个指针一起走，当第而个指针刚好走到环入口时，第一个指针正好在环中走了一圈，也在环的入口，此时的节点就是环的的入口节点，
+另一种解决方法是，假设存在环，环的长度为x，第一个指针先走x步，然后第二个指针从链表头结点出发，两个指针一起走，当第二个指针刚好走到环入口时，第一个指针正好在环中走了一圈，也在环的入口，此时的节点就是环的的入口节点，
 
 怎么得到环的长度呢，就是一个指针每次走2步，一个指针每次走一步，他们相遇时的节点肯定就是在环中的某个节点，然后这个节点在环中遍历一圈，回到原点，就可以得到环的长度count。
 
-两个指针从头出发，第一个指针先走count步，然后两个指针每次都只走一步，相遇的地方就是环的入口，
+两个指针从头出发，第一个指针先走count步，然后两个指针每次都只走一步，相遇的地方就是环的入口。
 
 ```java
 public ListNode EntryNodeOfLoop(ListNode pHead)
@@ -2193,7 +2194,6 @@ public ListNode deleteDuplication(ListNode pHead)
 
     ListNode ourHead = new ListNode(0);
     ourHead.next = pHead;
-    int temp = pHead.val;
     ListNode preNode = ourHead;
     ListNode currentNode = ourHead.next;
     
@@ -2329,7 +2329,7 @@ public ArrayList<ArrayList<Integer>> Print(TreeNode pRoot) {
      int flag = 0;//代表当前遍历的是奇数层还是偶数层。区别在于添加子节点的顺序。
      stack1.add(pRoot);
      while ((flag == 0 && stack1.size()>0) || (flag == 1 && stack2.size()>0)) {
-         if (flag==0) {
+         if (flag==0) {//代表是偶数层
              ArrayList<Integer> array = new ArrayList<Integer>();
              while (stack1.size()>0) {
                  TreeNode node = stack1.pop();
@@ -2439,7 +2439,7 @@ ArrayList<ArrayList<Integer>> Print(TreeNode pRoot) {
 
 就是递归遍历每一个节点，遍历时传入深度depth，将节点加入到ArrayList中特定深度对应的数组中去。
 
-这种方法也可以用来进行二叉树深度遍历，遍历完之后将嵌套数组拆分成单层的数组。
+这种方法也可以用来进行二叉树先序遍历，遍历完之后将嵌套数组拆分成单层的数组。
 
 ```java
 ArrayList<ArrayList<Integer>> Print2(TreeNode pRoot) {
@@ -2738,7 +2738,7 @@ boolean judge(char[] matrix, int rows, int cols, int i, int j, char[] str, int c
         return false;
     }
     if (charIndex==str.length-1) { return true;}
-
+		//用来记录这个位置是否在路径中
     flag[index]=true;
     if (judge(matrix,rows,cols,i+1, j, str, charIndex+1, flag)
             ||judge(matrix,rows,cols,i-1, j, str, charIndex+1, flag)
@@ -2845,10 +2845,6 @@ public int cutRope(int target) {
     return result;
 }
 ```
-
-
-
-
 
 # 基础篇
 

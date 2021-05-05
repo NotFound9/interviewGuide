@@ -211,7 +211,7 @@ https://www.infoq.cn/article/2018/08/rocketmq-4.3-release
 
 #### TCC
 
-2PC是基于数据库层面的分布式事务场景，而TCC是针对所有业务场景的，TCC分为Try预留阶段，Confirm确认阶段，Cancel撤销阶段三个阶段。
+TCC分为Try预留阶段，Confirm确认阶段，Cancel撤销阶段三个阶段。
 
 比如某个事务需要A，B，C三个业务系统各自执行一些操作，那么事务管理器会发送Try指令，会让A，B，C三个业务系统各自去申请执行操作所需的一些资源，冻结库存之类的。A，B，C预留资源成功了就会通知事务管理器Try阶段执行成功了。那么事务管理器就会发送Confirm指令给三个业务系统，告诉他们进入到Confirm阶段，让A，B，C业务系统各自执行自己真正的事务操作。如果三个业务系统都执行成功，那么事务管理器就认为执行成功，如果有一个失败那么事务管理器就认为执行失败了，会通知每个业务执行Cancel操作，进行回滚。
 
@@ -241,7 +241,7 @@ https://www.cnblogs.com/jajian/p/10014145.html
 
 并且下游系统是通过消息中操作记录的主键id来防止不重复消费，保证幂等性的。就是消费消息时，发送操作记录的id已经在数据库中存在了，就代表之前已经处理过了，不处理这条消息了。
 
-##### 最大努力通知法(RocketMQ)
+##### 可靠消息最终一致性方案
 
 RocketMQ在4.3以后，增加了对分布式事务的支持，就是将事务的执行状态保存在RocketMQ中，由RocketMQ去负责将commit状态的消息推送给下游系统。
 
@@ -255,11 +255,15 @@ RocketMQ在4.3以后，增加了对分布式事务的支持，就是将事务的
 
 4.如果一个prepare消息一直没有接受到上游系统的commit或者rollback指令，这样就判定prepare消息超时了，RocketMQ会去查询上游系统的这个事务的执行状态，是成功了，还是失败，做下一步的处理。
 
-底层实现原理
+**底层实现原理**
 
-RocketMQ使用了Half topic来保存所有prepare消息，使用Operation Topic来保存commit消息和rollback消息。这样通过Operation Topic就知道哪些消息commit了，可以推送给消费者，哪些消息rollback了，不需要推送给消费者。以及那些在Half topic中有，在Operation Topic中没有的消息，就是事务超时的消息。
+RocketMQ使用了Half topic队列来保存所有prepare消息，使用Operation Topic队列来保存commit消息和rollback消息。这样通过Operation Topic就知道哪些消息commit了，可以推送给消费者，哪些消息rollback了，不需要推送给消费者。以及那些在Half topic中有，在Operation Topic中没有的消息，就是事务超时的消息。
 
 https://www.infoq.cn/article/2018/08/rocketmq-4.3-release
+
+##### 最大努力通知方案
+
+业务系统 A 执行本地事务完成后，发送个消息到 MQ，有一个个专门消费 MQ 的服务，来消费MQ的消息，消费完会在数据库中记录下来(或者放入到内存队列)，之后就一直调用系统 B 的接口，要是系统 B 执行成功就提交，执行失败或者调用超时就一直重试，直到业务系统B执行成功。
 
 ### 如何设计秒杀系统？
 
