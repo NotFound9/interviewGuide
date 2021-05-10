@@ -195,8 +195,6 @@ https://blog.csdn.net/choumu8867/article/details/100658332
 
 （一次上下文切换，一次DMA拷贝。）
 
-
-
 ##### 总结：
 
 传统read()和write()方案：数据拷贝了4次，CPU上下文切换了很多次
@@ -250,4 +248,6 @@ https://www.cnblogs.com/runnerjack/p/12108132.html
 ### kafka的选举机制
 
 https://blog.csdn.net/qq_37142346/article/details/91349100
+
+https://honeypps.com/mq/kafka-basic-knowledge-of-selection/
 

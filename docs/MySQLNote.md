@@ -79,13 +79,15 @@ innodb 引擎首先开启事务，获得一个事务ID(是一直递增的)，根
 
 因为需要保证更新后的唯一性，所以不能延迟更新，必须把数据页从磁盘加载到内存，然后判断更新后是否会数据冲突，不会的话就更新数据页。
 
-#### 5.写undo log（prepare状态）
+#### 5.写redo log（prepare状态）
 
-将对数据页的更改写入到redo log，将redo log设置为prepare状态。
+将对数据页的更改写入到redo log，此时redo log中这条事务的状态为prepare状态。
 
-#### 6.写bin log（commit状态）
+#### 6.写bin log（同时将redo log设置为commit状态）
 
-通知MySQL server已经更新操作写入到redo log 了，随时可以提交，将执行的SQL写入到bin log日志，将redo log改成commit状态，事务提交成功。
+通知MySQL server已经更新操作写入到redo log 了，随时可以提交，将执行的SQL写入到bin log日志，将redo log 中这条事务的状态改成commit状态，事务提交成功。
+
+https://www.cnblogs.com/yuyue2014/p/6121114.html
 
 ##### undo log
 

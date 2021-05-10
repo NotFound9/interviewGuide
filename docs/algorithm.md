@@ -317,6 +317,32 @@ int find_left_bound(int[] array,double target) {
 }
 ```
 
+寻找左边界的二分查找算法
+
+```java
+int findLeft(int[] array,int target) {
+        if (array==null|| array.length==0) {
+            return -1;
+        }
+        int left = 0;
+        int right = array.length-1;
+        while (left<=right) {
+            int mid = (left+right)/2;
+            if (array[mid] == target) {
+                if (mid==0 || array[mid-1]<target) {//取的已经是左边界的值了
+                    return mid;
+                }
+                right = mid-1;
+            } else if(array[mid] < target) {//中间值小于target
+                left = mid+1;
+            } else {//中间值大于target
+                right = mid-1;
+            }
+        }
+        return -1;
+    }
+```
+
 ### 查找链表倒数第K个节点
 
 ```java

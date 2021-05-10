@@ -929,3 +929,81 @@ void afterNodeAccess(Node<K,V> e) { // move node to last
     }
 }
 ```
+
+### JDK1.7的HashMap链表成环是怎么造成的？
+
+这是JDK1.7里面HashMap扩容相关的代码：
+
+```java
+void transfer(Entry[] newTable, boolean rehash) {
+    int newCapacity = newTable.length;
+    for (Entry<K,V> e : table) {//遍历原数组的每一个下标
+        while(null != e) {
+        		//将数组下标下所有元素一个一个迁移到新数组，使用头插法
+            Entry<K,V> next = e.next;
+            if (rehash) {
+                e.hash = null == e.key ? 0 : hash(e.key);
+            }
+            int i = indexFor(e.hash, newCapacity);
+            e.next = newTable[i];
+            newTable[i] = e;
+            e = next;
+        } 
+    }
+}
+```
+
+JDK1.7版本的HashMap中，两个线程同时添加一个新的键值对，然后同时触发扩容时，两个线程都会进行扩容，就会造成前一个线程将某个数组下标的元素迁移过去后，另一个线程又进行迁移。假设原数组下标下有node1->node2->null，这样一个链表，线程A和线程B都在迁移，都拿到了node1，假设线程A先执行，将两个节点迁移到新的数组，假设node1和node2在新数组还是在同一下标下，那么迁移后的链表是node2->node1->null，此时如果线程B还在迁移，拿到node1又迁移，会让node1-next=node，从而让node1和node2形成环。
+
+##### 那么JDK1.8版本的HashMap是怎么解决的呢？
+
+首先迁移时不是拿到一个键值对就迁移一个了，而是对一个数组下标下的链表进行遍历，根据hash值的不同，分成两个链表，然后将两个链表分别设置到新的数组的下标下。
+
+```java
+if (oldTab != null) {
+            for (int j = 0; j < oldCap; ++j) {
+                Node<K,V> e;
+                if ((e = oldTab[j]) != null) {
+                    oldTab[j] = null;
+                    if (e.next == null)
+                        newTab[e.hash & (newCap - 1)] = e;
+                    else if (e instanceof TreeNode)
+                        ((TreeNode<K,V>)e).split(this, newTab, j, oldCap);
+                    else { // preserve order
+                        Node<K,V> loHead = null, loTail = null;
+                        Node<K,V> hiHead = null, hiTail = null;
+                        Node<K,V> next;
+                        do {
+                            next = e.next;
+                            if ((e.hash & oldCap) == 0) {
+                                if (loTail == null)
+                                    loHead = e;
+                                else
+                                    loTail.next = e;
+                                loTail = e;
+                            }
+                            else {
+                                if (hiTail == null)
+                                    hiHead = e;
+                                else
+                                    hiTail.next = e;
+                                hiTail = e;
+                            }
+                        } while ((e = next) != null);
+                        if (loTail != null) {
+                            loTail.next = null;
+                            newTab[j] = loHead;
+                        }
+                        if (hiTail != null) {
+                            hiTail.next = null;
+                            newTab[j + oldCap] = hiHead;
+                        }
+                    }
+                }
+            }
+        }
+```
+
+
+
+https://zhuanlan.zhihu.com/p/111501405

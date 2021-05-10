@@ -352,7 +352,7 @@ Callable跟Runnable类似，也是一个接口。只不过它的call方法有返
 
 ##### Future
 
-Future也是一个接口，Future就像是一个管理的容器一样，进一步对Runable和Callable的实例进行封装，提供了取消任务的cancel()方法，查询任务是否完成的isDone()方法，获取执行结果的get()方法，带有超时时间来获取执行结果的get()方法。
+Future也是一个接口，Future就像是一个管理的容器一样，进一步对Runable和Callable的实例进行封装，定义了一些方法。取消任务的cancel()方法，查询任务是否完成的isDone()方法，获取执行结果的get()方法，带有超时时间来获取执行结果的get()方法。
 
 ```java
 public interface Future<V> {
@@ -360,13 +360,9 @@ public interface Future<V> {
   //为true，如果任务已经执行，那么会调用Thread.interrupt()方法设置中断标识
   //为false，如果任务已经执行，就只会将任务状态标记为取消，而不会去设置中断标识
  boolean cancel(boolean mayInterruptIfRunning);
-
  boolean isCancelled();
-
  boolean isDone();
-  
  V get() throws InterruptedException, ExecutionException;
-  
  V get(long timeout, TimeUnit unit)   
    throws InterruptedException, ExecutionException, TimeoutException;
 }
@@ -1653,7 +1649,7 @@ ThreadPoolExecutor提供了如下几个public的setter方法
 
 说明有多余的worker线程，此时会向当前idle状态的worker线程发起中断请求以实现回收，多余的worker在下次idel的时候也会被回收。
 
-**对于新corePoolSize>当前工作线程数的情况：**
+**对于新corePoolSize>当前工作线程数且队列中有任务的情况：**
 
 如果当前队列中有待执行任务，则线程池会创建新的worker线程来执行队列任务。
 

@@ -2475,3 +2475,40 @@ dp[i] = max(1,dp[k]+1); k<i,并且nums[k]<nums[i]
     }
 
 ```
+
+时间复杂度为O(NlogN)的解法，就是使用一个数组sizeArray记录元素对应的最长子序列长度，sizeArray[i]代表sizeArray[i]这个元素组成的最长子序列的长度为i+1
+
+```java
+public int anotherLengthOfLIS(int[] nums) {
+    if (nums== null||nums.length==0) {
+        return 0;
+    }
+    //sizeArray[i]代表sizeArray[i]这个元素组成的最长子序列的长度为i+1
+    int[] sizeArray = new int[nums.length];
+    sizeArray[0] = nums[0];//第一个元素的最长子序列长度为1
+    int maxSize = 0;
+    for (int i = 1; i < nums.length; i++) {
+        if (nums[i]>sizeArray[maxSize]) {//如果当前元素比最长子序列的尾部元素大
+            maxSize++;
+            sizeArray[maxSize] = nums[i];
+        } else if (nums[i]==sizeArray[maxSize]) {//等于尾部元素，那么不用更新
+            continue;
+        } else {//小于尾部元素进行更新，在sizeArray中进行二分查找
+            int left = 0;
+            int right = maxSize;
+            while (left < right) {
+                int mid = (left+right)/2;
+                if (sizeArray[mid] < nums[i]) {
+                    left = mid+1;
+                } else {
+                    right = mid;
+                }
+            }
+            //最后left的位置肯定就是需要进行插入的位置
+            //left左边的元素都比nums[i]小
+            sizeArray[left]=nums[i];
+        }
+    }
+    return maxSize+1;
+}
+```
