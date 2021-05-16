@@ -800,7 +800,7 @@ SELECT a,b,c FROM user where a = 1
 
 假如要取offset 为X，limitY的数据，
 
-1.假设有四个库，需要去每个库查offset为X，limit为Y的数据，然后得到四个结果集，每个结果集的time都有一个时间最小的time_min，时间最大的time_max结果，取四个结果集中最小的time_min
+1.假设有四个库，需要去每个库查offset为X/4，limit为Y的数据，然后得到四个结果集，每个结果集的time都有一个时间最小的time_min，时间最大的time_max结果，取四个结果集中最小的time_min
 
 2.然后去每个库去查between time_min到之前每个库的time_max的结果集，
 
