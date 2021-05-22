@@ -1066,6 +1066,43 @@ https://blog.csdn.net/dennis211/article/details/78170079
 
 因为大查询在查询时可能会锁住很多数据，也需要获取到这些数据的行锁才能进行查询，切分成小查询可以减少锁竞争，减少等待获取锁的时间。
 
+##### 1.使用show profile对一条SQL查询分析当前会话中语句执行的资源消耗情况
+
+1.profiling配置默认是不开启的，可以使用set profiling = ON;命令将配置暂时打开。
+
+2.执行一条查询SQL
+
+3.使用show profiles可以查看最近15条查询SQL及对应的查询idquery id
+
+4.假设查询id为9，使用这个命令show profile for query 9;可以查看每个步骤及其消耗的时间。
+
+```
+mysql> show PROFILE for QUERY 9;
++----------------------+----------+
+| Status               | Duration |
++----------------------+----------+
+| starting             | 0.000054 |
+| checking permissions | 0.000007 |
+| Opening tables       | 0.000116 |
+| init                 | 0.000019 |
+| System lock          | 0.000009 |
+| optimizing           | 0.000004 |
+| statistics           | 0.000011 |
+| preparing            | 0.000010 |
+| executing            | 0.000002 |
+| Sending data         | 0.000061 |
+| end                  | 0.000005 |
+| query end            | 0.000006 |
+| closing tables       | 0.000006 |
+| freeing items        | 0.000031 |
+| cleaning up          | 0.000010 |
++----------------------+----------+
+```
+
+https://www.cnblogs.com/116970u/p/11004431.html
+
+https://www.jianshu.com/p/1efdddf3d461
+
 ### char类型与varchar类型的区别？
 
 char类型

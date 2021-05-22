@@ -230,25 +230,29 @@ ReentrantLock的非公平锁与公平锁的区别在于非公平锁在CAS更新s
 
 **不同点：**
 
-1.实现原理
+**1.实现原理**
 
-synchronized是一个Java 关键字，synchronized锁是JVM实现的，底层代码应该是C++代码。而ReenTrantLock是JDK实现的，是Java提供的一个类库，代码是Java代码，源码实现更加方便阅读。
+synchronized是一个Java 关键字，是由JVM实现的，底层代码应该是C++代码。而ReentrantLock是JDK实现的，是Java提供的一个类库，代码是Java代码，源码实现更加方便阅读。
 
-2.性能
+**2.性能**
 
-在以前，synchronized锁的实现只有重量级锁一种模式，性能会比较差，后面引入了偏向锁和轻量级锁后就优化了很多。
+在以前，synchronized锁的实现只有重量级锁一种模式，性能会比较差，后面引入了偏向锁和轻量级锁后就优化了很多。根据测试结果，在线程竞争不激烈的情况下，ReentrantLock与synchronized锁持平，竞争比较激烈的情况下，ReentrantLock会效率更高一些。
 
-3.功能
+**3.功能**
 
-synchronized只能修饰方法，或者用于代码块，而ReenTrantLock的加锁和解锁是调用lock和unlock方法，更加灵活。
+synchronized只能修饰方法，或者用于代码块，而ReentrantLock的加锁和解锁是调用lock和unlock方法，更加灵活。
 
-其次是synchronized的等待队列只有一个(调用wait()方法的线程会进入等待队列)，而ReenTrantLock可以有多个条件等待队列。可以分组唤醒需要唤醒的线程们，而不是像synchronized要么用notify方法随机唤醒一个线程要么用notifyAll方法唤醒全部线程。ReenTrantLock 提供了一种能够中断等待锁的线程的机制，就是线程通过调用lock.lockInterruptibly()方法来加锁时，一旦线程被中断，就会停止等待。
+其次是synchronized的等待队列只有一个(调用wait()方法的线程会进入等待队列)，而ReentrantLock可以有多个条件等待队列。可以分组唤醒需要唤醒的线程们，而不是像synchronized要么用notify方法随机唤醒一个线程要么用notifyAll方法唤醒全部线程。ReentrantLock 提供了一种能够中断等待锁的线程的机制，就是线程通过调用lock.lockInterruptibly()方法来加锁时，一旦线程被中断，就会停止等待。
 
-ReenTrantLock可以使用tryLock(long timeout, TimeUnit unit)方法来尝试申请锁，设置一个超时时间，超过超时时间，就会直接返回false，而不是一直等待锁。
+ReentrantLock可以使用tryLock(long timeout, TimeUnit unit)方法来尝试申请锁，设置一个超时时间，超过超时时间，就会直接返回false，而不是一直等待锁。
 
-4.公平性
+ReentrantLock可以响应中断，而synchronized锁不行
+
+**4.公平性**
 
  synchronized锁是非公平锁，ReentrantLock有公平锁和非公平锁两种模式。
+
+https://www.codercto.com/a/22884.html
 
 ### ReentrantLock的加锁流程是怎么样的？
 
@@ -275,6 +279,8 @@ ReentrantLock非公平锁的加锁流程：
 ![图片](../static/640-20210221154207974.png)
 
 https://blog.csdn.net/qq_14996421/article/details/102967314
+
+https://blog.csdn.net/fuyuwei2015/article/details/83719444
 
 ### 谈一谈你对AQS的理解？
 
