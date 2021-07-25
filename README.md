@@ -13,6 +13,8 @@ Github项目主页：https://github.com/NotFound9/interviewGuide
 
 欢迎大家进群一起学习进步！
 
+（另外我目前在一个互联网大厂工作，我们这边在大量招人，大家如果在找工作也可以扫下方的码填加我的微信，或者搜索**577528249** 添加我的微信，备注**内推**，我可以帮大家内推，除了我所在的公司以外，我还都有同事在各个大公司，也可以帮大家内推到那些公司。）
+
 <figure class="half">
 <img src="http://notfound9.github.io/interviewGuide/static/qe222wewewqere.jpeg" width="30%"/>
 <img src="http://notfound9.github.io/interviewGuide/static/image1.jpg" width="30%"/>
