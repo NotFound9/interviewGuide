@@ -135,7 +135,7 @@ https://www.cnblogs.com/youngchaolin/archive/2004/01/13/12034660.html
 
 ##### 下线
 
-在节点上执行 redis-trib.rb del-node{host:port} {donwNodeId}  通知其他的节点，自己下线，如果本节点是主节点，会安排对应的从节点阶梯主节点的位置。
+在节点上执行 redis-trib.rb del-node{host:port} {donwNodeId}  通知其他的节点，自己下线，如果本节点是主节点，会安排对应的从节点接替主节点的位置。
 
 #### RedisCluster是怎么做故障转移和发现的？
 
