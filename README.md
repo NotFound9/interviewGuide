@@ -4,7 +4,7 @@
 
 九章算法，由北大、清华校友于美国硅谷创办，已帮助数十万IT程序员找到高薪offer! 提供1对1求职指导、算法指导、前后端项目、简历代笔等服务。 
 
-* 推荐免费ChatGPT网站，戳此免费使用：[https://www.lintcode.com/chat-gpt](https://www.lintcode.com/chat-gpt?utm_source=tf-github-lucifer)
+* 推荐免费ChatGPT网站，戳此免费使用：[https://www.lintcode.com/chat-gpt](https://www.lintcode.com/chat-gpt?utm_source=tf-github-NotFound)
 
 点此领取7天VIP会员：[https://www.lintcode.com/vip/activity/z1qgMH](https://www.lintcode.com/vip/activity/z1qgMH)
 
