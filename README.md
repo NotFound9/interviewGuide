@@ -1,10 +1,10 @@
-现在有很多朋友在找工作，如果有需要有偿的面试指导，可以加微信577528249，包含简历优化，一对一2小时的针对性指导及模拟面试+赠送《大厂面试指北》PDF版+优秀简历参考范本。及后续跟踪问题解答，offer建议等等。目前活动期是500元1人，目前已为多人辅导找到满意的工作。
+现在有很多朋友在找工作，如果有需要有偿的面试辅导，可以加作者微信577528249，包含简历优化，一对一2小时的针对性指导及模拟面试+赠送《大厂面试指北》PDF版+优秀简历参考范本。及后续跟踪问题解答，offer建议，背调指导等等。
 
 <img src="http://notfound9.github.io/interviewGuide/static/image0.png" />
 
 九章算法，由北大、清华校友于美国硅谷创办，已帮助数十万IT程序员找到高薪offer! 提供1对1求职指导、算法指导、前后端项目、简历代笔等服务。 
 
-* 推荐刷题网站：[www.lintcode.com](https://www.lintcode.com/?utm_source=tf-github-NotFound2022)
+* 推荐免费ChatGPT网站，戳此免费使用：[https://www.lintcode.com/chat-gpt](https://www.lintcode.com/chat-gpt?utm_source=tf-github-lucifer)
 
 点此领取7天VIP会员：[https://www.lintcode.com/vip/activity/z1qgMH](https://www.lintcode.com/vip/activity/z1qgMH)
 
