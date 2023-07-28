@@ -1,6 +1,3 @@
-<img src="http://notfound9.github.io/interviewGuide/static/351684196936_pic.jpg" />
-
-现在有很多朋友在找工作，如果有需要有偿的面试辅导，可以加作者微信577528249，包含简历优化，一对一2小时的针对性指导及模拟面试+赠送《大厂面试指北》PDF版+优秀简历参考范本，后续跟踪问题解答，offer建议，背调指导等等。
 
 <img src="http://notfound9.github.io/interviewGuide/static/image0.png" />
 
