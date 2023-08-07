@@ -1,15 +1,4 @@
 
-<img src="http://notfound9.github.io/interviewGuide/static/image0.png" />
-
-九章算法，由北大、清华校友于美国硅谷创办，已帮助数十万IT程序员找到高薪offer! 提供1对1求职指导、算法指导、前后端项目、简历代笔等服务。 
-
-* 推荐免费ChatGPT网站，戳此免费使用：[https://www.lintcode.com/chat-gpt](https://www.lintcode.com/chat-gpt?utm_source=tf-github-NotFound)
-
-点此领取7天VIP会员：[https://www.lintcode.com/vip/activity/z1qgMH](https://www.lintcode.com/vip/activity/z1qgMH)
-
-* 推荐北大FB双料大神的[《九章算法班》](https://www.jiuzhang.com/course/71/?utm_source=tf-github-NotFound2022)，有人靠他连拿3个大厂offer
-<img src="http://notfound9.github.io/interviewGuide/static/WechatIMG0328.jpeg" />
-
 # 《大厂面试指北》
 
 最佳阅读地址：http://notfound9.github.io/interviewGuide/
